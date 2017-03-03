@@ -1,0 +1,16 @@
+language: python
+matrix:
+  include:
+    - python: "2.7"
+    - pytest
+
+virtualenv:
+  system_site_packages: true
+
+before_script:
+  - python ./setup.py install
+  - pip install -r requirements-test.txt
+script:
+  - py.test .
+  # Code quality check
+  - flake8 spinn_utilities unittests

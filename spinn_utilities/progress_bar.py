@@ -11,12 +11,12 @@ class ProgressBar(object):
     __slots__ = (
         "_number_of_things", "_currently_completed", "_destination",
         "_chars_per_thing", "_last_update", "_chars_done", "_string",
-        "_step_character"
+        "_step_character", "_end_character"
     )
 
     def __init__(self, total_number_of_things_to_do,
                  string_describing_what_being_progressed,
-                 step_character="="):
+                 step_character="=", end_character="|"):
         try:
             self._number_of_things = int(total_number_of_things_to_do)
         except TypeError:
@@ -29,6 +29,7 @@ class ProgressBar(object):
         self._string = string_describing_what_being_progressed
         self._destination = sys.stderr
         self._step_character = step_character
+        self._end_character = end_character
 
         self._create_initial_progress_bar(
             string_describing_what_being_progressed)
@@ -39,24 +40,33 @@ class ProgressBar(object):
         :param amount_to_add:
         :return:
         """
+        if self._currently_completed + amount_to_add > self._number_of_things:
+            raise Exception("too many update steps")
         self._currently_completed += amount_to_add
         self._check_differences()
 
+    def _print_overwritten_line(self, string):
+        print("\r" + string, end="", file=self._destination)
+
     def _print_distance_indicator(self, description):
-        print(description, file=self._destination)
-        print("|0                           50%                         100%|",
-              end="", file=self._destination)
+        if description is not None:
+            print(description, file=self._destination)
+        self._print_overwritten_line("{}100%{}".format(
+            " " * (ProgressBar.MAX_LENGTH_IN_CHARS-3), self._end_character))
+        self._print_overwritten_line("{}50%".format(
+            " " * (ProgressBar.MAX_LENGTH_IN_CHARS/2)))
+        self._print_overwritten_line(
+            "{}0%".format(self._end_character))
 
     def _print_progress(self, length):
-        print("\r|", end="", file=self._destination)
+        self._print_overwritten_line(self._end_character)
         for _ in range(int(length)):
             print(self._step_character, end='', file=self._destination)
-        if self._currently_completed == self._number_of_things:
-            print("|", file=self._destination)
         self._destination.flush()
 
     def _print_progress_done(self):
-        print("", file=self._destination)
+        self._print_progress(ProgressBar.MAX_LENGTH_IN_CHARS)
+        print(self._end_character, file=self._destination)
 
     def _create_initial_progress_bar(self, description):
         if self._number_of_things == 0:
@@ -98,7 +108,14 @@ class ProgressBar(object):
 
 if __name__ == "__main__":
     from time import sleep
-    demo = ProgressBar(5, "Progress Bar Demonstration", step_character="-")
+    demo = ProgressBar(5, "Progress Bar Demonstration", step_character="-",
+                       end_character="!")
     for _ in range(5):
         sleep(1)
         demo.update()
+    demo.end()
+    demo = ProgressBar(30, "Progress Bar Demonstration")
+    for _ in range(30):
+        sleep(0.1)
+        demo.update()
+    demo.end()

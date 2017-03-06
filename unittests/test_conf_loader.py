@@ -55,14 +55,15 @@ def test_intermediate_use(tmpdir, default_config, mach_spec):
 
 
 def test_advanced_use(tmpdir, default_config):
+    def parseAbc(parser):
+        f = parser.getfloat("Abc", "def")
+        parser.set("Abc", "ghi", f*3)
+        parser.remove_option("Abc", "def")
+
     with tmpdir.as_cwd():
         cl = ConfigurationLoader(unittests, CFGFILE)
         f = tmpdir.join(CFGFILE)
         f.write(default_config + "\n[Abc]\ndef=1.25\n")
-        def parseAbc(parser):
-            f = parser.getfloat("Abc", "def")
-            parser.set("Abc", "ghi", f*3)
-            parser.remove_option("Abc", "def")
         config = cl.load_config([("Abc", parseAbc)])
         assert config.options("Abc") == ["ghi"]
         assert config.getfloat("Abc", "ghi") == 3.75

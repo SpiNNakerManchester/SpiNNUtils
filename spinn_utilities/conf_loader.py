@@ -79,8 +79,8 @@ class ConfigurationLoader():
         read = config.read(config_locations)
         read.append(default)
         parsers = list(config_parsers)
-        parsers.append(self._logging_parser)
-        parsers.append(self._machine_spec_parser)
+        parsers.append(("Logging", self._logging_parser))
+        parsers.append(("Machine", self._machine_spec_parser))
 
         for (section, parser) in parsers:
             if config.has_section(section):

@@ -105,6 +105,23 @@ class ProgressBar(object):
     def __exit__(self, exty, exval, traceback):
         self.end()
 
+    def over(self, collection):
+        """Simple wrapper for the cases where the progress bar is being used
+        to show progress through the iteration over a single collection.
+        The progress bar should have been initialised to the size of the
+        collection being iterated over.
+
+        :param collection: The base collection (any iterable) being iterated
+        over
+        :return: An iterable. Expected to be directly used in a for.
+        """
+        try:
+            for item in collection:
+                yield item
+                self.update()
+        finally:
+            self.end()
+
 
 if __name__ == "__main__":
     from time import sleep
@@ -119,3 +136,8 @@ if __name__ == "__main__":
         sleep(0.1)
         demo.update()
     demo.end()
+
+    collection = [2, 3, 5, 7, 11, 13, 17]
+    demo = ProgressBar(collection, "Demo over a few primes")
+    for prime in demo.over(collection):
+        sleep(0.1)

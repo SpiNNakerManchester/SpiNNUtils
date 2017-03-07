@@ -23,3 +23,13 @@ def test_check_length_addition():
     with pytest.raises(Exception):  # @UndefinedVariable
         p.update()
     p.end()
+
+
+def test_iteration_style():
+    coll = range(5)
+    p = ProgressBar(coll, None)
+    total = 0
+    for value in p.over(coll):
+        total += value
+    assert total == 10
+    assert p._number_of_things == 5

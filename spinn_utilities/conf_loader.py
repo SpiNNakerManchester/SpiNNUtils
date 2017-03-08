@@ -4,7 +4,7 @@ import ConfigParser
 import sys
 import logging
 import string
-import distutils
+from distutils.util import strtobool
 from spinn_utilities import log
 
 
@@ -15,7 +15,7 @@ class ConfigurationLoader():
             contextPackage.__file__))
         self._filename = filename
         try:
-            self._in_special_environment = bool(distutils.util.strtobool(
+            self._in_special_environment = bool(strtobool(
                 os.environ.get("READTHEDOCS", "False")))
         except:
             self._in_special_environment = False

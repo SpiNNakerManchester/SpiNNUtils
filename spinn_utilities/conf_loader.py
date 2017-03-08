@@ -16,7 +16,7 @@ class ConfigurationLoader():
         self._filename = filename
         try:
             self._in_special_environment = bool(distutils.util.strtobool(
-                os.environ.get("READTHEDOCS")))
+                os.environ.get("READTHEDOCS", "False")))
         except:
             self._in_special_environment = False
 

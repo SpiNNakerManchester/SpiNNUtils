@@ -38,7 +38,7 @@ class ProgressBar(object):
         """ Update the progress bar by a given amount
 
         :param amount_to_add:
-        :return:
+        :rtype: None
         """
         if self._currently_completed + amount_to_add > self._number_of_things:
             raise Exception("too many update steps")
@@ -89,7 +89,7 @@ class ProgressBar(object):
     def end(self):
         """ Close the progress bar, updating whatever is left if needed
 
-        :return:
+        :rtype: None
         """
         difference = self._number_of_things - self._currently_completed
         self._currently_completed += difference
@@ -112,7 +112,7 @@ class ProgressBar(object):
         collection being iterated over.
 
         :param collection: The base collection (any iterable) being iterated
-        over
+            over
         :return: An iterable. Expected to be directly used in a for.
         """
         try:

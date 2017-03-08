@@ -4,6 +4,7 @@ import ConfigParser
 import sys
 import logging
 import string
+import distutils
 from spinn_utilities import log
 
 
@@ -13,6 +14,11 @@ class ConfigurationLoader():
         self._contextDir = os.path.dirname(os.path.realpath(
             contextPackage.__file__))
         self._filename = filename
+        try:
+            self._in_special_environment = bool(distutils.util.strtobool(
+                os.environ.get("READTHEDOCS")))
+        except:
+            self._in_special_environment = False
 
     def print_message(self, filename):
         print "************************************"
@@ -57,6 +63,9 @@ class ConfigurationLoader():
 
     def load_config(self, config_parsers=[]):
         config = ConfigParser.RawConfigParser()
+        # When the config is being loaded in a special environment, do nothing
+        if self._in_special_environment:
+            return config
         default = os.path.join(self._contextDir, self._filename)
         spynnaker_user = os.path.expanduser("~/.{}".format(self._filename))
         config_locations = [spynnaker_user, self._filename]

@@ -2,7 +2,8 @@ from six import add_metaclass
 
 from spinn_utilities.abstract_base import AbstractBase, abstractproperty
 
-#@add_metaclass(AbstractBase)
+
+@add_metaclass(AbstractBase)
 class AbstractHasId(object):
     """ Represents an item with a label
     """

@@ -3,6 +3,7 @@ from six import add_metaclass
 from spinn_utilities.abstract_base import AbstractBase, abstractproperty, \
     abstractmethod
 
+
 @add_metaclass(AbstractBase)
 class AbstractHasLabel(object):
     """ Represents an item with a label

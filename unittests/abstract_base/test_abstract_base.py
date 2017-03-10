@@ -1,8 +1,5 @@
 import pytest
 
-from spinn_utilities.overrides import overrides
-
-from abstract_grandparent import AbstractGrandParent
 from abstract_has_constraints import AbstractHasConstraints
 from abstract_has_label import AbstractHasLabel
 from abstract_has_id import AbstractHasId
@@ -23,7 +20,7 @@ def test_create():
 
 def test_no_has_label():
     with pytest.raises(TypeError):
-        o = NoLabel()
+        NoLabel()
 
 
 # What this test checks is actually undesirable but it shows it happens
@@ -35,4 +32,5 @@ def test_unchecked_bad_param():
 def test_checked_bad_param():
     with pytest.raises(AttributeError):
         from checked_bad_param import CheckedBadParam
-
+        # This line never reached but there for pep8
+        CheckedBadParam()

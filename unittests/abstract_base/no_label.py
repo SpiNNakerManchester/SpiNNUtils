@@ -1,5 +1,4 @@
 from abstract_grandparent import AbstractGrandParent
-from abstract_has_label import AbstractHasLabel
 from abstract_has_constraints import AbstractHasConstraints
 
 from spinn_utilities.overrides import overrides
@@ -17,5 +16,3 @@ class NoLabel(AbstractGrandParent):
     @overrides(AbstractHasConstraints.constraints)
     def constraints(self):
         return ["No night feeds", "No nappy changes"]
-
-

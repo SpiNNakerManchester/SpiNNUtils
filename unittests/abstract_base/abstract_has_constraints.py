@@ -3,12 +3,14 @@ from six import add_metaclass
 from spinn_utilities.abstract_base import AbstractBase, abstractproperty, \
     abstractmethod
 
+
 @add_metaclass(AbstractBase)
 class AbstractHasConstraints(object):
     """ Represents an object with constraints
     """
 
     __slots__ = ()
+
     @abstractmethod
     def add_constraint(self, constraint):
         """ Add a new constraint to the collection of constraints

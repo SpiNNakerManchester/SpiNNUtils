@@ -3,6 +3,7 @@ from spinn_utilities.overrides import overrides
 from abstract_grandparent import AbstractGrandParent
 from abstract_has_constraints import AbstractHasConstraints
 
+
 class UncheckedBadParam(AbstractGrandParent):
     def label(self):
         return "GRANDPARENT"
@@ -17,5 +18,3 @@ class UncheckedBadParam(AbstractGrandParent):
     @overrides(AbstractHasConstraints.constraints)
     def constraints(self):
         return ["No night feeds", "No nappy changes"]
-
-

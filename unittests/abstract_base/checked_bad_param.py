@@ -1,5 +1,3 @@
-import pytest
-
 from spinn_utilities.overrides import overrides
 
 from abstract_grandparent import AbstractGrandParent
@@ -20,5 +18,3 @@ class CheckedBadParam(AbstractGrandParent):
     @overrides(AbstractHasConstraints.constraints)
     def constraints(self):
         return ["No night feeds", "No nappy changes"]
-
-

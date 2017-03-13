@@ -27,6 +27,7 @@ def test_simple_eval():
     assert evaluator.eval("1+2*3") == 7
     assert evaluator.eval("x+y*z", x=1, y=2, z=3) == 7
 
+
 def test_environment_eval():
     evaluator = SafeEval(Abc)
     assert evaluator.eval("Abc(1)") == 2
@@ -34,6 +35,7 @@ def test_environment_eval():
         evaluator.eval("Def(1)")
     with pytest.raises(TypeError):
         evaluator.eval("Abc(1,2)")
+
 
 def test_multi_environment():
     s = Support()

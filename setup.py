@@ -10,5 +10,5 @@ setup(
     url="https://github.com/SpiNNakerManchester/SpiNNUtilities",
     license="GNU GPLv3.0",
     packages=['spinn_utilities'],
-    install_requires=[]
+    install_requires=['six']
 )

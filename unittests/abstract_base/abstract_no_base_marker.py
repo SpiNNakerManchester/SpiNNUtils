@@ -1,0 +1,2 @@
+class AbstractNoBaseMarker(object):
+    pass

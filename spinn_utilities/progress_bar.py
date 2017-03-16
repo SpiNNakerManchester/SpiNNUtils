@@ -111,7 +111,7 @@ class ProgressBar(object):
         The progress bar should have been initialised to the size of the
         collection being iterated over.
 
-        :param collection: The base collection (any iterable) being iterated
+        :param collection: The base collection (any iterable) being iterated\
             over
         :return: An iterable. Expected to be directly used in a for.
         """

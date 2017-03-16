@@ -114,7 +114,7 @@ class ConfigurationLoader():
         read.append(default)
         parsers = list()
         if config_parsers is not None:
-            parsers.append(config_parsers)
+            parsers.extend(config_parsers)
         parsers.append(("Logging", self._logging_parser))
         parsers.append(("Machine", self._machine_spec_parser))
 

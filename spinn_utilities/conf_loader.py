@@ -27,10 +27,10 @@ class ConfigurationLoader():
             contextPackage.__file__))
         self._filename = filename
         try:
-            self._in_special_environment = bool(strtobool(
+            self._in_read_the_docs = bool(strtobool(
                 os.environ.get("READTHEDOCS", "False")))
         except:
-            self._in_special_environment = False
+            self._in_read_the_docs = False
 
     def print_message(self, filename):
         print "************************************"
@@ -87,8 +87,9 @@ class ConfigurationLoader():
         """
         config = ConfigParser.RawConfigParser()
 
-        # When the config is being loaded in a special environment, do nothing
-        if self._in_special_environment:
+        # When the config is being loaded in read-the-docs, skip loading
+        # as this is not needed to generate documents
+        if self._in_read_the_docs:
             return config
         default = os.path.join(self._contextDir, self._filename)
         spynnaker_user = os.path.expanduser("~/.{}".format(self._filename))

@@ -1,6 +1,6 @@
 class SafeEval(object):
-    """This provides expression evaluation capabilities while allowing the set
-    of symbols exposed to the expression to be strictly controlled.
+    """ This provides expression evaluation capabilities while allowing the\
+        set of symbols exposed to the expression to be strictly controlled.
 
     Sample of use:
 
@@ -21,11 +21,12 @@ class SafeEval(object):
 
     def __init__(self, *args):
         """
-        :param args: The symbols to use to populate the global reference table.
-        Note that all of these symbols must support the __name__ property, but
-        that includes any function, method of an object, or module. If you want
-        to make an object available by anything other than its inherent name,
-        define it in the eval() call.
+        :param args:\
+            The symbols to use to populate the global reference table.
+            Note that all of these symbols must support the __name__ property,\
+            but that includes any function, method of an object, or module. If\
+            you want to make an object available by anything other than its\
+            inherent name, define it in the eval() call.
         """
         env = {}
         for item in args:
@@ -33,13 +34,14 @@ class SafeEval(object):
         self._environment = env
 
     def eval(self, expression, **kwargs):
-        """Evaluate an expression and return the result.
+        """ Evaluate an expression and return the result.
 
         :param expression: The expression to evaluate
         :type expression: str
-        :param kwargs: The extra symbol bindings to use for this evaluation.
-        This is useful for passing in particular parameters to an individual
-        evaluation run.
+        :param kwargs:\
+            The extra symbol bindings to use for this evaluation.
+            This is useful for passing in particular parameters to an\
+            individual evaluation run.
         :return: The expression result
         """
         return eval(expression, self._environment, kwargs)

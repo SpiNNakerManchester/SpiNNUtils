@@ -52,9 +52,9 @@ class ProgressBar(object):
         if description is not None:
             print(description, file=self._destination)
         self._print_overwritten_line("{}100%{}".format(
-            " " * (ProgressBar.MAX_LENGTH_IN_CHARS-3), self._end_character))
+            " " * (ProgressBar.MAX_LENGTH_IN_CHARS - 3), self._end_character))
         self._print_overwritten_line("{}50%".format(
-            " " * (ProgressBar.MAX_LENGTH_IN_CHARS/2)))
+            " " * (ProgressBar.MAX_LENGTH_IN_CHARS / 2)))
         self._print_overwritten_line(
             "{}0%".format(self._end_character))
 

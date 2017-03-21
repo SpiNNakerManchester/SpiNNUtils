@@ -2,13 +2,14 @@ import datetime
 
 
 class Timer(object):
-    """
-    A timer used for performance measurements
+    """ A timer used for performance measurements
     """
 
     __slots__ = [
+
         # The start time when the timer was set off
         "_start_time",
+
         # The time in the measured section
         "_measured_section_interval"
     ]

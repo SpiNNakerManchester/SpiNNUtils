@@ -3,7 +3,7 @@ import inspect
 
 class overrides(object):
     """ A decorator for indicating that a method overrides another method in\
-        a super class.  This checks that the method does actually exist,
+        a super class.  This checks that the method does actually exist,\
         copies the doc-string for the method, and enforces that the method\
         overridden is specified, making maintenance easier.
     """

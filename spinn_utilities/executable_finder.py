@@ -2,15 +2,15 @@ import os
 
 
 class ExecutableFinder(object):
-    """ Manages a set of folders in which to search for binaries,
+    """ Manages a set of folders in which to search for binaries,\
         and allows for binaries to be discovered within this path
     """
 
     def __init__(self, binary_search_paths):
         """
 
-        :param binary_search_paths: The initial set of folders to search for\
-                    binaries.
+        :param binary_search_paths:\
+            The initial set of folders to search for binaries.
         :type binary_search_paths: iterable of str
         """
         self._binary_search_paths = binary_search_paths
@@ -42,8 +42,9 @@ class ExecutableFinder(object):
 
         :param executable_name: The name of the executable to find
         :type executable_name: str
-        :return: The full path of the discovered executable, or None if no \
-                    executable was found in the set of folders
+        :return:\
+            The full path of the discovered executable, or None if no \
+            executable was found in the set of folders
         :rtype: str
         """
 

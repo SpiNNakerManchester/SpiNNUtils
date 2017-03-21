@@ -5,6 +5,7 @@ SpiNNUtils
 This provides basic utility functions and classes to other parts of SpiNNaker's
 tooling. Nothing in here knows anything about SpiNNaker functionality.
 
+
 `spinn_utilities.abstract_base`
 -------------------------------
 Provides a simplified (and faster) version of the standard Python Abstract
@@ -42,3 +43,9 @@ Holder for the locations of network resources.
 `spinn_utilities.timer`
 -----------------------
 General code timer utility.
+
+Documentation
+=============
+[SpiNNUtils python documentation](http://spinnutils.readthedocs.io)
+
+[Combined python documentation](http://spinnakermanchester.readthedocs.io)

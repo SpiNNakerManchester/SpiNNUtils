@@ -1,6 +1,7 @@
 from __future__ import print_function
 import sys
 import math
+import os
 
 
 class ProgressBar(object):
@@ -10,8 +11,8 @@ class ProgressBar(object):
 
     __slots__ = (
         "_number_of_things", "_currently_completed", "_destination",
-        "_chars_per_thing", "_last_update", "_chars_done", "_string",
-        "_step_character", "_end_character"
+        "_chars_per_thing", "_chars_done", "_string",
+        "_step_character", "_end_character", "_in_bad_terminal"
     )
 
     def __init__(self, total_number_of_things_to_do,
@@ -20,16 +21,21 @@ class ProgressBar(object):
         try:
             self._number_of_things = int(total_number_of_things_to_do)
         except TypeError:
+
             # Might be dealing with general iterable; better not be infinite
             self._number_of_things = len(list(total_number_of_things_to_do))
+
         self._currently_completed = 0
         self._chars_per_thing = None
-        self._last_update = 0
         self._chars_done = 0
         self._string = string_describing_what_being_progressed
         self._destination = sys.stderr
         self._step_character = step_character
         self._end_character = end_character
+
+        # Determine if we are in a "bad" terminal i.e. one that doesn't handle
+        # carriage return correctly
+        self._in_bad_terminal = "PROGRESS_BAD_TERMINAL" in os.environ
 
         self._create_initial_progress_bar(
             string_describing_what_being_progressed)
@@ -38,7 +44,7 @@ class ProgressBar(object):
         """ Update the progress bar by a given amount
 
         :param amount_to_add:
-        :return:
+        :rtype: None
         """
         if self._currently_completed + amount_to_add > self._number_of_things:
             raise Exception("too many update steps")
@@ -51,22 +57,44 @@ class ProgressBar(object):
     def _print_distance_indicator(self, description):
         if description is not None:
             print(description, file=self._destination)
-        self._print_overwritten_line("{}100%{}".format(
-            " " * (ProgressBar.MAX_LENGTH_IN_CHARS-3), self._end_character))
-        self._print_overwritten_line("{}50%".format(
-            " " * (ProgressBar.MAX_LENGTH_IN_CHARS/2)))
-        self._print_overwritten_line(
-            "{}0%".format(self._end_character))
+
+        # Find the mid point
+        mid_point = ProgressBar.MAX_LENGTH_IN_CHARS / 2
+
+        # The space between 0% and 50% is the mid-point minus the width of
+        # 0% and ~half the width of 50%
+        first_space = mid_point - 4
+
+        # The space between 50% and 100% is the mid-point minus the rest of
+        # the width of 50% and the width of 100%
+        second_space = mid_point - 5
+
+        # Print the progress bar itself
+        print(
+            "{}0%{}50%{}100%{}".format(
+                self._end_character, " " * first_space,
+                " " * second_space, self._end_character),
+            end="", file=self._destination)
+        if self._in_bad_terminal:
+            print("", file=self._destination)
+            print(" ", end="", file=self._destination)
 
     def _print_progress(self, length):
-        self._print_overwritten_line(self._end_character)
-        for _ in range(int(length)):
+        chars_to_print = length
+        if not self._in_bad_terminal:
+            self._print_overwritten_line(self._end_character)
+        else:
+            chars_to_print = length - self._chars_done
+        for _ in range(int(chars_to_print)):
             print(self._step_character, end='', file=self._destination)
         self._destination.flush()
 
     def _print_progress_done(self):
         self._print_progress(ProgressBar.MAX_LENGTH_IN_CHARS)
-        print(self._end_character, file=self._destination)
+        if not self._in_bad_terminal:
+            print(self._end_character, file=self._destination)
+        else:
+            print("", file=self._destination)
 
     def _create_initial_progress_bar(self, description):
         if self._number_of_things == 0:
@@ -79,8 +107,8 @@ class ProgressBar(object):
         self._check_differences()
 
     def _check_differences(self):
-        expected_chars_done = math.floor(self._currently_completed *
-                                         self._chars_per_thing)
+        expected_chars_done = math.floor(
+            self._currently_completed * self._chars_per_thing)
         if self._currently_completed == self._number_of_things:
             expected_chars_done = ProgressBar.MAX_LENGTH_IN_CHARS
         self._print_progress(expected_chars_done)
@@ -89,7 +117,7 @@ class ProgressBar(object):
     def end(self):
         """ Close the progress bar, updating whatever is left if needed
 
-        :return:
+        :rtype: None
         """
         difference = self._number_of_things - self._currently_completed
         self._currently_completed += difference
@@ -106,13 +134,13 @@ class ProgressBar(object):
         self.end()
 
     def over(self, collection):
-        """Simple wrapper for the cases where the progress bar is being used
-        to show progress through the iteration over a single collection.
-        The progress bar should have been initialised to the size of the
-        collection being iterated over.
+        """ Simple wrapper for the cases where the progress bar is being used\
+            to show progress through the iteration over a single collection.\
+            The progress bar should have been initialised to the size of the\
+            collection being iterated over.
 
-        :param collection: The base collection (any iterable) being iterated
-        over
+        :param collection:\
+            The base collection (any iterable) being iterated over
         :return: An iterable. Expected to be directly used in a for.
         """
         try:
@@ -125,8 +153,8 @@ class ProgressBar(object):
 
 if __name__ == "__main__":
     from time import sleep
-    demo = ProgressBar(5, "Progress Bar Demonstration", step_character="-",
-                       end_character="!")
+    demo = ProgressBar(
+        5, "Progress Bar Demonstration", step_character="-", end_character="!")
     for _ in range(5):
         sleep(1)
         demo.update()

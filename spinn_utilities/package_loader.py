@@ -71,4 +71,3 @@ def load_module(name, remove_pyc_files=False, exclusions=[]):
 
 if __name__ == '__main__':
     load_module("spinn_utilities", True)
-

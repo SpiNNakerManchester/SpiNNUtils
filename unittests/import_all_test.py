@@ -1,5 +1,3 @@
-import pytest
-
 import spinn_utilities.package_loader as package_loader
 
 

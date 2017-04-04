@@ -1,4 +1,6 @@
 import os
+import sys
+import traceback
 
 
 def all_modules(directory, prefix, remove_pyc_files=False):
@@ -38,7 +40,9 @@ def all_modules(directory, prefix, remove_pyc_files=False):
     return results
 
 
-def load_modules(directory, prefix, remove_pyc_files=False, exclusions=[]):
+def load_modules(
+        directory, prefix, remove_pyc_files=False, exclusions=[],
+        gather_errors=True):
     """
     Loads all the python files found in this directory giving then the prefix
 
@@ -47,26 +51,52 @@ def load_modules(directory, prefix, remove_pyc_files=False, exclusions=[]):
 
     :param directory: path to check for python files
     :param prefix: package prefix top add to the file name
+    :param remove_pyc_files: True if .pyc files should be deleted
+    :param exclusions: a list of modules to exclude
+    :param gather_errors:\
+        True if errors should be gathered, False to report on first error
     """
     modules = all_modules(directory, prefix, remove_pyc_files)
+    errors = list()
     for module in modules:
         if module in exclusions:
             print "SKIPPING " + module
         else:
             print module
-            __import__(module)
+            if gather_errors:
+                try:
+                    __import__(module)
+                except:
+                    errors.append((module, sys.exc_info()))
+            else:
+                __import__(module)
+
+    for module, (exc_type, exc_value, exc_traceback) in errors:
+        print "Error importing {}:".format(module)
+        for line in traceback.format_exception(
+                exc_type, exc_value, exc_traceback):
+            for line_line in line.split("\n"):
+                if len(line_line) > 0:
+                    print "  ", line_line.rstrip()
+    if len(errors) > 0:
+        raise Exception("Error when importing, starting at {}".format(prefix))
 
 
-def load_module(name, remove_pyc_files=False, exclusions=[]):
+def load_module(
+        name, remove_pyc_files=False, exclusions=[], gather_errors=True):
     """
     Loads this modules and all its children
 
     :param name: name of the modules
+    :param remove_pyc_files: True if .pyc files should be deleted
+    :param exclusions: a list of modules to exclude
+    :param gather_errors:\
+        True if errors should be gathered, False to report on first error
     """
     module = __import__(name)
     path = module.__file__
     directory = os.path.dirname(path)
-    load_modules(directory, name, remove_pyc_files, exclusions)
+    load_modules(directory, name, remove_pyc_files, exclusions, gather_errors)
 
 
 if __name__ == '__main__':

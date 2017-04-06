@@ -59,3 +59,8 @@ def test_state_sensitive():
 def test_packages():
     evaluator = SafeEval(math)
     assert evaluator.eval("math.floor(d)", d=2.5) == 2.0
+
+
+def test_defined_names():
+    evaluator = SafeEval(math, x=123.25)
+    assert evaluator.eval("math.floor(x+d)", d=0.875) == 124.0

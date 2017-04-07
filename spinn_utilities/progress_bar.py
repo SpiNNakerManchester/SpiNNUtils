@@ -35,7 +35,7 @@ class ProgressBar(object):
 
         # Determine if we are in a "bad" terminal i.e. one that doesn't handle
         # carriage return correctly
-        self._in_bad_terminal = "PROGRESS_BAD_TERMINAL" in os.environ
+        self._in_bad_terminal = "PROGRESS_GOOD_TERMINAL" not in os.environ
 
         self._create_initial_progress_bar(
             string_describing_what_being_progressed)

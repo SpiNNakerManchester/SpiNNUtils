@@ -27,7 +27,7 @@ for dirname, dirnames, filenames in os.walk(main_package_dir):
 
 setup(
     name="SpiNNUtilities",
-    version="4.0.0a1",
+    version="1!4.0.0a1",
     description="Utility classes and functions for SpiNNaker projects",
     url="https://github.com/SpiNNakerManchester/SpiNNUtilities",
     license="GNU GPLv3.0",

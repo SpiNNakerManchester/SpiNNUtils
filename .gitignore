@@ -3,3 +3,5 @@
 *.pyc
 /.cache
 __pycache__
+/SpiNNUtilities.egg-info/
+/dist/

@@ -5,6 +5,10 @@ except ImportError:
 from collections import defaultdict
 import os
 
+__version__ = None
+exec(open("spinn_utilities/_version.py").read())
+assert __version__
+
 # Build a list of all project modules, as well as supplementary files
 main_package = "spinn_utilities"
 data_extensions = {".aplx", ".xml"}
@@ -27,7 +31,7 @@ for dirname, dirnames, filenames in os.walk(main_package_dir):
 
 setup(
     name="SpiNNUtilities",
-    version="3.0.0",
+    version=__version__,
     description="Utility classes and functions for SpiNNaker projects",
     url="https://github.com/SpiNNakerManchester/SpiNNUtilities",
     license="GNU GPLv3.0",

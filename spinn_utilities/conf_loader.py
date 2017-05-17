@@ -7,6 +7,8 @@ import string
 from distutils.util import strtobool
 from spinn_utilities import log
 
+logger = logging.getLogger(__name__)
+
 
 class ConfigurationLoader():
     """ Utility for loading configuration files from a range of paths,\
@@ -73,8 +75,10 @@ class ConfigurationLoader():
         if not config.has_option("Machine", "machine_spec_file"):
             return None
         machine_spec_file_path = config.get("Machine", "machine_spec_file")
-        config.read(machine_spec_file_path)
-        return machine_spec_file_path
+        read_ok = config.read(machine_spec_file_path)
+        if len(read_ok) == 1:
+            return read_ok[0]
+        return None
 
     def load_config(self, config_parsers=None):
         """ Load the configuration
@@ -126,7 +130,6 @@ class ConfigurationLoader():
                     read.append(result)
 
         # Log which config files we read
-        logger = logging.getLogger(self._contextPackage.__name__)
         logger.info("Read config files: %s" % string.join(read, ", "))
 
         return config

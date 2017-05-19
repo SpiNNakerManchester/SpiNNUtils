@@ -5,7 +5,6 @@ import ConfigParser
 import sys
 import logging
 import string
-from distutils.util import strtobool
 from spinn_utilities import log
 
 logger = logging.getLogger(__name__)
@@ -22,7 +21,8 @@ def install_cfg(contextDir, filename):
           "Please edit this file and change \"None\""
           " after \"machineName\" to the hostname or IP address of your"
           " SpiNNaker board, and change \"None\" after \"version\" to the"
-          " version of SpiNNaker hardware you are running on:".format(home_cfg))
+          " version of SpiNNaker hardware you are running "
+          "on:".format(home_cfg))
     print "[Machine]"
     print "machineName = None"
     print "version = None"
@@ -122,4 +122,3 @@ def load_config(contextPackage, filename, config_parsers=None):
     logger.info("Read config files: %s" % string.join(read, ", "))
 
     return config
-

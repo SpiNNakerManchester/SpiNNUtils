@@ -1,4 +1,5 @@
 import os
+from .ordered_set import OrderedSet
 
 
 class ExecutableFinder(object):
@@ -13,7 +14,9 @@ class ExecutableFinder(object):
             The initial set of folders to search for binaries.
         :type binary_search_paths: iterable of str
         """
-        self._binary_search_paths = binary_search_paths
+        self._binary_search_paths = OrderedSet()
+        for path in binary_search_paths:
+            self.add_path(path)
 
     def add_path(self, path):
         """ Adds a path to the set of folders to be searched.  The path is\
@@ -25,7 +28,7 @@ class ExecutableFinder(object):
         :return: Nothing is returned
         :rtype: None
         """
-        self._binary_search_paths.append(path)
+        self._binary_search_paths.add(path)
 
     @property
     def binary_paths(self):

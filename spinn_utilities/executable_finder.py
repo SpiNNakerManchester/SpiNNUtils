@@ -28,8 +28,7 @@ class ExecutableFinder(object):
         :return: Nothing is returned
         :rtype: None
         """
-        if path not in self._path_set:
-            self._binary_search_paths.add(path)
+        self._binary_search_paths.add(path)
 
     @property
     def binary_paths(self):

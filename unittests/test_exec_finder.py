@@ -40,3 +40,19 @@ def test_find_in_two_places(tmpdir):
     assert ef.get_executable_path("abc.aplx") == str(w1)
     w1.remove()
     assert ef.get_executable_path("abc.aplx") is None
+
+
+def test_find_no_duplicates(tmpdir):
+    a = tmpdir.mkdir("a")
+    b = tmpdir.mkdir("b")
+    ef = ExecutableFinder([str(a), str(b)])
+    assert ef.binary_paths == "{} : {}".format(a, b)
+    ef.add_path(str(a))
+    ef.add_path(str(a))
+    ef.add_path(str(b))
+    ef.add_path(str(b))
+    ef.add_path(str(a))
+    ef.add_path(str(a))
+    ef.add_path(str(b))
+    ef.add_path(str(b))
+    assert ef.binary_paths == "{} : {}".format(a, b)

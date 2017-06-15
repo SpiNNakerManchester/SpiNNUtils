@@ -8,7 +8,6 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-
 class TestLoggerUtils(unittest.TestCase):
 
     def tearDown(self):
@@ -29,14 +28,12 @@ class TestLoggerUtils(unittest.TestCase):
             log_checker.assert_logs_contains_once("WARNING", l.records,
                                                   "another log warning")
 
-
     def test_twice(self):
         with LogCapture() as l:
             logger_utils.warn_once(logger, "a log warning")
             logger_utils.warn_once(logger, "a log warning")
             log_checker.assert_logs_contains_once("WARNING", l.records,
                                                   "a log warning")
-
 
     def test_multiple(self):
         with LogCapture() as l:

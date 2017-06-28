@@ -43,19 +43,21 @@ def logging_parser(config):
             handler.setFormatter(log.ConfiguredFormatter(config))
     except ConfigParser.NoOptionError:
         pass
-    return None
 
 
-def machine_spec_parser(config):
-    """ Load any cross-referenced machine specification file.
+def read_a_config(config, cfg_file):
+    """ Reads in a config file andthen directly its machine_spec_file
+
+    :param config: config to do the reading
+    :param cfg_file: path to file which should be read in
+    :return: list of files read including and machione_spec_files
     """
-    if not config.has_option("Machine", "machine_spec_file"):
-        return None
-    machine_spec_file_path = config.get("Machine", "machine_spec_file")
-    read_ok = config.read(machine_spec_file_path)
-    if len(read_ok) == 1:
-        return read_ok[0]
-    return None
+    read_ok = config.read(cfg_file)
+    if config.has_option("Machine", "machine_spec_file"):
+        machine_spec_file_path = config.get("Machine", "machine_spec_file")
+        read_ok.extend(config.read(machine_spec_file_path))
+        config.remove_option("Machine", "machine_spec_file")
+    return read_ok
 
 
 def load_config(contextPackage, filename, config_parsers=None):
@@ -91,7 +93,6 @@ def load_config(contextPackage, filename, config_parsers=None):
     for possible_config_file in config_locations:
         if os.path.isfile(possible_config_file):
             found_configs = True
-            os.path.abspath(possible_config_file)
 
     if not found_configs:
         print "Unable to find config file in any of the following " \
@@ -101,22 +102,20 @@ def load_config(contextPackage, filename, config_parsers=None):
         install_cfg(contextDir, filename)
         sys.exit(2)
 
-    with open(default_cfg_file) as f:
-        config.readfp(f)
+    config_locations.insert(0, default_cfg_file)
 
-    read = config.read(config_locations)
-    read.insert(0, default_cfg_file)
+    read = list()
+    for possible_config_file in config_locations:
+        read.extend(read_a_config(config, possible_config_file))
+
     parsers = list()
     if config_parsers is not None:
         parsers.extend(config_parsers)
     parsers.append(("Logging", logging_parser))
-    parsers.append(("Machine", machine_spec_parser))
 
     for (section, parser) in parsers:
         if config.has_section(section):
-            result = parser(config)
-            if result is not None:
-                read.append(result)
+            parser(config)
 
     # Log which config files we read
     logger.info("Read config files: %s" % string.join(read, ", "))

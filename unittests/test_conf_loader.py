@@ -61,8 +61,7 @@ def test_intermediate_use(tmpdir, default_config, mach_spec):
             assert config.sections() == ["sect", "Machine"]
             assert config.options("sect") == ["foo"]
             assert config.get("sect", "foo") == "bar"
-            assert config.options("Machine") == ["machine_spec_file",
-                                                 "machinename", "version"]
+            assert config.options("Machine") == ["machinename", "version"]
             assert config.get("Machine", "MachineName") == "foo"
             assert config.getint("Machine", "VeRsIoN") == 5
             log_checker.assert_logs_info_contains(l.records, CFGFILE)

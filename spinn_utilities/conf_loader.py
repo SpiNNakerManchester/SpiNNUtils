@@ -268,6 +268,7 @@ class _ExtendedConfigParser(RawConfigParser):
 @add_metaclass(AbstractBase)
 class ConfigParserCallback(object):
     __slots__ = []
+
     @abstractmethod
     def __call__(self, config):
         """Parse a section of the config. The configuration can be updated \

@@ -1,13 +1,27 @@
 import appdirs
 import shutil
 import os
-import ConfigParser
 import sys
 import logging
 import string
+from distutils.util import strtobool
+from ConfigParser import NoSectionError, NoOptionError, RawConfigParser
 from spinn_utilities import log
+from spinn_utilities.abstract_base import AbstractBase, abstractmethod
+from six import add_metaclass
 
 logger = logging.getLogger(__name__)
+
+
+def _bool(value):
+    """Better version of bool() that handles 'boolean strings'.
+
+    More overhead than standard bool().
+    """
+    try:
+        return bool(strtobool(str(value)))
+    except ValueError:
+        return bool(value)
 
 
 def install_cfg(contextDir, filename):
@@ -41,12 +55,12 @@ def logging_parser(config):
         for handler in logging.root.handlers:
             handler.addFilter(log.ConfiguredFilter(config))
             handler.setFormatter(log.ConfiguredFormatter(config))
-    except ConfigParser.NoOptionError:
+    except NoOptionError:
         pass
 
 
 def read_a_config(config, cfg_file):
-    """ Reads in a config file andthen directly its machine_spec_file
+    """ Reads in a config file and then directly its machine_spec_file
 
     :param config: config to do the reading
     :param cfg_file: path to file which should be read in
@@ -67,14 +81,16 @@ def load_config(contextPackage, filename, config_parsers=None):
         The parsers to parse the config with, as a list of\
         (section name, parser); config will only be parsed if the\
         section_name is found in the configuration files already loaded
-    :type config_parsers: list of (str, ConfigParser)
+    :type config_parsers: list of (str, ConfigParserCallback)
     """
+    # We don't actually check that the type is right
 
     contextDir = os.path.dirname(
         os.path.realpath(contextPackage.__file__))
     dotname = "." + filename
 
-    config = ConfigParser.RawConfigParser()
+    read = list()
+    config = _ExtendedConfigParser(read)
 
     # Search path for config files (lowest to highest priority)
     default_cfg_file = os.path.join(contextDir, filename)
@@ -104,7 +120,6 @@ def load_config(contextPackage, filename, config_parsers=None):
 
     config_locations.insert(0, default_cfg_file)
 
-    read = list()
     for possible_config_file in config_locations:
         read.extend(read_a_config(config, possible_config_file))
 
@@ -119,5 +134,146 @@ def load_config(contextPackage, filename, config_parsers=None):
 
     # Log which config files we read
     logger.info("Read config files: %s" % string.join(read, ", "))
-
     return config
+
+
+class _ExtendedConfigParser(RawConfigParser):
+    def __init__(self, read_files, defaults=None, none_marker="None"):
+        RawConfigParser.__init__(self, defaults)
+        self._none_marker = none_marker
+        self._read_files = read_files
+
+    @property
+    def read_files(self):
+        """Indicate which files were read when creating this config parser.\
+        Only set when this class was instantiated by ConfigurationLoader.
+        """
+        return self._read_files
+
+    def get_str(self, section, option, default):
+        """Get the string value of an option. You can provide a default to be\
+        used when the section is absent, the option is absent in the section,\
+        or when the user has explicitly set the option to the "None" value (as\
+        configured for this object).
+
+        :param section: What section to get the option from.
+        :type section: str
+        :param option: What option to read.
+        :type option: str
+        :param default: The default value to use. Will be converted to a\
+             string if not already a string *unless* the value is None.
+        :type default: str or None
+        :return: The option value, or the default.
+        :rtype: str (or None, if that is the default)
+        """
+        d = str(default) if default is not None else None
+        try:
+            value = self.get(section, option)
+            if value == self._none_marker:
+                return d
+            return str(value)
+        except NoSectionError:
+            return d
+        except NoOptionError:
+            return d
+
+    def get_int(self, section, option, default):
+        """Get the integer value of an option. You can provide a default to be\
+        used when the section is absent, the option is absent in the section,\
+        or when the user has explicitly set the option to the "None" value (as\
+        configured for this object).
+
+        :param section: What section to get the option from.
+        :type section: str
+        :param option: What option to read.
+        :type option: str
+        :param default: The default value to use. Will be converted to an\
+             integer if not already an int *unless* the value is None.
+        :type default: int or None
+        :return: The option value, or the default.
+        :rtype: int (or None, if that is the default)
+        """
+        d = int(default) if default is not None else None
+        try:
+            value = self.get(section, option)
+            if value == self._none_marker:
+                return d
+            return int(value)
+        except NoSectionError:
+            return d
+        except NoOptionError:
+            return d
+        except ValueError:
+            return d
+
+    def get_float(self, section, option, default):
+        """Get the float value of an option. You can provide a default to be\
+        used when the section is absent, the option is absent in the section,\
+        or when the user has explicitly set the option to the "None" value (as\
+        configured for this object).
+
+        :param section: What section to get the option from.
+        :type section: str
+        :param option: What option to read.
+        :type option: str
+        :param default: The default value to use. Will be converted to a\
+             float if not already a float *unless* the value is None.
+        :type default: float or None
+        :return: The option value, or the default.
+        :rtype: float (or None, if that is the default)
+        """
+        d = float(default) if default is not None else None
+        try:
+            value = self.get(section, option)
+            if value == self._none_marker:
+                return d
+            return float(value)
+        except NoSectionError:
+            return d
+        except NoOptionError:
+            return d
+        except ValueError:
+            return d
+
+    def get_bool(self, section, option, default):
+        """Get the boolean value of an option. You can provide a default to be\
+        used when the section is absent, the option is absent in the section,\
+        or when the user has explicitly set the option to the "None" value (as\
+        configured for this object).
+
+        :param section: What section to get the option from.
+        :type section: str
+        :param option: What option to read.
+        :type option: str
+        :param default: The default value to use. Will be converted to a\
+             boolean if not already a bool *unless* the value is None.
+        :type default: bool or None
+        :return: The option value, or the default.
+        :rtype: bool (or None, if that is the default)
+        """
+        d = _bool(default) if default is not None else None
+        try:
+            value = self.get(section, option)
+            if value == self._none_marker:
+                return d
+            return _bool(value)
+        except NoSectionError:
+            return d
+        except NoOptionError:
+            return d
+        except ValueError:
+            return d
+
+
+@add_metaclass(AbstractBase)
+class ConfigParserCallback(object):
+    __slots__ = []
+    @abstractmethod
+    def __call__(self, config):
+        """Parse a section of the config. The configuration can be updated \
+            as required.
+
+        :param config: The configuration containing the section that needs \
+            to be parsed.
+        :type config: RawConfigParser
+        """

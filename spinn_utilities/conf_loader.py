@@ -10,12 +10,14 @@ from spinn_utilities import log
 logger = logging.getLogger(__name__)
 
 
-def install_cfg(contextDir, filename):
-    template_file = filename + ".template"
-    template_cfg = os.path.join(contextDir, template_file)
-    dotname = "." + filename
+def install_cfg(dotname, defaults):
     home_cfg = os.path.join(os.path.expanduser("~"), dotname)
-    shutil.copyfile(template_cfg, home_cfg)
+
+    with (open(home_cfg, "w")) as destination:
+        for source in defaults:
+            with open(source, "r") as source_file:
+                destination.write(source_file.dead())
+                destination.write("\n")
     print "************************************"
     print("{} has been created. \n"
           "Please edit this file and change \"None\""
@@ -60,7 +62,7 @@ def read_a_config(config, cfg_file):
     return read_ok
 
 
-def load_config(contextPackage, filename, config_parsers=None):
+def load_config(filename, defaults, old_filename, config_parsers=None):
     """ Load the configuration
 
     :param config_parsers:\
@@ -70,14 +72,11 @@ def load_config(contextPackage, filename, config_parsers=None):
     :type config_parsers: list of (str, ConfigParser)
     """
 
-    contextDir = os.path.dirname(
-        os.path.realpath(contextPackage.__file__))
     dotname = "." + filename
 
     config = ConfigParser.RawConfigParser()
 
     # Search path for config files (lowest to highest priority)
-    default_cfg_file = os.path.join(contextDir, filename)
     system_config_cfg_file = os.path.join(appdirs.site_config_dir(), dotname)
     user_config_cfg_file = os.path.join(appdirs.user_config_dir(), dotname)
     user_home_cfg_file = os.path.join(os.path.expanduser("~"), dotname)
@@ -99,10 +98,10 @@ def load_config(contextPackage, filename, config_parsers=None):
               "locations: {}\n".format(config_locations)
         # Create a default in the user home directory and get
         # them to update it.
-        install_cfg(contextDir, filename)
+        install_cfg(dotname, defaults)
         sys.exit(2)
 
-    config_locations.insert(0, default_cfg_file)
+    config_locations[0:0] = defaults
 
     read = list()
     for possible_config_file in config_locations:

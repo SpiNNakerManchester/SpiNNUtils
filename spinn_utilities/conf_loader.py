@@ -10,25 +10,36 @@ from spinn_utilities import log
 logger = logging.getLogger(__name__)
 
 
-def install_cfg(dotname, defaults):
+def install_cfg_and_IOError(dotname, defaults, config_locations):
     home_cfg = os.path.join(os.path.expanduser("~"), dotname)
 
     with (open(home_cfg, "w")) as destination:
         for source in defaults:
+            template = source + ".template"
             with open(source, "r") as source_file:
-                destination.write(source_file.dead())
+                destination.write(source_file.read())
                 destination.write("\n")
-    print "************************************"
-    print("{} has been created. \n"
-          "Please edit this file and change \"None\""
-          " after \"machineName\" to the hostname or IP address of your"
-          " SpiNNaker board, and change \"None\" after \"version\" to the"
-          " version of SpiNNaker hardware you are running "
-          "on:".format(home_cfg))
-    print "[Machine]"
-    print "machineName = None"
-    print "version = None"
-    print "************************************"
+        destination.write("\n# Additional config options can be found in:\n")
+        for source in defaults:
+            destination.write("# {}\n".format(source))
+        destination.write("\n# Copy any additional settings you want to "
+                          "change here including section headings\n")
+
+    msg = "Unable to find config file in any of the following locations: \n" \
+          "{}\n" \
+          "********************************************************\n" \
+          "{} has been created. \n" \
+          "Please edit this file and change \"None\" after \"machineName\" " \
+          "to the hostname or IP address of your SpiNNaker board, and change " \
+          "\"None\" after \"version\" to the version of SpiNNaker hardware " \
+          "you are running on:\n" \
+          "[Machine]\n" \
+          "machineName = None\n" \
+          "version = None\n" \
+          "***********************************************************\n" \
+          "".format(config_locations, home_cfg)
+    print msg
+    raise IOError(msg)
 
 
 def logging_parser(config):
@@ -62,7 +73,7 @@ def read_a_config(config, cfg_file):
     return read_ok
 
 
-def load_config(filename, defaults, old_filename, config_parsers=None):
+def load_config(filename, defaults, old_filename=None, config_parsers=None):
     """ Load the configuration
 
     :param config_parsers:\
@@ -94,12 +105,7 @@ def load_config(filename, defaults, old_filename, config_parsers=None):
             found_configs = True
 
     if not found_configs:
-        print "Unable to find config file in any of the following " \
-              "locations: {}\n".format(config_locations)
-        # Create a default in the user home directory and get
-        # them to update it.
-        install_cfg(dotname, defaults)
-        sys.exit(2)
+        install_cfg_and_IOError(dotname, defaults, config_locations)
 
     config_locations[0:0] = defaults
 

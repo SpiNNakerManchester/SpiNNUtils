@@ -10,8 +10,8 @@ from spinn_utilities import log
 logger = logging.getLogger(__name__)
 
 
-def install_cfg_and_IOError(dotname, defaults, config_locations):
-    home_cfg = os.path.join(os.path.expanduser("~"), dotname)
+def install_cfg_and_IOError(filename, defaults, config_locations):
+    home_cfg = os.path.join(os.path.expanduser("~"), ".{}".format(filename))
 
     with (open(home_cfg, "w")) as destination:
         for source in defaults:
@@ -73,6 +73,24 @@ def read_a_config(config, cfg_file):
     return read_ok
 
 
+def checked_path(directory, filename, old_filename, dot):
+    if dot:
+        filename = ".{}".format(filename)
+    current_path = os.path.join(directory, filename)
+    if not os.path.exists(current_path) and old_filename is not None:
+        if dot:
+            old_file_name = ".{}".format(old_filename)
+        old_path = os.path.join(directory, old_filename)
+        if os.path.exists(old_path):
+            msg = "Config file name has changed from {} to {}\n" \
+                  "Found old config {}\n" \
+                  "Please rename it to {}" \
+                  "".format(old_filename, filename, old_path, current_path)
+            print msg
+            raise IOError(msg)
+    return current_path
+
+
 def load_config(filename, defaults, old_filename=None, config_parsers=None):
     """ Load the configuration
 
@@ -83,21 +101,18 @@ def load_config(filename, defaults, old_filename=None, config_parsers=None):
     :type config_parsers: list of (str, ConfigParser)
     """
 
-    dotname = "." + filename
-
     config = ConfigParser.RawConfigParser()
 
-    # Search path for config files (lowest to highest priority)
-    system_config_cfg_file = os.path.join(appdirs.site_config_dir(), dotname)
-    user_config_cfg_file = os.path.join(appdirs.user_config_dir(), dotname)
-    user_home_cfg_file = os.path.join(os.path.expanduser("~"), dotname)
-    current_directory_cfg_file = os.path.join(os.curdir, filename)
-
     # locations to read as well as default later overrides earlier
-    config_locations = [system_config_cfg_file,
-                        user_config_cfg_file,
-                        user_home_cfg_file,
-                        current_directory_cfg_file]
+    config_locations = []
+    config_locations.append(checked_path(appdirs.site_config_dir(),
+                                         filename, old_filename, True))
+    config_locations.append(checked_path(appdirs.user_config_dir(),
+                                         filename, old_filename, True))
+    config_locations.append(checked_path(os.path.expanduser("~"),
+                                         filename, old_filename, True))
+    config_locations.append(checked_path(os.curdir,
+                                         filename, old_filename, False))
 
     found_configs = False
     for possible_config_file in config_locations:
@@ -105,7 +120,7 @@ def load_config(filename, defaults, old_filename=None, config_parsers=None):
             found_configs = True
 
     if not found_configs:
-        install_cfg_and_IOError(dotname, defaults, config_locations)
+        install_cfg_and_IOError(filename, defaults, config_locations)
 
     config_locations[0:0] = defaults
 

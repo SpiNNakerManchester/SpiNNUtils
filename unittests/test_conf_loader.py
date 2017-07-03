@@ -54,11 +54,8 @@ def test_basic_use(tmpdir, default_config):
 
 
 def test_use_one_default(not_there):
-    try:
+    with pytest.raises(IOError):
         config = conf_loader.load_config(NOTTHERE, [CFGFILE])
-        assert False, "Expected an IOError as config file should not extist"
-    except IOError:
-        pass
     # Load the now created file
     config = ConfigParser.ConfigParser()
     config.read(NOTTHEREPATH)
@@ -70,11 +67,8 @@ def test_use_one_default(not_there):
 
 
 def test_use_two_default(tmpdir, default_config, not_there):
-    try:
+    with pytest.raises(IOError):
         config = conf_loader.load_config(NOTTHERE, [ONEPATH, TWOPATH])
-        assert False, "Expected an IOError as config file should not extist"
-    except IOError:
-        pass
     # Load the now created file
     config = ConfigParser.ConfigParser()
     config.read(NOTTHEREPATH)
@@ -129,3 +123,12 @@ def test_advanced_use(tmpdir, default_config):
                                          config_parsers=[("Abc", parseAbc)])
         assert config.options("Abc") == ["ghi"]
         assert config.getfloat("Abc", "ghi") == 3.75
+
+
+def test_old_config(tmpdir, default_config):
+    with pytest.raises(IOError):
+        with tmpdir.as_cwd():
+            f = tmpdir.join("old_config.cfg")
+            f.write(default_config)
+            conf_loader.load_config(filename="new_config.cfg", defaults=[],
+                                    old_filename="old_config.cfg")

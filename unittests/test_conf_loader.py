@@ -132,3 +132,13 @@ def test_old_config(tmpdir, default_config):
             f.write(default_config)
             conf_loader.load_config(filename="new_config.cfg", defaults=[],
                                     old_filename="old_config.cfg")
+
+
+def test_both_config(tmpdir, default_config):
+    with tmpdir.as_cwd():
+        f = tmpdir.join("old_config.cfg")
+        f.write(default_config)
+        f = tmpdir.join("new_config.cfg")
+        f.write(default_config)
+        conf_loader.load_config(filename="new_config.cfg", defaults=[],
+                                old_filename="old_config.cfg")

@@ -91,6 +91,20 @@ def checked_path(directory, filename, old_filename, dot):
     return current_path
 
 
+def checked_path_copy(directory, filename, old_filename, dot):
+    if dot:
+        filename = ".{}".format(filename)
+    current_path = os.path.join(directory, filename)
+    if not os.path.exists(current_path) and old_filename is not None:
+        if dot:
+            old_file_name = ".{}".format(old_filename)
+        old_path = os.path.join(directory, old_filename)
+        if os.path.exists(old_path):
+            shutil.copyfile(old_path, current_path)
+            logger.warn("{} copied to {}".format(old_path, current_path))
+    return current_path
+
+
 def load_config(filename, defaults, old_filename=None, config_parsers=None):
     """ Load the configuration
 

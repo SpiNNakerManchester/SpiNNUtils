@@ -1,8 +1,6 @@
 import appdirs
-import shutil
 import os
 import ConfigParser
-import sys
 import logging
 import string
 from spinn_utilities import log
@@ -16,7 +14,7 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
     with (open(home_cfg, "w")) as destination:
         for source in defaults:
             template = source + ".template"
-            with open(source, "r") as source_file:
+            with open(template, "r") as source_file:
                 destination.write(source_file.read())
                 destination.write("\n")
         destination.write("\n# Additional config options can be found in:\n")
@@ -30,9 +28,9 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
           "********************************************************\n" \
           "{} has been created. \n" \
           "Please edit this file and change \"None\" after \"machineName\" " \
-          "to the hostname or IP address of your SpiNNaker board, and change " \
-          "\"None\" after \"version\" to the version of SpiNNaker hardware " \
-          "you are running on:\n" \
+          "to the hostname or IP address of your SpiNNaker board, " \
+          "and change \"None\" after \"version\" to the version of " \
+          "SpiNNaker hardware you are running on:\n" \
           "[Machine]\n" \
           "machineName = None\n" \
           "version = None\n" \
@@ -73,39 +71,7 @@ def read_a_config(config, cfg_file):
     return read_ok
 
 
-def checked_path(directory, filename, old_filename, dot):
-    if dot:
-        filename = ".{}".format(filename)
-    current_path = os.path.join(directory, filename)
-    if not os.path.exists(current_path) and old_filename is not None:
-        if dot:
-            old_file_name = ".{}".format(old_filename)
-        old_path = os.path.join(directory, old_filename)
-        if os.path.exists(old_path):
-            msg = "Config file name has changed from {} to {}\n" \
-                  "Found old config {}\n" \
-                  "Please rename it to {}" \
-                  "".format(old_filename, filename, old_path, current_path)
-            print msg
-            raise IOError(msg)
-    return current_path
-
-
-def checked_path_copy(directory, filename, old_filename, dot):
-    if dot:
-        filename = ".{}".format(filename)
-    current_path = os.path.join(directory, filename)
-    if not os.path.exists(current_path) and old_filename is not None:
-        if dot:
-            old_file_name = ".{}".format(old_filename)
-        old_path = os.path.join(directory, old_filename)
-        if os.path.exists(old_path):
-            shutil.copyfile(old_path, current_path)
-            logger.warn("{} copied to {}".format(old_path, current_path))
-    return current_path
-
-
-def load_config(filename, defaults, old_filename=None, config_parsers=None):
+def load_config(filename, defaults, config_parsers=None):
     """ Load the configuration
 
     :param config_parsers:\
@@ -116,17 +82,18 @@ def load_config(filename, defaults, old_filename=None, config_parsers=None):
     """
 
     config = ConfigParser.RawConfigParser()
+    dotname = "." + filename
 
     # locations to read as well as default later overrides earlier
     config_locations = []
-    config_locations.append(checked_path(appdirs.site_config_dir(),
-                                         filename, old_filename, True))
-    config_locations.append(checked_path(appdirs.user_config_dir(),
-                                         filename, old_filename, True))
-    config_locations.append(checked_path(os.path.expanduser("~"),
-                                         filename, old_filename, True))
-    config_locations.append(checked_path(os.curdir,
-                                         filename, old_filename, False))
+    system_config_cfg_file = os.path.join(appdirs.site_config_dir(), dotname)
+    user_config_cfg_file = os.path.join(appdirs.user_config_dir(), dotname)
+    user_home_cfg_file = os.path.join(os.path.expanduser("~"), dotname)
+    current_directory_cfg_file = os.path.join(os.curdir, filename)
+
+    # locations to read as well as default later overrides earlier
+    config_locations = [system_config_cfg_file, user_config_cfg_file,
+                        user_home_cfg_file, current_directory_cfg_file]
 
     found_configs = False
     for possible_config_file in config_locations:

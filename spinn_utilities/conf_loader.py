@@ -1,9 +1,11 @@
 import appdirs
-import os
 import ConfigParser
+import os
+
 import logging
 import string
 from spinn_utilities import log
+from spinn_utilities.camel_case_config_parser import CamelCaseConfigParser
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +83,7 @@ def load_config(filename, defaults, config_parsers=None):
     :type config_parsers: list of (str, ConfigParser)
     """
 
-    config = ConfigParser.RawConfigParser()
+    config = CamelCaseConfigParser()
     dotname = "." + filename
 
     # locations to read as well as default later overrides earlier

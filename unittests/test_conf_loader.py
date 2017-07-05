@@ -26,6 +26,7 @@ def not_there():
         config.read(NOTTHEREPATH)
         # Remove it
         os.remove(NOTTHEREPATH)
+    return NOTTHEREPATH
 
 
 @pytest.fixture
@@ -58,6 +59,9 @@ def test_use_one_default(not_there):
     with pytest.raises(IOError):
         config = conf_loader.load_config(NOTTHERE, [CFGFILE])
     # Load the now created file
+    with open(NOTTHEREPATH, "r")as temp:
+        print temp.read()
+    print "========="
     config = ConfigParser.ConfigParser()
     config.read(NOTTHEREPATH)
     assert config is not None

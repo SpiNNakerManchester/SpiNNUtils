@@ -36,7 +36,7 @@ def not_there():
         retry += 1
         if retry > 1000:
             raise SkipTest("delete failed")
-    print "retry"
+    print retry
     return NOTTHEREPATH
 
 

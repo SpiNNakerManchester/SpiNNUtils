@@ -104,8 +104,11 @@ def load_config(filename, defaults, config_parsers=None):
 
     if not found_configs:
         install_cfg_and_IOError(filename, defaults, config_locations)
-
+    else:
+        print "found"
     config_locations[0:0] = defaults
+
+    print config_locations
 
     read = list()
     for possible_config_file in config_locations:

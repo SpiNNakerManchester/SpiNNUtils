@@ -83,6 +83,7 @@ def load_config(filename, defaults, config_parsers=None):
     :type config_parsers: list of (str, ConfigParser)
     """
 
+    print "load_config", defaults
     config = CamelCaseConfigParser()
     dotname = "." + filename
 

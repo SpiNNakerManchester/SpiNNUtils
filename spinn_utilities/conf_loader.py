@@ -83,7 +83,6 @@ def load_config(filename, defaults, config_parsers=None):
     :type config_parsers: list of (str, ConfigParser)
     """
 
-    print "load_config", defaults
     config = CamelCaseConfigParser()
     dotname = "." + filename
 
@@ -105,11 +104,7 @@ def load_config(filename, defaults, config_parsers=None):
 
     if not found_configs:
         install_cfg_and_IOError(filename, defaults, config_locations)
-    else:
-        print "found"
     config_locations[0:0] = defaults
-
-    print config_locations
 
     read = list()
     for possible_config_file in config_locations:
@@ -126,6 +121,5 @@ def load_config(filename, defaults, config_parsers=None):
 
     # Log which config files we read
     logger.info("Read config files: %s" % string.join(read, ", "))
-    print("Read config files: %s" % string.join(read, ", "))
 
     return config

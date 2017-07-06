@@ -6,6 +6,7 @@ import spinn_utilities.testing.log_checker as log_checker
 import ConfigParser
 import os
 import pytest
+from unittest import SkipTest
 
 CFGFILE = "configloader.cfg"
 CFGPATH = os.path.join(os.path.dirname(unittests.__file__), CFGFILE)
@@ -26,6 +27,12 @@ def not_there():
         config.read(NOTTHEREPATH)
         # Remove it
         os.remove(NOTTHEREPATH)
+    retry = 0
+    while os.path.exists(NOTTHEREPATH):
+        print "retry"
+        retry += 1
+        if retry > 1000:
+            raise SkipTest ("delete failed")
     return NOTTHEREPATH
 
 

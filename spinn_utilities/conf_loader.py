@@ -122,5 +122,6 @@ def load_config(filename, defaults, config_parsers=None):
 
     # Log which config files we read
     logger.info("Read config files: %s" % string.join(read, ", "))
+    print("Read config files: %s" % string.join(read, ", "))
 
     return config

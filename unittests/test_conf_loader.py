@@ -27,12 +27,16 @@ def not_there():
         config.read(NOTTHEREPATH)
         # Remove it
         os.remove(NOTTHEREPATH)
+        print "deleted"
+    else:
+        print "no found"
     retry = 0
     while os.path.exists(NOTTHEREPATH):
         print "retry"
         retry += 1
         if retry > 1000:
-            raise SkipTest ("delete failed")
+            raise SkipTest("delete failed")
+    print "retry"
     return NOTTHEREPATH
 
 

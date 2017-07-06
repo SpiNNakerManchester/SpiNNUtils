@@ -90,3 +90,15 @@ def test_pop():
         assert o.pop() == item
     with pytest.raises(KeyError):  # @UndefinedVariable
         o.pop()
+
+
+def test_update():
+    o = OrderedSet()
+    o.add(1)
+    o.add(2)
+    o.add(3)
+    o.update([3, 4, 5])
+    for item in (5, 4, 3, 2, 1):
+        assert o.pop() == item
+    with pytest.raises(KeyError):
+        o.pop()

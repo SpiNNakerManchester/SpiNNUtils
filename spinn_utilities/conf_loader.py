@@ -66,8 +66,7 @@ def check_config(config, cfg_file, default_config_names):
         if (len(default_config_names[section]) != len(
                 config.options(section))):
             for name in config.options(section):
-                if name not in default_config_names[section] \
-                        and name != "machinespecfile":
+                if name not in default_config_names[section] and name != "machinespecfile":
                     msg = "Unexpected config {} found in section {} " \
                           "found in {}".format(name, section, cfg_file)
                     raise UnexpectedConfigException(msg)
@@ -123,13 +122,10 @@ def load_config(filename, defaults, config_parsers=None,
     if not found_configs:
         install_cfg_and_IOError(filename, defaults, config_locations)
 
-    print "defaults: " , defaults
     read = list()
     default_config_names = dict()
     for default in defaults:
         read.extend(read_a_config(config, default, default_config_names))
-
-    print "read: " , read
 
     if check_for_extra_values:
         for section in config.sections():
@@ -149,7 +145,6 @@ def load_config(filename, defaults, config_parsers=None,
             parser(config)
 
     # Log which config files we read
-    print "Read config files: %s" % string.join(read, ", ")
     logger.info("Read config files: %s" % string.join(read, ", "))
 
     return config

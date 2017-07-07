@@ -128,6 +128,8 @@ def load_config(filename, defaults, config_parsers=None,
     for default in defaults:
         read.extend(read_a_config(config, default, default_config_names))
 
+    print "defaults: " , read
+
     if check_for_extra_values:
         for section in config.sections():
             default_config_names[section] = config.options(section)
@@ -146,6 +148,7 @@ def load_config(filename, defaults, config_parsers=None,
             parser(config)
 
     # Log which config files we read
+    print "Read config files: %s" % string.join(read, ", ")
     logger.info("Read config files: %s" % string.join(read, ", "))
 
     return config

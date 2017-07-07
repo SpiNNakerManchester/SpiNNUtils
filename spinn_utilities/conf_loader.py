@@ -66,8 +66,8 @@ def check_config(config, cfg_file, default_config_names):
         if (len(default_config_names[section]) != len(
                 config.options(section))):
             for name in config.options(section):
-                if name not in default_config_names[section] and \
-                                name != "machinespecfile":
+                if name not in default_config_names[section] \
+                        and name != "machinespecfile":
                     msg = "Unexpected config {} found in section {} " \
                           "found in {}".format(name, section, cfg_file)
                     raise UnexpectedConfigException(msg)
@@ -149,10 +149,3 @@ def load_config(filename, defaults, config_parsers=None,
     logger.info("Read config files: %s" % string.join(read, ", "))
 
     return config
-
-['machinename', 'version', 'remotespinnakerurl', 'spallocserver', 'spallocport',
- 'spallocuser', 'spallocmachine', 'virtualboard', 'requireswraparounds',
- 'downcores', 'downchips', 'downlinks', 'corelimit', 'appid', 'bmpnames',
- 'numberofboards', 'width', 'height', 'scampconnectionsdata', 'bootconnectionportnum',
- 'autodetectbmp', 'turnoffmachine', 'clearroutingtables', 'cleartags', 'enablereinjection',
- 'resetmachineonstartup', 'postsimulationoverrunbeforeerror', 'maxsdramallowedperchip']

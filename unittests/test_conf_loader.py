@@ -173,4 +173,3 @@ def test_advanced_use(tmpdir, default_config):
                                          config_parsers=[("Abc", parseAbc)])
         assert config.options("Abc") == ["ghi"]
         assert config.getfloat("Abc", "ghi") == 3.75
-

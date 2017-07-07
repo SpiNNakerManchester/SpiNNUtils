@@ -6,6 +6,7 @@ import logging
 import string
 from spinn_utilities import log
 from spinn_utilities.camel_case_config_parser import CamelCaseConfigParser
+from spinn_utilities.unexpected_config import UnexpectedConfig
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +74,8 @@ def read_a_config(config, cfg_file):
     return read_ok
 
 
-def load_config(filename, defaults, config_parsers=None):
+def load_config(filename, defaults, config_parsers=None,
+                check_for_extra_values=True):
     """ Load the configuration
 
     :param config_parsers:\
@@ -104,11 +106,27 @@ def load_config(filename, defaults, config_parsers=None):
 
     if not found_configs:
         install_cfg_and_IOError(filename, defaults, config_locations)
-    config_locations[0:0] = defaults
 
     read = list()
+    for default in defaults:
+        read.extend(read_a_config(config, default))
+
+    if check_for_extra_values:
+        default_config_names = dict()
+        for section in config.sections():
+            default_config_names[section] = config.options(section)
+
     for possible_config_file in config_locations:
         read.extend(read_a_config(config, possible_config_file))
+        if check_for_extra_values:
+            for section in default_config_names:
+                if (len(default_config_names[section]) !=
+                        len(config.options(section))):
+                    for name in config.options(section):
+                        if name not in default_config_names[section]:
+                            msg = "Unexpected config {} found in section {}" \
+                                  "".format(name, section)
+                            raise UnexpectedConfig(msg)
 
     parsers = list()
     if config_parsers is not None:

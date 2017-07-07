@@ -6,7 +6,9 @@ import logging
 import string
 from spinn_utilities import log
 from spinn_utilities.camel_case_config_parser import CamelCaseConfigParser
-from spinn_utilities.unexpected_config import UnexpectedConfig
+from spinn_utilities.unexpected_config_exception import \
+    UnexpectedConfigException
+from spinn_utilities.no_config_found_exception import NoConfigFoundException
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +42,7 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
           "***********************************************************\n" \
           "".format(config_locations, home_cfg)
     print msg
-    raise IOError(msg)
+    raise NoConfigFoundException(msg)
 
 
 def logging_parser(config):
@@ -126,7 +128,7 @@ def load_config(filename, defaults, config_parsers=None,
                         if name not in default_config_names[section]:
                             msg = "Unexpected config {} found in section {}" \
                                   "".format(name, section)
-                            raise UnexpectedConfig(msg)
+                            raise UnexpectedConfigException(msg)
 
     parsers = list()
     if config_parsers is not None:

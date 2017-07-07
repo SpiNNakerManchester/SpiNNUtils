@@ -1,6 +1,9 @@
 import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture
 import spinn_utilities.conf_loader as conf_loader
+from spinn_utilities.unexpected_config_exception \
+    import UnexpectedConfigException
+from spinn_utilities.no_config_found_exception import NoConfigFoundException
 import spinn_utilities.testing.log_checker as log_checker
 
 import ConfigParser
@@ -55,8 +58,54 @@ def test_basic_use(tmpdir, default_config):
         assert config.get("sect", "foo_bob") == "bar"
 
 
+def test_as_default(tmpdir, default_config):
+    with tmpdir.as_cwd():
+        f = tmpdir.join(CFGFILE)
+        f.write(default_config)
+        config = conf_loader.load_config(CFGFILE, [CFGPATH])
+        assert config is not None
+        assert config.sections() == ["sect"]
+        assert config.options("sect") == ["foobob"]
+        assert config.get("sect", "foobob") == "bar"
+        assert config.get("sect", "fooBob") == "bar"
+        assert config.get("sect", "foo_bob") == "bar"
+
+
+def test_different_value(tmpdir, default_config):
+    with tmpdir.as_cwd():
+        f = tmpdir.join(CFGFILE)
+        default_config = default_config.replace("bar", "cat")
+        f.write(default_config)
+        config = conf_loader.load_config(CFGFILE, [CFGPATH])
+        assert config is not None
+        assert config.sections() == ["sect"]
+        assert config.options("sect") == ["foobob"]
+        assert config.get("sect", "foobob") == "cat"
+
+
+def test_new_config(tmpdir, default_config):
+    with tmpdir.as_cwd():
+        f = tmpdir.join(CFGFILE)
+        default_config = default_config + "sam=cat\n"
+        f.write(default_config)
+        with pytest.raises(UnexpectedConfigException):
+            conf_loader.load_config(CFGFILE, [CFGPATH])
+
+
+def test_new_section(tmpdir, default_config):
+    with tmpdir.as_cwd():
+        f = tmpdir.join(CFGFILE)
+        default_config = default_config + "[other]\nsam=cat\n"
+        f.write(default_config)
+        config = conf_loader.load_config(CFGFILE, [CFGPATH])
+        assert config.sections() == ["sect", "other"]
+        assert config.options("sect") == ["foobob"]
+        assert config.get("sect", "foobob") == "bar"
+        assert config.get("other", "sam") == "cat"
+
+
 def test_use_one_default(not_there):
-    with pytest.raises(IOError):
+    with pytest.raises(NoConfigFoundException):
         config = conf_loader.load_config(NOTTHERE, [CFGPATH])
     # Load the now created file
     config = ConfigParser.ConfigParser()
@@ -68,7 +117,7 @@ def test_use_one_default(not_there):
 
 
 def test_use_two_default(tmpdir, default_config, not_there):
-    with pytest.raises(IOError):
+    with pytest.raises(NoConfigFoundException):
         config = conf_loader.load_config(NOTTHERE, [ONEPATH, TWOPATH])
     # Load the now created file
     config = ConfigParser.ConfigParser()
@@ -124,3 +173,4 @@ def test_advanced_use(tmpdir, default_config):
                                          config_parsers=[("Abc", parseAbc)])
         assert config.options("Abc") == ["ghi"]
         assert config.getfloat("Abc", "ghi") == 3.75
+

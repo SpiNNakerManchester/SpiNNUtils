@@ -59,7 +59,7 @@ def logging_parser(config):
 
 
 def read_a_config(config, cfg_file):
-    """ Reads in a config file andthen directly its machine_spec_file
+    """ Reads in a config file and then directly its machine_spec_file
 
     :param config: config to do the reading
     :param cfg_file: path to file which should be read in

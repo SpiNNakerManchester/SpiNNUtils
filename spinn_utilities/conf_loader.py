@@ -61,7 +61,19 @@ def logging_parser(config):
         pass
 
 
-def read_a_config(config, cfg_file):
+def check_config(config, cfg_file, default_config_names):
+    for section in default_config_names:
+        if (len(default_config_names[section]) != len(
+                config.options(section))):
+            for name in config.options(section):
+                if name not in default_config_names[section] and \
+                                name != "machinespecfile":
+                    msg = "Unexpected config {} found in section {} " \
+                          "found in {}".format(name, section, cfg_file)
+                    raise UnexpectedConfigException(msg)
+
+
+def read_a_config(config, cfg_file, default_config_names):
     """ Reads in a config file and then directly its machine_spec_file
 
     :param config: config to do the reading
@@ -69,9 +81,11 @@ def read_a_config(config, cfg_file):
     :return: list of files read including and machione_spec_files
     """
     read_ok = config.read(cfg_file)
+    check_config(config, cfg_file, default_config_names)
     if config.has_option("Machine", "machine_spec_file"):
         machine_spec_file_path = config.get("Machine", "machine_spec_file")
         read_ok.extend(config.read(machine_spec_file_path))
+        check_config(config, machine_spec_file_path, default_config_names)
         config.remove_option("Machine", "machine_spec_file")
     return read_ok
 
@@ -110,25 +124,17 @@ def load_config(filename, defaults, config_parsers=None,
         install_cfg_and_IOError(filename, defaults, config_locations)
 
     read = list()
+    default_config_names = dict()
     for default in defaults:
-        read.extend(read_a_config(config, default))
+        read.extend(read_a_config(config, default, default_config_names))
 
     if check_for_extra_values:
-        default_config_names = dict()
         for section in config.sections():
             default_config_names[section] = config.options(section)
 
     for possible_config_file in config_locations:
-        read.extend(read_a_config(config, possible_config_file))
-        if check_for_extra_values:
-            for section in default_config_names:
-                if (len(default_config_names[section]) !=
-                        len(config.options(section))):
-                    for name in config.options(section):
-                        if name not in default_config_names[section]:
-                            msg = "Unexpected config {} found in section {}" \
-                                  "".format(name, section)
-                            raise UnexpectedConfigException(msg)
+        read.extend(read_a_config(config, possible_config_file,
+                                  default_config_names))
 
     parsers = list()
     if config_parsers is not None:
@@ -143,3 +149,10 @@ def load_config(filename, defaults, config_parsers=None,
     logger.info("Read config files: %s" % string.join(read, ", "))
 
     return config
+
+['machinename', 'version', 'remotespinnakerurl', 'spallocserver', 'spallocport',
+ 'spallocuser', 'spallocmachine', 'virtualboard', 'requireswraparounds',
+ 'downcores', 'downchips', 'downlinks', 'corelimit', 'appid', 'bmpnames',
+ 'numberofboards', 'width', 'height', 'scampconnectionsdata', 'bootconnectionportnum',
+ 'autodetectbmp', 'turnoffmachine', 'clearroutingtables', 'cleartags', 'enablereinjection',
+ 'resetmachineonstartup', 'postsimulationoverrunbeforeerror', 'maxsdramallowedperchip']

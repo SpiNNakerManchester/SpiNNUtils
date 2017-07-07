@@ -123,12 +123,13 @@ def load_config(filename, defaults, config_parsers=None,
     if not found_configs:
         install_cfg_and_IOError(filename, defaults, config_locations)
 
+    print "defaults: " , defaults
     read = list()
     default_config_names = dict()
     for default in defaults:
         read.extend(read_a_config(config, default, default_config_names))
 
-    print "defaults: " , read
+    print "read: " , read
 
     if check_for_extra_values:
         for section in config.sections():

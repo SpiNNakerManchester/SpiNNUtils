@@ -66,7 +66,8 @@ def check_config(config, cfg_file, default_config_names):
         if (len(default_config_names[section]) != len(
                 config.options(section))):
             for name in config.options(section):
-                if name not in default_config_names[section] and name != "machinespecfile":
+                if name not in default_config_names[section] and \
+                                name != "machinespecfile":
                     msg = "Unexpected config {} found in section {} " \
                           "found in {}".format(name, section, cfg_file)
                     raise UnexpectedConfigException(msg)

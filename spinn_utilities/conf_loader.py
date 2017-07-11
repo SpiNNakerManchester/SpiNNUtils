@@ -69,7 +69,12 @@ def check_config(config, cfg_file, default_config_names):
                 if name not in default_config_names[section] and \
                                 name != "machinespecfile":
                     msg = "Unexpected config {} found in section {} " \
-                          "found in {}".format(name, section, cfg_file)
+                          "found in {}\n" \
+                          "With the exception of the [Machine] section " \
+                          "all options in the user's cfg files are now " \
+                          "optional and can be safely removed." \
+                          "".format(name, section, cfg_file)
+                    print msg
                     raise UnexpectedConfigException(msg)
 
 

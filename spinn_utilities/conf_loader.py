@@ -65,7 +65,7 @@ def logging_parser(config):
 
 
 def outdated_config(cfg_file, validation_config, default_config):
-    #try:
+    try:
         print "Your config file {} is outdated.".format(cfg_file)
         config = CamelCaseConfigParser()
         config.read(cfg_file)
@@ -76,7 +76,7 @@ def outdated_config(cfg_file, validation_config, default_config):
                 key = validation_config.get("PreviousValues", dead_value)
                 (section, option) = key.split("|")
                 if config.has_option(section, option) and \
-                                dead_value in config.get(section, option):
+                        dead_value in config.get(section, option):
                     print "Error in Section [{}] the option {}" \
                           "".format(section, option)
                     print "\t The value below is no longer supported:"
@@ -116,11 +116,13 @@ def outdated_config(cfg_file, validation_config, default_config):
                         else:
                             different.append(option)
                     else:
-                        print "Unexpected Option [{}] {}".format(section, option)
+                        print "Unexpected Option [{}] {}" \
+                              "".format(section, option)
                         all_default = False
                 if len(different) == 0:
                     if all_default:
-                        print "Whole section [{}] same as default".format(section)
+                        print "Whole section [{}] same as default" \
+                              "".format(section)
                         print "\tIt can be safely removed"
                 elif len(sames) == 0:
                     print "In Section [{}] all options changed".format(section)
@@ -137,8 +139,8 @@ def outdated_config(cfg_file, validation_config, default_config):
                     print "\tThese can be safely removed"
         print "Option names are case and underscore insenitive. " \
               "So may show in your cfg file with capitals or underscores."
-    #except:
-    #    print "Unexpected error:", sys.exc_info()[0]
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
         msg = "Config file {} is outdated.".format(cfg_file)
         raise UnexpectedConfigException(msg)
 
@@ -164,7 +166,7 @@ def check_config(config, cfg_file, validation_config=None,
     for section in default_config.sections():
         if section not in user_sections and \
                 (len(default_config.options(section)) !=
-                len(config.options(section))):
+                 len(config.options(section))):
             raise outdated_config(cfg_file, validation_config, default_config)
 
     # check for any previous values

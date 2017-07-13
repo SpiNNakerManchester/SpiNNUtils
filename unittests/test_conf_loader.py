@@ -94,7 +94,7 @@ def test_new_option(tmpdir, default_config):
                                     validation_cfg="blank.cfg")
 
 
-def test_new_section(tmpdir, default_config):
+def test_new_section_validation(tmpdir, default_config):
     with tmpdir.as_cwd():
         f = tmpdir.join(CFGFILE)
         default_config = default_config + "[Pets]\nsam=cat\n"

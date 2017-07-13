@@ -1,11 +1,14 @@
 import appdirs
+import collections
 import ConfigParser
-import os
-
 import logging
+import os
 import string
+import sys
+
 from spinn_utilities import log
 from spinn_utilities.camel_case_config_parser import CamelCaseConfigParser
+from spinn_utilities.case_sensitive_parser import CaseSensitiveParser
 from spinn_utilities.unexpected_config_exception import \
     UnexpectedConfigException
 from spinn_utilities.no_config_found_exception import NoConfigFoundException
@@ -61,24 +64,120 @@ def logging_parser(config):
         pass
 
 
-def check_config(config, cfg_file, default_config_names):
-    for section in default_config_names:
-        if (len(default_config_names[section]) != len(
-                config.options(section))):
-            for name in config.options(section):
-                if name not in default_config_names[section] and \
-                                name != "machinespecfile":
-                    msg = "Unexpected config {} found in section {} " \
-                          "found in {}\n" \
-                          "With the exception of the [Machine] section " \
-                          "all options in the user's cfg files are now " \
-                          "optional and can be safely removed." \
-                          "".format(name, section, cfg_file)
-                    print msg
-                    raise UnexpectedConfigException(msg)
+def outdated_config(config, cfg_file, validation_config, default_config):
+    #try:
+        print "Your config file {} is outdated.".format(cfg_file)
+
+        previous_sections = collections.defaultdict(set)
+        if validation_config.has_section("PreviousValues"):
+            for dead_value in validation_config.options("PreviousValues"):
+                key = validation_config.get("PreviousValues", dead_value)
+                (section, option) = key.split("|")
+                if dead_value in config.get(section, option):
+                    print "Error in Section [{}] the option {}" \
+                          "".format(section, option)
+                    print "\t The value below is no longer supported:"
+                    print "\t{}".format(dead_value)
+                    print "\tUnless you specifically need a none " \
+                          "default value remove it"
+                    previous_sections[section].add(option)
+
+        if validation_config.has_section("UserSections"):
+            user_sections = validation_config.options("UserSections")
+        else:
+            user_sections = ["Machine"]
+
+        for section in config.sections():
+            if section in user_sections:
+                print "Section [{}] should be kept as these need to be set " \
+                      "by the user".format(section)
+                break
+            if section not in default_config.sections():
+                if validation_config.has_section("DeadSections"):
+                    if section in validation_config.options("DeadSections"):
+                        print "Remove the Section [{}]".format(section)
+                        print "\tThat section is no longer used."
+                        break
+                print "Section [{}] does not appear in the defaults so is " \
+                      "unchecked".format(section)
+                break
+            different = []
+            sames = []
+            all_default = True
+            for option in config.options(section):
+                if option in previous_sections[section]:
+                    break
+                if default_config.has_option(section, option):
+                    if config.get(section, option) == \
+                            default_config.get(section, option):
+                        sames.append(option)
+                    else:
+                        different.append(option)
+                else:
+                    print "Unexpected Option [{}] {}".format(section, option)
+                    all_default = False
+            if len(different) == 0:
+                if all_default:
+                    print "Whole section [{}] same as default".format(section)
+                    print "\tIt can be safely removed"
+            elif len(sames) == 0:
+                print "In Section [{}] all options changed".format(section)
+                print "\tThis section should be kept"
+            elif len(different) < len(sames):
+                print "In Section [{}] only options changed are:" \
+                      "".format(section)
+                print "\t{}".format(different)
+                print "\tAll other values can be safelty removed"
+            else:
+                print "In Section [{}] options with default values are:" \
+                      "".format(section)
+                print "\t{}".format(sames)
+                print "\tThese can be safely removed"
+        print "Option names are case and underscore insenitive. " \
+              "So may show in your cfg file with capitals or underscores."
+    #except:
+    #    print "Unexpected error:", sys.exc_info()[0]
+        msg = "Config file {} is outdated.".format(cfg_file)
+        raise UnexpectedConfigException(msg)
 
 
-def read_a_config(config, cfg_file, default_config_names):
+def check_config(config, cfg_file, validation_config=None,
+                 default_config=None):
+    if validation_config is None or default_config is None:
+        return
+
+    # Check for sections registered as dead other none default are ignored
+    if validation_config.has_section("DeadSections"):
+        for dead_section in validation_config.options("DeadSections"):
+            if config.has_section(dead_section):
+                raise outdated_config(config, cfg_file, validation_config,
+                                      default_config)
+
+    # check every section except ones user should change by default machine
+    if validation_config.has_section("UserSections"):
+        user_sections = validation_config.options("UserSections")
+    else:
+        user_sections = ["Machine"]
+    # check there are no extra options. default options assumed merged in
+    for section in default_config.sections():
+        if section not in user_sections and \
+                (len(default_config.options(section)) !=
+                len(config.options(section))):
+            raise outdated_config(config, cfg_file, validation_config,
+                                  default_config)
+
+    # check for any previous values
+    if validation_config.has_section("PreviousValues"):
+        for dead_value in validation_config.options("PreviousValues"):
+            key = validation_config.get("PreviousValues", dead_value)
+            (section, option) = key.split("|")
+            if dead_value in config.get(section, option):
+                raise outdated_config(config, cfg_file, validation_config,
+                                                  default_config)
+
+
+def read_a_config(config, cfg_file, validation_config=None,
+                  default_config=None):
     """ Reads in a config file and then directly its machine_spec_file
 
     :param config: config to do the reading
@@ -86,17 +185,17 @@ def read_a_config(config, cfg_file, default_config_names):
     :return: list of files read including and machione_spec_files
     """
     read_ok = config.read(cfg_file)
-    check_config(config, cfg_file, default_config_names)
+    check_config(config, cfg_file, validation_config, default_config)
     if config.has_option("Machine", "machine_spec_file"):
         machine_spec_file_path = config.get("Machine", "machine_spec_file")
         read_ok.extend(config.read(machine_spec_file_path))
-        check_config(config, machine_spec_file_path, default_config_names)
+        check_config(config, machine_spec_file_path, validation_config,
+                     default_config)
         config.remove_option("Machine", "machine_spec_file")
     return read_ok
 
 
-def load_config(filename, defaults, config_parsers=None,
-                check_for_extra_values=True):
+def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
     """ Load the configuration
 
     :param config_parsers:\
@@ -129,17 +228,20 @@ def load_config(filename, defaults, config_parsers=None,
         install_cfg_and_IOError(filename, defaults, config_locations)
 
     read = list()
-    default_config_names = dict()
-    for default in defaults:
-        read.extend(read_a_config(config, default, default_config_names))
+    read.extend(config.read(defaults))
 
-    if check_for_extra_values:
-        for section in config.sections():
-            default_config_names[section] = config.options(section)
+    if validation_cfg is not None:
+        validation_config = CaseSensitiveParser()
+        validation_config.read(validation_cfg)
+        default_config = CamelCaseConfigParser()
+        default_config.read(defaults)
+    else:
+        validation_config = None
+        default_config = None
 
     for possible_config_file in config_locations:
         read.extend(read_a_config(config, possible_config_file,
-                                  default_config_names))
+                                  validation_config, default_config))
 
     parsers = list()
     if config_parsers is not None:

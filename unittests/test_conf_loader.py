@@ -16,7 +16,8 @@ ONEFILE = "config_one.cfg"
 ONEPATH = os.path.join(os.path.dirname(unittests.__file__), ONEFILE)
 TWOFILE = "config_two.cfg"
 TWOPATH = os.path.join(os.path.dirname(unittests.__file__), TWOFILE)
-
+VALIDATION_PATH = os.path.join(os.path.dirname(unittests.__file__),
+                               "validation_config.cfg")
 NOTTHERE = "test_config_for_spinnutils_unittests.txt"
 NOTTHEREPATH = os.path.join(os.path.expanduser("~"), ".{}".format(NOTTHERE))
 
@@ -83,13 +84,42 @@ def test_different_value(tmpdir, default_config):
         assert config.get("sect", "foobob") == "cat"
 
 
-def test_new_config(tmpdir, default_config):
+def test_new_option(tmpdir, default_config):
     with tmpdir.as_cwd():
         f = tmpdir.join(CFGFILE)
         default_config = default_config + "sam=cat\n"
         f.write(default_config)
         with pytest.raises(UnexpectedConfigException):
-            conf_loader.load_config(CFGFILE, [CFGPATH])
+            conf_loader.load_config(CFGFILE, [CFGPATH],
+                                    validation_cfg="blank.cfg")
+
+
+def test_new_section(tmpdir, default_config):
+    with tmpdir.as_cwd():
+        f = tmpdir.join(CFGFILE)
+        default_config = default_config + "[Pets]\nsam=cat\n"
+        f.write(default_config)
+        conf_loader.load_config(CFGFILE, [CFGPATH], validation_cfg="blank.cfg")
+
+
+def test_dead_section(tmpdir, default_config):
+    with tmpdir.as_cwd():
+        f = tmpdir.join(CFGFILE)
+        default_config = default_config + "[Pets]\nsam=cat\n"
+        f.write(default_config)
+        with pytest.raises(UnexpectedConfigException):
+            conf_loader.load_config(CFGFILE, [CFGPATH],
+                                    validation_cfg=VALIDATION_PATH)
+
+
+def test_previous_value(tmpdir, default_config):
+    with tmpdir.as_cwd():
+        f = tmpdir.join(CFGFILE)
+        default_config = default_config.replace("bar", "alpha")
+        f.write(default_config)
+        with pytest.raises(UnexpectedConfigException):
+            conf_loader.load_config(CFGFILE, [CFGPATH],
+                                    validation_cfg=VALIDATION_PATH)
 
 
 def test_new_section(tmpdir, default_config):

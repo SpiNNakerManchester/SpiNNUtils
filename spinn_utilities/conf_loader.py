@@ -64,16 +64,19 @@ def logging_parser(config):
         pass
 
 
-def outdated_config(config, cfg_file, validation_config, default_config):
+def outdated_config(cfg_file, validation_config, default_config):
     #try:
         print "Your config file {} is outdated.".format(cfg_file)
+        config = CamelCaseConfigParser()
+        config.read(cfg_file)
 
         previous_sections = collections.defaultdict(set)
         if validation_config.has_section("PreviousValues"):
             for dead_value in validation_config.options("PreviousValues"):
                 key = validation_config.get("PreviousValues", dead_value)
                 (section, option) = key.split("|")
-                if dead_value in config.get(section, option):
+                if config.has_option(section, option) and \
+                                dead_value in config.get(section, option):
                     print "Error in Section [{}] the option {}" \
                           "".format(section, option)
                     print "\t The value below is no longer supported:"
@@ -91,8 +94,7 @@ def outdated_config(config, cfg_file, validation_config, default_config):
             if section in user_sections:
                 print "Section [{}] should be kept as these need to be set " \
                       "by the user".format(section)
-                break
-            if section not in default_config.sections():
+            elif section not in default_config.sections():
                 if validation_config.has_section("DeadSections"):
                     if section in validation_config.options("DeadSections"):
                         print "Remove the Section [{}]".format(section)
@@ -100,39 +102,39 @@ def outdated_config(config, cfg_file, validation_config, default_config):
                         break
                 print "Section [{}] does not appear in the defaults so is " \
                       "unchecked".format(section)
-                break
-            different = []
-            sames = []
-            all_default = True
-            for option in config.options(section):
-                if option in previous_sections[section]:
-                    break
-                if default_config.has_option(section, option):
-                    if config.get(section, option) == \
-                            default_config.get(section, option):
-                        sames.append(option)
-                    else:
-                        different.append(option)
-                else:
-                    print "Unexpected Option [{}] {}".format(section, option)
-                    all_default = False
-            if len(different) == 0:
-                if all_default:
-                    print "Whole section [{}] same as default".format(section)
-                    print "\tIt can be safely removed"
-            elif len(sames) == 0:
-                print "In Section [{}] all options changed".format(section)
-                print "\tThis section should be kept"
-            elif len(different) < len(sames):
-                print "In Section [{}] only options changed are:" \
-                      "".format(section)
-                print "\t{}".format(different)
-                print "\tAll other values can be safelty removed"
             else:
-                print "In Section [{}] options with default values are:" \
-                      "".format(section)
-                print "\t{}".format(sames)
-                print "\tThese can be safely removed"
+                different = []
+                sames = []
+                all_default = True
+                for option in config.options(section):
+                    if option in previous_sections[section]:
+                        pass
+                    elif default_config.has_option(section, option):
+                        if config.get(section, option) == \
+                                default_config.get(section, option):
+                            sames.append(option)
+                        else:
+                            different.append(option)
+                    else:
+                        print "Unexpected Option [{}] {}".format(section, option)
+                        all_default = False
+                if len(different) == 0:
+                    if all_default:
+                        print "Whole section [{}] same as default".format(section)
+                        print "\tIt can be safely removed"
+                elif len(sames) == 0:
+                    print "In Section [{}] all options changed".format(section)
+                    print "\tThis section should be kept"
+                elif len(different) < len(sames):
+                    print "In Section [{}] only options changed are:" \
+                          "".format(section)
+                    print "\t{}".format(different)
+                    print "\tAll other values can be safelty removed"
+                else:
+                    print "In Section [{}] options with default values are:" \
+                          "".format(section)
+                    print "\t{}".format(sames)
+                    print "\tThese can be safely removed"
         print "Option names are case and underscore insenitive. " \
               "So may show in your cfg file with capitals or underscores."
     #except:
@@ -150,7 +152,7 @@ def check_config(config, cfg_file, validation_config=None,
     if validation_config.has_section("DeadSections"):
         for dead_section in validation_config.options("DeadSections"):
             if config.has_section(dead_section):
-                raise outdated_config(config, cfg_file, validation_config,
+                raise outdated_config(cfg_file, validation_config,
                                       default_config)
 
     # check every section except ones user should change by default machine
@@ -163,8 +165,7 @@ def check_config(config, cfg_file, validation_config=None,
         if section not in user_sections and \
                 (len(default_config.options(section)) !=
                 len(config.options(section))):
-            raise outdated_config(config, cfg_file, validation_config,
-                                  default_config)
+            raise outdated_config(cfg_file, validation_config, default_config)
 
     # check for any previous values
     if validation_config.has_section("PreviousValues"):
@@ -172,8 +173,8 @@ def check_config(config, cfg_file, validation_config=None,
             key = validation_config.get("PreviousValues", dead_value)
             (section, option) = key.split("|")
             if dead_value in config.get(section, option):
-                raise outdated_config(config, cfg_file, validation_config,
-                                                  default_config)
+                raise outdated_config(cfg_file, validation_config,
+                                      default_config)
 
 
 def read_a_config(config, cfg_file, validation_config=None,

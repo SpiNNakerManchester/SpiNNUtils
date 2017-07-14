@@ -141,8 +141,8 @@ def outdated_config(cfg_file, validation_config, default_config):
               "So may show in your cfg file with capitals or underscores."
     except:
         print "Unexpected error:", sys.exc_info()[0]
-        msg = "Config file {} is outdated.".format(cfg_file)
-        raise UnexpectedConfigException(msg)
+    msg = "Config file {} is outdated.".format(cfg_file)
+    return UnexpectedConfigException(msg)
 
 
 def check_config(config, cfg_file, validation_config=None,

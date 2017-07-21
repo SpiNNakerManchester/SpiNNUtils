@@ -7,16 +7,37 @@ import string
 import sys
 
 from spinn_utilities import log
-from spinn_utilities.camel_case_config_parser import CamelCaseConfigParser
-from spinn_utilities.case_sensitive_parser import CaseSensitiveParser
-from spinn_utilities.unexpected_config_exception import \
+from spinn_utilities.configs.camel_case_config_parser import \
+    CamelCaseConfigParser
+from spinn_utilities.configs.case_sensitive_parser import CaseSensitiveParser
+from spinn_utilities.configs.unexpected_config_exception import \
     UnexpectedConfigException
-from spinn_utilities.no_config_found_exception import NoConfigFoundException
+from spinn_utilities.configs.no_config_found_exception import \
+    NoConfigFoundException
 
 logger = logging.getLogger(__name__)
 
 
 def install_cfg_and_IOError(filename, defaults, config_locations):
+    """
+    Installs a local config based on the tamplates and thorws an Error
+
+    This method is called when no user config is found.
+
+    It will create a file in the users home directory based on the defaults.
+
+    Then it prints a helpful messages and thros and error with the same message
+
+    :param filename: Name under which to save the new config file
+    :type filename: str
+    :param defaults: List of full paths to the default config files.
+        Each of which MUST have an associated template file with exactly the
+        same path plus .template
+    :type defaults: List[str]
+    :param config_locations: List of paths the user configs where looked for,
+        Onlty used for the message
+    raise NoConfigFoundException: Always raised
+    """
     home_cfg = os.path.join(os.path.expanduser("~"), ".{}".format(filename))
 
     with (open(home_cfg, "w")) as destination:
@@ -45,7 +66,7 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
           "***********************************************************\n" \
           "".format(config_locations, home_cfg)
     print msg
-    raise NoConfigFoundException(msg)
+    return NoConfigFoundException(msg)
 
 
 def logging_parser(config):
@@ -64,7 +85,36 @@ def logging_parser(config):
         pass
 
 
-def outdated_config(cfg_file, validation_config, default_config):
+def outdated_config(cfg_file, validation_config, default_configs):
+    """
+    Prints why a config file is outdated and raises an exception
+
+    Reads a config file by itself (Without others)
+
+    Reports errors in this config based on the validation_config and the
+        defaults_configs
+
+    Reports any values listed as PreviousValues.
+        These are specific values in specific options no longer supported
+        For example old algorithm names
+
+    Checks all sections not defined as UserSections (Default Machine)
+        IE ones the user is expected to change
+
+    Any section specific list as Dead will be reported
+
+    Any section in the default config is compared
+        reporting any unexpected values
+        reporting the smaller of values non default or values same as default
+
+    Any other section is ignored as assumed being used by an extenstion
+
+    :param cfg_file: Path to be checked
+    :param validation_config: Path containing the validation rules
+    :param default_configs: List of Paths to defaults
+    :return:
+    """
+
     try:
         print "Your config file {} is outdated.".format(cfg_file)
         config = CamelCaseConfigParser()
@@ -94,7 +144,7 @@ def outdated_config(cfg_file, validation_config, default_config):
             if section in user_sections:
                 print "Section [{}] should be kept as these need to be set " \
                       "by the user".format(section)
-            elif section not in default_config.sections():
+            elif section not in default_configs.sections():
                 if validation_config.has_section("DeadSections"):
                     if section in validation_config.options("DeadSections"):
                         print "Remove the Section [{}]".format(section)
@@ -109,9 +159,9 @@ def outdated_config(cfg_file, validation_config, default_config):
                 for option in config.options(section):
                     if option in previous_sections[section]:
                         pass
-                    elif default_config.has_option(section, option):
+                    elif default_configs.has_option(section, option):
                         if config.get(section, option) == \
-                                default_config.get(section, option):
+                                default_configs.get(section, option):
                             sames.append(option)
                         else:
                             different.append(option)
@@ -147,6 +197,26 @@ def outdated_config(cfg_file, validation_config, default_config):
 
 def check_config(config, cfg_file, validation_config=None,
                  default_config=None):
+    """
+    Checks the config read up to this point to see if it is outdated
+
+    Once one difference is found a full reports is generated and an error
+        raised
+
+     Any section specific list as Dead will cause a error
+
+     Any section in the defaults should not have extra values.
+        It will never have less as the defaults are in the config
+
+    Errors on any values listed as PreviousValues.
+        These are specific values in specific options no longer supported
+        For example old algorithm names
+
+    :param config: Config as read in up to this point
+    :param cfg_file: Path of last file read in
+    :param validation_config: Path containing the validation rules
+    :param default_configs: List of Paths to defaults
+    """
     if validation_config is None or default_config is None:
         return
 
@@ -185,17 +255,16 @@ def read_a_config(config, cfg_file, validation_config=None,
 
     :param config: config to do the reading
     :param cfg_file: path to file which should be read in
-    :return: list of files read including and machione_spec_files
+    :return: list of files read including and machine_spec_files
     """
-    read_ok = config.read(cfg_file)
+    config.read(cfg_file)
     check_config(config, cfg_file, validation_config, default_config)
     if config.has_option("Machine", "machine_spec_file"):
         machine_spec_file_path = config.get("Machine", "machine_spec_file")
-        read_ok.extend(config.read(machine_spec_file_path))
+        config.read(machine_spec_file_path)
         check_config(config, machine_spec_file_path, validation_config,
                      default_config)
         config.remove_option("Machine", "machine_spec_file")
-    return read_ok
 
 
 def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
@@ -228,10 +297,9 @@ def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
             found_configs = True
 
     if not found_configs:
-        install_cfg_and_IOError(filename, defaults, config_locations)
+        raise install_cfg_and_IOError(filename, defaults, config_locations)
 
-    read = list()
-    read.extend(config.read(defaults))
+    config.read(defaults)
 
     if validation_cfg is not None:
         validation_config = CaseSensitiveParser()
@@ -243,8 +311,8 @@ def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
         default_config = None
 
     for possible_config_file in config_locations:
-        read.extend(read_a_config(config, possible_config_file,
-                                  validation_config, default_config))
+        read_a_config(config, possible_config_file, validation_config,
+                      default_config)
 
     parsers = list()
     if config_parsers is not None:
@@ -256,6 +324,7 @@ def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
             parser(config)
 
     # Log which config files we read
-    logger.info("Read config files: %s" % string.join(read, ", "))
+    print config.read_files
+    logger.info("Read config files: %s" % string.join(config.read_files, ", "))
 
     return config

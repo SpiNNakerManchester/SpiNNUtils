@@ -11,6 +11,16 @@ class CamelCaseConfigParser(RawConfigParser):
     def __init__(self, defaults=None, none_marker="None"):
         RawConfigParser.__init__(self, defaults)
         self._none_marker = none_marker
+        self.read_files = list()
+
+    def read(self, filenames):
+        new_files = RawConfigParser.read(self, filenames)
+        self.read_files.extend(new_files)
+        return new_files
+
+    @property
+    def read_files(self):
+        return self.read_files
 
     def get_str(self, section, option):
         """Get the string value of an option.

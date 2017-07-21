@@ -1,9 +1,10 @@
 import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture
 import spinn_utilities.conf_loader as conf_loader
-from spinn_utilities.unexpected_config_exception \
+from spinn_utilities.configs.unexpected_config_exception \
     import UnexpectedConfigException
-from spinn_utilities.no_config_found_exception import NoConfigFoundException
+from spinn_utilities.configs.no_config_found_exception import \
+    NoConfigFoundException
 import spinn_utilities.testing.log_checker as log_checker
 
 import ConfigParser

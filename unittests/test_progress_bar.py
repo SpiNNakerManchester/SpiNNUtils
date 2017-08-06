@@ -8,10 +8,20 @@ def test_operation():
     p.update()
     p.end()
 
+
+def test_two_end():
+    p = ProgressBar(2, "abc2")
+    p.update()
+    p.update()
+    p.end()
+    p.end()
+
+
 def test_with_operation():
     with ProgressBar(2, "with_p") as p:
         p.update()
         p.update()
+
 
 def test_check_length_full():
     p = ProgressBar(2, None)

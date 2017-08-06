@@ -128,7 +128,17 @@ class ProgressBar(object):
         return "progress bar for {}".format(self._string)
 
     def __enter__(self):
-        pass
+        """ Support method to use the with ProgressBar(...) as
+
+        This method does not have any parameters because any parameters in the
+            with ProgressBar(...) call have been passed to the __init__
+
+        Like the __new__ this method has to return self as in theory it
+            could pass back a different object. Welocome to Python
+        :return: The Progress bar
+
+        """
+        return self
 
     def __exit__(self, exty, exval, traceback):
         self.end()

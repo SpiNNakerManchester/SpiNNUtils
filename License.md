@@ -11,7 +11,7 @@ See: [here](http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgree
 
 # Modifications
 
-See: [http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html](http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html#modifications)
+See: [here](http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html#modifications)
 
 # Contributors
 

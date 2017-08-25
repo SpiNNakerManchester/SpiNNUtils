@@ -7,17 +7,17 @@ As shown there the software is currently being released under the GPL version 3 
 
 # Paper Authorship
 
-See: [http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html](http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html)
+See: [here](http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html#paper-authorship)
 
 # Modifications
 
-See: [http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html](http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html)
+See: [http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html](http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html#modifications)
 
 # Contributors
 
 For up to date information on Contributors see the graphs/contributors pages on each project.
 
-For example [https://github.com/SpiNNakerManchester/SpiNNUtils/graphs/contributors](https://github.com/SpiNNakerManchester/SpiNNakerManchester.github.io/graphs/contributors)
+For example [https://github.com/SpiNNakerManchester/SpiNNUtils/graphs/contributors](https://github.com/SpiNNakerManchester/SpiNNUtils/graphs/contributors)
 
-[Combined list](http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html)
+[Combined list](http://spinnakermanchester.github.io/common_pages/4.0.0/LicenseAgreement.html#contributors)
 

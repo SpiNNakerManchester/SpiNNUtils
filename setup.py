@@ -37,5 +37,6 @@ setup(
     license="GNU GPLv3.0",
     packages=packages,
     package_data=package_data,
-    install_requires=['appdirs', 'six']
+    install_requires=['appdirs',
+                      'six']
 )

@@ -35,7 +35,6 @@ for dirname, dirnames, filenames in os.walk(main_package_dir):
         package = "{}{}".format(
             main_package, dirname[start:].replace(os.sep, '.'))
         package_data[package].append("*{}".format(ext))
-       package_data[package].append("*{}".format(ext))
 
 setup(
     name="SpiNNUtilities",

@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import print_function, division
 import sys
 import math
 import os
@@ -59,7 +59,7 @@ class ProgressBar(object):
             print(description, file=self._destination)
 
         # Find the mid point
-        mid_point = ProgressBar.MAX_LENGTH_IN_CHARS / 2
+        mid_point = ProgressBar.MAX_LENGTH_IN_CHARS // 2
 
         # The space between 0% and 50% is the mid-point minus the width of
         # 0% and ~half the width of 50%
@@ -100,8 +100,8 @@ class ProgressBar(object):
         if self._number_of_things == 0:
             self._chars_per_thing = ProgressBar.MAX_LENGTH_IN_CHARS
         else:
-            self._chars_per_thing = (ProgressBar.MAX_LENGTH_IN_CHARS /
-                                     float(self._number_of_things))
+            self._chars_per_thing = \
+                ProgressBar.MAX_LENGTH_IN_CHARS / self._number_of_things
         self._print_distance_indicator(description)
         self._print_progress(0)
         self._check_differences()

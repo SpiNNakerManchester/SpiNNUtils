@@ -1,0 +1,2 @@
+class AbstractDict(object):
+    pass

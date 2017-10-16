@@ -1,4 +1,4 @@
-class ListIterator(object):
+class ListIterator1(object):
 
     def __init__(self, inner):
         self.i = 0

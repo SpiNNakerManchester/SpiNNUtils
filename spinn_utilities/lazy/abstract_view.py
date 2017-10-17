@@ -5,6 +5,8 @@ class AbstractView(AbstractDict):
 
     # self.get_value(key)
 
+    # self.set_value(key, value)
+
     # self.ids()
 
     def __init__(self, range_dict):
@@ -21,6 +23,14 @@ class AbstractView(AbstractDict):
             for i in key:
                 selected.append(ids[i])
             return self._range_dict._view_factory(selected)
+        else:
+            raise KeyError("Unexpected key type: {}".format(type(key)))
+
+    def __setitem__(self, key, value):
+        if isinstance(key, str):
+            return self.set_value(key=key, value=value)
+        if isinstance(key, (slice, int, tuple, list)):
+            raise KeyError("Settting of a slice/ids not supported")
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
 

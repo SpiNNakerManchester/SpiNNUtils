@@ -23,61 +23,71 @@ class RangedList(object):
         sort
     """
 
-    def __init__(self, size, default):
+    def __init__(self, size, default, key=None):
         self._size = size
         self._default = default
         self._ranges = []
         self._ranges.append((0, size, default))
+        self._key=key
 
     def __len__(self):
         return self._size
 
-    def get_data(self, key):
-        if key < 0:
-            if isinstance(key, int):
+    def get_data(self, id):
+        if id < 0:
+            if isinstance(id, int):
                 raise IndexError(
-                    "The index {0!d} is out of range.".format(key))
-            raise TypeError("Invalid argument type {}.".format(type(key)))
-        if key >= len(self):
-            if isinstance(key, int):
+                    "The index {0!d} is out of range.".format(id))
+            raise TypeError("Invalid argument type {}.".format(type(id)))
+        if id >= len(self):
+            if isinstance(id, int):
                 raise IndexError(
-                    "The index {0!d} is out of range.".format(key))
-            raise TypeError("Invalid argument type {}.".format(type(key)))
+                    "The index {0!d} is out of range.".format(id))
+            raise TypeError("Invalid argument type {}.".format(type(id)))
         for (start, stop, value) in self._ranges:
-            if key < stop:
+            if id < stop:
                 return value
 
-    def get_data_by_range(self, range_start, range_stop):
-        if range_start > range_stop:
-            temp = range_start
-            range_start = range_stop
-            range_stop = range_start
-        if range_start < 0:
-            if isinstance(range_start, int):
+    def get_data_by_slice(self, slice_start, slice_stop):
+        if slice_start > slice_stop:
+            temp = slice_start
+            slice_start = slice_stop
+            slice_stop = slice_start
+        if slice_start < 0:
+            if isinstance(slice_start, int):
                 raise IndexError(
                     "The range_start {0!d} is out of range."
-                    "".format(range_start))
+                    "".format(slice_start))
             raise TypeError("Invalid argument type {}."
-                            "".format(type(range_start)))
-        if range_stop >= len(self):
-            if isinstance(range_stop, int):
+                            "".format(type(slice_start)))
+        if slice_stop >= len(self):
+            if isinstance(slice_stop, int):
                 raise IndexError(
                     "The range_stop {0!d} is out of range."
-                    "".format(range_stop))
+                    "".format(slice_stop))
             raise TypeError("Invalid argument type {}."
-                            "".format(type(range_stop)))
+                            "".format(type(slice_stop)))
+
         result = None
         for (_start, _stop, _value) in self._ranges:
-            if range_start < _stop:
+            if slice_start < _stop:
                 if result is None:
                     result = _value
                 elif result != _value:
-                    raise MultipleValuesException()
-                if range_stop <= _stop:
+                    raise MultipleValuesException(self._key, result, _value)
+                if slice_stop <= _stop:
                     return _value
 
     def __getslice__(self, start, stop):
-        return self.get_data_by_range(start, stop)
+        return self.get_data_by_slice(start, stop)
+
+    def get_data_by_ids(self, ids):
+        result = self.get_data(ids[0])
+        for id in ids[1:]:
+            value = self.get_data(id)
+            if result != value:
+                raise MultipleValuesException(self._key, result, value)
+        return result
 
     def __getitem__(self, key):
         if isinstance(key, slice):
@@ -90,32 +100,32 @@ class RangedList(object):
         else:
             raise TypeError("Invalid argument type.")
 
-    def set_data(self, key, value):
+    def set_data(self, id, value):
         """
         Sets the value for a single id to the new value.
 
         Note: This method only works for a single possitive int id.
         use set or __set__ for slices, tuples, lists and negative indexes
-        :param key: Single id
-        :type key:int
+        :param id: Single id
+        :type id:int
         :param value:  The value to save
         :type value: anything
         """
-        if key < 0:
+        if id < 0:
             raise IndexError(
-                "The index {0!d} is out of range.".format(key))
-        if key >= len(self):
+                "The index {0!d} is out of range.".format(id))
+        if id >= len(self):
             raise IndexError(
-                "The index {0!d} is out of range.".format(key))
+                "The index {0!d} is out of range.".format(id))
         for index, (start, stop, old_value) in enumerate(self._ranges):
-            if key < stop:
+            if id < stop:
                 if value == old_value:
                     return  # alreay set as needed so do nothing
-                self._ranges[index] = (key, key + 1, value)
-                if key +1 < stop:  # Need a new range after the key
-                    self._ranges.insert(index + 1, (key + 1, stop, old_value))
-                if key > start:   # Need a new range before the key
-                    self._ranges.insert(index, (start, key, old_value))
+                self._ranges[index] = (id, id + 1, value)
+                if id +1 < stop:  # Need a new range after the key
+                    self._ranges.insert(index + 1, (id + 1, stop, old_value))
+                if id > start:   # Need a new range before the key
+                    self._ranges.insert(index, (start, id, old_value))
                 if index < len(self._ranges) - 1:
                     if self._ranges[index][2] == self._ranges[index+1][2]:
                         self._ranges[index] = (
@@ -132,7 +142,7 @@ class RangedList(object):
                         self._ranges.pop(index)
                 return
 
-    def set_data_by_range(self, slice_start, slice_stop, value):
+    def set_data_by_slice(self, slice_start, slice_stop, value):
         """
         Sets the value for a single range to the new value.
 
@@ -224,7 +234,7 @@ class RangedList(object):
             raise TypeError("Invalid argument type.")
 
     def __setslice__(self, start, stop, value):
-        self.set_data_by_range(start, stop, value)
+        self.set_data_by_slice(start, stop, value)
 
     def __iter__(self):
         return ListIterator(self)

@@ -12,3 +12,10 @@ class IdsView(AbstractView):
 
     def ids(self):
         return list(self._ids)
+
+    def get_value(self, key):
+        return self._range_dict.get_value_by_ids(key, self._ids)
+
+    def set_value(self, key):
+        self._range_dict.set_value_by_ids(key, self._ids)
+

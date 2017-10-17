@@ -4,11 +4,11 @@ defaults = {"a": "alpha", "b": "bravo"}
 
 rd = RangeDictionary(10, defaults)
 
-ranged_view = rd[4:6]
+ranged_view = rd[2,3,8]
 
 
 def test_ids():
-    assert [4] == ranged_view.ids()
+    assert [2, 3, 8] == ranged_view.ids()
 
 def test_value():
     assert "alpha" == ranged_view["a"]
@@ -36,5 +36,5 @@ def test_set_range_direct():
     ranged_view1 = rd1[4:7]
     assert "alpha" == ranged_view1["a"]
     ranged_view1["a"] = "Foo"
-    assert "alpha" == ranged_view1["Foo"]
+    assert "Foo" == ranged_view1["a"]
 

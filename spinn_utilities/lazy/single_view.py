@@ -14,5 +14,8 @@ class SingleView(AbstractView):
         return [self._id]
 
     def get_value(self, key):
-        return self._range_dict.get_value_by_id(key, self._id)
+        return self._range_dict.get_value_by_id(key=key, id=self._id)
 
+    def set_value(self, key, value):
+        return self._range_dict.set_value_by_id(key=key, value=value,
+                                                id=self._id)

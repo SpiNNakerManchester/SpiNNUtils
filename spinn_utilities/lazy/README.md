@@ -6,8 +6,8 @@ This dimension supports the main list funtions.
 The second dimension is keys which must be Strings.
 This dimension supports the main dict methods.
 
-**NOTE**: Where value or item methods would result in multiple values an
-Exception is raised.
+**NOTE**: As Dictionary value and item methods expect to return a single value,
+where the result would result in multiple values an Exception is raised.
 
 **WARNING**:
 len and \_\_len\_\_ are id based. Use len_keys for dict len.

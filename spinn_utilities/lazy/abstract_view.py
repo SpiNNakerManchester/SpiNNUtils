@@ -3,7 +3,6 @@ from spinn_utilities.lazy.abstract_dict import AbstractDict
 
 class AbstractView(AbstractDict):
 
-    # self.get_value(key)
 
     # self.set_value(key, value)
 
@@ -48,26 +47,6 @@ class AbstractView(AbstractDict):
 
     def viewkeys(self):
         return self._range_dict.viewkeys()
-
-    def items(self):
-        results = []
-        for key in self._range_dict.keys():
-            value = self.get_value(key)
-            results.append((key, value))
-        return results
-
-    def iteritems(self):
-        return iter(self.items())
-
-    def values(self):
-        results = []
-        for key in self._range_dict.keys():
-            value = self.get_value(key)
-            results.append(value)
-        return results
-
-    def itervalues(self):
-        return iter(self.values())
 
     def setdefault(self, key, default=None):
         self._range_dict.setdefault(key, default)

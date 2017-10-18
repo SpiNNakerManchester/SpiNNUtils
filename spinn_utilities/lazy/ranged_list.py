@@ -33,7 +33,13 @@ class RangedList(object):
     def __len__(self):
         return self._size
 
-    def get_data(self, id):
+    def get_value_all(self):
+        if len(self._ranges) > 1:
+            raise MultipleValuesException(self._key, self._ranges[0][2],
+                                          self._ranges[1][2])
+        return self._ranges[0][2]
+
+    def get_value_by_id(self, id):
         if id < 0:
             if isinstance(id, int):
                 raise IndexError(
@@ -48,7 +54,7 @@ class RangedList(object):
             if id < stop:
                 return value
 
-    def get_data_by_slice(self, slice_start, slice_stop):
+    def get_value_by_slice(self, slice_start, slice_stop):
         if slice_start > slice_stop:
             temp = slice_start
             slice_start = slice_stop
@@ -79,12 +85,12 @@ class RangedList(object):
                     return _value
 
     def __getslice__(self, start, stop):
-        return self.get_data_by_slice(start, stop)
+        return self.get_value_by_slice(start, stop)
 
-    def get_data_by_ids(self, ids):
-        result = self.get_data(ids[0])
+    def get_value_by_ids(self, ids):
+        result = self.get_value_by_id(ids[0])
         for id in ids[1:]:
-            value = self.get_data(id)
+            value = self.get_value_by_id(id)
             if result != value:
                 raise MultipleValuesException(self._key, result, value)
         return result
@@ -96,11 +102,15 @@ class RangedList(object):
         elif isinstance(key, int):
             if key < 0:  # Handle negative indices
                 key += len(self)
-            return self.get_data(key)
+            return self.get_value_by_id(key)
         else:
             raise TypeError("Invalid argument type.")
 
-    def set_data(self, id, value):
+    def set_value(self, value):
+        self._ranges = []
+        self._ranges.append((0, self._size, value))
+
+    def set_value_by_id(self, id, value):
         """
         Sets the value for a single id to the new value.
 
@@ -142,7 +152,7 @@ class RangedList(object):
                         self._ranges.pop(index)
                 return
 
-    def set_data_by_slice(self, slice_start, slice_stop, value):
+    def set_value_by_slice(self, slice_start, slice_stop, value):
         """
         Sets the value for a single range to the new value.
 
@@ -222,19 +232,19 @@ class RangedList(object):
         if isinstance(id, slice):
             # Get the start, stop, and step from the slice
             for ii in xrange(*id.indices(len(self))):
-                self.set_data(ii, value)
+                self.set_value_by_id(ii, value)
         elif isinstance(id, int):
             if id < 0:  # Handle negative indices
                 id += len(self)
-            self.set_data(id, value)
+            self.set_value_by_id(id, value)
         elif isinstance(id, (tuple, list)):
             for index in id:
-                self.set_data(index, value)
+                self.set_value_by_id(index, value)
         else:
             raise TypeError("Invalid argument type.")
 
     def __setslice__(self, start, stop, value):
-        self.set_data_by_slice(start, stop, value)
+        self.set_value_by_slice(start, stop, value)
 
     def __iter__(self):
         return ListIterator(self)
@@ -263,3 +273,17 @@ class RangedList(object):
 
     def setdefault(self, default):
         self._default = default
+
+    def fastiter(self):
+        for (start, stop, value) in self._ranges:
+            for x in range(stop-start):
+                yield value
+
+    def slice_iter(self, slice_start, slice_stop):
+        for (start, stop, value) in self._ranges:
+            if slice_start < stop and slice_stop >= start:
+                first = max(start, slice_start)
+                end_point = min(stop, slice_stop)
+                for _ in range(end_point - first):
+                    yield value
+

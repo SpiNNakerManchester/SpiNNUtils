@@ -1,33 +1,33 @@
-from spinn_utilities.lazy.range_dictionary import RangeDictionary
+from spinn_utilities.ranged.range_dictionary import RangeDictionary
 
 defaults = {"a": "alpha", "b": "bravo"}
 
 rd = RangeDictionary(10, defaults)
 
-ranged_view = rd[2,3,8]
+slice_view = rd[4:6]
 
 
 def test_ids():
-    assert [2, 3, 8] == ranged_view.ids()
+    assert [4, 5] == slice_view.ids()
 
 def test_value():
-    assert "alpha" == ranged_view["a"]
-    assert "bravo" == ranged_view["b"]
-    assert "a" in ranged_view
-    assert "c" not in ranged_view
-    assert ranged_view.has_key("b")
-    assert {"a", "b"} == set(ranged_view.keys())
+    assert "alpha" == slice_view["a"]
+    assert "bravo" == slice_view["b"]
+    assert "a" in slice_view
+    assert "c" not in slice_view
+    assert slice_view.has_key("b")
+    assert {"a", "b"} == set(slice_view.keys())
 
 
 def test_items():
     expected = {("a", "alpha"), ("b", "bravo")}
-    result = set(ranged_view.items())
+    result = set(slice_view.items())
     assert expected == result
 
 
 def test_values():
     expected = {"alpha", "bravo"}
-    result = set(ranged_view.values())
+    result = set(slice_view.values())
     assert expected == result
 
 

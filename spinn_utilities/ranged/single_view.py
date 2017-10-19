@@ -1,9 +1,12 @@
-from spinn_utilities.lazy.abstract_view import AbstractView
+from spinn_utilities.ranged.abstract_view import AbstractView
 
 
-class SingleView(AbstractView):
+class _SingleView(AbstractView):
 
     def __init__(self, range_dict, id):
+        """
+        USE RangeDictionary.view_factory to create views
+        """
         AbstractView.__init__(self, range_dict)
         self._id = id
 

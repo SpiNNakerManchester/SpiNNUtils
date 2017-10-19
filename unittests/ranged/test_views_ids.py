@@ -1,4 +1,4 @@
-from spinn_utilities.lazy.range_dictionary import RangeDictionary
+from spinn_utilities.ranged.range_dictionary import RangeDictionary
 
 defaults = {"a": "alpha", "b": "bravo"}
 

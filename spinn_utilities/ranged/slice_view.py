@@ -1,9 +1,12 @@
-from spinn_utilities.lazy.abstract_view import AbstractView
+from spinn_utilities.ranged.abstract_view import AbstractView
 
 
-class SliceView(AbstractView):
+class _SliceView(AbstractView):
 
     def __init__(self, range_dict, start, stop):
+        """
+        USE RangeDictionary.view_factory to create views
+        """
         AbstractView.__init__(self, range_dict)
         self._start = start
         self._stop = stop

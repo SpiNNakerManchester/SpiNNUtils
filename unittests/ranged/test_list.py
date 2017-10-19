@@ -110,7 +110,7 @@ def test_iter_simple():
 
 def test_iter_complex():
     rl = RangedList(size=10, default="a", key="alpha")
-    list_iter = iter(rl)
+    list_iter = rl.iter()
     assert "a" == list_iter.next()  # 0
     assert "a" == list_iter.next()  # 1
     assert "a" == list_iter.next()  # 2
@@ -121,7 +121,7 @@ def test_iter_complex():
     assert "c" == list_iter.next()  # 5
     assert "a" == list_iter.next()  # 6
 
-def test_fast_iter():
+def test_iter():
     rl = RangedList(size=10, default="a", key="alpha")
-    it = rl.fastiter()
+    it = rl.iter()
     assert list(it) == ["a", "a", "a", "a", "a", "a", "a", "a", "a", "a"]

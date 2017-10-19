@@ -246,8 +246,21 @@ class RangedList(object):
     def __setslice__(self, start, stop, value):
         self.set_value_by_slice(start, stop, value)
 
-    def __iter__(self):
+    def iter(self):
         return ListIterator(self)
+
+    def __iter__(self):
+        for (start, stop, value) in self._ranges:
+            for x in range(stop - start):
+                yield value
+
+    def slice_iter(self, slice_start, slice_stop):
+        for (start, stop, value) in self._ranges:
+            if slice_start < stop and slice_stop >= start:
+                first = max(start, slice_start)
+                end_point = min(stop, slice_stop)
+                for _ in range(end_point - first):
+                    yield value
 
     def __contains__(self, item):
         for (_, _, value) in self._ranges:
@@ -273,17 +286,4 @@ class RangedList(object):
 
     def setdefault(self, default):
         self._default = default
-
-    def fastiter(self):
-        for (start, stop, value) in self._ranges:
-            for x in range(stop-start):
-                yield value
-
-    def slice_iter(self, slice_start, slice_stop):
-        for (start, stop, value) in self._ranges:
-            if slice_start < stop and slice_stop >= start:
-                first = max(start, slice_start)
-                end_point = min(stop, slice_stop)
-                for _ in range(end_point - first):
-                    yield value
 

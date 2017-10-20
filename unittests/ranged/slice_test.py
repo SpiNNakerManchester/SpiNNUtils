@@ -38,3 +38,13 @@ def test_set_range_direct():
     ranged_view1["a"] = "Foo"
     assert "Foo" == ranged_view1["a"]
 
+
+def test_iter_values():
+    rd1 = RangeDictionary(10, defaults)
+    ranged_view1 = rd1[4:7]
+    aware = ranged_view1.iter_values("a", fast = False)
+    fast = ranged_view1.iter_values("a", fast = True)
+    assert ["alpha","alpha","alpha"] == list(fast)
+    rd1["a"] = "Foo"
+    assert rd1["a"] == "Foo"
+    assert ["Foo","Foo","Foo"] == list(aware)

@@ -19,6 +19,8 @@ class _IdsView(AbstractView):
     def get_value(self, key):
         return self._range_dict.get_value_by_ids(key, self._ids)
 
-    def set_value(self, key):
-        self._range_dict.set_value_by_ids(key, self._ids)
+    def set_value(self, key, value):
+        self._range_dict.set_value_by_ids(key=key, ids=self._ids, value=value)
 
+    def iter_values(self, key, fast=True):
+        return self._range_dict.iter_values_by_ids(key=key, ids=self._ids)

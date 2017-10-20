@@ -1,8 +1,30 @@
+from six import add_metaclass
+
+from spinn_utilities.abstract_base import AbstractBase, abstractproperty, \
+    abstractmethod
+
+@add_metaclass(AbstractBase)
 class AbstractDict(object):
 
-    # self.get_value(key)
+    @abstractmethod
+    def get_value(self, key):
+        pass
 
-    # self.keys()_
+    #@abstractmethod
+    #def iter_values(self, key, fast=True):
+    #    pass
+
+    @abstractmethod
+    def keys(self):
+        pass
+
+    @abstractmethod
+    def set_value(self, key, value):
+        pass
+
+    @abstractmethod
+    def ids(self):
+        pass
 
     def items(self):
         results = []
@@ -27,5 +49,17 @@ class AbstractDict(object):
             yield self.get_value(key)
 
     def __contains__(self, key):
-        return key in self._value_lists
+        if isinstance(key, str):
+            return key in self.keys()
+        if isinstance(key, int):
+            return key in self.ids
+        raise KeyError("Unexpected key type: {}".format(type(key)))
+
+    def has_key(self, key):
+        return key in self.keys()
+
+    def iterkeys(self):
+        return self.keys().iter()
+
+
 

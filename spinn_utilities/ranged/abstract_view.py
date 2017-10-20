@@ -3,11 +3,6 @@ from spinn_utilities.ranged.abstract_dict import AbstractDict
 
 class AbstractView(AbstractDict):
 
-
-    # self.set_value(key, value)
-
-    # self.ids()
-
     def __init__(self, range_dict):
         """
         USE RangeDictionary.view_factory to create views
@@ -25,8 +20,7 @@ class AbstractView(AbstractDict):
             for i in key:
                 selected.append(ids[i])
             return self._range_dict.view_factory(selected)
-        else:
-            raise KeyError("Unexpected key type: {}".format(type(key)))
+        raise KeyError("Unexpected key type: {}".format(type(key)))
 
     def __setitem__(self, key, value):
         if isinstance(key, str):
@@ -36,20 +30,12 @@ class AbstractView(AbstractDict):
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
 
-    def __contains__(self, key):
-        return self._range_dict.__contains__(key)
-
-    def has_key(self, key):
-        return self._range_dict.has_key(key)
-
-    def keys(self):
-        return self._range_dict.keys()
-
-    def iterkeys(self):
-        return self._range_dict.iterkeys()
-
     def viewkeys(self):
         return self._range_dict.viewkeys()
 
     def setdefault(self, key, default=None):
         self._range_dict.setdefault(key, default)
+
+    def keys(self):
+        return self._range_dict.keys()
+

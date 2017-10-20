@@ -9,6 +9,9 @@ class ListIterator(object):
         else:
             self._stop = stop
 
+    def __iter__(self):
+        return self
+
     def next(self):
         if self._next_index >= self._stop:
             raise StopIteration()

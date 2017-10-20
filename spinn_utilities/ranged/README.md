@@ -22,7 +22,14 @@ str will be dict based all others will cause an error
 Methods that reduce the size of a dimension are not supported
 including \_\_delitem\_\_, \_\_delslice\_\_, clear(), pop(), popitem(), remove()
 
-dict's view methods viewvalues() and viewitems() are not supported.
+Methods that increase the size of a dimension are not supported
+including extend, append, and \_\_set\_\_ with a new key
+
+Methods that change the order of a list are not supported
+including reverse and sort
+
+dict's view methods viewvalues() and viewitems() are not supported
+viewkeys is supported but as keys may not changes makes little sense.
 However a slice by id is a view so items() and values() methods  
 will return the latest results even if changes after the slice was created.
 
@@ -36,7 +43,6 @@ __getitem__
 __setitem__
 
 __iter__
-__reversed__
 __contains__
 
 

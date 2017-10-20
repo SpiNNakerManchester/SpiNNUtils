@@ -7,6 +7,7 @@ class _SingleView(AbstractView):
         """
         USE RangeDictionary.view_factory to create views
         """
+        print "Single"
         AbstractView.__init__(self, range_dict)
         self._id = id
 
@@ -18,6 +19,9 @@ class _SingleView(AbstractView):
 
     def get_value(self, key):
         return self._range_dict.get_value_by_id(key=key, id=self._id)
+
+    def iter_values(self, key, fast=True):
+        yield self._range_dict.get_value_by_id(key=key, id=self._id)
 
     def set_value(self, key, value):
         return self._range_dict.set_value_by_id(key=key, value=value,

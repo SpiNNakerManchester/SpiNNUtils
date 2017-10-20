@@ -246,8 +246,21 @@ class RangedList(object):
     def __setslice__(self, start, stop, value):
         self.set_value_by_slice(start, stop, value)
 
+    def iter_by_ids(self, ids):
+        range_pointer = 0
+        for id in ids:
+            # check if ranges reset so too far ahead
+            if id < self._ranges[range_pointer][0]:
+                range_pointer = 0
+                while id > self._ranges[range_pointer][0]:
+                    range_pointer += 1
+            # check if pointer needs to move on
+            while id >= self._ranges[range_pointer][1]:
+                range_pointer += 1
+            yield self._ranges[range_pointer][2]
+
     def iter(self):
-        return ListIterator(self)
+        return self.iter_by_ids(range(self._size))
 
     def __iter__(self):
         for (start, stop, value) in self._ranges:

@@ -39,14 +39,20 @@ class RangeDictionary(AbstractDict):
 
     def __getitem__(self, key):
         if isinstance(key, str):
-            return self.get_value_all(key)
+            return self.get_value(key)
         if (isinstance(key, (int, slice, tuple, list))):
             return self.view_factory(key=key)
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
 
-    def get_value_all(self, key):
+    def get_value(self, key):
         return self._value_lists[key].get_value_all()
+
+    def iter_values(self, key, fast=True):
+        if fast:
+            return self._value_lists[key].__iter__()
+        else:
+            return self._value_lists[key].iter()
 
     def get_value_by_id(self, key, id):
         return self._value_lists[key].get_value_by_id(id=id)
@@ -55,6 +61,13 @@ class RangeDictionary(AbstractDict):
         return self._value_lists[key].get_value_by_slice(
             slice_start=start, slice_stop=stop)
 
+    def iter_values_by_slice(self, key, start, stop):
+        return self._value_lists[key].slice_iter(
+            slice_start=start, slice_stop=stop)
+
+    def iter_values_by_ids(self, key, ids):
+        return self._value_lists[key].iter_by_ids(ids=ids)
+
     def get_value_by_ids(self, key, ids):
         return self._value_lists[key].get_value_by_ids(ids=ids)
 
@@ -62,6 +75,7 @@ class RangeDictionary(AbstractDict):
         self._value_lists[key].set_value(value)
 
     def __setitem__(self, key, value):
+        print "set"
         if isinstance(key, str):
             return self.set_value(key=key, value=value)
         if isinstance(key, (slice, int, tuple, list)):
@@ -76,10 +90,14 @@ class RangeDictionary(AbstractDict):
         return self._value_lists[key].set_value_by_slice(
             slice_start=start, slice_stop=stop, value=value)
 
+    def set_value_by_ids(self, key, ids, value):
+        for id in ids:
+            self._value_lists[key].set_value_by_id(id=id, value=value)
+
     def items(self):
         results = []
         for key in self.keys():
-            value = self.get_value_all(key)
+            value = self.get_value(key)
             results.append((key, value))
         return results
 
@@ -89,7 +107,7 @@ class RangeDictionary(AbstractDict):
     def values(self):
         results = []
         for key in self.keys():
-            value = self.get_value_all(key)
+            value = self.get_value(key)
             results.append(value)
         return results
 

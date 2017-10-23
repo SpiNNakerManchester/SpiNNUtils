@@ -48,7 +48,7 @@ class RangeDictionary(AbstractDict):
     def get_value(self, key):
         return self._value_lists[key].get_value_all()
 
-    def iter_values(self, key, fast=True):
+    def iter_all_values(self, key, fast=True):
         if fast:
             return self._value_lists[key].__iter__()
         else:

@@ -41,8 +41,8 @@ def test_set_range_direct():
 def test_iter_values():
     rd1 = RangeDictionary(10, defaults)
     ranged_view1 = rd1[2, 3, 8]
-    aware = ranged_view1.iter_values("a", fast = False)
-    fast = ranged_view1.iter_values("a", fast = True)
+    aware = ranged_view1.iter_all_values("a", fast = False)
+    fast = ranged_view1.iter_all_values("a", fast = True)
     assert ["alpha","alpha","alpha"] == list(fast)
     rd1["a"] = "Foo"
     assert rd1["a"] == "Foo"

@@ -24,7 +24,7 @@ class _SliceView(AbstractView):
         for id in self.ids():
             yield self._range_dict.get_value_by_id(key=key, id=id)
 
-    def iter_values(self, key, fast=True):
+    def iter_all_values(self, key, fast=True):
         if fast:
             return self._range_dict.iter_values_by_slice(
                 key=key, start=self._start, stop=self._stop)

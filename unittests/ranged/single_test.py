@@ -42,8 +42,8 @@ def test_set():
 def test_iter_values():
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1[4]
-    aware = single1.iter_values("a", fast = False)
-    fast = single1.iter_values("a", fast = True)
+    aware = single1.iter_all_values("a", fast = False)
+    fast = single1.iter_all_values("a", fast = True)
     assert ["alpha"] == list(fast)
     rd1["a"] = "Foo"
     assert rd1["a"] == "Foo"

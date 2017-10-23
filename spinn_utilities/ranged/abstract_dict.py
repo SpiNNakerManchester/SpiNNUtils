@@ -26,6 +26,10 @@ class AbstractDict(object):
     def ids(self):
         pass
 
+    @abstractmethod
+    def iter_all_values(self, key, fast=True):
+        pass
+
     def items(self):
         results = []
         for key in self.keys():

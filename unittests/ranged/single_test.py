@@ -42,12 +42,22 @@ def test_set():
 def test_iter_values():
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1[4]
-    aware = single1.iter_all_values("a", fast = False)
-    fast = single1.iter_all_values("a", fast = True)
+    aware = single1.iter_all_values(key="a", fast = False)
+    fast = single1.iter_all_values(key="a", fast = True)
     assert ["alpha"] == list(fast)
     rd1["a"] = "Foo"
     assert rd1["a"] == "Foo"
     assert ["Foo"] == list(aware)
+
+def test_iter_values_keys():
+    rd1 = RangeDictionary(10, defaults)
+    single1 = rd1[4]
+    aware = single1.iter_all_values(key=("a", "b"), fast = False)
+    fast = single1.iter_all_values(key=("b", "a"), fast = True)
+    assert [{'a': 'alpha', 'b': 'bravo'}] == list(fast)
+    rd1["a"] = "Foo"
+    assert rd1["a"] == "Foo"
+    assert [{'a': 'Foo', 'b': 'bravo'}] == list(aware)
 
 def test_ranges_by_key():
     rd1 = RangeDictionary(10, defaults)

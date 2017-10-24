@@ -27,7 +27,6 @@ def test_values():
     result = set(rd.values())
     assert expected == result
 
-
 def test_set_range_direct():
     rd1 = RangeDictionary(10, defaults)
     assert "alpha" == rd1["a"]
@@ -37,3 +36,48 @@ def test_set_range_direct():
 def test_ranges_by_key():
     rd1 = RangeDictionary(10, defaults)
     assert [(0,10,"alpha")] == rd1.get_ranges(key="a")
+
+def test_iter_values():
+    rd1 = RangeDictionary(10, defaults)
+    single1 = rd1[4]
+    aware = rd1.iter_all_values(key="a", fast = False)
+    fast = rd1.iter_all_values(key="a", fast = True)
+    assert ["alpha", "alpha", "alpha", "alpha", "alpha", "alpha", "alpha",
+            "alpha", "alpha", "alpha"] == list(fast)
+    single1["a"] = "Foo"
+    assert ["alpha", "alpha", "alpha", "alpha", "Foo", "alpha", "alpha",
+            "alpha", "alpha", "alpha"] == list(aware)
+
+def test_iter_values_keys():
+    rd1 = RangeDictionary(10, defaults)
+    aware = rd1.iter_all_values(key=("a", "b"), fast = False)
+    fast = rd1.iter_all_values(key=("b", "a"), fast = True)
+    assert [{'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
+            {'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
+            {'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
+            {'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
+            {'a': 'alpha', 'b': 'bravo'},{'a': 'alpha', 'b': 'bravo'}] \
+           == list(fast)
+    rd1[4]["a"] = "Foo"
+    rd1[6]["b"] = "Bar"
+    assert [{'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
+            {'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
+            {'a': 'Foo', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
+            {'a': 'alpha', 'b': 'Bar'}, {'a': 'alpha', 'b': 'bravo'},
+            {'a': 'alpha', 'b': 'bravo'},{'a': 'alpha', 'b': 'bravo'}] \
+           == list(aware)
+
+def test_ranges_by_key():
+    rd1 = RangeDictionary(10, defaults)
+    assert [(0, 10, "alpha")] == rd1.get_ranges(key="a")
+    rd1[4]["a"] = "foo"
+    assert [(0,4,"alpha"),(4,5,"foo"),(5,10,"alpha")] == \
+           rd1.get_ranges(key="a")
+
+def test_ranges_all():
+    rd1 = RangeDictionary(10, defaults)
+    assert [(0, 10, {"a":"alpha", "b":"bravo"})] == rd1.get_ranges()
+    rd1[4]["a"] = "foo"
+    assert [(0, 4, {"a":"alpha", "b":"bravo"}),
+            (4, 5,{"a":"foo", "b":"bravo"}),
+            (5, 10, {"a":"alpha", "b":"bravo"})] == rd1.get_ranges()

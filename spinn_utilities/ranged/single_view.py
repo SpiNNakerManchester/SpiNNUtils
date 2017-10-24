@@ -24,7 +24,7 @@ class _SingleView(AbstractView):
         if isinstance(key, str):
             yield self._range_dict.get_list(key).get_value_by_id(id=self._id)
         else:
-            yield self._range_dict.get_values_by_id(id)
+            yield self._range_dict.get_values_by_id(key=key, id=self._id)
 
     def set_value(self, key, value):
         return self._range_dict.get_list(key).set_value_by_id(

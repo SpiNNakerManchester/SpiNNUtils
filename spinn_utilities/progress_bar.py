@@ -143,7 +143,7 @@ class ProgressBar(object):
     def __exit__(self, exty, exval, traceback):
         self.end()
 
-    def over(self, collection):
+    def over(self, collection, finish_at_end=True):
         """ Simple wrapper for the cases where the progress bar is being used\
             to show progress through the iteration over a single collection.\
             The progress bar should have been initialised to the size of the\
@@ -151,6 +151,8 @@ class ProgressBar(object):
 
         :param collection:\
             The base collection (any iterable) being iterated over
+        :param finish_at_end: flag to say if the bar should finish at the \
+        end of the collection
         :return: An iterable. Expected to be directly used in a for.
         """
         try:
@@ -158,7 +160,8 @@ class ProgressBar(object):
                 yield item
                 self.update()
         finally:
-            self.end()
+            if finish_at_end:
+                self.end()
 
 
 if __name__ == "__main__":

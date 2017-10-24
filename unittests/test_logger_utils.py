@@ -14,31 +14,31 @@ class TestLoggerUtils(unittest.TestCase):
         logger_utils.reset()
 
     def test_one(self):
-        with LogCapture() as l:
+        with LogCapture() as lc:
             logger_utils.warn_once(logger, "a log warning")
-            log_checker.assert_logs_contains_once("WARNING", l.records,
+            log_checker.assert_logs_contains_once("WARNING", lc.records,
                                                   "a log warning")
 
     def test_two(self):
-        with LogCapture() as l:
+        with LogCapture() as lc:
             logger_utils.warn_once(logger, "a log warning")
             logger_utils.warn_once(logger, "another log warning")
-            log_checker.assert_logs_contains_once("WARNING", l.records,
+            log_checker.assert_logs_contains_once("WARNING", lc.records,
                                                   "a log warning")
-            log_checker.assert_logs_contains_once("WARNING", l.records,
+            log_checker.assert_logs_contains_once("WARNING", lc.records,
                                                   "another log warning")
 
     def test_twice(self):
-        with LogCapture() as l:
+        with LogCapture() as lc:
             logger_utils.warn_once(logger, "a log warning")
             logger_utils.warn_once(logger, "a log warning")
-            log_checker.assert_logs_contains_once("WARNING", l.records,
+            log_checker.assert_logs_contains_once("WARNING", lc.records,
                                                   "a log warning")
 
     def test_multiple(self):
-        with LogCapture() as l:
+        with LogCapture() as lc:
             logger_utils.warn_once(logger, "a log warning")
             logger_utils.warn_once(logger, "another log warning")
             logger_utils.warn_once(logger, "a log warning")
-            log_checker.assert_logs_contains_once("WARNING", l.records,
+            log_checker.assert_logs_contains_once("WARNING", lc.records,
                                                   "a log warning")

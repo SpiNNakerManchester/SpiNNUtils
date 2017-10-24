@@ -176,7 +176,7 @@ def test_None_machine_spec_file(tmpdir, default_config):
 
 def test_intermediate_use(tmpdir, default_config, mach_spec):
     with tmpdir.as_cwd():
-        with LogCapture() as l:
+        with LogCapture() as lc:
             f = tmpdir.join(CFGFILE)
             f.write(default_config + "\n[Machine]\nmachine_spec_file=" +
                     mach_spec + "\n")
@@ -188,7 +188,7 @@ def test_intermediate_use(tmpdir, default_config, mach_spec):
             assert config.options("Machine") == ["machinename", "version"]
             assert config.get("Machine", "MachineName") == "foo"
             assert config.getint("Machine", "VeRsIoN") == 5
-            log_checker.assert_logs_info_contains(l.records, CFGFILE)
+            log_checker.assert_logs_info_contains(lc.records, CFGFILE)
 
 
 def test_advanced_use(tmpdir, default_config):

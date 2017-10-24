@@ -49,10 +49,10 @@ def test_ordered_ness():
     o.add(90)
     assert len(o) == 5
     assert list(o) == [12, 78, 56, 34, 90]
-    l = []
+    result = []
     for item in o:
-        l.append(item)
-    assert l == [12, 78, 56, 34, 90]
+        result.append(item)
+    assert result == [12, 78, 56, 34, 90]
 
 
 def test_containment():

@@ -33,24 +33,8 @@ viewkeys is supported but as keys may not changes makes little sense.
 However a slice by id is a view so items() and values() methods  
 will return the latest results even if changes after the slice was created.
 
+See AbstractDict.py for extra methods that the whole dictionary and view support
+These include:
+
 No Numerical or comparision operators are currently supported.
 
-=====
-mixed
-
-__len__
-__getitem__
-__setitem__
-
-__iter__
-__contains__
-
-
-mapping
-setdefault(),  copy(), and update()
-__missing__
-
-list
-append(), count(), index(), extend(), insert(), reverse() and sort()
-__getslice__()
-__setslice__

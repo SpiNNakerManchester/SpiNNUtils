@@ -40,8 +40,8 @@ def test_ranges_by_key():
 def test_iter_values():
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1[4]
-    aware = rd1.iter_all_values(key="a", fast = False)
-    fast = rd1.iter_all_values(key="a", fast = True)
+    aware = rd1.iter_all_values(key="a", update_save = True)
+    fast = rd1.iter_all_values(key="a", update_save = False)
     assert ["alpha", "alpha", "alpha", "alpha", "alpha", "alpha", "alpha",
             "alpha", "alpha", "alpha"] == list(fast)
     single1["a"] = "Foo"
@@ -50,8 +50,8 @@ def test_iter_values():
 
 def test_iter_values_keys():
     rd1 = RangeDictionary(10, defaults)
-    aware = rd1.iter_all_values(key=("a", "b"), fast = False)
-    fast = rd1.iter_all_values(key=("b", "a"), fast = True)
+    aware = rd1.iter_all_values(key=("a", "b"), update_save = True)
+    fast = rd1.iter_all_values(key=("b", "a"), update_save = False)
     assert [{'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
             {'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
             {'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},

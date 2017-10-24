@@ -20,7 +20,7 @@ class _SingleView(AbstractView):
     def get_value(self, key):
         return self._range_dict.get_list(key).get_value_by_id(id=self._id)
 
-    def iter_all_values(self, key, fast=True):
+    def iter_all_values(self, key, update_save=False):
         if isinstance(key, str):
             yield self._range_dict.get_list(key).get_value_by_id(id=self._id)
         else:

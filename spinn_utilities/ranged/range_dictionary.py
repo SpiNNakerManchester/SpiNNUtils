@@ -78,36 +78,37 @@ class RangeDictionary(AbstractDict):
     def get_list(self, key):
         return self._value_lists[key]
 
-    def _aware_iter(self, key, ids):
+    def update_save_iter_all_values(self, key, ids):
         for id in ids:
             yield self.get_values_by_id(key=key, id=id)
 
-    def iter_all_values(self, key=None, fast=True):
+    def iter_all_values(self, key=None, update_save=True):
         if isinstance(key, str):
-            if fast:
-                return self._value_lists[key].__iter__()
-            else:
+            if update_save:
                 return self._value_lists[key].iter()
-        else:
-            if fast:
-                return self._values_from_ranges(self.iter_ranges(key))
             else:
-                return self._aware_iter(key, range(self._size))
+                return self._value_lists[key].__iter__()
+        else:
+            if update_save:
+                return self.update_save_iter_all_values(key, range(self._size))
+            else:
+                return self._values_from_ranges(self.iter_ranges(key))
 
     def iter_values_by_slice(
-            self, slice_start, slice_stop, key=None, fast=True):
-        if fast:
+            self, slice_start, slice_stop, key=None, update_save=False):
+        if update_save:
+            return self.update_save_iter_all_values(
+                key, range(slice_start, slice_stop))
+        else:
             return self._values_from_ranges(self.iter_ranges_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop, key=key))
-        else:
-            return self._aware_iter(key, range(slice_start, slice_stop))
 
-    def iter_values_by_ids(self, ids, key=None, fast=True):
-        if fast:
+    def iter_values_by_ids(self, ids, key=None, update_save=True):
+        if update_save:
+            return self.update_save_iter_all_values(key, ids)
+        else:
             return self._values_from_ranges(self.iter_ranges_by_ids(
                 key=key, ids=ids))
-        else:
-            return self._aware_iter(key, ids)
 
     def _values_from_ranges(self, ranges):
         for (start, stop, value) in ranges:

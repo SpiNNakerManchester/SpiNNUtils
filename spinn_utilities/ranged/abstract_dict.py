@@ -10,10 +10,6 @@ class AbstractDict(object):
     def get_value(self, key):
         pass
 
-    #@abstractmethod
-    #def iter_values(self, key, fast=True):
-    #    pass
-
     @abstractmethod
     def keys(self):
         pass
@@ -27,7 +23,7 @@ class AbstractDict(object):
         pass
 
     @abstractmethod
-    def iter_all_values(self, key, fast=True):
+    def iter_all_values(self, key, update_save=True):
         pass
 
     @abstractmethod

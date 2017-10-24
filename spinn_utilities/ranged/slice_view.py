@@ -21,22 +21,22 @@ class _SliceView(AbstractView):
         return self._range_dict.get_list(key).get_value_by_slice(
             slice_start=self._start, slice_stop=self._stop)
 
-    def _aware_iter(self, key):
+    def update_save_iter_all_values(self, key):
         ranged_list = self._range_dict.get_list(key)
         for id in self.ids():
             yield ranged_list.get_value_by_id(id=id)
 
-    def iter_all_values(self, key, fast=True):
+    def iter_all_values(self, key, update_save=False):
         if isinstance(key, str):
-            if fast:
+            if update_save:
+                return self.update_save_iter_all_values(key)
+            else:
                 return self._range_dict.get_list(key).iter_by_slice(
                     slice_start=self._start, slice_stop=self._stop)
-            else:
-                return self._aware_iter(key)
         else:
             return self._range_dict.iter_values_by_slice(
                 key=key, slice_start=self._start, slice_stop=self._stop,
-                fast=fast)
+                update_save=update_save)
 
     def set_value(self, key, value):
         self._range_dict.get_list(key).set_value_by_slice(

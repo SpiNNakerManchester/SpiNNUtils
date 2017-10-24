@@ -18,13 +18,14 @@ class _SingleView(AbstractView):
         return [self._id]
 
     def get_value(self, key):
-        return self._range_dict.get_value_by_id(key=key, id=self._id)
+        return self._range_dict.get_list(key).get_value_by_id(id=self._id)
 
     def iter_all_values(self, key, fast=True):
-        yield self._range_dict.get_value_by_id(key=key, id=self._id)
+        yield self._range_dict.get_list(key).get_value_by_id(id=self._id)
 
     def set_value(self, key, value):
-        return self._range_dict.set_value_by_id(key=key, value=value,
-                                                id=self._id)
+        return self._range_dict.get_list(key).set_value_by_id(
+            value=value, id=self._id)
+
     def iter_ranges(self, key):
         return self._range_dict.iter_ranges_by_id(key=key, id=self._id)

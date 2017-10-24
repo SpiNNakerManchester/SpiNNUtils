@@ -64,12 +64,8 @@ class RangeDictionary(AbstractDict):
         else:
             return self._value_lists[key].iter()
 
-    def get_value_by_id(self, key, id):
-        return self._value_lists[key].get_value_by_id(id=id)
-
-    def get_value_by_slice(self, key, start, stop):
-        return self._value_lists[key].get_value_by_slice(
-            slice_start=start, slice_stop=stop)
+    def get_list(self, key):
+        return self._value_lists[key]
 
     def iter_values_by_slice(self, key, start, stop):
         return self._value_lists[key].slice_iter(
@@ -77,9 +73,6 @@ class RangeDictionary(AbstractDict):
 
     def iter_values_by_ids(self, key, ids):
         return self._value_lists[key].iter_by_ids(ids=ids)
-
-    def get_value_by_ids(self, key, ids):
-        return self._value_lists[key].get_value_by_ids(ids=ids)
 
     def set_value(self, key, value):
         self._value_lists[key].set_value(value)
@@ -92,17 +85,6 @@ class RangeDictionary(AbstractDict):
             raise KeyError("Settting of a slice/ids not supported")
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
-
-    def set_value_by_id(self, key, id, value):
-        self._value_lists[key].set_value_by_id(id=id, value=value)
-
-    def set_value_by_slice(self, key, slice_start, slice_stop, value):
-        return self._value_lists[key].set_value_by_slice(
-            slice_start=slice_start, slice_stop=slice_stop, value=value)
-
-    def set_value_by_ids(self, key, ids, value):
-        for id in ids:
-            self._value_lists[key].set_value_by_id(id=id, value=value)
 
     def items(self):
         results = []
@@ -169,7 +151,7 @@ class RangeDictionary(AbstractDict):
 
     def iter_ranges(self, key=None):
         if isinstance(key, str):
-            return self._value_lists[key].get_ranges()
+            return self._value_lists[key].iter_ranges()
         if key is None:
             key = self.keys()
         ranges = dict()

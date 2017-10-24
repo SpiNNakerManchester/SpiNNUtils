@@ -17,10 +17,15 @@ class _IdsView(AbstractView):
         return list(self._ids)
 
     def get_value(self, key):
-        return self._range_dict.get_value_by_ids(key, self._ids)
+        return self._range_dict.get_list(key).get_value_by_ids(self._ids)
 
     def set_value(self, key, value):
-        self._range_dict.set_value_by_ids(key=key, ids=self._ids, value=value)
+        ranged_list = self._range_dict.get_list(key)
+        for id in self._ids:
+            ranged_list.set_value_by_id(id=id, value=value)
+
+    def set_value_by_ids(self, key, ids, value):
+            self._value_lists[key].set_value_hhby_id(id=id, value=value)
 
     def iter_all_values(self, key, fast=True):
         return self._range_dict.iter_values_by_ids(key=key, ids=self._ids)

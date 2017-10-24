@@ -10,12 +10,13 @@ slice_view = rd[4:6]
 def test_ids():
     assert [4, 5] == slice_view.ids()
 
+
 def test_value():
     assert "alpha" == slice_view["a"]
     assert "bravo" == slice_view["b"]
     assert "a" in slice_view
     assert "c" not in slice_view
-    assert slice_view.has_key("b")
+    assert slice_view.has_key("b")  # noqa: W601
     assert {"a", "b"} == set(slice_view.keys())
 
 
@@ -42,12 +43,12 @@ def test_set_range_direct():
 def test_iter_values():
     rd1 = RangeDictionary(10, defaults)
     slice_view1 = rd1[4:7]
-    aware = slice_view1.iter_all_values("a", update_save= False)
-    fast = slice_view1.iter_all_values("a", update_save= True)
-    assert ["alpha","alpha","alpha"] == list(fast)
+    aware = slice_view1.iter_all_values("a", update_save=False)
+    fast = slice_view1.iter_all_values("a", update_save=True)
+    assert ["alpha", "alpha", "alpha"] == list(fast)
     rd1["a"] = "Foo"
     assert rd1["a"] == "Foo"
-    assert ["Foo","Foo","Foo"] == list(aware)
+    assert ["Foo", "Foo", "Foo"] == list(aware)
 
 
 def test_ranges_by_key():
@@ -56,26 +57,25 @@ def test_ranges_by_key():
     assert [(4, 7, "alpha")] == slice_view1.get_ranges(key="a")
     slice_view1["a"] = "foo"
     assert [(0, 4, "alpha"), (4, 7, "foo"), (7, 10, "alpha")] \
-           == rd1.get_ranges(key="a")
+        == rd1.get_ranges(key="a")
     assert [(4, 7, "foo")] == slice_view1.get_ranges(key="a")
     rd1[5]["a"] = "bar"
-    y = slice_view1.get_ranges(key="a")
     assert [(4, 5, "foo"), (5, 6, "bar"), (6, 7, "foo")] \
-           == slice_view1.get_ranges(key="a")
+        == slice_view1.get_ranges(key="a")
+
 
 def test_ranges_all():
     rd1 = RangeDictionary(10, defaults)
     slice_view1 = rd1[4:7]
-    assert [(4, 7, {"a":"alpha", "b":"bravo"})] == slice_view1.get_ranges()
+    assert [(4, 7, {"a": "alpha", "b": "bravo"})] == slice_view1.get_ranges()
     slice_view1["a"] = "foo"
-    assert [(0, 4, {"a":"alpha", "b":"bravo"}),
-            (4, 7, {"a":"foo", "b":"bravo"}),
-            (7, 10, {"a":"alpha", "b":"bravo"})] \
-           == rd1.get_ranges()
-    assert [(4, 7, {"a":"foo", "b":"bravo"})] == slice_view1.get_ranges()
+    assert [(0, 4, {"a": "alpha", "b": "bravo"}),
+            (4, 7, {"a": "foo", "b": "bravo"}),
+            (7, 10, {"a": "alpha", "b": "bravo"})] \
+        == rd1.get_ranges()
+    assert [(4, 7, {"a": "foo", "b": "bravo"})] == slice_view1.get_ranges()
     rd1[5]["a"] = "bar"
-    y = slice_view1.get_ranges(key="a")
-    assert [(4, 5, {"a":"foo", "b":"bravo"}),
-            (5, 6, {"a":"bar", "b":"bravo"}),
-            (6, 7, {"a":"foo", "b":"bravo"})] \
-           == slice_view1.get_ranges()
+    assert [(4, 5, {"a": "foo", "b": "bravo"}),
+            (5, 6, {"a": "bar", "b": "bravo"}),
+            (6, 7, {"a": "foo", "b": "bravo"})] \
+        == slice_view1.get_ranges()

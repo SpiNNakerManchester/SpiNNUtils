@@ -4,8 +4,6 @@ from spinn_utilities.ranged.slice_view import _SliceView
 from spinn_utilities.ranged.ids_view import _IdsView
 from spinn_utilities.ranged.abstract_dict import AbstractDict
 
-import copy
-
 
 class RangeDictionary(AbstractDict):
 
@@ -60,7 +58,7 @@ class RangeDictionary(AbstractDict):
             return self._value_lists[key].get_value_all()
         if key is None:
             key = self.keys()
-        results =  dict()
+        results = dict()
         for a_key in key:
             results[a_key] = self._value_lists[a_key].get_value_all()
         return results
@@ -70,7 +68,7 @@ class RangeDictionary(AbstractDict):
             return self._value_lists[key].get_value_by_id(id)
         if key is None:
             key = self.keys()
-        results =  dict()
+        results = dict()
         for a_key in key:
             results[a_key] = self._value_lists[a_key].get_value_by_id(id)
         return results
@@ -151,7 +149,7 @@ class RangeDictionary(AbstractDict):
         return range(self._size)
 
     def has_key(self, key):
-        return self._value_lists.has_key(key)
+        return key in self._value_lists
 
     def keys(self):
         return self._value_lists.keys()
@@ -222,7 +220,7 @@ class RangeDictionary(AbstractDict):
                 slice_start=slice_start, slice_stop=slice_stop)
         return self._merge_ranges(ranges)
 
-    def iter_ranges_by_ids(self, ids, key = None):
+    def iter_ranges_by_ids(self, ids, key=None):
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_ids(ids=ids)
         if key is None:
@@ -232,12 +230,3 @@ class RangeDictionary(AbstractDict):
             ranges[a_key] = self._value_lists[a_key].\
                 iter_ranges_by_ids(ids=ids)
         return self._merge_ranges(ranges)
-
-if __name__ == "__main__":
-    defaults = {"a": "alpha", "b": "bravo"}
-    rd = RangeDictionary(10, defaults)
-    rd[6:]["a"] = "foo"
-    rd[:4]["b"] = "bar"
-    for range in rd.iter_ranges_by_ids(ids=(1,2,4,5)):
-        print range
-

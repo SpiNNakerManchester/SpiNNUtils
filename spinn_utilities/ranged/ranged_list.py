@@ -1,4 +1,3 @@
-from spinn_utilities.ranged.list_iterator import ListIterator
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
 
@@ -28,7 +27,7 @@ class RangedList(object):
         self._default = default
         self._ranges = []
         self._ranges.append((0, size, default))
-        self._key=key
+        self._key = key
 
     def __len__(self):
         return self._size
@@ -52,8 +51,8 @@ class RangedList(object):
             raise TypeError("Invalid argument type {}.".format(type(id)))
 
     def _check_slice(self, slice_start, slice_stop):
-        if (slice_start > slice_stop and not slice_start is None
-                and not slice_stop is None):
+        if (slice_start > slice_stop and slice_start is not None
+                and slice_stop is not None):
             if not isinstance(slice_start, int):
                 raise TypeError("Invalid argument type {}."
                                 "".format(type(slice_start)))
@@ -63,14 +62,14 @@ class RangedList(object):
             raise IndexError(
                 "The range_start {0!d} is after the range stop {0!d}."
                 "".format(slice_start, slice_stop))
-        if slice_start < 0 and not slice_start is None:
+        if slice_start < 0 and slice_start is not None:
             if isinstance(slice_start, int):
                 raise IndexError(
                     "The range_start {0!d} is out of range."
                     "".format(slice_start))
             raise TypeError("Invalid argument type {}."
                             "".format(type(slice_start)))
-        if slice_stop > len(self) and not slice_stop is None:
+        if slice_stop > len(self) and slice_stop is not None:
             if isinstance(slice_stop, int):
                 raise IndexError(
                     "The range_stop {0!d} is out of range."
@@ -139,7 +138,7 @@ class RangedList(object):
                 if value == old_value:
                     return  # alreay set as needed so do nothing
                 self._ranges[index] = (id, id + 1, value)
-                if id +1 < stop:  # Need a new range after the key
+                if id + 1 < stop:  # Need a new range after the key
                     self._ranges.insert(index + 1, (id + 1, stop, old_value))
                 if id > start:   # Need a new range before the key
                     self._ranges.insert(index, (start, id, old_value))
@@ -175,7 +174,7 @@ class RangedList(object):
         self._check_slice(slice_start, slice_stop)
         index = 0
         # Skip ranges before set range
-        while index < len(self._ranges) -1 and \
+        while index < len(self._ranges) - 1 and \
                 (self._ranges[0][1] <= slice_start):
             index += 1
 
@@ -318,9 +317,9 @@ class RangedList(object):
             # check if pointer needs to move on
             while id >= self._ranges[range_pointer][1]:
                 range_pointer += 1
-            if not result is None:
+            if result is not None:
                 if (result[1] == id and
-                            result[2] == self._ranges[range_pointer][2]):
+                        result[2] == self._ranges[range_pointer][2]):
                     result = (result[0], id + 1, result[2])
                     continue
                 yield result
@@ -329,4 +328,3 @@ class RangedList(object):
 
     def setdefault(self, default):
         self._default = default
-

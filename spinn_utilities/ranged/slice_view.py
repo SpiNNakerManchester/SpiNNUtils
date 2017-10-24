@@ -45,4 +45,3 @@ class _SliceView(AbstractView):
     def iter_ranges(self, key):
         return self._range_dict.iter_ranges_by_slice(
             key=key, slice_start=self._start, slice_stop=self._stop)
-

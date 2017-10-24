@@ -1,7 +1,7 @@
 from six import add_metaclass
 
-from spinn_utilities.abstract_base import AbstractBase, abstractproperty, \
-    abstractmethod
+from spinn_utilities.abstract_base import AbstractBase, abstractmethod
+
 
 @add_metaclass(AbstractBase)
 class AbstractDict(object):
@@ -67,4 +67,3 @@ class AbstractDict(object):
 
     def get_ranges(self, key=None):
         return list(self.iter_ranges(key=key))
-

@@ -163,7 +163,7 @@ def test_use_two_default(tmpdir, default_config, not_there):
 
 def test_None_machine_spec_file(tmpdir, default_config):
     with tmpdir.as_cwd():
-        with LogCapture() as l:
+        with LogCapture() as lc:
             f = tmpdir.join(CFGFILE)
             f.write(default_config + "\n[Machine]\nmachine_spec_file=None\n")
             config = conf_loader.load_config(CFGFILE, [])
@@ -171,12 +171,12 @@ def test_None_machine_spec_file(tmpdir, default_config):
             assert config.sections() == ["sect", "Machine"]
             assert config.options("sect") == ["foobob"]
             assert config.get("sect", "foobob") == "bar"
-            log_checker.assert_logs_info_not_contains(l.records, "None")
+            log_checker.assert_logs_info_not_contains(lc.records, "None")
 
 
 def test_intermediate_use(tmpdir, default_config, mach_spec):
     with tmpdir.as_cwd():
-        with LogCapture() as l:
+        with LogCapture() as lc:
             f = tmpdir.join(CFGFILE)
             f.write(default_config + "\n[Machine]\nmachine_spec_file=" +
                     mach_spec + "\n")
@@ -188,7 +188,7 @@ def test_intermediate_use(tmpdir, default_config, mach_spec):
             assert config.options("Machine") == ["machinename", "version"]
             assert config.get("Machine", "MachineName") == "foo"
             assert config.getint("Machine", "VeRsIoN") == 5
-            log_checker.assert_logs_info_contains(l.records, CFGFILE)
+            log_checker.assert_logs_info_contains(lc.records, CFGFILE)
 
 
 def test_advanced_use(tmpdir, default_config):

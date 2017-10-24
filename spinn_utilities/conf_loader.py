@@ -189,7 +189,7 @@ def outdated_config(cfg_file, validation_config, default_configs):
                     print "\tThese can be safely removed"
         print "Option names are case and underscore insenitive. " \
               "So may show in your cfg file with capitals or underscores."
-    except:
+    except Exception:
         print "Unexpected error:", sys.exc_info()[0]
     msg = "Config file {} is outdated.".format(cfg_file)
     return UnexpectedConfigException(msg)

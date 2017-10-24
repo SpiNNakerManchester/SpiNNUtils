@@ -66,7 +66,7 @@ def load_modules(
             if gather_errors:
                 try:
                     __import__(module)
-                except:
+                except Exception:
                     errors.append((module, sys.exc_info()))
             else:
                 __import__(module)

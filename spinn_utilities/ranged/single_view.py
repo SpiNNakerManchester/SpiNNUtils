@@ -26,3 +26,5 @@ class _SingleView(AbstractView):
     def set_value(self, key, value):
         return self._range_dict.set_value_by_id(key=key, value=value,
                                                 id=self._id)
+    def iter_ranges(self, key):
+        return self._range_dict.iter_ranges_by_id(key=key, id=self._id)

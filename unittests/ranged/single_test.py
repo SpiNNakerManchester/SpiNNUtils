@@ -48,3 +48,23 @@ def test_iter_values():
     rd1["a"] = "Foo"
     assert rd1["a"] == "Foo"
     assert ["Foo"] == list(aware)
+
+def test_ranges_by_key():
+    rd1 = RangeDictionary(10, defaults)
+    single1 = rd1[4]
+    assert [(4, 5, "alpha")] == single1.get_ranges(key="a")
+    single1["a"] = "foo"
+    assert [(0,4,"alpha"),(4,5,"foo"),(5,10,"alpha")] == \
+           rd1.get_ranges(key="a")
+    assert [(4,5,"foo")] == single1.get_ranges(key="a")
+
+def test_ranges_all():
+    rd1 = RangeDictionary(10, defaults)
+    single1 = rd1[4]
+    assert [(4, 5, {"a":"alpha", "b":"bravo"})] == single1.get_ranges()
+    single1["a"] = "foo"
+    assert [(0, 4, {"a":"alpha", "b":"bravo"}),
+            (4, 5,{"a":"foo", "b":"bravo"}),
+            (5, 10, {"a":"alpha", "b":"bravo"})] == rd1.get_ranges()
+    assert [(4, 5,{"a":"foo", "b":"bravo"})] == \
+           single1.get_ranges()

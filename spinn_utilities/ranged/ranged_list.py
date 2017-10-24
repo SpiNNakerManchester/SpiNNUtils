@@ -39,7 +39,7 @@ class RangedList(object):
                                           self._ranges[1][2])
         return self._ranges[0][2]
 
-    def get_value_by_id(self, id):
+    def _check_id(self, id):
         if id < 0:
             if isinstance(id, int):
                 raise IndexError(
@@ -50,23 +50,27 @@ class RangedList(object):
                 raise IndexError(
                     "The index {0!d} is out of range.".format(id))
             raise TypeError("Invalid argument type {}.".format(type(id)))
-        for (start, stop, value) in self._ranges:
-            if id < stop:
-                return value
 
-    def get_value_by_slice(self, slice_start, slice_stop):
-        if slice_start > slice_stop:
-            temp = slice_start
-            slice_start = slice_stop
-            slice_stop = slice_start
-        if slice_start < 0:
+    def _check_slice(self, slice_start, slice_stop):
+        if (slice_start > slice_stop and not slice_start is None
+                and not slice_stop is None):
+            if not isinstance(slice_start, int):
+                raise TypeError("Invalid argument type {}."
+                                "".format(type(slice_start)))
+            if not isinstance(slice_stop, int):
+                raise TypeError("Invalid argument type {}."
+                                "".format(type(slice_start)))
+            raise IndexError(
+                "The range_start {0!d} is after the range stop {0!d}."
+                "".format(slice_start, slice_stop))
+        if slice_start < 0 and not slice_start is None:
             if isinstance(slice_start, int):
                 raise IndexError(
                     "The range_start {0!d} is out of range."
                     "".format(slice_start))
             raise TypeError("Invalid argument type {}."
                             "".format(type(slice_start)))
-        if slice_stop >= len(self):
+        if slice_stop > len(self) and not slice_stop is None:
             if isinstance(slice_stop, int):
                 raise IndexError(
                     "The range_stop {0!d} is out of range."
@@ -74,6 +78,14 @@ class RangedList(object):
             raise TypeError("Invalid argument type {}."
                             "".format(type(slice_stop)))
 
+    def get_value_by_id(self, id):
+        self._check_id(id)
+        for (start, stop, value) in self._ranges:
+            if id < stop:
+                return value
+
+    def get_value_by_slice(self, slice_start, slice_stop):
+        self._check_slice(slice_start, slice_stop)
         result = None
         for (_start, _stop, _value) in self._ranges:
             if slice_start < _stop:
@@ -121,12 +133,7 @@ class RangedList(object):
         :param value:  The value to save
         :type value: anything
         """
-        if id < 0:
-            raise IndexError(
-                "The index {0!d} is out of range.".format(id))
-        if id >= len(self):
-            raise IndexError(
-                "The index {0!d} is out of range.".format(id))
+        self._check_id(id)
         for index, (start, stop, old_value) in enumerate(self._ranges):
             if id < stop:
                 if value == old_value:
@@ -165,24 +172,7 @@ class RangedList(object):
         :param value:  The value to save
         :type value: anything
         """
-        if slice_start > slice_stop:
-            temp = slice_start
-            slice_start = slice_stop
-            slice_stop = slice_start
-        if slice_start < 0:
-            if isinstance(slice_start, int):
-                raise IndexError(
-                    "The slice_start {0!d} is out of range."
-                    "".format(slice_start))
-            raise TypeError("Invalid argument type {}."
-                            "".format(type(slice_start)))
-        if slice_stop >= len(self):
-            if isinstance(slice_stop, int):
-                raise IndexError(
-                    "The slice_stop {0!d} is out of range."
-                    "".format(slice_stop))
-            raise TypeError("Invalid argument type {}."
-                            "".format(type(slice_stop)))
+        self._check_slice(slice_start, slice_stop)
         index = 0
         # Skip ranges before set range
         while index < len(self._ranges) -1 and \
@@ -294,8 +284,48 @@ class RangedList(object):
                 return start
         raise ValueError("{} is not in list".format(x))
 
-    def ranges(self):
+    def iter_ranges(self):
+        return iter(self._ranges)
+
+    def get_ranges(self):
         return list(self._ranges)
+
+    def iter_ranges_by_id(self, id):
+        self._check_id(id)
+        for (start, stop, value) in self._ranges:
+            if id < stop:
+                yield (id, id + 1, value)
+                break
+
+    def iter_ranges_by_slice(self, slice_start, slice_stop):
+        self._check_slice(slice_start, slice_stop)
+        for (_start, _stop, value) in self._ranges:
+            if slice_start < _stop:
+                yield (max(_start, slice_start), min(_stop, slice_stop),
+                       value)
+                if slice_stop <= _stop:
+                    break
+
+    def iter_ranges_by_ids(self, ids):
+        range_pointer = 0
+        result = None
+        for id in ids:
+            # check if ranges reset so too far ahead
+            if id < self._ranges[range_pointer][0]:
+                range_pointer = 0
+                while id > self._ranges[range_pointer][0]:
+                    range_pointer += 1
+            # check if pointer needs to move on
+            while id >= self._ranges[range_pointer][1]:
+                range_pointer += 1
+            if not result is None:
+                if (result[1] == id and
+                            result[2] == self._ranges[range_pointer][2]):
+                    result = (result[0], id + 1, result[2])
+                    continue
+                yield result
+            result = (id, id + 1, self._ranges[range_pointer][2])
+        yield result
 
     def setdefault(self, default):
         self._default = default

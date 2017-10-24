@@ -31,11 +31,11 @@ def test_tuple():
 
 def test_unsorted_tuple():
     view = rd[2, 7, 3]
-    assert [2, 3, 7] == view.ids()
+    assert [2, 7, 3] == view.ids()
 
 
 def test_list():
-    l = [2, 7, 3]
+    l = [2, 3, 7]
     view = rd[l]
     assert [2, 3, 7] == view.ids()
 
@@ -50,6 +50,6 @@ def test_double_slice():
 def test_double_list():
     l = [2, 7, 1, 3, 5, 8]
     view1 = rd[l]
-    assert [1, 2, 3, 5, 7, 8] == view1.ids()
+    assert [2, 7, 1, 3, 5, 8] == view1.ids()
     view2 = view1[2, 3, 5]
-    assert [3, 5, 8] == view2.ids()
+    assert [1, 3, 8] == view2.ids()

@@ -34,3 +34,6 @@ def test_set_range_direct():
     rd1["a"] = "Foo"
     assert "Foo" == rd1["a"]
 
+def test_ranges_by_key():
+    rd1 = RangeDictionary(10, defaults)
+    assert [(0,10,"alpha")] == rd1.get_ranges(key="a")

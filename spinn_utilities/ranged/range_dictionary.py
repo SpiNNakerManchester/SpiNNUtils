@@ -3,8 +3,8 @@ from spinn_utilities.ranged.single_view import _SingleView
 from spinn_utilities.ranged.slice_view import _SliceView
 from spinn_utilities.ranged.ids_view import _IdsView
 from spinn_utilities.ranged.abstract_dict import AbstractDict
-from spinn_utilities.ranged.multiple_values_exception import \
-    MultipleValuesException
+
+import copy
 
 
 class RangeDictionary(AbstractDict):
@@ -19,11 +19,19 @@ class RangeDictionary(AbstractDict):
         if isinstance(key, int):
             return _SingleView(range_dict=self, id=key)
         if isinstance(key, slice):
-            if key.start == key.stop:
-                return _SingleView(range_dict=self, id=key.start)
+            if key.start is None:
+                slice_start = 0
+            else:
+                slice_start = key.start
+            if key.stop is None:
+                slice_stop = self._size
+            else:
+                slice_stop = key.stop
+            if slice_start == slice_stop:
+                return _SingleView(range_dict=self, id=slice_start)
             elif key.step is None or key.step == 1:
-                return _SliceView(range_dict=self, start=key.start,
-                                  stop=key.stop)
+                return _SliceView(range_dict=self, start=slice_start,
+                                  stop=slice_stop)
             else:
                 key = range(self._size)[key]
         if not all(isinstance(x, int) for x in key):
@@ -31,9 +39,11 @@ class RangeDictionary(AbstractDict):
         if len(key) == 1:
             return _SingleView(range_dict=self, id=key[0])
         key = list(key)
-        key.sort()
         if len(key) == key[-1] - key[0] + 1:
-            return _SliceView(range_dict=self, start=key[0], stop=key[-1] + 1)
+            in_order = sorted(key)
+            if in_order == key:
+                return _SliceView(
+                    range_dict=self, start=key[0], stop=key[-1] + 1)
         else:
             return _IdsView(range_dict=self, ids=key)
 
@@ -86,9 +96,9 @@ class RangeDictionary(AbstractDict):
     def set_value_by_id(self, key, id, value):
         self._value_lists[key].set_value_by_id(id=id, value=value)
 
-    def set_value_by_slice(self, key, start, stop, value):
+    def set_value_by_slice(self, key, slice_start, slice_stop, value):
         return self._value_lists[key].set_value_by_slice(
-            slice_start=start, slice_stop=stop, value=value)
+            slice_start=slice_start, slice_stop=slice_stop, value=value)
 
     def set_value_by_ids(self, key, ids, value):
         for id in ids:
@@ -131,3 +141,80 @@ class RangeDictionary(AbstractDict):
 
     def setdefault(self, key, default=None):
         return self._value_lists[key].setdefault(default)
+
+    def _merge_ranges(self, range_iters):
+        current = dict()
+        ranges = dict()
+        start = 0
+        stop = self._size
+        keys = range_iters.keys()
+        for key in keys:
+            ranges[key] = range_iters[key].next()
+            start = ranges[key][0]
+            current[key] = ranges[key][2]
+            stop = min(ranges[key][1], stop)
+        yield (start, stop, current)
+        while stop < self._size:
+            current = dict()
+            start = self._size
+            next_stop = self._size
+            for key in keys:
+                if ranges[key][1] == stop:
+                    ranges[key] = range_iters[key].next()
+                start = min(max(ranges[key][0], stop), start)
+                next_stop = min(ranges[key][1], next_stop)
+                current[key] = ranges[key][2]
+            stop = next_stop
+            yield (start, stop, current)
+
+    def iter_ranges(self, key=None):
+        if isinstance(key, str):
+            return self._value_lists[key].get_ranges()
+        if key is None:
+            key = self.keys()
+        ranges = dict()
+        for a_key in key:
+            ranges[a_key] = self._value_lists[a_key].iter_ranges()
+        return self._merge_ranges(ranges)
+
+    def iter_ranges_by_id(self, key=None, id=None):
+        if isinstance(key, str):
+            return self._value_lists[key].iter_ranges_by_id(id=id)
+        if key is None:
+            key = self.keys()
+        ranges = dict()
+        for a_key in key:
+            ranges[a_key] = self._value_lists[a_key].iter_ranges_by_id(id=id)
+        return self._merge_ranges(ranges)
+
+    def iter_ranges_by_slice(self, key, slice_start, slice_stop):
+        if isinstance(key, str):
+            return self._value_lists[key].iter_ranges_by_slice(
+                slice_start=slice_start, slice_stop=slice_stop)
+        if key is None:
+            key = self.keys()
+        ranges = dict()
+        for a_key in key:
+            ranges[a_key] = self._value_lists[a_key].iter_ranges_by_slice(
+                slice_start=slice_start, slice_stop=slice_stop)
+        return self._merge_ranges(ranges)
+
+    def iter_ranges_by_ids(self, ids, key = None):
+        if isinstance(key, str):
+            return self._value_lists[key].iter_ranges_by_ids(ids=ids)
+        if key is None:
+            key = self.keys()
+        ranges = dict()
+        for a_key in key:
+            ranges[a_key] = self._value_lists[a_key].\
+                iter_ranges_by_ids(ids=ids)
+        return self._merge_ranges(ranges)
+
+if __name__ == "__main__":
+    defaults = {"a": "alpha", "b": "bravo"}
+    rd = RangeDictionary(10, defaults)
+    rd[6:]["a"] = "foo"
+    rd[:4]["b"] = "bar"
+    for range in rd.iter_ranges_by_ids(ids=(1,2,4,5)):
+        print range
+

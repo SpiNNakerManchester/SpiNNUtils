@@ -24,3 +24,7 @@ class _IdsView(AbstractView):
 
     def iter_all_values(self, key, fast=True):
         return self._range_dict.iter_values_by_ids(key=key, ids=self._ids)
+
+    def iter_ranges(self, key):
+        return self._range_dict.iter_ranges_by_ids(key=key, ids=self._ids)
+

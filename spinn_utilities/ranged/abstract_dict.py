@@ -30,6 +30,10 @@ class AbstractDict(object):
     def iter_all_values(self, key, fast=True):
         pass
 
+    @abstractmethod
+    def iter_ranges(self, key):
+        pass
+
     def items(self):
         results = []
         for key in self.keys():
@@ -65,5 +69,6 @@ class AbstractDict(object):
     def iterkeys(self):
         return self.keys().iter()
 
-
+    def get_ranges(self, key=None):
+        return list(self.iter_ranges(key=key))
 

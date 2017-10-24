@@ -48,3 +48,33 @@ def test_iter_values():
     assert rd1["a"] == "Foo"
     assert ["Foo","Foo","Foo"] == list(aware)
 
+def test_ranges_by_key():
+    rd1 = RangeDictionary(10, defaults)
+    view = rd1[1, 2, 4, 5, 6, 7]
+    view["a"] = "foo"
+    assert [(0, 1, "alpha"), (1, 3, "foo"), (3, 4, "alpha"), (4, 8, "foo"),
+            (8, 10, "alpha")] == rd1.get_ranges(key="a")
+    assert [(1, 3, "foo"), (4, 8, "foo")] == view.get_ranges(key="a")
+    rd1[5]["a"] = "bar"
+    assert [(1, 3, "foo"), (4, 5, "foo"), (5, 6, "bar"), (6, 8, "foo")] \
+           == view.get_ranges(key="a")
+
+
+def test_ranges_by_all():
+    rd1 = RangeDictionary(10, defaults)
+    view = rd1[1, 2, 4, 5, 6, 7]
+    view["a"] = "foo"
+    assert [(0, 1, {"a":"alpha", "b":"bravo"}),
+            (1, 3, {"a":"foo", "b":"bravo"}),
+            (3, 4, {"a":"alpha", "b":"bravo"}),
+            (4, 8, {"a":"foo", "b":"bravo"}),
+            (8, 10, {"a":"alpha", "b":"bravo"})] == rd1.get_ranges()
+    temp = view.get_ranges()
+    assert [(1, 3, {"a":"foo", "b":"bravo"}),
+            (4, 8, {"a":"foo", "b":"bravo"})] == view.get_ranges()
+    rd1[5]["a"] = "bar"
+    assert [(1, 3, {"a":"foo", "b":"bravo"}),
+            (4, 5, {"a":"foo", "b":"bravo"}),
+            (5, 6, {"a":"bar", "b":"bravo"}),
+            (6, 8, {"a":"foo", "b":"bravo"})] \
+           == view.get_ranges()

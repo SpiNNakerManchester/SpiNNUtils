@@ -38,4 +38,3 @@ class AbstractView(AbstractDict):
 
     def keys(self):
         return self._range_dict.keys()
-

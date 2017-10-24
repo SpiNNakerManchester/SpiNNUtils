@@ -11,6 +11,8 @@ def test_basic_use():
     t = Timer()
     # Just check that these things don't throw
     t.start_timing()
+    with t:
+        sleep(0.1)
     assert t.take_sample() is not None
     assert t.take_sample().total_seconds() > 0
 

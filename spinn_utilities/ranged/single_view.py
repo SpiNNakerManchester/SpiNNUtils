@@ -21,7 +21,10 @@ class _SingleView(AbstractView):
         return self._range_dict.get_list(key).get_value_by_id(id=self._id)
 
     def iter_all_values(self, key, fast=True):
-        yield self._range_dict.get_list(key).get_value_by_id(id=self._id)
+        if isinstance(key, str):
+            yield self._range_dict.get_list(key).get_value_by_id(id=self._id)
+        else:
+            yield self._range_dict.get_values_by_id(id)
 
     def set_value(self, key, value):
         return self._range_dict.get_list(key).set_value_by_id(

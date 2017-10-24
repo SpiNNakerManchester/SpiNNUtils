@@ -257,7 +257,7 @@ class RangedList(object):
             for x in range(stop - start):
                 yield value
 
-    def slice_iter(self, slice_start, slice_stop):
+    def iter_by_slice(self, slice_start, slice_stop):
         for (start, stop, value) in self._ranges:
             if slice_start < stop and slice_stop >= start:
                 first = max(start, slice_start)

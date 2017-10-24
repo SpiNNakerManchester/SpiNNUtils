@@ -27,10 +27,16 @@ class _SliceView(AbstractView):
             yield ranged_list.get_value_by_id(id=id)
 
     def iter_all_values(self, key, fast=True):
-        if fast:
+        if isinstance(key, str):
+            if fast:
+                return self._range_dict.get_list(key).iter_by_slice(
+                    slice_start=self._start, slice_stop=self._stop)
+            else:
+                return self._aware_iter(key)
+        else:
             return self._range_dict.iter_values_by_slice(
-                key=key, start=self._start, stop=self._stop)
-        return self._aware_iter(key)
+                key=key, slice_start=self._start, slice_stop=self._stop,
+                fast=fast)
 
     def set_value(self, key, value):
         self._range_dict.get_list(key).set_value_by_slice(

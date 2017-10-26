@@ -132,13 +132,16 @@ class RangedList(object):
 
          """
         self._check_slice(slice_start, slice_stop)
-        result = None
+        found_value = False
         for (_start, _stop, _value) in self._ranges:
             if slice_start < _stop:
-                if result is None:
+                if found_value:
+                    if result != _value:
+                        raise MultipleValuesException(
+                            self._key, result, _value)
+                else:
                     result = _value
-                elif result != _value:
-                    raise MultipleValuesException(self._key, result, _value)
+                    found_value = True
                 if slice_stop <= _stop:
                     return _value
 

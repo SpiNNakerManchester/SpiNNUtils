@@ -67,9 +67,9 @@ class AbstractDict(object):
         If the view is setup with ids out of numerical order the order used
         to create the view is maintained.
 
-        WARNING: If indexing into a view you are picking the Xth id 
-        So if the ids are [2,3,4,5] the view[2] will be the data for id 4 
-        and not 2 
+        WARNING: If indexing into a view you are picking the Xth id
+        So if the ids are [2,3,4,5] the view[2] will be the data for id 4
+        and not 2
 
         :return: list of ids
         :rtype: list(int)

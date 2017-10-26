@@ -41,7 +41,7 @@ def test_insert_slice_part_range():
 
 def test_insert_complex_slice():
     rl = RangedList(10, "a")
-    assert rl[4:8:2] == ["a","a"]
+    assert rl[4:8:2] == ["a", "a"]
     assert "b" not in rl
     rl[4:8:2] = "b"
     assert "b" in rl

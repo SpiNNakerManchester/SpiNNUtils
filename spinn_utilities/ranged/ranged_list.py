@@ -133,6 +133,7 @@ class RangedList(object):
          """
         self._check_slice(slice_start, slice_stop)
         found_value = False
+        result = None
         for (_start, _stop, _value) in self._ranges:
             if slice_start < _stop:
                 if found_value:

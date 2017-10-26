@@ -36,6 +36,22 @@ def test_insert_slice_part_range():
     assert ranges == [(0, 4, "a"), (4, 6, "b"), (6, 10, "a")]
     assert "a" in rl
     assert "c" not in rl
+    assert ["a", "b"] == rl[3:5]
+
+
+def test_insert_complex_slice():
+    rl = RangedList(10, "a")
+    assert rl[4:8:2] == ["a","a"]
+    assert "b" not in rl
+    rl[4:8:2] = "b"
+    assert "b" in rl
+    assert list(rl) == ["a", "a", "a", "a", "b", "a", "b", "a", "a", "a"]
+    ranges = rl.get_ranges()
+    assert ranges == [(0, 4, "a"), (4, 5, "b"), (5, 6, "a"), (6, 7, "b"),
+                      (7, 10, "a")]
+    assert "a" in rl
+    assert "c" not in rl
+    assert ["a", "b"] == rl[3:7:3]
 
 
 def test_insert_slice_up_to():

@@ -146,7 +146,7 @@ class RangedList(object):
                     return _value
 
     def __getslice__(self, start, stop):
-        return self.get_value_by_slice(start, stop)
+        return list(self.iter_by_slice(start, stop))
 
     def get_value_by_ids(self, ids):
         """
@@ -309,11 +309,9 @@ class RangedList(object):
             if id < 0:  # Handle negative indices
                 id += len(self)
             self.set_value_by_id(id, value)
-        elif isinstance(id, (tuple, list)):
+        else:
             for index in id:
                 self.set_value_by_id(index, value)
-        else:
-            raise TypeError("Invalid argument type.")
 
     def __setslice__(self, start, stop, value):
         self.set_value_by_slice(start, stop, value)
@@ -491,7 +489,7 @@ class RangedList(object):
             result = (id, id + 1, self._ranges[range_pointer][2])
         yield result
 
-    def setdefault(self, default):
+    def set_default(self, default):
         """
         Sets the default value
 
@@ -500,3 +498,11 @@ class RangedList(object):
         :param default: new default value
         """
         self._default = default
+
+    def get_default(self):
+        """
+        Returns the default value for this list
+
+        :return: Default Value
+        """
+        return self._default

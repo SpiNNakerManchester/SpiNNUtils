@@ -117,6 +117,37 @@ class AbstractDict(object):
         If key is iterable (list, tuple, set ect) of str (or None)
         value is a dictionary object
         """
+        pass
+
+    @abstractmethod
+    def set_default(self, key, default):
+        """
+        Sets the default value for a single key.
+
+        Note: Does not change any values
+        but only changes what reset_value would do
+
+        :param key: Existing dict key
+        :type key: str
+        :param default: Value to be used by reset
+        """
+        pass
+
+    @abstractmethod
+    def get_default(self, key):
+        """
+        Gets the default value for a single key.
+
+        Unless changed the default is the original value
+
+        Note: Does not change any values
+        but only changes what reset_value would do
+
+        :param key: Existing dict key
+        :type key: str
+        :return: default fo this key.
+        """
+        pass
 
     def items(self):
         """
@@ -250,9 +281,9 @@ class AbstractDict(object):
         """
         return list(self.iter_ranges(key=key))
 
-    def setdefault(self, key, default=None):
+    def reset(self, key):
         """
-        Sets the default value for a single key.
+        Sets the default value for a single key back to the default
 
         Note: Does not change any values
         but only changes what reset_value would do
@@ -261,5 +292,4 @@ class AbstractDict(object):
         :type key: str
         :param default: Value to be used by reset
         """
-        self._value_lists[key].setdefault(default)
-
+        self.set_value(key, self.get_default(key=key))

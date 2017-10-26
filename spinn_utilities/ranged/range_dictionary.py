@@ -89,10 +89,8 @@ class RangeDictionary(AbstractDict):
         """
         if isinstance(key, str):
             return self.get_value(key)
-        if (isinstance(key, (int, slice, tuple, list, set))):
-            return self.view_factory(key=key)
         else:
-            raise KeyError("Unexpected key type: {}".format(type(key)))
+            return self.view_factory(key=key)
 
     def get_value(self, key):
         """
@@ -327,3 +325,15 @@ class RangeDictionary(AbstractDict):
             ranges[a_key] = self._value_lists[a_key].\
                 iter_ranges_by_ids(ids=ids)
         return self._merge_ranges(ranges)
+
+    def set_default(self, key, default):
+        """
+        See AbstractDict.set_default
+        """
+        self._value_lists[key].set_default(default)
+
+    def get_default(self, key):
+        """
+        See AbstractDict.get_default
+        """
+        return self._value_lists[key].get_default()

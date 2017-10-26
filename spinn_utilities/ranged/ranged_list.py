@@ -20,9 +20,21 @@ class RangedList(object):
     These include
         reverse, __reversed__
         sort
+
+    In the current version the ids are zero base consecutive numbers so there
+    is no difference between value based ids and index based ids
+    but this could change in the future
     """
 
     def __init__(self, size, default, key=None):
+        """
+        Constructor for a ranged list.
+
+        :param size: Fixed length of the list
+        :param default: Default value to given to all elements in the list
+        :param key: The dict key this list covers.
+        This is used only for better Exception messages
+        """
         self._size = size
         self._default = default
         self._ranges = []
@@ -30,9 +42,25 @@ class RangedList(object):
         self._key = key
 
     def __len__(self):
+        """
+        Size of the list, irrespective of actual values
+
+        :return: the initial and Fixed size of the list
+        """
         return self._size
 
     def get_value_all(self):
+        """
+        If possible returns a single value shared by the whole list.
+
+        For multiple values use for x in list, iter(list) or list.iter,
+        or one of the iter_ranges methods
+
+        :return: Value shared by all elements in the list
+        :raises MultipleValuesException If even one elements has a different
+        value
+
+        """
         if len(self._ranges) > 1:
             raise MultipleValuesException(self._key, self._ranges[0][2],
                                           self._ranges[1][2])
@@ -78,12 +106,31 @@ class RangedList(object):
                             "".format(type(slice_stop)))
 
     def get_value_by_id(self, id):
+        """
+        Returns the value for one item in the list
+
+        :param id: One of the ids of an element in the list
+        :type id: int
+        :return: The value of that element
+        """
         self._check_id(id)
         for (start, stop, value) in self._ranges:
             if id < stop:
                 return value
 
     def get_value_by_slice(self, slice_start, slice_stop):
+        """
+         If possible returns a single value shared by the whole slice list.
+
+         For multiple values use for x in list, iter(list) or list.iter,
+         or one of the iter_ranges methods
+
+         :return: Value shared by all elements in the slice
+         :raises MultipleValuesException If even one elements has a different
+         value.
+         Not thrown if elements outside of the slice have a different value
+
+         """
         self._check_slice(slice_start, slice_stop)
         result = None
         for (_start, _stop, _value) in self._ranges:
@@ -99,6 +146,19 @@ class RangedList(object):
         return self.get_value_by_slice(start, stop)
 
     def get_value_by_ids(self, ids):
+        """
+         If possible returns a single value shared by all the ids.
+
+         For multiple values use for x in list, iter(list) or list.iter,
+         or one of the iter_ranges methods
+
+         :return: Value shared by all elements with these ids
+         :raises MultipleValuesException If even one elements has a different
+         value.
+         Not thrown if elements outside of the ids have a different value,
+         even if these elements are between the ones pointed to by ids
+
+         """
         result = self.get_value_by_id(ids[0])
         for id in ids[1:]:
             value = self.get_value_by_id(id)
@@ -107,6 +167,12 @@ class RangedList(object):
         return result
 
     def __getitem__(self, key):
+        """
+        Supports the list[x] to return an element or slice of the list
+
+        :param key: The int id, slice
+        :return: The element[key] or the slice
+        """
         if isinstance(key, slice):
             # Get the start, stop, and step from the slice
             return [self[ii] for ii in xrange(*key.indices(self._size))]
@@ -118,6 +184,13 @@ class RangedList(object):
             raise TypeError("Invalid argument type.")
 
     def set_value(self, value):
+        """
+        Sets ALL elements in the list to this value.
+
+        Note Does not change the default
+
+        :param value: new value
+        """
         self._ranges = []
         self._ranges.append((0, self._size, value))
 
@@ -138,9 +211,9 @@ class RangedList(object):
                 if value == old_value:
                     return  # alreay set as needed so do nothing
                 self._ranges[index] = (id, id + 1, value)
-                if id + 1 < stop:  # Need a new range after the key
+                if id + 1 < stop:  # Need a new range after the id
                     self._ranges.insert(index + 1, (id + 1, stop, old_value))
-                if id > start:   # Need a new range before the key
+                if id > start:   # Need a new range before the id
                     self._ranges.insert(index, (start, id, old_value))
                 if index < len(self._ranges) - 1:
                     if self._ranges[index][2] == self._ranges[index+1][2]:
@@ -218,6 +291,13 @@ class RangedList(object):
                                self._ranges[index][1], value)
 
     def __setitem__(self, id, value):
+        """
+        Support for the list[x] == format
+
+        :param id: A single Element id, the
+        :param value:
+        :return:
+        """
         if isinstance(id, slice):
             # Get the start, stop, and step from the slice
             for ii in xrange(*id.indices(len(self))):
@@ -236,6 +316,14 @@ class RangedList(object):
         self.set_value_by_slice(start, stop, value)
 
     def iter_by_ids(self, ids):
+        """
+        Update safe iterator by collection of ids
+
+        Note: Duplicate/Repeated elements are yielded for each id
+
+        :param ids: Ids
+        :return: yeilds the elements pointed to by ids
+        """
         range_pointer = 0
         for id in ids:
             # check if ranges reset so too far ahead
@@ -249,14 +337,35 @@ class RangedList(object):
             yield self._ranges[range_pointer][2]
 
     def iter(self):
+        """
+        Update safe iterator of all elements
+
+        Note: Duplicate/Repeated elements are yielded for each id
+
+        :return: yields each element one by one
+        """
         return self.iter_by_ids(range(self._size))
 
     def __iter__(self):
+        """
+        Fast NOT update safe iterator of all elements
+
+        Note: Duplicate/Repeated elements are yielded for each id
+
+        :return: yields each element one by one
+        """
         for (start, stop, value) in self._ranges:
             for x in range(stop - start):
                 yield value
 
     def iter_by_slice(self, slice_start, slice_stop):
+        """
+        Fast NOT update safe iterator of all elements in the slice
+
+        Note: Duplicate/Repeated elements are yielded for each id
+
+        :return: yields each element one by one
+        """
         for (start, stop, value) in self._ranges:
             if slice_start < stop and slice_stop >= start:
                 first = max(start, slice_start)
@@ -271,6 +380,12 @@ class RangedList(object):
         return False
 
     def count(self, x):
+        """
+        Counts the number of elements in the list with value x
+
+        :param x:
+        :return:
+        """
         result = 0
         for (start, stop, value) in self._ranges:
             if value == x:
@@ -278,18 +393,46 @@ class RangedList(object):
         return result
 
     def index(self, x):
+        """
+        Finds the first id of the first element in the list with value x
+        :param x:
+        :return:
+        """
         for (start, _, value) in self._ranges:
             if value == x:
                 return start
         raise ValueError("{} is not in list".format(x))
 
     def iter_ranges(self):
-        return iter(self._ranges)
+        """
+        Fast NOT update safe iterator of the ranges
+
+        :return: yields each range one by one
+        """
+        for r in self._ranges:
+            yield r
 
     def get_ranges(self):
+        """
+        Returns a copy ot the list of ranges.
+
+        As this is a copy it will not refelct any updates
+        :return:
+        """
         return list(self._ranges)
 
     def iter_ranges_by_id(self, id):
+        """
+        iterator of the range for this id
+
+        Note: The start and stop of the range will be reducded to just the id
+
+        This method purpose is one one a control method can select
+        which iterator to use
+
+        :return: yields the one range
+        """
+
         self._check_id(id)
         for (start, stop, value) in self._ranges:
             if id < stop:
@@ -297,6 +440,14 @@ class RangedList(object):
                 break
 
     def iter_ranges_by_slice(self, slice_start, slice_stop):
+        """
+         Fast NOT update safe iterator of the ranges covered by this slice
+
+         Note: The start and stop of the range will be reduced to just the
+         ids inside the slice
+
+         :return: yields each range one by one
+         """
         self._check_slice(slice_start, slice_stop)
         for (_start, _stop, value) in self._ranges:
             if slice_start < _stop:
@@ -306,6 +457,17 @@ class RangedList(object):
                     break
 
     def iter_ranges_by_ids(self, ids):
+        """
+         Update safe iterator of the ranges covered by these ids
+
+         For consecutive ids where the elements have the same value a single
+         range may be yielded
+
+         Note: The start and stop of the range will be reduced to just the
+         ids
+
+         :return: yields each range one by one
+         """
         range_pointer = 0
         result = None
         for id in ids:
@@ -327,4 +489,11 @@ class RangedList(object):
         yield result
 
     def setdefault(self, default):
+        """
+        Sets the default value
+
+        NOTE: Does not change the value of any element in the list
+
+        :param default: new default value
+        """
         self._default = default

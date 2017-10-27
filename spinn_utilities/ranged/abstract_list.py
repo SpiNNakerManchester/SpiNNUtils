@@ -124,6 +124,7 @@ class AbstractList(object):
             raise TypeError("Invalid argument type {}."
                             "".format(type(slice_stop)))
 
+    @abstractmethod
     def get_value_by_id(self, id):
         """
         Returns the value for one item in the list
@@ -132,62 +133,42 @@ class AbstractList(object):
         :type id: int
         :return: The value of that element
         """
-        self._check_id(id)
-        for (start, stop, value) in self.iter_ranges():
-            if id < stop:
-                return value
+        pass
 
+    @abstractmethod
     def get_value_by_slice(self, slice_start, slice_stop):
         """
-         If possible returns a single value shared by the whole slice list.
+        If possible returns a single value shared by the whole slice list.
 
-         For multiple values use for x in list, iter(list) or list.iter,
-         or one of the iter_ranges methods
+        For multiple values use for x in list, iter(list) or list.iter,
+        or one of the iter_ranges methods
 
-         :return: Value shared by all elements in the slice
-         :raises MultipleValuesException If even one elements has a different
-         value.
-         Not thrown if elements outside of the slice have a different value
+        :return: Value shared by all elements in the slice
+        :raises MultipleValuesException If even one elements has a different
+        value.
+        Not thrown if elements outside of the slice have a different value
 
-         """
-        self._check_slice(slice_start, slice_stop)
-        found_value = False
-        result = None
-        for (_start, _stop, _value) in self.iter_ranges():
-            if slice_start < _stop:
-                if found_value:
-                    if result != _value:
-                        raise MultipleValuesException(
-                            self._key, result, _value)
-                else:
-                    result = _value
-                    found_value = True
-                if slice_stop <= _stop:
-                    return _value
+        """
+        pass
 
     def __getslice__(self, start, stop):
         return list(self.iter_by_slice(start, stop))
 
+    @abstractmethod
     def get_value_by_ids(self, ids):
         """
-         If possible returns a single value shared by all the ids.
+        If possible returns a single value shared by all the ids.
 
-         For multiple values use for x in list, iter(list) or list.iter,
-         or one of the iter_ranges methods
+        For multiple values use for x in list, iter(list) or list.iter,
+        or one of the iter_ranges methods
 
-         :return: Value shared by all elements with these ids
-         :raises MultipleValuesException If even one elements has a different
-         value.
-         Not thrown if elements outside of the ids have a different value,
-         even if these elements are between the ones pointed to by ids
-
-         """
-        result = self.get_value_by_id(ids[0])
-        for id in ids[1:]:
-            value = self.get_value_by_id(id)
-            if result != value:
-                raise MultipleValuesException(self._key, result, value)
-        return result
+        :return: Value shared by all elements with these ids
+        :raises MultipleValuesException If even one elements has a different
+        value.
+        Not thrown if elements outside of the ids have a different value,
+        even if these elements are between the ones pointed to by ids
+        """
+        pass
 
     def __getitem__(self, key):
         """

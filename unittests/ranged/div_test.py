@@ -1,5 +1,5 @@
 from spinn_utilities.ranged.ranged_list import RangedList
-from spinn_utilities.ranged.div_view import DivList
+from spinn_utilities.ranged.div_list import DivList
 
 
 def test_simple():

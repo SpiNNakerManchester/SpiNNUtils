@@ -178,6 +178,9 @@ class AbstractList(object):
         :return: The element[key] or the slice
         """
         if isinstance(key, slice):
+            if slice.step is None or slice.step == 1:
+                return self.get_value_by_slice(
+                    slice_start=slice.start, slice_stop=slice.stop)
             # Get the start, stop, and step from the slice
             return [self[ii] for ii in xrange(*key.indices(self._size))]
         elif isinstance(key, int):
@@ -233,6 +236,7 @@ class AbstractList(object):
             for x in range(stop - start):
                 yield value
 
+    @abstractmethod
     def iter_by_slice(self, slice_start, slice_stop):
         """
         Fast NOT update safe iterator of all elements in the slice
@@ -241,12 +245,6 @@ class AbstractList(object):
 
         :return: yields each element one by one
         """
-        for (start, stop, value) in self.iter_ranges():
-            if slice_start < stop and slice_stop >= start:
-                first = max(start, slice_start)
-                end_point = min(stop, slice_stop)
-                for _ in range(end_point - first):
-                    yield value
 
     def __contains__(self, item):
         for (_, _, value) in self.iter_ranges():
@@ -296,6 +294,7 @@ class AbstractList(object):
                 yield (id, id + 1, value)
                 break
 
+    @abstractmethod
     def iter_ranges_by_slice(self, slice_start, slice_stop):
         """
          Fast NOT update safe iterator of the ranges covered by this slice
@@ -305,13 +304,7 @@ class AbstractList(object):
 
          :return: yields each range one by one
          """
-        self._check_slice(slice_start, slice_stop)
-        for (_start, _stop, value) in self.iter_ranges():
-            if slice_start < _stop:
-                yield (max(_start, slice_start), min(_stop, slice_stop),
-                       value)
-                if slice_stop <= _stop:
-                    break
+        pass
 
     def iter_ranges_by_ids(self, ids):
         """
@@ -347,3 +340,9 @@ class AbstractList(object):
                 ranges = self.get_ranges()
             result = (id, id + 1, ranges[range_pointer][2])
         yield result
+
+    def __div__(self, other):
+        from spinn_utilities.ranged.dual_list import DualList
+        if isinstance(other, AbstractList):
+            return DualList(
+                left=self, right=other, operation=lambda x, y: x / y )

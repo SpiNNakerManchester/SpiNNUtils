@@ -81,6 +81,25 @@ class RangedList(AbstractList):
                 raise MultipleValuesException(self._key, result, value)
         return result
 
+    def iter_by_slice(self, slice_start, slice_stop):
+        """
+        Fast NOT update safe iterator of all elements in the slice
+
+        Note: Duplicate/Repeated elements are yielded for each id
+
+        :return: yields each element one by one
+        """
+        ranges = self.iter_ranges()
+        current = ranges.next()
+        while current[1] < slice_start:
+            current = ranges.next()
+        while current[0] < slice_stop:
+            first = max(current[0], slice_start)
+            end_point = min(current[1], slice_stop)
+            for _ in range(end_point - first):
+                yield current[2]
+            current = ranges.next()
+
     def iter_ranges(self):
         """
         Fast NOT update safe iterator of the ranges
@@ -89,6 +108,23 @@ class RangedList(AbstractList):
         """
         for r in self.get_ranges():
             yield r
+
+    def iter_ranges_by_slice(self, slice_start, slice_stop):
+        """
+         Fast NOT update safe iterator of the ranges covered by this slice
+
+         Note: The start and stop of the range will be reduced to just the
+         ids inside the slice
+
+         :return: yields each range one by one
+         """
+        self._check_slice(slice_start, slice_stop)
+        for (_start, _stop, value) in self.iter_ranges():
+            if slice_start < _stop:
+                yield (max(_start, slice_start), min(_stop, slice_stop),
+                       value)
+                if slice_stop <= _stop:
+                    break
 
     def set_value(self, value):
         """

@@ -1,4 +1,5 @@
 from spinn_utilities.ranged.ranged_list import RangedList
+from spinn_utilities.ranged.abstract_list import AbstractList
 from spinn_utilities.ranged.single_view import _SingleView
 from spinn_utilities.ranged.slice_view import _SliceView
 from spinn_utilities.ranged.ids_view import _IdsView
@@ -32,7 +33,8 @@ class RangeDictionary(AbstractDict):
         self._size = size
         self._value_lists = dict()
         for key, value in defaults.items():
-            self._value_lists[key] = RangedList(size, value)
+            self._value_lists[key] = RangedList(
+                size=size, default=value, key=key)
 
     def view_factory(self, key):
         """
@@ -337,3 +339,8 @@ class RangeDictionary(AbstractDict):
         See AbstractDict.get_default
         """
         return self._value_lists[key].get_default()
+
+    def add_list(self, key, a_list):
+        assert isinstance(a_list, AbstractList)
+        assert self._size == a_list._size
+        self._value_lists[key] = a_list

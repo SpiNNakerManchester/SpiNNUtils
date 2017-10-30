@@ -236,7 +236,6 @@ class AbstractList(object):
             for x in range(stop - start):
                 yield value
 
-    @abstractmethod
     def iter_by_slice(self, slice_start, slice_stop):
         """
         Fast NOT update safe iterator of all elements in the slice
@@ -245,6 +244,10 @@ class AbstractList(object):
 
         :return: yields each element one by one
         """
+        for (start, stop, value) in \
+                self.iter_ranges_by_slice(slice_start, slice_stop):
+            for _ in range(start, stop):
+                yield value
 
     def __contains__(self, item):
         for (_, _, value) in self.iter_ranges():
@@ -345,4 +348,9 @@ class AbstractList(object):
         from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
             return DualList(
-                left=self, right=other, operation=lambda x, y: x / y )
+                left=self, right=other, operation=lambda x, y: x / y)
+
+    def apply_operation(self, operation):
+        from spinn_utilities.ranged.single_list import SingleList
+        return SingleList(a_list=self, operation=operation)
+

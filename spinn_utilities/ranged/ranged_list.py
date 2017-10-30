@@ -89,16 +89,6 @@ class RangedList(AbstractList):
 
         :return: yields each element one by one
         """
-        ranges = self.iter_ranges()
-        current = ranges.next()
-        while current[1] < slice_start:
-            current = ranges.next()
-        while current[0] < slice_stop:
-            first = max(current[0], slice_start)
-            end_point = min(current[1], slice_stop)
-            for _ in range(end_point - first):
-                yield current[2]
-            current = ranges.next()
 
     def iter_ranges(self):
         """

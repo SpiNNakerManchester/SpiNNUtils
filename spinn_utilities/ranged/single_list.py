@@ -19,16 +19,14 @@ class SingleList(AbstractList):
         self._operation = operation
 
     def get_value_by_id(self, id):
-        for value in self.a_list.get_value_by_id(id):
-            yield self._operation(value)
+        return self._operation(self._a_list.get_value_by_id(id))
 
     def get_value_by_slice(self, slice_start, slice_stop):
-        for value in self._a_list.get_value_by_slice(slice_start, slice_stop):
-            yield self._operation(value)
+        return self._operation(self._a_list.get_value_by_slice(
+            slice_start, slice_stop))
 
     def get_value_by_ids(self, ids):
-        for value in self._a_list.get_value_by_ids(ids):
-            yield self._operation(value)
+        return self._operation(self._a_list.get_value_by_ids(ids))
 
     def iter_ranges(self):
         for (start, stop, value) in self._a_list.iter_ranges():
@@ -36,3 +34,9 @@ class SingleList(AbstractList):
 
     def get_default(self):
         self._operation(self._a_list.get_default())
+
+    def iter_ranges_by_slice(self, slice_start, slice_stop):
+        for (start, stop, value) in \
+                self._a_list.iter_ranges_by_slice(slice_start, slice_stop):
+            yield (start, stop, self._operation(value))
+

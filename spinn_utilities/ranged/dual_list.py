@@ -34,25 +34,6 @@ class DualList(AbstractList):
         return self._operation(
             self._left.get_value_by_ids(ids), self._right.get_value_by_ids(ids))
 
-    def iter_by_slice(self, slice_start, slice_stop):
-        """
-        Fast NOT update safe iterator of all elements in the slice
-
-        Note: Duplicate/Repeated elements are yielded for each id
-
-        :return: yields each element one by one
-        """
-        ranges = self.iter_ranges_by_slice(slice_start, slice_stop)
-        current = ranges.next()
-        while current[1] < slice_start:
-            current = ranges.next()
-        while current[0] < slice_stop:
-            first = max(current[0], slice_start)
-            end_point = min(current[1], slice_stop)
-            for _ in range(end_point - first):
-                yield current[2]
-            current = ranges.next()
-
     def iter_ranges(self):
         left_iter = self._left.iter_ranges()
         right_iter = self._right.iter_ranges()

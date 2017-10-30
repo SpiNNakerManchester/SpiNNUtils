@@ -16,8 +16,7 @@ class RangedList(AbstractList):
         """
         AbstractList.__init__(self, size=size, key=key)
         self._default = default
-        self._ranges = []
-        self._ranges.append((0, size, default))
+        self.set_value(default)
 
     def get_value_by_id(self, id):
         """
@@ -89,6 +88,15 @@ class RangedList(AbstractList):
 
         :return: yields each element one by one
         """
+        for (start, stop, value) in self._ranges:
+            if stop <= slice_start:
+                continue
+            if start >= slice_stop:
+                break
+            first = max(start, slice_start)
+            end_point = min(stop, slice_stop)
+            for _ in range(end_point - first):
+                yield value
 
     def iter_ranges(self):
         """
@@ -125,7 +133,15 @@ class RangedList(AbstractList):
         :param value: new value
         """
         self._ranges = []
-        self._ranges.append((0, self._size, value))
+        if not hasattr(value, '__iter__'):
+            self._ranges.append((0, self._size, value))
+        else:
+            # Deal with multiple values, but not the correct number of them
+            if len(value) != self._size:
+                raise Exception(
+                    "The number of values does not equal the size")
+            for index, a_value in enumerate(value):
+                self._ranges.append((index, index+1, a_value))
 
     def set_value_by_id(self, id, value):
         """
@@ -181,7 +197,7 @@ class RangedList(AbstractList):
         index = 0
         # Skip ranges before set range
         while index < len(self._ranges) - 1 and \
-                (self._ranges[0][1] <= slice_start):
+                (self._ranges[index][1] <= slice_start):
             index += 1
 
         # Strip of start of first range if needed

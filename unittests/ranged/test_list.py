@@ -100,7 +100,6 @@ def test_insert_end():
     assert rl.get_ranges() == [(0, 1, "a"), (1, 2, "b"), (2, 4, "a"),
                                (4, 6, "c"), (6, 10, "a")]
 
-
 def test_insert_list():
     rl = RangedList(10, "a")
     rl[4, 8, 2] = "b"
@@ -170,3 +169,13 @@ def test_ranges_by_ids():
     rl[3] = "foo"
     assert [(1, 3, "a"), (3, 4, "foo"), (7, 8, "a"), (4, 5, "a")] == \
         list(rl.iter_ranges_by_ids((1, 2, 3, 7, 4)))
+
+
+def test_by_list():
+    rl = RangedList(size=5, default=[0, 1, 2, 3, 4], key="alpha")
+    assert list(rl) == [0, 1, 2, 3, 4]
+    assert rl.get_ranges() == [(0, 1, 0), (1, 2, 1), (2, 3, 2),
+                               (3, 4, 3), (4, 5, 4)]
+    rl[2:4] = 8
+    assert list(rl) == [0, 1, 8, 8, 4]
+    assert rl.get_ranges() == [(0, 1, 0), (1, 2, 1), (2, 4, 8), (4, 5, 4)]

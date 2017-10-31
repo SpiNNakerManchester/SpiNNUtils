@@ -46,14 +46,34 @@ class DualList(AbstractList):
         :return: yields each element one by one
         """
         slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
-        if self.range_based():
-            for (start, stop, value) in \
-                    self.iter_ranges_by_slice(slice_start, slice_stop):
-                for _ in range(start, stop):
-                    yield value
+        if self._left.range_based():
+            if self._right.range_based():
+                for (start, stop, value) in \
+                        self.iter_ranges_by_slice(slice_start, slice_stop):
+                    for _ in range(start, stop):
+                        yield value
+            else:
+                left_iter = self._left.iter_ranges_by_slice(
+                    slice_start, slice_stop)
+                right_iter = self._right.iter_by_slice(slice_start, slice_stop)
+                for (start, stop, left_value) in left_iter:
+                    for _ in range(start, stop):
+                        yield self._operation(left_value, right_iter.next())
         else:
-            for id in range(slice_start, slice_stop):
-                yield self.get_value_by_id(id)
+            if self._right.range_based():
+                left_iter = self._left.iter_by_slice(
+                    slice_start, slice_stop)
+                right_iter = self._right.iter_ranges_by_slice(
+                    slice_start, slice_stop)
+                for (start, stop, right_value) in right_iter:
+                    for _ in range(start, stop):
+                        yield self._operation(left_iter.next(), right_value)
+            else:
+                left_iter = self._left.iter_by_slice(slice_start, slice_stop)
+                right_iter = self._right.iter_by_slice(slice_start, slice_stop)
+                while True:
+                    yield self._operation(left_iter.next(), right_iter.next())
+
 
     def iter_ranges(self):
         left_iter = self._left.iter_ranges()

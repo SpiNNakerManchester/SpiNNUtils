@@ -18,6 +18,9 @@ class RangedList(AbstractList):
         self._default = default
         self.set_value(default)
 
+    def range_based(self):
+        return self._ranged_based
+
     def get_value_by_id(self, id):
         """
         Returns the value for one item in the list
@@ -47,7 +50,7 @@ class RangedList(AbstractList):
          Not thrown if elements outside of the slice have a different value
 
          """
-        self._check_slice(slice_start, slice_stop)
+        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
         found_value = False
         result = None
         if self._ranged_based:
@@ -91,6 +94,22 @@ class RangedList(AbstractList):
                 raise MultipleValuesException(self._key, result, value)
         return result
 
+    def __iter__(self):
+        """
+        Fast NOT update safe iterator of all elements
+
+        Note: Duplicate/Repeated elements are yielded for each id
+
+        :return: yields each element one by one
+        """
+        if self.range_based():
+            for (start, stop, value) in self._ranges:
+                for x in range(stop - start):
+                    yield value
+        else:
+            for value in self._ranges:
+                yield value
+
     def iter_by_slice(self, slice_start, slice_stop):
         """
         Fast NOT update safe iterator of all elements in the slice
@@ -99,6 +118,7 @@ class RangedList(AbstractList):
 
         :return: yields each element one by one
         """
+        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
         if self._ranged_based:
             ranges = self.iter_ranges()
             current = ranges.next()
@@ -124,8 +144,14 @@ class RangedList(AbstractList):
             for r in self._ranges:
                 yield r
         else:
+            previous_value = self._ranges[0]
+            previous_start = 0
             for start, value in enumerate(self._ranges):
-                yield (start, start + 1, value)
+                if value != previous_value:
+                    yield(previous_start, start, previous_value)
+                    previous_start = start
+                    previous_value = value
+            yield (previous_start, start + 1, value)
 
     def iter_ranges_by_slice(self, slice_start, slice_stop):
         """
@@ -136,16 +162,17 @@ class RangedList(AbstractList):
 
          :return: yields each range one by one
          """
-        self._check_slice(slice_start, slice_stop)
+        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
         if self._ranged_based:
-            for (_start, _stop, value) in self.iter_ranges():
+            for (_start, _stop, value) in self._ranges:
                 if slice_start < _stop:
                     yield (max(_start, slice_start), min(_stop, slice_stop),
                            value)
                     if slice_stop <= _stop:
                         break
         else:
-            for index, value in self._ranges[slice_start: slice_stop]:
+            for index, value in \
+                    enumerate(self._ranges[slice_start: slice_stop]):
                 yield (slice_start + index, slice_start + index + 1, value)
 
     def set_value(self, value):
@@ -221,11 +248,11 @@ class RangedList(AbstractList):
         :param value:  The value to save
         :type value: anything
         """
+        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
         if not self._ranged_based:
             for id in range(slice_start, slice_stop):
                 self._ranges[id] = value
             return
-        self._check_slice(slice_start, slice_stop)
         index = 0
         # Skip ranges before set range
         while index < len(self._ranges) - 1 and \
@@ -301,7 +328,10 @@ class RangedList(AbstractList):
         As this is a copy it will not refelct any updates
         :return:
         """
-        return list(self._ranges)
+        if self._ranged_based:
+            return list(self._ranges)
+        else:
+            return list(self.iter_ranges())
 
     def set_default(self, default):
         """

@@ -166,6 +166,9 @@ class RangeDictionary(AbstractDict):
         but limited to a simple slice
 
         """
+        if isinstance(key, str) and not update_save:
+            return self._value_lists[key].iter_by_slice(
+                self, slice_start=slice_start, slice_stop=slice_stop)
         if update_save:
             return self.update_safe_iter_all_values(
                 key, range(slice_start, slice_stop))

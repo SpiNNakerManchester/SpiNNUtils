@@ -74,7 +74,6 @@ class DualList(AbstractList):
                 while True:
                     yield self._operation(left_iter.next(), right_iter.next())
 
-
     def iter_ranges(self):
         left_iter = self._left.iter_ranges()
         right_iter = self._right.iter_ranges()

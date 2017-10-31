@@ -21,6 +21,9 @@ class DualList(AbstractList):
         self._right = right
         self._operation = operation
 
+    def range_based(self):
+        return self._left.range_based() and self._right.range_based()
+
     def get_value_by_id(self, id):
         return self._operation(
             self._left.get_value_by_id(id), self._right.get_value_by_id(id))
@@ -33,6 +36,44 @@ class DualList(AbstractList):
     def get_value_by_ids(self, ids):
         return self._operation(
             self._left.get_value_by_ids(ids), self._right.get_value_by_ids(ids))
+
+    def iter_by_slice(self, slice_start, slice_stop):
+        """
+        Fast NOT update safe iterator of all elements in the slice
+
+        Note: Duplicate/Repeated elements are yielded for each id
+
+        :return: yields each element one by one
+        """
+        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
+        if self._left.range_based():
+            if self._right.range_based():
+                for (start, stop, value) in \
+                        self.iter_ranges_by_slice(slice_start, slice_stop):
+                    for _ in range(start, stop):
+                        yield value
+            else:
+                left_iter = self._left.iter_ranges_by_slice(
+                    slice_start, slice_stop)
+                right_iter = self._right.iter_by_slice(slice_start, slice_stop)
+                for (start, stop, left_value) in left_iter:
+                    for _ in range(start, stop):
+                        yield self._operation(left_value, right_iter.next())
+        else:
+            if self._right.range_based():
+                left_iter = self._left.iter_by_slice(
+                    slice_start, slice_stop)
+                right_iter = self._right.iter_ranges_by_slice(
+                    slice_start, slice_stop)
+                for (start, stop, right_value) in right_iter:
+                    for _ in range(start, stop):
+                        yield self._operation(left_iter.next(), right_value)
+            else:
+                left_iter = self._left.iter_by_slice(slice_start, slice_stop)
+                right_iter = self._right.iter_by_slice(slice_start, slice_stop)
+                while True:
+                    yield self._operation(left_iter.next(), right_iter.next())
+
 
     def iter_ranges(self):
         left_iter = self._left.iter_ranges()

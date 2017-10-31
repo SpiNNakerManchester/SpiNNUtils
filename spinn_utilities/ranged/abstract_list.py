@@ -1,10 +1,9 @@
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
-
+from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 from six import add_metaclass
-
-from spinn_utilities.abstract_base import AbstractBase, abstractmethod
+import sys
 
 
 @add_metaclass(AbstractBase)
@@ -32,19 +31,6 @@ class AbstractList(object):
     but this could change in the future
     """
 
-    @abstractmethod
-    def iter_ranges(self):
-        """
-        Fast NOT update safe iterator of the ranges
-
-        :return: yields each range one by one
-        """
-        pass
-
-    @abstractmethod
-    def get_default(self):
-        pass
-
     def __init__(self, size, key=None):
         """
         Constructor for a ranged list.
@@ -55,6 +41,10 @@ class AbstractList(object):
         """
         self._size = int(round(size))
         self._key = key
+
+    @abstractmethod
+    def range_based(self):
+        pass
 
     def __len__(self):
         """
@@ -98,8 +88,11 @@ class AbstractList(object):
             raise TypeError("Invalid argument type {}.".format(type(id)))
 
     def _check_slice(self, slice_start, slice_stop):
-        if (slice_start > slice_stop and slice_start is not None
-                and slice_stop is not None):
+        if slice_start is None:
+            slice_start = 0
+        if slice_stop is None or slice_stop == sys.maxint:
+            slice_stop = self._size
+        if slice_start > slice_stop:
             if not isinstance(slice_start, int):
                 raise TypeError("Invalid argument type {}."
                                 "".format(type(slice_start)))
@@ -109,20 +102,21 @@ class AbstractList(object):
             raise IndexError(
                 "The range_start {0!d} is after the range stop {0!d}."
                 "".format(slice_start, slice_stop))
-        if slice_start < 0 and slice_start is not None:
+        if slice_start < 0:
             if isinstance(slice_start, int):
                 raise IndexError(
                     "The range_start {0!d} is out of range."
                     "".format(slice_start))
             raise TypeError("Invalid argument type {}."
                             "".format(type(slice_start)))
-        if slice_stop > len(self) and slice_stop is not None:
+        if slice_stop > len(self):
             if isinstance(slice_stop, int):
                 raise IndexError(
                     "The range_stop {0!d} is out of range."
                     "".format(slice_stop))
             raise TypeError("Invalid argument type {}."
                             "".format(type(slice_stop)))
+        return slice_start, slice_stop
 
     @abstractmethod
     def get_value_by_id(self, id):
@@ -179,8 +173,8 @@ class AbstractList(object):
         """
         if isinstance(key, slice):
             if slice.step is None or slice.step == 1:
-                return self.get_value_by_slice(
-                    slice_start=slice.start, slice_stop=slice.stop)
+                return list(self.iter_by_slice(
+                    slice_start=slice.start, slice_stop=slice.stop))
             # Get the start, stop, and step from the slice
             return [self[ii] for ii in xrange(*key.indices(self._size))]
         elif isinstance(key, int):
@@ -232,9 +226,13 @@ class AbstractList(object):
 
         :return: yields each element one by one
         """
-        for (start, stop, value) in self.iter_ranges():
-            for x in range(stop - start):
-                yield value
+        if self.range_based():
+            for (start, stop, value) in self.iter_ranges():
+                for x in range(stop - start):
+                    yield value
+        else:
+            for id in range(self._size):
+                yield self.get_value_by_id(id)
 
     def iter_by_slice(self, slice_start, slice_stop):
         """
@@ -244,10 +242,15 @@ class AbstractList(object):
 
         :return: yields each element one by one
         """
-        for (start, stop, value) in \
-                self.iter_ranges_by_slice(slice_start, slice_stop):
-            for _ in range(start, stop):
-                yield value
+        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
+        if self.range_based():
+            for (start, stop, value) in \
+                    self.iter_ranges_by_slice(slice_start, slice_stop):
+                for _ in range(start, stop):
+                    yield value
+        else:
+            for id in range(slice_start, slice_stop):
+                yield self.get_value_by_id(id)
 
     def __contains__(self, item):
         for (_, _, value) in self.iter_ranges():
@@ -278,6 +281,15 @@ class AbstractList(object):
             if value == x:
                 return start
         raise ValueError("{} is not in list".format(x))
+
+    @abstractmethod
+    def iter_ranges(self):
+        """
+        Fast NOT update safe iterator of the ranges
+
+        :return: yields each range one by one
+        """
+        pass
 
     def iter_ranges_by_id(self, id):
         """
@@ -343,6 +355,10 @@ class AbstractList(object):
                 ranges = self.get_ranges()
             result = (id, id + 1, ranges[range_pointer][2])
         yield result
+
+    @abstractmethod
+    def get_default(self):
+        pass
 
     def __div__(self, other):
         from spinn_utilities.ranged.dual_list import DualList

@@ -71,3 +71,13 @@ def test_get_ids():
     assert single[1:5:2] == [4, 4]
     a_list[1:3] = 6
     assert single[1:5:2] == [2, 4]
+
+
+def test_iter_by_slice():
+    a_list = RangedList(5, 12, "twelve")
+    single = SingleList(a_list=a_list, operation=lambda x: x / 3)
+    assert [4, 4, 4] == list(single.iter_by_slice(2, 5))
+    a_list[:3] = 6
+    assert [2, 4, 4] == list(single.iter_by_slice(2, 5))
+    a_list[4:] = 24
+    assert [2, 4, 8] == list(single.iter_by_slice(2, 5))

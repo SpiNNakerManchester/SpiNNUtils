@@ -85,16 +85,21 @@ class RangeDictionary(AbstractDict):
 
     def __getitem__(self, key):
         """
-        Uses the type of the ley to delage to get_value to view_factory
-        :param key: a str, int, or list, tuple or set of int values
-        :return: if str an Object of dictionary if int or multiple ints a View
+        Support for the view[x] based the type of the key
+
+        If key is a str a list type object of AbstractList is returned
+
+        Otherwise a View (AbstractView) over part of the ids in the Dict is returned
+
+        :param key: a str, int, iterable of int values
+        :return: An AbstractList or AbstractView
         """
         if isinstance(key, str):
-            return self.get_value(key)
+            return self._value_lists[key]
         else:
             return self.view_factory(key=key)
 
-    def get_value(self, key):
+    def get_value(self, key=None):
         """
         See AbstractDict
         """
@@ -207,11 +212,24 @@ class RangeDictionary(AbstractDict):
         NOTE: range[int] = is not supported
         """
         if isinstance(key, str):
-            return self.set_value(key=key, value=value)
-        if isinstance(key, (slice, int, tuple, list)):
+            if key in self:
+                self.set_value(key=key, value=value)
+            else:
+                if isinstance(value, AbstractList):
+                    assert self._size == value._size
+                    self._value_lists[key] = value
+                else:
+                    new_list = RangedList(size=self._size, default=value,
+                                          key=key)
+                    self._value_lists[key] = new_list
+        elif isinstance(key, (slice, int, tuple, list)):
             raise KeyError("Settting of a slice/ids not supported")
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
+
+    def add_list(self, key, a_list):
+        assert isinstance(a_list, AbstractList)
+
 
     def ids(self):
         """
@@ -342,8 +360,3 @@ class RangeDictionary(AbstractDict):
         See AbstractDict.get_default
         """
         return self._value_lists[key].get_default()
-
-    def add_list(self, key, a_list):
-        assert isinstance(a_list, AbstractList)
-        assert self._size == a_list._size
-        self._value_lists[key] = a_list

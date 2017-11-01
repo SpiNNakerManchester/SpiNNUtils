@@ -15,8 +15,8 @@ class RangedList(AbstractList):
         This is used only for better Exception messages
         """
         AbstractList.__init__(self, size=size, key=key)
-        self._default = default
-        self.set_value(default)
+        if not hasattr(default, '__iter__'):
+            self._default = default
         self.set_value(default)
 
     def range_based(self):
@@ -350,4 +350,7 @@ class RangedList(AbstractList):
 
         :return: Default Value
         """
-        return self._default
+        try:
+            return self._default
+        except AttributeError:
+            raise Exception("Default value not set.")

@@ -12,8 +12,8 @@ def test_ids():
 
 
 def test_value():
-    assert "alpha" == slice_view["a"]
-    assert "bravo" == slice_view["b"]
+    assert "alpha" == slice_view.get_value("a")
+    assert "bravo" == slice_view.get_value("b")
     assert "a" in slice_view
     assert "c" not in slice_view
     assert slice_view.has_key("b")  # noqa: W601
@@ -35,9 +35,9 @@ def test_values():
 def test_set_range_direct():
     rd1 = RangeDictionary(10, defaults)
     slice_view1 = rd1[4:7]
-    assert "alpha" == slice_view1["a"]
+    assert "alpha" == slice_view1.get_value("a")
     slice_view1["a"] = "Foo"
-    assert "Foo" == slice_view1["a"]
+    assert "Foo" == slice_view1.get_value("a")
 
 
 def test_iter_values():
@@ -47,7 +47,7 @@ def test_iter_values():
     fast = slice_view1.iter_all_values("a", update_save=True)
     assert ["alpha", "alpha", "alpha"] == list(fast)
     rd1["a"] = "Foo"
-    assert rd1["a"] == "Foo"
+    assert rd1["a"].get_value_all() == "Foo"
     assert ["Foo", "Foo", "Foo"] == list(aware)
 
 

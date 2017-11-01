@@ -12,8 +12,8 @@ def test_ids():
 
 
 def test_value():
-    assert "alpha" == ranged_view["a"]
-    assert "bravo" == ranged_view["b"]
+    assert "alpha" == ranged_view.get_value("a")
+    assert "bravo" == ranged_view.get_value("b")
     assert "a" in ranged_view
     assert "c" not in ranged_view
     assert ranged_view.has_key("b")  # noqa: W601
@@ -34,9 +34,9 @@ def test_values():
 
 def test_set_range_direct():
     ranged_view1 = rd[2, 3, 8]
-    assert "alpha" == ranged_view1["a"]
+    assert "alpha" == ranged_view1.get_value("a")
     ranged_view1["a"] = "Foo"
-    assert "Foo" == ranged_view1["a"]
+    assert "Foo" == ranged_view1.get_value("a")
 
 
 def test_iter_values():
@@ -46,7 +46,7 @@ def test_iter_values():
     fast = ranged_view1.iter_all_values("a", update_save=True)
     assert ["alpha", "alpha", "alpha"] == list(fast)
     rd1["a"] = "Foo"
-    assert rd1["a"] == "Foo"
+    assert rd1["a"][0] == "Foo"
     assert ["Foo", "Foo", "Foo"] == list(aware)
 
 

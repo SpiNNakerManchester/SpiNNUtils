@@ -12,8 +12,8 @@ def test_ids():
 
 
 def test_value():
-    assert "alpha" == single["a"]
-    assert "bravo" == single["b"]
+    assert "alpha" == single.get_value("a")
+    assert "bravo" == single.get_value("b")
     assert "a" in single
     assert "c" not in single
     assert single.has_key("b")  # noqa: W601
@@ -35,9 +35,9 @@ def test_values():
 def test_set():
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1[4]
-    assert single1["a"] == "alpha"
+    assert single1.get_value("a") == "alpha"
     single1["a"] = "foo"
-    assert single1["a"] == "foo"
+    assert single1.get_value("a") == "foo"
 
 
 def test_iter_values():
@@ -47,7 +47,7 @@ def test_iter_values():
     fast = single1.iter_all_values(key="a", update_save=True)
     assert ["alpha"] == list(fast)
     rd1["a"] = "Foo"
-    assert rd1["a"] == "Foo"
+    assert rd1["a"].get_value_all() == "Foo"
     assert ["Foo"] == list(aware)
 
 
@@ -58,7 +58,7 @@ def test_iter_values_keys():
     fast = single1.iter_all_values(key=("b", "a"), update_save=True)
     assert [{'a': 'alpha', 'b': 'bravo'}] == list(fast)
     rd1["a"] = "Foo"
-    assert rd1["a"] == "Foo"
+    assert rd1["a"].get_value_all() == "Foo"
     assert [{'a': 'Foo', 'b': 'bravo'}] == list(aware)
 
 

@@ -13,8 +13,9 @@ class AbstractView(AbstractDict):
         """
         Support for the view[x] based the type of the key
 
-        For str key values see AbstractDict.get_value
-        For multiple str keys (including None for all) use get_value
+        key is a str is currently not supported use get_value instead.
+        In the future this may be supported to return some kind of list
+        (AbstractList) but how to handle a view there to be dettermined
 
         For int and int collections a new view will be returned using
         RangeDictionary.view_factory
@@ -28,16 +29,14 @@ class AbstractView(AbstractDict):
             But not if other keys not asked for have multiple values
         """
         if isinstance(key, str):
-            return self.get_value(key)
+            raise KeyError("view[key] is not supported Use get_value() ")
         ids = self.ids()
         if isinstance(key, (slice, int)):
             return self._range_dict.view_factory(ids[key])
-        if isinstance(key, (tuple, list, set)):
-            selected = []
-            for i in key:
-                selected.append(ids[i])
-            return self._range_dict.view_factory(selected)
-        raise KeyError("Unexpected key type: {}".format(type(key)))
+        selected = []
+        for i in key:
+            selected.append(ids[i])
+        return self._range_dict.view_factory(selected)
 
     def __setitem__(self, key, value):
         """

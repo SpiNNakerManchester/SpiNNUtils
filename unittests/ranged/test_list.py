@@ -135,7 +135,7 @@ def test_iter_simple():
 
 
 def test_iter_complex():
-    rl = RangedList(size=10, default="a", key="alpha")
+    rl = RangedList(size=10, value="a", key="alpha")
     list_iter = rl.iter()
     assert "a" == list_iter.next()  # 0
     assert "a" == list_iter.next()  # 1
@@ -149,18 +149,18 @@ def test_iter_complex():
 
 
 def test_iter():
-    rl = RangedList(size=10, default="a", key="alpha")
+    rl = RangedList(size=10, value="a", key="alpha")
     it = rl.iter()
     assert list(it) == ["a", "a", "a", "a", "a", "a", "a", "a", "a", "a"]
 
 
 def test_ranges_by_id():
-    rl = RangedList(size=10, default="a", key="alpha")
+    rl = RangedList(size=10, value="a", key="alpha")
     assert [(3, 4, "a")] == list(rl.iter_ranges_by_id(3))
 
 
 def test_ranges_by_slice():
-    rl = RangedList(size=10, default="a", key="alpha")
+    rl = RangedList(size=10, value="a", key="alpha")
     assert [(3, 8, "a")] == list(rl.iter_ranges_by_slice(3, 8))
     rl[5] = "foo"
     assert [(3, 5, "a"), (5, 6, "foo"), (6, 8, "a")] == \
@@ -168,7 +168,7 @@ def test_ranges_by_slice():
 
 
 def test_ranges_by_ids():
-    rl = RangedList(size=10, default="a", key="alpha")
+    rl = RangedList(size=10, value="a", key="alpha")
     assert [(1, 4, "a"), (7, 8, "a"), (4, 5, "a")] == \
         list(rl.iter_ranges_by_ids((1, 2, 3, 7, 4)))
     rl[6] = "foo"
@@ -180,7 +180,7 @@ def test_ranges_by_ids():
 
 
 def test_iter_by_slice():
-    rl = RangedList(size=10, default="a", key="alpha")
+    rl = RangedList(size=10, value="a", key="alpha")
     assert ["a", "a", "a"] == list(rl.iter_by_slice(2, 5))
     rl[3:7] = "b"
     assert ["a", "b", "b"] == list(rl.iter_by_slice(2, 5))

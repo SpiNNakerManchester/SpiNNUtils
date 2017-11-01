@@ -105,3 +105,14 @@ def test_set_list():
     rd1["g"] = rl
     new_dict = {"a": "alpha", "b": "bravo", "g": "gamma"}
     assert new_dict == rd1.get_value()
+
+
+def test_empty():
+    rd1 = RangeDictionary(10)
+    rl = RangedList(10, "gamma")
+    rd1["g"] = rl
+    rd1["a"] = "alpha"
+    rd1["b"] = ["bravo", "bravo", "bravo", "bravo", "bravo", "bravo", "bravo",
+                "bravo", "bravo", "bravo"]
+    new_dict = {"a": "alpha", "b": "bravo", "g": "gamma"}
+    assert new_dict == rd1.get_value()

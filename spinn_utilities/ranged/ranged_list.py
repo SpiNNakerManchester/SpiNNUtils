@@ -5,19 +5,19 @@ from spinn_utilities.ranged.multiple_values_exception \
 
 class RangedList(AbstractList):
 
-    def __init__(self, size, default, key=None):
+    def __init__(self, size, value, key=None):
         """
         Constructor for a ranged list.
 
         :param size: Fixed length of the list
-        :param default: Default value to given to all elements in the list
+        :param value: value to given to all elements in the list
         :param key: The dict key this list covers.
         This is used only for better Exception messages
         """
         AbstractList.__init__(self, size=size, key=key)
-        if not hasattr(default, '__iter__'):
-            self._default = default
-        self.set_value(default)
+        if not hasattr(value, '__iter__'):
+            self._default = value
+        self.set_value(value)
 
     def range_based(self):
         return self._ranged_based

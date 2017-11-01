@@ -15,7 +15,7 @@ class RangeDictionary(AbstractDict):
     The size also set init time.
     """
 
-    def __init__(self, size, defaults):
+    def __init__(self, size, defaults=None):
         """
         Main constuctor for a Ranged Dictionary
 
@@ -32,9 +32,10 @@ class RangeDictionary(AbstractDict):
         """
         self._size = size
         self._value_lists = dict()
-        for key, value in defaults.items():
-            self._value_lists[key] = RangedList(
-                size=size, default=value, key=key)
+        if defaults is not None:
+            for key, value in defaults.items():
+                self._value_lists[key] = RangedList(
+                    size=size, value=value, key=key)
 
     def view_factory(self, key):
         """
@@ -219,17 +220,13 @@ class RangeDictionary(AbstractDict):
                     assert self._size == value._size
                     self._value_lists[key] = value
                 else:
-                    new_list = RangedList(size=self._size, default=value,
+                    new_list = RangedList(size=self._size, value=value,
                                           key=key)
                     self._value_lists[key] = new_list
         elif isinstance(key, (slice, int, tuple, list)):
             raise KeyError("Settting of a slice/ids not supported")
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
-
-    def add_list(self, key, a_list):
-        assert isinstance(a_list, AbstractList)
-
 
     def ids(self):
         """

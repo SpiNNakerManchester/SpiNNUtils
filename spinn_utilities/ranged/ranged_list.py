@@ -184,6 +184,11 @@ class RangedList(AbstractList):
 
         :param value: new value
         """
+        if hasattr(value, 'next'):
+            try:
+                value = value.next(n=self._size)
+            except TypeError:
+                pass
         if not hasattr(value, '__iter__'):
             self._ranges = []
             self._ranges.append((0, self._size, value))

@@ -1,6 +1,7 @@
 from spinn_utilities.ranged.ranged_list import RangedList
 from spinn_utilities.ranged.single_list import SingleList
 
+
 def test_simple():
     a_list = RangedList(5, [0, 1, 2, 3, 4], "many")
     single = SingleList(a_list=a_list, operation=lambda x: x + 5)
@@ -55,7 +56,8 @@ def test_ranges():
     a_list = RangedList(5, [0, 1, 2, 3, 4], "many")
     single = SingleList(a_list=a_list, operation=lambda x: x * 3)
     a_list[1:3] = 6
-    assert [(0, 1, 0), (1, 3, 18), (3, 4, 9), (4, 5, 12)] == list(single.iter_ranges())
+    assert [(0, 1, 0), (1, 3, 18), (3, 4, 9), (4, 5, 12)] == \
+        list(single.iter_ranges())
 
 
 def test_ranges_by_slice():

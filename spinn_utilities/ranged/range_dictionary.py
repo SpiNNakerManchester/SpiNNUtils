@@ -90,7 +90,8 @@ class RangeDictionary(AbstractDict):
 
         If key is a str a list type object of AbstractList is returned
 
-        Otherwise a View (AbstractView) over part of the ids in the Dict is returned
+        Otherwise a View (AbstractView) over part of the ids in the Dict is\
+        returned
 
         :param key: a str, int, iterable of int values
         :return: An AbstractList or AbstractView
@@ -113,7 +114,7 @@ class RangeDictionary(AbstractDict):
             results[a_key] = self._value_lists[a_key].get_value_all()
         return results
 
-    def get_values_by_id(self, key, id):
+    def get_values_by_id(self, key, id):  # @ReservedAssignment
         """
         Same as AbstractDict.get_value but limited to a single id
 
@@ -147,7 +148,7 @@ class RangeDictionary(AbstractDict):
         but limited to a collection of ids and update safe
 
         """
-        for id in ids:
+        for id in ids:  # @ReservedAssignment
             yield self.get_values_by_id(key=key, id=id)
 
     def iter_all_values(self, key=None, update_save=False):
@@ -161,7 +162,8 @@ class RangeDictionary(AbstractDict):
                 return self._value_lists[key].__iter__()
         else:
             if update_save:
-                return self.update_safe_iter_all_values(key, range(self._size))
+                return self.update_safe_iter_all_values(
+                    key, xrange(self._size))
             else:
                 return self._values_from_ranges(self.iter_ranges(key))
 
@@ -177,7 +179,7 @@ class RangeDictionary(AbstractDict):
                 self, slice_start=slice_start, slice_stop=slice_stop)
         if update_save:
             return self.update_safe_iter_all_values(
-                key, range(slice_start, slice_stop))
+                key, xrange(slice_start, slice_stop))
         else:
             return self._values_from_ranges(self.iter_ranges_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop, key=key))
@@ -196,7 +198,7 @@ class RangeDictionary(AbstractDict):
 
     def _values_from_ranges(self, ranges):
         for (start, stop, value) in ranges:
-            for _ in range(start, stop):
+            for _ in xrange(start, stop):
                 yield value
 
     def set_value(self, key, value):
@@ -286,7 +288,7 @@ class RangeDictionary(AbstractDict):
             ranges[a_key] = self._value_lists[a_key].iter_ranges()
         return self._merge_ranges(ranges)
 
-    def iter_ranges_by_id(self, key=None, id=None):
+    def iter_ranges_by_id(self, key=None, id=None):  # @ReservedAssignment
         """
         Same AbstractDict.iter_ranges but limited to one id
 

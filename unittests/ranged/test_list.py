@@ -184,4 +184,3 @@ def test_iter_by_slice():
     assert ["a", "a", "a"] == list(rl.iter_by_slice(2, 5))
     rl[3:7] = "b"
     assert ["a", "b", "b"] == list(rl.iter_by_slice(2, 5))
-

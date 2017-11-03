@@ -13,19 +13,19 @@ class AbstractView(AbstractDict):
         """
         Support for the view[x] based the type of the key
 
-        key is a str is currently not supported use get_value instead.
-        In the future this may be supported to return some kind of list
-        (AbstractList) but how to handle a view there to be dettermined
+        key is a str is currently not supported use get_value instead. \
+        In the future this may be supported to return some kind of list\
+        (AbstractList) but how to handle a view there to be determined
 
-        For int and int collections a new view will be returned using
+        For int and int collections a new view will be returned using\
         RangeDictionary.view_factory
 
-        NOTE int are indexes into the list of ids not id values
+        NOTE int are indexes into the list of ids not id values\
         So for a view with ids [2,3,4,5] view[2] will have an id of 4
 
         :param key: str, int or collection of int
         :return: the single value for the str key or a view
-        :raises MultipleValuesException If the keys has multiple values set.
+        :raises MultipleValuesException If the keys has multiple values set.\
             But not if other keys not asked for have multiple values
         """
         if isinstance(key, str):
@@ -42,14 +42,14 @@ class AbstractView(AbstractDict):
         """
         See AbstractDict.set_value
 
-        Note: Unlike __getitem__ int based ids are NOT supported so
+        Note: Unlike __getitem__ int based ids are NOT supported so\
         view[int] == will raise and exception
 
         """
         if isinstance(key, str):
             return self.set_value(key=key, value=value)
         if isinstance(key, (slice, int, tuple, list)):
-            raise KeyError("Settting of a slice/ids not supported")
+            raise KeyError("Setting of a slice/ids not supported")
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
 

@@ -26,8 +26,8 @@ class AbstractList(object):
         reverse, __reversed__
         sort
 
-    In the current version the ids are zero base consecutive numbers so there
-    is no difference between value based ids and index based ids
+    In the current version the ids are zero base consecutive numbers so there\
+    is no difference between value based ids and index based ids\
     but this could change in the future
     """
 
@@ -36,7 +36,7 @@ class AbstractList(object):
         Constructor for a ranged list.
 
         :param size: Fixed length of the list
-        :param key: The dict key this list covers.
+        :param key: The dict key this list covers.\
         This is used only for better Exception messages
         """
         self._size = int(round(size))
@@ -61,13 +61,12 @@ class AbstractList(object):
         """
         If possible returns a single value shared by the whole list.
 
-        For multiple values use for x in list, iter(list) or list.iter,
+        For multiple values use for x in list, iter(list) or list.iter,\
         or one of the iter_ranges methods
 
         :return: Value shared by all elements in the list
-        :raises MultipleValuesException If even one elements has a different
-        value
-
+        :raises MultipleValuesException If even one elements has a different\
+            value
         """
         ranges = self.get_ranges()
         if len(ranges) > 1:
@@ -75,7 +74,7 @@ class AbstractList(object):
                 self._key, ranges[0][2], ranges[1][2])
         return ranges[0][2]
 
-    def _check_id(self, id):
+    def _check_id(self, id):  # @ReservedAssignment
         if id < 0:
             if isinstance(id, int):
                 raise IndexError(
@@ -119,7 +118,7 @@ class AbstractList(object):
         return slice_start, slice_stop
 
     @abstractmethod
-    def get_value_by_id(self, id):
+    def get_value_by_id(self, id):  # @ReservedAssignment
         """
         Returns the value for one item in the list
 
@@ -134,14 +133,13 @@ class AbstractList(object):
         """
         If possible returns a single value shared by the whole slice list.
 
-        For multiple values use for x in list, iter(list) or list.iter,
+        For multiple values use for x in list, iter(list) or list.iter,\
         or one of the iter_ranges methods
 
         :return: Value shared by all elements in the slice
-        :raises MultipleValuesException If even one elements has a different
-        value.
-        Not thrown if elements outside of the slice have a different value
-
+        :raises MultipleValuesException If even one elements has a different\
+            value.
+            Not thrown if elements outside of the slice have a different value
         """
         pass
 
@@ -153,14 +151,14 @@ class AbstractList(object):
         """
         If possible returns a single value shared by all the ids.
 
-        For multiple values use for x in list, iter(list) or list.iter,
+        For multiple values use for x in list, iter(list) or list.iter,\
         or one of the iter_ranges methods
 
         :return: Value shared by all elements with these ids
-        :raises MultipleValuesException If even one elements has a different
-        value.
-        Not thrown if elements outside of the ids have a different value,
-        even if these elements are between the ones pointed to by ids
+        :raises MultipleValuesException If even one elements has a different\
+            value.
+            Not thrown if elements outside of the ids have a different value,\
+            even if these elements are between the ones pointed to by ids
         """
         pass
 
@@ -191,11 +189,11 @@ class AbstractList(object):
         Note: Duplicate/Repeated elements are yielded for each id
 
         :param ids: Ids
-        :return: yeilds the elements pointed to by ids
+        :return: yields the elements pointed to by ids
         """
         ranges = self.iter_ranges()
         current = ranges.next()
-        for id in ids:
+        for id in ids:  # @ReservedAssignment
             # check if ranges reset so too far ahead
             if id < current[0]:
                 ranges = self.iter_ranges()
@@ -215,7 +213,7 @@ class AbstractList(object):
 
         :return: yields each element one by one
         """
-        for id in range(self._size):
+        for id in xrange(self._size):  # @ReservedAssignment
             yield self.get_value_by_id(id)
 
     def __iter__(self):
@@ -228,10 +226,10 @@ class AbstractList(object):
         """
         if self.range_based():
             for (start, stop, value) in self.iter_ranges():
-                for x in range(stop - start):
+                for _ in xrange(stop - start):
                     yield value
         else:
-            for id in range(self._size):
+            for id in xrange(self._size):  # @ReservedAssignment
                 yield self.get_value_by_id(id)
 
     def iter_by_slice(self, slice_start, slice_stop):
@@ -246,10 +244,10 @@ class AbstractList(object):
         if self.range_based():
             for (start, stop, value) in \
                     self.iter_ranges_by_slice(slice_start, slice_stop):
-                for _ in range(start, stop):
+                for _ in xrange(start, stop):
                     yield value
         else:
-            for id in range(slice_start, slice_stop):
+            for id in xrange(slice_start, slice_stop):  # @ReservedAssignment
                 yield self.get_value_by_id(id)
 
     def __contains__(self, item):
@@ -291,20 +289,20 @@ class AbstractList(object):
         """
         pass
 
-    def iter_ranges_by_id(self, id):
+    def iter_ranges_by_id(self, id):  # @ReservedAssignment
         """
         iterator of the range for this id
 
-        Note: The start and stop of the range will be reducded to just the id
+        Note: The start and stop of the range will be reduced to just the id
 
-        This method purpose is one one a control method can select
+        This method purpose is one one a control method can select\
         which iterator to use
 
         :return: yields the one range
         """
 
         self._check_id(id)
-        for (start, stop, value) in self.iter_ranges():
+        for (_, stop, value) in self.iter_ranges():
             if id < stop:
                 yield (id, id + 1, value)
                 break
@@ -314,7 +312,7 @@ class AbstractList(object):
         """
          Fast NOT update safe iterator of the ranges covered by this slice
 
-         Note: The start and stop of the range will be reduced to just the
+         Note: The start and stop of the range will be reduced to just the\
          ids inside the slice
 
          :return: yields each range one by one
@@ -325,10 +323,10 @@ class AbstractList(object):
         """
          Update safe iterator of the ranges covered by these ids
 
-         For consecutive ids where the elements have the same value a single
+         For consecutive ids where the elements have the same value a single\
          range may be yielded
 
-         Note: The start and stop of the range will be reduced to just the
+         Note: The start and stop of the range will be reduced to just the\
          ids
 
          :return: yields each range one by one
@@ -336,7 +334,7 @@ class AbstractList(object):
         range_pointer = 0
         result = None
         ranges = self.get_ranges()
-        for id in ids:
+        for id in ids:  # @ReservedAssignment
             # check if ranges reset so too far ahead
             if id < ranges[range_pointer][0]:
                 range_pointer = 0
@@ -369,4 +367,3 @@ class AbstractList(object):
     def apply_operation(self, operation):
         from spinn_utilities.ranged.single_list import SingleList
         return SingleList(a_list=self, operation=operation)
-

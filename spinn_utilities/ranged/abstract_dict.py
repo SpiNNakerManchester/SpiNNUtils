@@ -9,8 +9,6 @@ class AbstractDict(object):
     Base class for the RangedDictionary and ALL views
 
     This allows the users to not have to worry if they have a view.
-
-
     """
 
     @abstractmethod
@@ -21,9 +19,9 @@ class AbstractDict(object):
         :param key: The key or keys to get the value of. Use None for all
         :type key: str, iterable of str, or None
         :return: If key is a str this returns the single object.
-            If key is iterable (list, tuple, set ect) of str (or None)
+            If key is iterable (list, tuple, set, etc) of str (or None)\
             returns a dictionary object
-        :raises MultipleValuesException If even one of the keys has multiple
+        :raises MultipleValuesException If even one of the keys has multiple\
             values set.
             But not if other keys not asked for have multiple values
         """
@@ -45,11 +43,11 @@ class AbstractDict(object):
 
         All ids in the whole range or view will have this key set
 
-        WARNING: Unlike normal dictionaries this implementaion does NOT
+        WARNING: Unlike normal dictionaries this implementation does NOT\
             allowing adding key
-        WARNING: If a View is created over multiple ranges this method would
-            raise a KeyError if any other ranges does not have the key.
-            (Not currently multuiple ranges not yet supported)
+        WARNING: If a View is created over multiple ranges this method would\
+            raise a KeyError if any other ranges does not have the key.\
+            (Not currently multiple ranges not yet supported)
 
         :param key: key to value being set
         :type key: str
@@ -64,11 +62,11 @@ class AbstractDict(object):
         """
         Returns the ids in range or view.
 
-        If the view is setup with ids out of numerical order the order used
+        If the view is setup with ids out of numerical order the order used\
         to create the view is maintained.
 
-        WARNING: If indexing into a view you are picking the Xth id
-        So if the ids are [2,3,4,5] the view[2] will be the data for id 4
+        WARNING: If indexing into a view you are picking the Xth id.\
+        So if the ids are [2,3,4,5] the view[2] will be the data for id 4\
         and not 2
 
         :return: list of ids
@@ -86,12 +84,12 @@ class AbstractDict(object):
 
         :param key: The key or keys to get the value of. Use None for all
         :type key: str, iterable of str, or None
-        :param update_save: If set True the iteration will work even if values
-            are updated during iteration. If left False the iterator may be
-            faster but behaviour is UNDEFINED and UNCHECKED if ANY values are
+        :param update_save: If set True the iteration will work even if values\
+            are updated during iteration. If left False the iterator may be\
+            faster but behaviour is UNDEFINED and UNCHECKED if ANY values are\
             changed during iteration.
         :return: If key is a str this yields single objects.
-            If key is iterable (list, tuple, set ect) of str (or None)
+            If key is iterable (list, tuple, set, etc) of str (or None)\
             yields dictionary objects
         """
         pass
@@ -101,21 +99,21 @@ class AbstractDict(object):
         """
         Iterates over the ranges(s) for all ids covered by this view
 
-        There will be one yield for each range which may cover one or
+        There will be one yield for each range which may cover one or\
         more ids.
 
-        WARNING: This iterator is NOT update safe!
-            Behaviour is UNDEFINED and UNCHECKED if ANY values are
+        WARNING: This iterator is NOT update safe!\
+            Behaviour is UNDEFINED and UNCHECKED if ANY values are\
             changed during iteration.
 
         :param key: The key or keys to get the value of. Use None for all
         :type key: str, iterable of str, or None
-        :return: yeilds tuples of (start, stop, value)
-        start is INCLUSIVE so is the first id in the range
-        stop is EXCLUSIVE so is the laft id in the range + 1
-        If key is a str this value is a single object.
-        If key is iterable (list, tuple, set ect) of str (or None)
-        value is a dictionary object
+        :return: yields tuples of (start, stop, value)
+            start is INCLUSIVE so is the first id in the range
+            stop is EXCLUSIVE so is the last id in the range + 1
+            If key is a str this value is a single object.
+            If key is iterable (list, tuple, set, etc) of str (or None)\
+            value is a dictionary object
         """
         pass
 
@@ -124,7 +122,7 @@ class AbstractDict(object):
         """
         Sets the default value for a single key.
 
-        Note: Does not change any values
+        Note: Does not change any values\
         but only changes what reset_value would do
 
         :param key: Existing dict key
@@ -140,12 +138,12 @@ class AbstractDict(object):
 
         Unless changed the default is the original value
 
-        Note: Does not change any values
+        Note: Does not change any values\
         but only changes what reset_value would do
 
         :param key: Existing dict key
         :type key: str
-        :return: default fo this key.
+        :return: default for this key.
         """
         pass
 
@@ -156,11 +154,11 @@ class AbstractDict(object):
         Works only if the whole ranges/view has single values.
 
         If key is a str the values are single objects.
-        If key is iterable (list, tuple, set ect) of str (or None)
+        If key is iterable (list, tuple, set, etc) of str (or None)\
         values are dictionary objects
 
         :return: List of (key, value) tuples
-        :raises MultipleValuesException If even one of the keys has multiple
+        :raises MultipleValuesException If even one of the keys has multiple\
             values set.
         """
         results = []
@@ -176,13 +174,13 @@ class AbstractDict(object):
         Works only if the whole ranges/view has single values.
 
         If key is a str the values are single objects.
-        If key is iterable (list, tuple, set ect) of str (or None)
+        If key is iterable (list, tuple, set, etc) of str (or None)\
         values are dictionary objects
 
         This function is update safe.
 
-        :return: yeild (key, value) tuples
-        :raises MultipleValuesException If even one of the keys has multiple
+        :return: yield (key, value) tuples
+        :raises MultipleValuesException If even one of the keys has multiple\
             values set.
         """
         for key in self.keys():
@@ -195,11 +193,11 @@ class AbstractDict(object):
         Works only if the whole ranges/view has single values.
 
         If key is a str the values are single objects.
-        If key is iterable (list, tuple, set ect) of str (or None)
+        If key is iterable (list, tuple, set, etc) of str (or None)\
         values are dictionary objects
 
         :return: List of values
-        :raises MultipleValuesException If even one of the keys has multiple
+        :raises MultipleValuesException If even one of the keys has multiple\
             values set.
         """
         results = []
@@ -215,13 +213,13 @@ class AbstractDict(object):
         Works only if the whole ranges/view has single values.
 
         If key is a str the values are single objects.
-        If key is iterable (list, tuple, set ect) of str (or None)
+        If key is iterable (list, tuple, set, etc) of str (or None)\
         values are dictionary objects
 
         This function is update safe.
 
-        :return: yeild values
-        :raises MultipleValuesException If even one of the keys has multiple
+        :return: yield values
+        :raises MultipleValuesException If even one of the keys has multiple\
             values set.
         """
         for key in self.keys():
@@ -233,8 +231,8 @@ class AbstractDict(object):
 
         :param key: Dict key or id to check
         :type key: str or int
-        :return: True if the str key is one of the dict keys or
-        if the int key is one of the range ids. Otherwise False
+        :return: True if the str key is one of the dict keys or\
+            if the int key is one of the range ids. Otherwise False
         """
         if isinstance(key, str):
             return key in self.keys()
@@ -244,9 +242,10 @@ class AbstractDict(object):
 
     def has_key(self, key):
         """
-        As the Depricated dict has_keys funtion
+        As the Deprecated dict has_keys function
 
         Note: Int keys to ids are not supported
+
         :param key: the key
         :type str
         :return:
@@ -256,7 +255,7 @@ class AbstractDict(object):
     def iterkeys(self):
         """
         Iterates over the dictionary keys
-        :return: yeild of each key
+        :return: yield of each key
         """
         return self.keys().iter()
 
@@ -264,20 +263,20 @@ class AbstractDict(object):
         """
         Lists the ranges(s) for all ids covered by this view
 
-        There will be one yield for each range which may cover one or
+        There will be one yield for each range which may cover one or\
         more ids.
 
-        Note: As the data is created in a single call this is not affected
+        Note: As the data is created in a single call this is not affected\
         by any updates.
 
         :param key: The key or keys to get the value of. Use None for all
         :type key: str, iterable of str, or None
         :return: List of tuples of (start, stop, value)
-        start is INCLUSIVE so is the first id in the range
-        stop is EXCLUSIVE so is the laft id in the range + 1
-        If key is a str this value is a single object.
-        If key is iterable (list, tuple, set ect) of str (or None)
-        value is a dictionary object
+            start is INCLUSIVE so is the first id in the range
+            stop is EXCLUSIVE so is the laft id in the range + 1
+            If key is a str this value is a single object.
+            If key is iterable (list, tuple, set, etc) of str (or None) \
+            value is a dictionary object
         """
         return list(self.iter_ranges(key=key))
 
@@ -285,7 +284,7 @@ class AbstractDict(object):
         """
         Sets the default value for a single key back to the default
 
-        Note: Does not change any values
+        Note: Does not change any values\
         but only changes what reset_value would do
 
         :param key: Existing dict key

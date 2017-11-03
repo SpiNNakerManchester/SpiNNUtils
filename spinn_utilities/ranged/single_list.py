@@ -1,5 +1,5 @@
 from spinn_utilities.ranged.abstract_list import AbstractList
-from spinn_utilities.abstract_base import AbstractBase, abstractmethod
+from spinn_utilities.abstract_base import AbstractBase
 
 from six import add_metaclass
 
@@ -21,7 +21,7 @@ class SingleList(AbstractList):
     def range_based(self):
         return self._a_list.range_based()
 
-    def get_value_by_id(self, id):
+    def get_value_by_id(self, id):  # @ReservedAssignment
         return self._operation(self._a_list.get_value_by_id(id))
 
     def get_value_by_slice(self, slice_start, slice_stop):
@@ -42,4 +42,3 @@ class SingleList(AbstractList):
         for (start, stop, value) in \
                 self._a_list.iter_ranges_by_slice(slice_start, slice_stop):
             yield (start, stop, self._operation(value))
-

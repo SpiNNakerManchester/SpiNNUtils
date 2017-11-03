@@ -1,6 +1,7 @@
 from spinn_utilities.ranged.ranged_list import RangedList
 from spinn_utilities.ranged.dual_list import DualList
 
+
 def test_simple():
     numerator = RangedList(5, 10, "ten")
     divisor = RangedList(5, 5, "five")

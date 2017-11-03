@@ -23,7 +23,7 @@ class _SliceView(AbstractView):
 
     def update_save_iter_all_values(self, key):
         ranged_list = self._range_dict.get_list(key)
-        for id in self.ids():
+        for id in self.ids():  # @ReservedAssignment
             yield ranged_list.get_value_by_id(id=id)
 
     def iter_all_values(self, key, update_save=False):

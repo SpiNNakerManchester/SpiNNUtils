@@ -3,7 +3,7 @@ from spinn_utilities.ranged.abstract_view import AbstractView
 
 class _SingleView(AbstractView):
 
-    def __init__(self, range_dict, id):
+    def __init__(self, range_dict, id):  # @ReservedAssignment
         """
         USE RangeDictionary.view_factory to create views
         """

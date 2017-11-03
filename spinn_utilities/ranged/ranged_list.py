@@ -23,7 +23,7 @@ class RangedList(AbstractList):
     def range_based(self):
         return self._ranged_based
 
-    def get_value_by_id(self, id):
+    def get_value_by_id(self, id):  # @ReservedAssignment
         """
         Returns the value for one item in the list
 
@@ -33,7 +33,7 @@ class RangedList(AbstractList):
         """
         self._check_id(id)
         if self._ranged_based:
-            for (start, stop, value) in self._ranges:
+            for (_, stop, value) in self._ranges:
                 if id < stop:
                     return value
         else:
@@ -56,17 +56,17 @@ class RangedList(AbstractList):
         found_value = False
         result = None
         if self._ranged_based:
-            for (_start, _stop, _value) in self._ranges:
-                if slice_start < _stop:
+            for (_, stop, value) in self._ranges:
+                if slice_start < stop:
                     if found_value:
-                        if result != _value:
+                        if result != value:
                             raise MultipleValuesException(
-                                self._key, result, _value)
+                                self._key, result, value)
                     else:
-                        result = _value
+                        result = value
                         found_value = True
-                    if slice_stop <= _stop:
-                        return _value
+                    if slice_stop <= stop:
+                        return value
         else:
             result = self._ranges[slice_start]
             for _value in self._ranges[slice_start+1: slice_stop]:
@@ -90,7 +90,7 @@ class RangedList(AbstractList):
 
          """
         result = self.get_value_by_id(ids[0])
-        for id in ids[1:]:
+        for id in ids[1:]:  # @ReservedAssignment
             value = self.get_value_by_id(id)
             if result != value:
                 raise MultipleValuesException(self._key, result, value)
@@ -106,7 +106,7 @@ class RangedList(AbstractList):
         """
         if self.range_based():
             for (start, stop, value) in self._ranges:
-                for x in range(stop - start):
+                for _ in xrange(stop - start):
                     yield value
         else:
             for value in self._ranges:
@@ -129,7 +129,7 @@ class RangedList(AbstractList):
             while current[0] < slice_stop:
                 first = max(current[0], slice_start)
                 end_point = min(current[1], slice_stop)
-                for _ in range(end_point - first):
+                for _ in xrange(end_point - first):
                     yield current[2]
                 current = ranges.next()
         else:
@@ -150,7 +150,7 @@ class RangedList(AbstractList):
             previous_start = 0
             for start, value in enumerate(self._ranges):
                 if value != previous_value:
-                    yield(previous_start, start, previous_value)
+                    yield (previous_start, start, previous_value)
                     previous_start = start
                     previous_value = value
             yield (previous_start, start + 1, value)
@@ -166,11 +166,11 @@ class RangedList(AbstractList):
          """
         slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
         if self._ranged_based:
-            for (_start, _stop, value) in self._ranges:
-                if slice_start < _stop:
-                    yield (max(_start, slice_start), min(_stop, slice_stop),
+            for (start, stop, value) in self._ranges:
+                if slice_start < stop:
+                    yield (max(start, slice_start), min(stop, slice_stop),
                            value)
-                    if slice_stop <= _stop:
+                    if slice_stop <= stop:
                         break
         else:
             for index, value in \
@@ -222,7 +222,7 @@ class RangedList(AbstractList):
             self._ranges.append((0, self._size, value))
             self._ranged_based = True
 
-    def set_value_by_id(self, id, value):
+    def set_value_by_id(self, id, value):  # @ReservedAssignment
         """
         Sets the value for a single id to the new value.
 
@@ -279,7 +279,7 @@ class RangedList(AbstractList):
         if self._is_list(value, size=slice_stop - slice_start):
             return self._set_values_list(range(slice_start, slice_stop), value)
         if not self._ranged_based:
-            for id in range(slice_start, slice_stop):
+            for id in xrange(slice_start, slice_stop):  # @ReservedAssignment
                 self._ranges[id] = value
             return
         index = 0

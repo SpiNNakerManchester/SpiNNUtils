@@ -1,6 +1,7 @@
 from spinn_utilities.ranged.ranged_list import RangedList
 from spinn_utilities.ranged.single_list import SingleList
 
+
 def test_simple():
     a_list = RangedList(5, 12, "twelve")
     single = SingleList(a_list=a_list, operation=lambda x: x + 5)

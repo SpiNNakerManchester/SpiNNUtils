@@ -1,5 +1,5 @@
 from spinn_utilities.ranged.abstract_list import AbstractList
-from spinn_utilities.abstract_base import AbstractBase, abstractmethod
+from spinn_utilities.abstract_base import AbstractBase
 
 from six import add_metaclass
 
@@ -24,7 +24,7 @@ class DualList(AbstractList):
     def range_based(self):
         return self._left.range_based() and self._right.range_based()
 
-    def get_value_by_id(self, id):
+    def get_value_by_id(self, id):  # @ReservedAssignment
         return self._operation(
             self._left.get_value_by_id(id), self._right.get_value_by_id(id))
 
@@ -35,7 +35,8 @@ class DualList(AbstractList):
 
     def get_value_by_ids(self, ids):
         return self._operation(
-            self._left.get_value_by_ids(ids), self._right.get_value_by_ids(ids))
+            self._left.get_value_by_ids(ids),
+            self._right.get_value_by_ids(ids))
 
     def iter_by_slice(self, slice_start, slice_stop):
         """

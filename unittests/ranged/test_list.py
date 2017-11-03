@@ -185,3 +185,9 @@ def test_iter_by_slice():
     rl[3:7] = "b"
     assert ["a", "b", "b"] == list(rl.iter_by_slice(2, 5))
 
+
+def test_update_slice_with_list():
+    rl = RangedList(size=10, value="a", key="alpha")
+    rl[2:5] = [2, 3, 4]
+    assert ["a", "a", 2, 3, 4, "a", "a", "a",  "a", "a"] == list(rl)
+

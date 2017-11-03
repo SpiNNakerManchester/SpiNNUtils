@@ -1,6 +1,7 @@
 from spinn_utilities.ranged.abstract_list import AbstractList
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
+import inspect
 
 
 class RangedList(AbstractList):
@@ -176,6 +177,35 @@ class RangedList(AbstractList):
                     enumerate(self._ranges[slice_start: slice_stop]):
                 yield (slice_start + index, slice_start + index + 1, value)
 
+    def _is_list(self, value, size):
+        if hasattr(value, '__iter__'):
+            if len(value) != size:
+                raise Exception(
+                    "The number of values does not equal the size")
+            else:
+                return True
+        if hasattr(value, 'next'):
+            arg_spec = inspect.getargspec(value.next)
+            if "n" in arg_spec.args:
+                return True
+        return False
+
+    def _as_list(self, value, size):
+        """
+        Converts if required the value into a list
+
+        Assumes that _is_list has been called and returned True
+        So does not repeat the checks there unless required
+
+        :param value:
+        :return:
+        """
+        if hasattr(value, 'next'):
+            arg_spec = inspect.getargspec(value.next)
+            if "n" in arg_spec.args:
+                return value.next(n=size)
+        return value
+
     def set_value(self, value):
         """
         Sets ALL elements in the list to this value.
@@ -184,22 +214,13 @@ class RangedList(AbstractList):
 
         :param value: new value
         """
-        if hasattr(value, 'next'):
-            try:
-                value = value.next(n=self._size)
-            except TypeError:
-                pass
-        if not hasattr(value, '__iter__'):
+        if self._is_list(value, self._size):
+            self._ranges =self._as_list(value, self._size)
+            self._ranged_based = False
+        else:
             self._ranges = []
             self._ranges.append((0, self._size, value))
             self._ranged_based = True
-        else:
-            # Deal with multiple values, but not the correct number of them
-            if len(value) != self._size:
-                raise Exception(
-                    "The number of values does not equal the size")
-            self._ranges = value
-            self._ranged_based = False
 
     def set_value_by_id(self, id, value):
         """
@@ -255,6 +276,8 @@ class RangedList(AbstractList):
         :type value: anything
         """
         slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
+        if self._is_list(value, size=slice_stop - slice_start):
+            return self._set_values_list(range(slice_start, slice_stop), value)
         if not self._ranged_based:
             for id in range(slice_start, slice_stop):
                 self._ranges[id] = value
@@ -304,6 +327,18 @@ class RangedList(AbstractList):
         self._ranges[index] = (self._ranges[index][0],
                                self._ranges[index][1], value)
 
+    def _set_values_list(self, ids, value):
+        values = self._as_list(value=value, size=len(ids))
+        for id, value in zip(ids, values):
+            self.set_value_by_id(id, value)
+
+    def set_value_by_ids(self, ids, value):
+        if self._is_list(value, len(ids)):
+            self._set_values_list(ids, value)
+        else:
+            for id in ids:
+                self.set_value_by_id(id, value)
+
     def __setitem__(self, id, value):
         """
         Support for the list[x] == format
@@ -313,16 +348,17 @@ class RangedList(AbstractList):
         :return:
         """
         if isinstance(id, slice):
-            # Get the start, stop, and step from the slice
-            for ii in xrange(*id.indices(len(self))):
-                self.set_value_by_id(ii, value)
+            if slice.step is None or slice.step == 1:
+                self.set_value_by_slice(slice.start, slice.stop, value)
+            else:
+                ids = range(*id.indices(len(self)))
+                self.set_value_by_ids(ids=ids, value=value)
         elif isinstance(id, int):
             if id < 0:  # Handle negative indices
                 id += len(self)
-            self.set_value_by_id(id, value)
+            self.set_value_by_id(id=id, value=value)
         else:
-            for index in id:
-                self.set_value_by_id(index, value)
+            self.set_value_by_ids(ids=id, value=value)
 
     def __setslice__(self, start, stop, value):
         self.set_value_by_slice(start, stop, value)

@@ -215,7 +215,7 @@ class RangedList(AbstractList):
         :param value: new value
         """
         if self._is_list(value, self._size):
-            self._ranges =self._as_list(value, self._size)
+            self._ranges = self._as_list(value, self._size)
             self._ranged_based = False
         else:
             self._ranges = []

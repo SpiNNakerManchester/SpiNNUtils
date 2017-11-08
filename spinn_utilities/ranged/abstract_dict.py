@@ -43,11 +43,12 @@ class AbstractDict(object):
 
         All ids in the whole range or view will have this key set
 
-        WARNING: Unlike normal dictionaries this implementation does NOT\
-            allowing adding key
+        WARNING: This method does not allow adding keys.
+        The dict[str] = will add a new key but is not supported for views
+
         WARNING: If a View is created over multiple ranges this method would\
-            raise a KeyError if any other ranges does not have the key.\
-            (Not currently multiple ranges not yet supported)
+            raise a KeyError if any the ranges does not have the key.\
+            (Currently multiple ranges not yet supported)
 
         :param key: key to value being set
         :type key: str
@@ -84,6 +85,7 @@ class AbstractDict(object):
 
         :param key: The key or keys to get the value of. Use None for all
         :type key: str, iterable of str, or None
+        None is assumed to mean all keys.
         :param update_save: If set True the iteration will work even if values\
             are updated during iteration. If left False the iterator may be\
             faster but behaviour is UNDEFINED and UNCHECKED if ANY values are\
@@ -93,6 +95,27 @@ class AbstractDict(object):
             yields dictionary objects
         """
         pass
+
+    def get_ranges(self, key=None):
+        """
+        Lists the ranges(s) for all ids covered by this view
+
+        There will be one yield for each range which may cover one or\
+        more ids.
+
+        Note: As the data is created in a single call this is not affected\
+        by any updates.
+
+        :param key: The key or keys to get the value of. Use None for all
+        :type key: str, iterable of str, or None
+        :return: List of tuples of (start, stop, value)
+            start is INCLUSIVE so is the first id in the range
+            stop is EXCLUSIVE so is the laft id in the range + 1
+            If key is a str this value is a single object.
+            If key is iterable (list, tuple, set, etc) of str (or None) \
+            value is a dictionary object
+        """
+        return list(self.iter_ranges(key=key))
 
     @abstractmethod
     def iter_ranges(self, key):
@@ -114,20 +137,6 @@ class AbstractDict(object):
             If key is a str this value is a single object.
             If key is iterable (list, tuple, set, etc) of str (or None)\
             value is a dictionary object
-        """
-        pass
-
-    @abstractmethod
-    def set_default(self, key, default):
-        """
-        Sets the default value for a single key.
-
-        Note: Does not change any values\
-        but only changes what reset_value would do
-
-        :param key: Existing dict key
-        :type key: str
-        :param default: Value to be used by reset
         """
         pass
 
@@ -177,7 +186,8 @@ class AbstractDict(object):
         If key is iterable (list, tuple, set, etc) of str (or None)\
         values are dictionary objects
 
-        This function is update safe.
+        This function is safe for value updates but may miss new keys\
+        added during iteration.
 
         :return: yield (key, value) tuples
         :raises MultipleValuesException If even one of the keys has multiple\
@@ -216,7 +226,8 @@ class AbstractDict(object):
         If key is iterable (list, tuple, set, etc) of str (or None)\
         values are dictionary objects
 
-        This function is update safe.
+        This function is safe for value updates but may miss new keys\
+        added during iteration.
 
         :return: yield values
         :raises MultipleValuesException If even one of the keys has multiple\
@@ -259,33 +270,9 @@ class AbstractDict(object):
         """
         return self.keys().iter()
 
-    def get_ranges(self, key=None):
-        """
-        Lists the ranges(s) for all ids covered by this view
-
-        There will be one yield for each range which may cover one or\
-        more ids.
-
-        Note: As the data is created in a single call this is not affected\
-        by any updates.
-
-        :param key: The key or keys to get the value of. Use None for all
-        :type key: str, iterable of str, or None
-        :return: List of tuples of (start, stop, value)
-            start is INCLUSIVE so is the first id in the range
-            stop is EXCLUSIVE so is the laft id in the range + 1
-            If key is a str this value is a single object.
-            If key is iterable (list, tuple, set, etc) of str (or None) \
-            value is a dictionary object
-        """
-        return list(self.iter_ranges(key=key))
-
     def reset(self, key):
         """
-        Sets the default value for a single key back to the default
-
-        Note: Does not change any values\
-        but only changes what reset_value would do
+        Sets the value(s)  for a single key back to the default value
 
         :param key: Existing dict key
         :type key: str

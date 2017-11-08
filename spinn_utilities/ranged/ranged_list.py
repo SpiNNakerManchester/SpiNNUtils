@@ -20,7 +20,7 @@ class RangedList(AbstractList):
             self._default = value
         self.set_value(value)
 
-    def range_based(self):
+    def _range_based(self):
         return self._ranged_based
 
     def get_value_by_id(self, id):  # @ReservedAssignment
@@ -104,7 +104,7 @@ class RangedList(AbstractList):
 
         :return: yields each element one by one
         """
-        if self.range_based():
+        if self._range_based():
             for (start, stop, value) in self._ranges:
                 for _ in xrange(stop - start):
                     yield value

@@ -18,8 +18,8 @@ class SingleList(AbstractList):
         self._a_list = a_list
         self._operation = operation
 
-    def range_based(self):
-        return self._a_list.range_based()
+    def _range_based(self):
+        return self._a_list._range_based()
 
     def get_value_by_id(self, id):  # @ReservedAssignment
         return self._operation(self._a_list.get_value_by_id(id))

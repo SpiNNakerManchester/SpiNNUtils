@@ -1,13 +1,13 @@
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
+from spinn_utilities.ranged.abstract_sized import AbstractSized
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 from six import add_metaclass
-import sys
 
 
 @add_metaclass(AbstractBase)
-class AbstractList(object):
+class AbstractList(AbstractSized):
     """
     A ranged implemantation of list.
 
@@ -39,11 +39,11 @@ class AbstractList(object):
         :param key: The dict key this list covers.\
         This is used only for better Exception messages
         """
-        self._size = int(round(size))
+        AbstractSized.__init__(self, size)
         self._key = key
 
     @abstractmethod
-    def range_based(self):
+    def _range_based(self):
         pass
 
     def __len__(self):
@@ -73,49 +73,6 @@ class AbstractList(object):
             raise MultipleValuesException(
                 self._key, ranges[0][2], ranges[1][2])
         return ranges[0][2]
-
-    def _check_id(self, id):  # @ReservedAssignment
-        if id < 0:
-            if isinstance(id, int):
-                raise IndexError(
-                    "The index {0!d} is out of range.".format(id))
-            raise TypeError("Invalid argument type {}.".format(type(id)))
-        if id >= len(self):
-            if isinstance(id, int):
-                raise IndexError(
-                    "The index {0!d} is out of range.".format(id))
-            raise TypeError("Invalid argument type {}.".format(type(id)))
-
-    def _check_slice(self, slice_start, slice_stop):
-        if slice_start is None:
-            slice_start = 0
-        if slice_stop is None or slice_stop == sys.maxint:
-            slice_stop = self._size
-        if slice_start > slice_stop:
-            if not isinstance(slice_start, int):
-                raise TypeError("Invalid argument type {}."
-                                "".format(type(slice_start)))
-            if not isinstance(slice_stop, int):
-                raise TypeError("Invalid argument type {}."
-                                "".format(type(slice_start)))
-            raise IndexError(
-                "The range_start {0!d} is after the range stop {0!d}."
-                "".format(slice_start, slice_stop))
-        if slice_start < 0:
-            if isinstance(slice_start, int):
-                raise IndexError(
-                    "The range_start {0!d} is out of range."
-                    "".format(slice_start))
-            raise TypeError("Invalid argument type {}."
-                            "".format(type(slice_start)))
-        if slice_stop > len(self):
-            if isinstance(slice_stop, int):
-                raise IndexError(
-                    "The range_stop {0!d} is out of range."
-                    "".format(slice_stop))
-            raise TypeError("Invalid argument type {}."
-                            "".format(type(slice_stop)))
-        return slice_start, slice_stop
 
     @abstractmethod
     def get_value_by_id(self, id):  # @ReservedAssignment
@@ -224,7 +181,7 @@ class AbstractList(object):
 
         :return: yields each element one by one
         """
-        if self.range_based():
+        if self._range_based():
             for (start, stop, value) in self.iter_ranges():
                 for _ in xrange(stop - start):
                     yield value
@@ -241,7 +198,7 @@ class AbstractList(object):
         :return: yields each element one by one
         """
         slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
-        if self.range_based():
+        if self._range_based():
             for (start, stop, value) in \
                     self.iter_ranges_by_slice(slice_start, slice_stop):
                 for _ in xrange(start, stop):
@@ -295,7 +252,7 @@ class AbstractList(object):
 
         Note: The start and stop of the range will be reduced to just the id
 
-        This method purpose is one one a control method can select\
+        This method purpose is so one a control method can select\
         which iterator to use
 
         :return: yields the one range
@@ -321,7 +278,7 @@ class AbstractList(object):
 
     def iter_ranges_by_ids(self, ids):
         """
-         Update safe iterator of the ranges covered by these ids
+         Fast NOT update safe iterator of the ranges covered by these ids
 
          For consecutive ids where the elements have the same value a single\
          range may be yielded

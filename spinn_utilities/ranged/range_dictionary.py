@@ -4,33 +4,35 @@ from spinn_utilities.ranged.single_view import _SingleView
 from spinn_utilities.ranged.slice_view import _SliceView
 from spinn_utilities.ranged.ids_view import _IdsView
 from spinn_utilities.ranged.abstract_dict import AbstractDict
+from spinn_utilities.ranged.abstract_sized import AbstractSized
 
 
-class RangeDictionary(AbstractDict):
+class RangeDictionary(AbstractDict, AbstractSized):
     """
     Main holding class for a range of similar Dictionary object.
 
-    Keys in the dictionary must be str object and no new keys can be added
+    Keys in the dictionary must be str object and can not be removed.
 
-    The size also set init time.
+    New keys can be added using the dict[str] = xyz format
+
+    The size (length of the list) is fixed and set at init time.
     """
 
     def __init__(self, size, defaults=None):
         """
-        Main constuctor for a Ranged Dictionary
+        Main constructor for a Ranged Dictionary
 
         The Object is set up initially where every id in the range will share
         the same value for each key.
-        All keys must be provided at init time.
         All keys must be or type str
         The default Values can be anything including None
 
-        :param size: Fixed number of ids
+        :param size: Fixed number of ids/ Length of lists
         :type size: int
         :param defaults: Default dictionary where all keys must be str
         :type defaults: dict
         """
-        self._size = size
+        AbstractSized.__init__(self, size)
         self._value_lists = dict()
         if defaults is not None:
             for key, value in defaults.items():
@@ -54,16 +56,11 @@ class RangeDictionary(AbstractDict):
         :return: A view over the Range
         """
         if isinstance(key, int):
+            self._check_id(key)
             return _SingleView(range_dict=self, id=key)
         if isinstance(key, slice):
-            if key.start is None:
-                slice_start = 0
-            else:
-                slice_start = key.start
-            if key.stop is None:
-                slice_stop = self._size
-            else:
-                slice_stop = key.stop
+            slice_start, slice_stop = self._check_slice(
+               key.start, key.stop)
             if slice_start == slice_stop:
                 return _SingleView(range_dict=self, id=slice_start)
             elif key.step is None or key.step == 1:
@@ -92,6 +89,8 @@ class RangeDictionary(AbstractDict):
 
         Otherwise a View (AbstractView) over part of the ids in the Dict is\
         returned
+
+        Multiple str object or None are not supported as keys here
 
         :param key: a str, int, iterable of int values
         :return: An AbstractList or AbstractView
@@ -213,6 +212,17 @@ class RangeDictionary(AbstractDict):
         Wrapper around set_value to support range["key"] =
 
         NOTE: range[int] = is not supported
+
+        value can be a single object or None in\
+        which case every value in the list is set to that.
+        value can be a collection but\
+        then it must be exactly the size of all lists in this dictionary.
+        value can be an AbstractList
+
+        :param key: Existing or NEW str dictionary kay
+        :type key: str
+        :param value: List or value to create list based on
+        :return:
         """
         if isinstance(key, str):
             if key in self:
@@ -311,6 +321,8 @@ class RangeDictionary(AbstractDict):
 
         slice_start amd slice_stop are actual id values and
         not indexes into the ids
+        They must also be actual values, so None, maxint, and\
+        negative numbers are not supported.
 
         :param key: see AbstractDict.iter_ranges param key
         :param slice_start: Inclusive ie first id
@@ -350,7 +362,17 @@ class RangeDictionary(AbstractDict):
 
     def set_default(self, key, default):
         """
-        See AbstractDict.set_default
+        Sets the default value for a single key.
+
+        Note: Does not change any values
+        but only changes what reset_value would do
+
+        WARNING: If called on a View it sets the default for the WHOLE range
+        and not just the view.
+
+        :param key: Existing dict key
+        :type key: str
+        :param default: Value to be used by reset
         """
         self._value_lists[key].set_default(default)
 

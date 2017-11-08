@@ -21,8 +21,8 @@ class DualList(AbstractList):
         self._right = right
         self._operation = operation
 
-    def range_based(self):
-        return self._left.range_based() and self._right.range_based()
+    def _range_based(self):
+        return self._left._range_based() and self._right._range_based()
 
     def get_value_by_id(self, id):  # @ReservedAssignment
         return self._operation(
@@ -47,8 +47,8 @@ class DualList(AbstractList):
         :return: yields each element one by one
         """
         slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
-        if self._left.range_based():
-            if self._right.range_based():
+        if self._left._range_based():
+            if self._right._range_based():
                 for (start, stop, value) in \
                         self.iter_ranges_by_slice(slice_start, slice_stop):
                     for _ in range(start, stop):
@@ -61,7 +61,7 @@ class DualList(AbstractList):
                     for _ in range(start, stop):
                         yield self._operation(left_value, right_iter.next())
         else:
-            if self._right.range_based():
+            if self._right._range_based():
                 left_iter = self._left.iter_by_slice(
                     slice_start, slice_stop)
                 right_iter = self._right.iter_ranges_by_slice(

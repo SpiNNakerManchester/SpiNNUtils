@@ -79,3 +79,18 @@ def test_ranges_all():
             (5, 6, {"a": "bar", "b": "bravo"}),
             (6, 7, {"a": "foo", "b": "bravo"})] \
         == slice_view1.get_ranges()
+
+
+def test_left_slice():
+    slice_view1 = rd[4:]
+    assert [(4, 10, {"a": "alpha", "b": "bravo"})] == slice_view1.get_ranges()
+
+
+def test_right_slice():
+    slice_view1 = rd[:4]
+    assert [(0, 4, {"a": "alpha", "b": "bravo"})] == slice_view1.get_ranges()
+
+
+def test_minus_slice():
+    slice_view1 = rd[-8:-4]
+    assert [(2, 6, {"a": "alpha", "b": "bravo"})] == slice_view1.get_ranges()

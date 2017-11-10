@@ -39,4 +39,3 @@ class DoubleDict(object):
         except AttributeError:
             raise ValueError("Value must of type dict. Or at least "
                              "implement keys() and __getitem__")
-

@@ -43,7 +43,7 @@ class AbstractList(AbstractSized):
         self._key = key
 
     @abstractmethod
-    def _range_based(self):
+    def range_based(self):
         pass
 
     def __len__(self):
@@ -181,7 +181,7 @@ class AbstractList(AbstractSized):
 
         :return: yields each element one by one
         """
-        if self._range_based():
+        if self.range_based():
             for (start, stop, value) in self.iter_ranges():
                 for _ in xrange(stop - start):
                     yield value
@@ -198,7 +198,7 @@ class AbstractList(AbstractSized):
         :return: yields each element one by one
         """
         slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
-        if self._range_based():
+        if self.range_based():
             for (start, stop, value) in \
                     self.iter_ranges_by_slice(slice_start, slice_stop):
                 for _ in xrange(start, stop):

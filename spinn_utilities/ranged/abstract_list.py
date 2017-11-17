@@ -324,14 +324,118 @@ class AbstractList(AbstractSized):
 
     @abstractmethod
     def get_default(self):
+        """
+        Gets the default value of the list.
+
+        Just in case we later allow to increase the number of elements
+
+        :return: Default value
+        """
         pass
 
+    def __add__(self, other):
+        """
+        Support for newlist = list1 + list2
+
+        Applied the add operator over this and other to create a new list
+
+        The values of the new list are created on the fly so any changes to
+        the original lists are reflected.
+
+        :param other: another list
+        :type other: AbstractList
+        :return: new list
+        :rtype AbstractList
+        """
+        from spinn_utilities.ranged.dual_list import DualList
+        if isinstance(other, AbstractList):
+            return DualList(
+                left=self, right=other, operation=lambda x, y: x + y)
+
+    def __sub__(self, other):
+        """
+        Support for newlist = list1 - list2
+
+        Applied the add operator over this and other to create a new list
+
+        The values of the new list are created on the fly so any changes to
+        the original lists are reflected.
+
+        :param other: another list
+        :type other: AbstractList
+        :return: new list
+        :rtype AbstractList
+        """
+        from spinn_utilities.ranged.dual_list import DualList
+        if isinstance(other, AbstractList):
+            return DualList(
+                left=self, right=other, operation=lambda x, y: x - y)
+
+    def __mul__(self, other):
+        """
+        Support for newlist = list1 * list2
+
+        Applied the multiplication operator over this and other
+
+        The values of the new list are created on the fly so any changes to
+        the original lists are reflected.
+
+        :param other: another list
+        :type other: AbstractList
+        :return: new list
+        :rtype AbstractList
+        """
+        from spinn_utilities.ranged.dual_list import DualList
+        if isinstance(other, AbstractList):
+            return DualList(
+                left=self, right=other, operation=lambda x, y: x * y)
+
     def __div__(self, other):
+        """
+        Support for newlist = list1 / list2
+
+        Applied the division operator over this and other to create a new list
+
+        The values of the new list are created on the fly so any changes to
+        the original lists are reflected.
+
+        :param other: another list
+        :type other: AbstractList
+        :return: new list
+        :rtype AbstractList
+        """
         from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x / y)
 
+    def __floordiv__(self, other):
+        """
+        Support for newlist = list1 // list2
+
+        Applied the floor division operator over this and other
+
+        :param other: another list
+        :type other: AbstractList
+        :return: new list
+        :rtype AbstractList
+        """
+        from spinn_utilities.ranged.dual_list import DualList
+        if isinstance(other, AbstractList):
+            return DualList(
+                left=self, right=other, operation=lambda x, y: x // y)
+
     def apply_operation(self, operation):
+        """
+        Applies a function on the list to create a new one
+
+        The values of the new list are created on the fly so any changes to
+        the original lists are reflected.
+
+        :param operation: A function that can be applied over the indvidual
+        values to create new ones.
+        :return: new list
+        :rtype AbstractList
+        """
         from spinn_utilities.ranged.single_list import SingleList
         return SingleList(a_list=self, operation=operation)

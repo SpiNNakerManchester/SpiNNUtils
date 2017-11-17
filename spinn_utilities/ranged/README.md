@@ -24,6 +24,7 @@ including \_\_delitem\_\_, \_\_delslice\_\_, clear(), pop(), popitem(), remove()
 
 Methods that increase the size of a dimension are not supported
 including extend, append, and \_\_set\_\_ with a new key
+One exception is that Dict[str] = xyz is supported as only as Dict is an orginal and not a view
 
 Methods that change the order of a list are not supported
 including reverse and sort
@@ -36,5 +37,5 @@ will return the latest results even if changes after the slice was created.
 See AbstractDict.py for extra methods that the whole dictionary and view support
 These include:
 
-No Numerical or comparision operators are currently supported.
-
+The Only numerical operation that are supported are +. -, *, / and //
+Where two dict[str] objects (lists) are combined to form a new list  

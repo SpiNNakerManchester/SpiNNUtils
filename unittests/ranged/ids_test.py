@@ -55,11 +55,11 @@ def test_ranges_by_key():
     view = rd1[1, 2, 4, 5, 6, 7]
     view["a"] = "foo"
     assert [(0, 1, "alpha"), (1, 3, "foo"), (3, 4, "alpha"), (4, 8, "foo"),
-            (8, 10, "alpha")] == rd1.get_ranges(key="a")
-    assert [(1, 3, "foo"), (4, 8, "foo")] == view.get_ranges(key="a")
+            (8, 10, "alpha")] == list(rd1.iter_ranges(key="a"))
+    assert [(1, 3, "foo"), (4, 8, "foo")] == list(view.iter_ranges(key="a"))
     rd1[5]["a"] = "bar"
     assert [(1, 3, "foo"), (4, 5, "foo"), (5, 6, "bar"), (6, 8, "foo")] \
-        == view.get_ranges(key="a")
+        == list(view.iter_ranges(key="a"))
 
 
 def test_ranges_by_all():

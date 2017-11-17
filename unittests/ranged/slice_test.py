@@ -54,43 +54,48 @@ def test_iter_values():
 def test_ranges_by_key():
     rd1 = RangeDictionary(10, defaults)
     slice_view1 = rd1[4:7]
-    assert [(4, 7, "alpha")] == slice_view1.get_ranges(key="a")
+    assert [(4, 7, "alpha")] == list(slice_view1.iter_ranges(key="a"))
     slice_view1["a"] = "foo"
     assert [(0, 4, "alpha"), (4, 7, "foo"), (7, 10, "alpha")] \
         == rd1.get_ranges(key="a")
-    assert [(4, 7, "foo")] == slice_view1.get_ranges(key="a")
+    assert [(4, 7, "foo")] == list(slice_view1.iter_ranges(key="a"))
     rd1[5]["a"] = "bar"
     assert [(4, 5, "foo"), (5, 6, "bar"), (6, 7, "foo")] \
-        == slice_view1.get_ranges(key="a")
+        == list(slice_view1.iter_ranges(key="a"))
 
 
 def test_ranges_all():
     rd1 = RangeDictionary(10, defaults)
     slice_view1 = rd1[4:7]
-    assert [(4, 7, {"a": "alpha", "b": "bravo"})] == slice_view1.get_ranges()
+    assert [(4, 7, {"a": "alpha", "b": "bravo"})] == \
+           list(slice_view1.iter_ranges())
     slice_view1["a"] = "foo"
     assert [(0, 4, {"a": "alpha", "b": "bravo"}),
             (4, 7, {"a": "foo", "b": "bravo"}),
             (7, 10, {"a": "alpha", "b": "bravo"})] \
         == rd1.get_ranges()
-    assert [(4, 7, {"a": "foo", "b": "bravo"})] == slice_view1.get_ranges()
+    assert [(4, 7, {"a": "foo", "b": "bravo"})] == \
+           list(slice_view1.iter_ranges())
     rd1[5]["a"] = "bar"
     assert [(4, 5, {"a": "foo", "b": "bravo"}),
             (5, 6, {"a": "bar", "b": "bravo"}),
-            (6, 7, {"a": "foo", "b": "bravo"})] \
-        == slice_view1.get_ranges()
+            (6, 7, {"a": "foo", "b": "bravo"})] == \
+            list(slice_view1.iter_ranges())
 
 
 def test_left_slice():
     slice_view1 = rd[4:]
-    assert [(4, 10, {"a": "alpha", "b": "bravo"})] == slice_view1.get_ranges()
+    assert [(4, 10, {"a": "alpha", "b": "bravo"})] == \
+           list(slice_view1.iter_ranges())
 
 
 def test_right_slice():
     slice_view1 = rd[:4]
-    assert [(0, 4, {"a": "alpha", "b": "bravo"})] == slice_view1.get_ranges()
+    assert [(0, 4, {"a": "alpha", "b": "bravo"})] == \
+           list(slice_view1.iter_ranges())
 
 
 def test_minus_slice():
     slice_view1 = rd[-8:-4]
-    assert [(2, 6, {"a": "alpha", "b": "bravo"})] == slice_view1.get_ranges()
+    assert [(2, 6, {"a": "alpha", "b": "bravo"})] == \
+           list(slice_view1.iter_ranges())

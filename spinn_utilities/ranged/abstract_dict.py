@@ -118,7 +118,7 @@ class AbstractDict(object):
         return list(self.iter_ranges(key=key))
 
     @abstractmethod
-    def iter_ranges(self, key):
+    def iter_ranges(self, key=None):
         """
         Iterates over the ranges(s) for all ids covered by this view
 

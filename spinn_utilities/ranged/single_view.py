@@ -30,5 +30,5 @@ class _SingleView(AbstractView):
         return self._range_dict.get_list(key).set_value_by_id(
             value=value, id=self._id)
 
-    def iter_ranges(self, key):
+    def iter_ranges(self, key=None):
         return self._range_dict.iter_ranges_by_id(key=key, id=self._id)

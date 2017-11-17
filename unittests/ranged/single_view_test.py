@@ -65,11 +65,11 @@ def test_iter_values_keys():
 def test_ranges_by_key():
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1[4]
-    assert [(4, 5, "alpha")] == single1.get_ranges(key="a")
+    assert [(4, 5, "alpha")] == list(single1.iter_ranges(key="a"))
     single1["a"] = "foo"
     assert [(0, 4, "alpha"), (4, 5, "foo"), (5, 10, "alpha")] == \
         rd1.get_ranges(key="a")
-    assert [(4, 5, "foo")] == single1.get_ranges(key="a")
+    assert [(4, 5, "foo")] == list(single1.iter_ranges(key="a"))
 
 
 def test_ranges_all():

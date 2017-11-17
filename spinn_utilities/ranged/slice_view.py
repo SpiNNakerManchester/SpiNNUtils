@@ -42,6 +42,6 @@ class _SliceView(AbstractView):
         self._range_dict.get_list(key).set_value_by_slice(
             slice_start=self._start, slice_stop=self._stop, value=value)
 
-    def iter_ranges(self, key):
+    def iter_ranges(self, key=None):
         return self._range_dict.iter_ranges_by_slice(
             key=key, slice_start=self._start, slice_stop=self._stop)

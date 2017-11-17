@@ -44,6 +44,17 @@ class AbstractList(AbstractSized):
 
     @abstractmethod
     def range_based(self):
+        """
+        Shows if the list is suited to deal with ranges or not.
+
+        All list must implement all the range functions, \
+        but there are times when using ranges will probably be slower than \
+        using individual values.
+        For example the indivudual values may be stored in a list in which \
+        case the ranges are created on demand.
+
+        :return: True if and only if Ranged based calls are recommended.
+        """
         pass
 
     def __len__(self):
@@ -53,9 +64,6 @@ class AbstractList(AbstractSized):
         :return: the initial and Fixed size of the list
         """
         return self._size
-
-    def get_ranges(self):
-        return list(self.iter_ranges())
 
     def get_value_all(self):
         """
@@ -68,11 +76,16 @@ class AbstractList(AbstractSized):
         :raises MultipleValuesException If even one elements has a different\
             value
         """
-        ranges = self.get_ranges()
-        if len(ranges) > 1:
+        # This is not ellegant code but as the ranges could be created on the
+        # fly the best way.
+        iter = self.iter_ranges()
+        only_range = iter.next()
+        try:
+            one_too_many = iter.next()
             raise MultipleValuesException(
-                self._key, ranges[0][2], ranges[1][2])
-        return ranges[0][2]
+                self._key, only_range[2], one_too_many[2])
+        except StopIteration:
+            return only_range[2]
 
     @abstractmethod
     def get_value_by_id(self, id):  # @ReservedAssignment
@@ -278,19 +291,19 @@ class AbstractList(AbstractSized):
 
     def iter_ranges_by_ids(self, ids):
         """
-         Fast NOT update safe iterator of the ranges covered by these ids
+        Fast NOT update safe iterator of the ranges covered by these ids
 
-         For consecutive ids where the elements have the same value a single\
-         range may be yielded
+        For consecutive ids where the elements have the same value a single\
+        range may be yielded
 
-         Note: The start and stop of the range will be reduced to just the\
-         ids
+        Note: The start and stop of the range will be reduced to just the\
+        ids
 
-         :return: yields each range one by one
-         """
+        :return: yields each range one by one
+        """
         range_pointer = 0
         result = None
-        ranges = self.get_ranges()
+        ranges = list(self.iter_ranges())
         for id in ids:  # @ReservedAssignment
             # check if ranges reset so too far ahead
             if id < ranges[range_pointer][0]:
@@ -306,8 +319,6 @@ class AbstractList(AbstractSized):
                     result = (result[0], id + 1, result[2])
                     continue
                 yield result
-                # get ranges againb in case changed
-                ranges = self.get_ranges()
             result = (id, id + 1, ranges[range_pointer][2])
         yield result
 

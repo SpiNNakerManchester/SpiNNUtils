@@ -6,6 +6,61 @@ This dimension supports the main list funtions.
 The second dimension is keys which must be Strings.
 This dimension supports the main dict methods.
 
+**USAGE**
+1. Create a RangeDict
+    data = RangeDictionary(size=x)
+
+2. Add Lists to the range by.
+
+a. Setting all the values the same so
+    data["foo"] = foo_value
+
+b. Setting using a list of size x
+
+    foo_list = range(x)
+
+    data["foo"] = foo_list          
+
+c. Setting using something that implements next(n) to return n objects
+
+    data["foo"] = foo_creator
+
+    \# Same result as
+
+    foo_list = foo_creator.next(n)
+
+    data["foo"] = foo_list          
+
+d. create a new list by operaing over two lists
+
+    data["foo"] = foo...
+
+    data["bar"] = bar...
+
+    data["add"] = data["foo"] + data["bar"]
+    
+
+e. create a new list by applying operatoion to a list
+
+    data["foo"] = foo...
+
+    data["2_foo"] = data["foo"].apply_operation(lambda x: x * 2)        
+
+3.  Changing the value of an existing list is saver via
+
+    data.set_value(key="foo", value=foo...)      
+
+    \# There are also set_value by id, by slice and by ids methods    
+
+    \# You can not set the values of a derived list
+    
+    \# Changing the values for a list also effects the lists drived from it.
+    
+4. Get the values as a list like Object
+   
+   data["foo"]          
+    
+    
 **NOTE**: As Dictionary value and item methods expect to return a single value,
 where the result would result in multiple values an Exception is raised.
 

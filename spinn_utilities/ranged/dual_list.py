@@ -11,8 +11,9 @@ class DualList(AbstractList):
         """
         Constructor for a ranged list.
 
-        :param key: The dict key this list covers.
-        This is used only for better Exception messages
+        :param key:\
+            The dict key this list covers.
+            This is used only for better Exception messages
         """
         if left._size != right._size:
             raise Exception("Two list must have the same size")

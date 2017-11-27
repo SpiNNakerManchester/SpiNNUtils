@@ -90,8 +90,8 @@ class RangedList(AbstractList):
 
          """
         result = self.get_value_by_id(ids[0])
-        for id in ids[1:]:  # @ReservedAssignment
-            value = self.get_value_by_id(id)
+        for id_value in ids[1:]:
+            value = self.get_value_by_id(id_value)
             if result != value:
                 raise MultipleValuesException(self._key, result, value)
         return result
@@ -226,8 +226,9 @@ class RangedList(AbstractList):
         """
         Sets the value for a single id to the new value.
 
-        Note: This method only works for a single possitive int id.
+        Note: This method only works for a single positive int id.
         use set or __set__ for slices, tuples, lists and negative indexes
+
         :param id: Single id
         :type id:int
         :param value:  The value to save
@@ -240,7 +241,10 @@ class RangedList(AbstractList):
         for index, (start, stop, old_value) in enumerate(self._ranges):
             if id < stop:
                 if value == old_value:
-                    return  # alreay set as needed so do nothing
+
+                    # already set as needed so do nothing
+                    return
+
                 self._ranges[index] = (id, id + 1, value)
                 if id + 1 < stop:  # Need a new range after the id
                     self._ranges.insert(index + 1, (id + 1, stop, old_value))
@@ -266,8 +270,9 @@ class RangedList(AbstractList):
         """
         Sets the value for a single range to the new value.
 
-        Note: This method only works for a single possitive int id.
+        Note: This method only works for a single positive int id.
         use set or __set__ for slices, tuples, lists and negative indexes
+
         :param slice_start: Start of the range
         :type slice_start:int
         :param slice_stop: Exclusive end of the range
@@ -279,8 +284,8 @@ class RangedList(AbstractList):
         if self._is_list(value, size=slice_stop - slice_start):
             return self._set_values_list(range(slice_start, slice_stop), value)
         if not self._ranged_based:
-            for id in xrange(slice_start, slice_stop):  # @ReservedAssignment
-                self._ranges[id] = value
+            for id_value in xrange(slice_start, slice_stop):
+                self._ranges[id_value] = value
             return
         index = 0
         # Skip ranges before set range
@@ -329,17 +334,17 @@ class RangedList(AbstractList):
 
     def _set_values_list(self, ids, value):
         values = self._as_list(value=value, size=len(ids))
-        for id, value in zip(ids, values):
-            self.set_value_by_id(id, value)
+        for id_value, value in zip(ids, values):
+            self.set_value_by_id(id_value, value)
 
     def set_value_by_ids(self, ids, value):
         if self._is_list(value, len(ids)):
             self._set_values_list(ids, value)
         else:
-            for id in ids:
-                self.set_value_by_id(id, value)
+            for id_value in ids:
+                self.set_value_by_id(id_value, value)
 
-    def __setitem__(self, id, value):
+    def __setitem__(self, id, value):  # @ReservedAssignment
         """
         Support for the list[x] == format
 
@@ -367,7 +372,8 @@ class RangedList(AbstractList):
         """
         Returns a copy of the list of ranges.
 
-        As this is a copy it will not refelct any updates
+        As this is a copy it will not reflect any updates
+
         :return:
         """
         if self._ranged_based:

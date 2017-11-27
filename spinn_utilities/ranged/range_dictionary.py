@@ -13,9 +13,9 @@ class RangeDictionary(AbstractDict, AbstractSized):
 
     Keys in the dictionary must be str object and can not be removed.
 
-    New keys can be added using the dict[str] = xyz format
+    New keys can be added using the dict[str] = value format
 
-    The size (length of the list) is fixed and set at init time.
+    The size (length of the list) is fixed and set at initialisation time.
     """
 
     def __init__(self, size, defaults=None):
@@ -46,7 +46,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         This is the preferred way of creating new views as it check parameters
         and returns the most efficient view.
 
-        Note the __getitem__ methods called by Object[id] and similar deffer
+        Note the __getitem__ methods called by Object[id] and similar defer
         to this method so are fine to use.
 
         The id(s) used are the actual ids in the Range and not indexes on
@@ -147,8 +147,8 @@ class RangeDictionary(AbstractDict, AbstractSized):
         but limited to a collection of ids and update safe
 
         """
-        for id in ids:  # @ReservedAssignment
-            yield self.get_values_by_id(key=key, id=id)
+        for id_value in ids:  # @ReservedAssignment
+            yield self.get_values_by_id(key=key, id=id_value)
 
     def iter_all_values(self, key=None, update_save=False):
         """
@@ -219,7 +219,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         then it must be exactly the size of all lists in this dictionary.
         value can be an AbstractList
 
-        :param key: Existing or NEW str dictionary kay
+        :param key: Existing or NEW str dictionary key
         :type key: str
         :param value: List or value to create list based on
         :return:
@@ -236,7 +236,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
                                           key=key)
                     self._value_lists[key] = new_list
         elif isinstance(key, (slice, int, tuple, list)):
-            raise KeyError("Settting of a slice/ids not supported")
+            raise KeyError("Setting of a slice/ids not supported")
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
 
@@ -319,13 +319,13 @@ class RangeDictionary(AbstractDict, AbstractSized):
         """
         Same AbstractDict.iter_ranges but limited to a simple slice
 
-        slice_start amd slice_stop are actual id values and
+        slice_start and slice_stop are actual id values and
         not indexes into the ids
-        They must also be actual values, so None, maxint, and\
+        They must also be actual values, so None, max_int, and\
         negative numbers are not supported.
 
         :param key: see AbstractDict.iter_ranges param key
-        :param slice_start: Inclusive ie first id
+        :param slice_start: Inclusive i.e. first id
         :param slice_stop:  Exclusive to last id + 1
         :return: see AbstractDict.iter_ranges
         """

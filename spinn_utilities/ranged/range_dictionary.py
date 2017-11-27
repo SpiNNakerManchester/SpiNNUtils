@@ -22,12 +22,12 @@ class RangeDictionary(AbstractDict, AbstractSized):
         """
         Main constructor for a Ranged Dictionary
 
-        The Object is set up initially where every id in the range will share
+        The Object is set up initially where every id in the range will share\
         the same value for each key.
-        All keys must be or type str
-        The default Values can be anything including None
+        All keys must be of type str.
+        The default Values can be anything including None.
 
-        :param size: Fixed number of ids/ Length of lists
+        :param size: Fixed number of ids / Length of lists
         :type size: int
         :param defaults: Default dictionary where all keys must be str
         :type defaults: dict
@@ -35,7 +35,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         AbstractSized.__init__(self, size)
         self._value_lists = dict()
         if defaults is not None:
-            for key, value in defaults.items():
+            for key, value in defaults.iteritems():
                 self._value_lists[key] = RangedList(
                     size=size, value=value, key=key)
 
@@ -55,31 +55,47 @@ class RangeDictionary(AbstractDict, AbstractSized):
         :param key: A single int id, a Slice object or an Iterable of int ids
         :return: A view over the Range
         """
+        # Key is an int - return single view
         if isinstance(key, int):
-            self._check_id(key)
+            self._check_id_in_range(key)
             return _SingleView(range_dict=self, id=key)
+
+        # Key is a slice - return a sliced view
         if isinstance(key, slice):
-            slice_start, slice_stop = self._check_slice(
+            slice_start, slice_stop = self._check_slice_in_range(
                key.start, key.stop)
+
+            # Slice is really just one item - return a single view
             if slice_start == slice_stop:
                 return _SingleView(range_dict=self, id=slice_start)
+
+            # Slice is continuous - return a slice view
             elif key.step is None or key.step == 1:
                 return _SliceView(range_dict=self, start=slice_start,
                                   stop=slice_stop)
-            else:
-                key = range(self._size)[key]
+
+            # Slice is really a list of integers - change it and continue below
+            key = range(self._size)[key]
+
+        # Key can only now be an iterable of ints so make it a list and check
+        key = list(key)
         if not all(isinstance(x, int) for x in key):
             raise KeyError("Only list/tuple of int are supported")
+
+        # Key is really just a single int - return single view
         if len(key) == 1:
             return _SingleView(range_dict=self, id=key[0])
-        key = list(key)
+
+        # Key is really just a slice (i.e. one of each key in order without
+        # holes) - return a slice view
         if len(key) == key[-1] - key[0] + 1:
             in_order = sorted(key)
             if in_order == key:
                 return _SliceView(
                     range_dict=self, start=key[0], stop=key[-1] + 1)
-        else:
-            return _IdsView(range_dict=self, ids=key)
+
+        # Random jumble of ints - return an IDs view
+        return _IdsView(range_dict=self, ids=key)
 
     def __getitem__(self, key):
         """

@@ -47,7 +47,7 @@ class DualList(AbstractList):
 
         :return: yields each element one by one
         """
-        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
+        slice_start, slice_stop = self._check_slice_in_range(slice_start, slice_stop)
         if self._left.range_based():
             if self._right.range_based():
                 for (start, stop, value) in \

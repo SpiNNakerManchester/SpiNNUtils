@@ -31,7 +31,7 @@ class RangedList(AbstractList):
         :type id: int
         :return: The value of that element
         """
-        self._check_id(id)
+        self._check_id_in_range(id)
         if self._ranged_based:
             for (_, stop, value) in self._ranges:
                 if id < stop:
@@ -52,7 +52,8 @@ class RangedList(AbstractList):
          Not thrown if elements outside of the slice have a different value
 
          """
-        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
+        slice_start, slice_stop = self._check_slice_in_range(
+            slice_start, slice_stop)
         found_value = False
         result = None
         if self._ranged_based:
@@ -120,7 +121,8 @@ class RangedList(AbstractList):
 
         :return: yields each element one by one
         """
-        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
+        slice_start, slice_stop = self._check_slice_in_range(
+            slice_start, slice_stop)
         if self._ranged_based:
             ranges = self.iter_ranges()
             current = ranges.next()
@@ -164,7 +166,8 @@ class RangedList(AbstractList):
 
          :return: yields each range one by one
          """
-        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
+        slice_start, slice_stop = self._check_slice_in_range(
+            slice_start, slice_stop)
         if self._ranged_based:
             for (start, stop, value) in self._ranges:
                 if slice_start < stop:
@@ -234,7 +237,7 @@ class RangedList(AbstractList):
         :param value:  The value to save
         :type value: anything
         """
-        self._check_id(id)
+        self._check_id_in_range(id)
         if not self._ranged_based:
             self._ranges[id] = value
             return
@@ -280,7 +283,8 @@ class RangedList(AbstractList):
         :param value:  The value to save
         :type value: anything
         """
-        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
+        slice_start, slice_stop = self._check_slice_in_range(
+            slice_start, slice_stop)
         if self._is_list(value, size=slice_stop - slice_start):
             return self._set_values_list(range(slice_start, slice_stop), value)
         if not self._ranged_based:

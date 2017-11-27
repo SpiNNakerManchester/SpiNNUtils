@@ -210,7 +210,8 @@ class AbstractList(AbstractSized):
 
         :return: yields each element one by one
         """
-        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
+        slice_start, slice_stop = self._check_slice_in_range(
+            slice_start, slice_stop)
         if self.range_based():
             for (start, stop, value) in \
                     self.iter_ranges_by_slice(slice_start, slice_stop):
@@ -272,7 +273,7 @@ class AbstractList(AbstractSized):
         :return: yields the one range
         """
 
-        self._check_id(id)
+        self._check_id_in_range(id)
         for (_, stop, value) in self.iter_ranges():
             if id < stop:
                 yield (id, id + 1, value)

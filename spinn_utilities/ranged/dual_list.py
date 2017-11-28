@@ -6,11 +6,17 @@ from six import add_metaclass
 
 @add_metaclass(AbstractBase)
 class DualList(AbstractList):
+    """ A list which combines two other lists with an operation.
+    """
 
     def __init__(self, left, right, operation, key=None):
         """
-        Constructor for a ranged list.
 
+        :param left: The first list to combine
+        :param right: The second list to combine
+        :param operation:\
+            The operation to perform as a function that takes two values and\
+            returns the result of the operation
         :param key:\
             The dict key this list covers.
             This is used only for better Exception messages
@@ -51,11 +57,15 @@ class DualList(AbstractList):
             slice_start, slice_stop)
         if self._left.range_based():
             if self._right.range_based():
+
+                # Both lists are range based
                 for (start, stop, value) in \
                         self.iter_ranges_by_slice(slice_start, slice_stop):
                     for _ in range(start, stop):
                         yield value
             else:
+
+                # Left list is range based, right is not
                 left_iter = self._left.iter_ranges_by_slice(
                     slice_start, slice_stop)
                 right_iter = self._right.iter_by_slice(slice_start, slice_stop)
@@ -64,6 +74,8 @@ class DualList(AbstractList):
                         yield self._operation(left_value, right_iter.next())
         else:
             if self._right.range_based():
+
+                # Right list is range based left is not
                 left_iter = self._left.iter_by_slice(
                     slice_start, slice_stop)
                 right_iter = self._right.iter_ranges_by_slice(
@@ -72,6 +84,8 @@ class DualList(AbstractList):
                     for _ in range(start, stop):
                         yield self._operation(left_iter.next(), right_value)
             else:
+
+                # Neither list is range based
                 left_iter = self._left.iter_by_slice(slice_start, slice_stop)
                 right_iter = self._right.iter_by_slice(slice_start, slice_stop)
                 while True:
@@ -88,19 +102,19 @@ class DualList(AbstractList):
         return self._merge_ranges(left_iter, right_iter)
 
     def _merge_ranges(self, left_iter, right_iter):
-        left = left_iter.next()
-        right = right_iter.next()
+        (left_start, left_stop, left_value) = left_iter.next()
+        (right_start, right_stop, right_value) = right_iter.next()
         while True:
-            yield (max(left[0], right[0]),
-                   min(left[1], right[1]),
-                   self._operation(left[2], right[2]))
-            if left[1] < right[1]:
-                left = left_iter.next()
-            elif left[1] > right[1]:
-                right = right_iter.next()
+            yield (max(left_start, right_start),
+                   min(left_stop, right_stop),
+                   self._operation(left_value, right_value))
+            if left_stop < right_stop:
+                (left_start, left_stop, left_value) = left_iter.next()
+            elif left_stop > right_stop:
+                (right_start, right_stop, right_value) = right_iter.next()
             else:
-                left = left_iter.next()
-                right = right_iter.next()
+                (left_start, left_stop, left_value) = left_iter.next()
+                (right_start, right_stop, right_value) = right_iter.next()
 
     def get_default(self):
         self._operation(self._left.get_default(), self._right.get_default())

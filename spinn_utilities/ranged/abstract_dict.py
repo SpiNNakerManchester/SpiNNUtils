@@ -66,7 +66,7 @@ class AbstractDict(object):
         If the view is setup with ids out of numerical order the order used\
         to create the view is maintained.
 
-        WARNING: If indexing into a view you are picking the Xth id.\
+        WARNING: If indexing into a view you are picking the X'th id.\
         So if the ids are [2,3,4,5] the view[2] will be the data for id 4\
         and not 2
 
@@ -110,7 +110,7 @@ class AbstractDict(object):
         :type key: str, iterable of str, or None
         :return: List of tuples of (start, stop, value)
             start is INCLUSIVE so is the first id in the range
-            stop is EXCLUSIVE so is the laft id in the range + 1
+            stop is EXCLUSIVE so is the last id in the range + 1
             If key is a str this value is a single object.
             If key is iterable (list, tuple, set, etc) of str (or None) \
             value is a dictionary object

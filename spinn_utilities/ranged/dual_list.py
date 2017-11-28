@@ -11,8 +11,9 @@ class DualList(AbstractList):
         """
         Constructor for a ranged list.
 
-        :param key: The dict key this list covers.
-        This is used only for better Exception messages
+        :param key:\
+            The dict key this list covers.
+            This is used only for better Exception messages
         """
         if left._size != right._size:
             raise Exception("Two list must have the same size")
@@ -46,7 +47,8 @@ class DualList(AbstractList):
 
         :return: yields each element one by one
         """
-        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
+        slice_start, slice_stop = self._check_slice_in_range(
+            slice_start, slice_stop)
         if self._left.range_based():
             if self._right.range_based():
                 for (start, stop, value) in \

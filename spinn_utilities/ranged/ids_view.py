@@ -21,8 +21,8 @@ class _IdsView(AbstractView):
 
     def set_value(self, key, value):
         ranged_list = self._range_dict.get_list(key)
-        for id in self._ids:  # @ReservedAssignment
-            ranged_list.set_value_by_id(id=id, value=value)
+        for id_value in self._ids:
+            ranged_list.set_value_by_id(id=id_value, value=value)
 
     def set_value_by_ids(self, key, ids, value):  # @UnusedVariable
             self._value_lists[key].set_value_id(id=id, value=value)

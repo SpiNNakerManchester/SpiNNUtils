@@ -3,7 +3,7 @@ import sys
 
 class AbstractSized(object):
     """
-    Based class for slice and id checking vs size
+    Based class for slice and id checking against size
     """
 
     __slots__ = ("_size")
@@ -24,7 +24,7 @@ class AbstractSized(object):
         """
         return self._size
 
-    def _check_id(self, id):  # @ReservedAssignment
+    def _check_id_in_range(self, id):  # @ReservedAssignment
         if id < 0:
             if isinstance(id, (int, long)):
                 raise IndexError(
@@ -36,7 +36,7 @@ class AbstractSized(object):
                     "The index {0!d} is out of range.".format(id))
             raise TypeError("Invalid argument type {}.".format(type(id)))
 
-    def _check_slice(self, slice_start, slice_stop):
+    def _check_slice_in_range(self, slice_start, slice_stop):
         if slice_start is None:
             slice_start = 0
         elif slice_start < 0:

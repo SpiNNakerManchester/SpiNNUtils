@@ -1,7 +1,7 @@
-These classes present a RangeMapping Matrix implementaion
+These classes present a RangeMapping Matrix implementation
 
-The main dimension is ids which must be zero based continious int values.
-This dimension supports the main list funtions.
+The main dimension is ids which must be zero based continuous int values.
+This dimension supports the main list functions.
 
 The second dimension is keys which must be Strings.
 This dimension supports the main dict methods.
@@ -31,7 +31,7 @@ c. Setting using something that implements next(n) to return n objects
 
     data["foo"] = foo_list          
 
-d. create a new list by operaing over two lists
+d. create a new list by operating over two lists
 
     data["foo"] = foo...
 
@@ -40,7 +40,7 @@ d. create a new list by operaing over two lists
     data["add"] = data["foo"] + data["bar"]
     
 
-e. create a new list by applying operatoion to a list
+e. create a new list by applying operation to a list
 
     data["foo"] = foo...
 
@@ -54,7 +54,7 @@ e. create a new list by applying operatoion to a list
 
     \# You can not set the values of a derived list
     
-    \# Changing the values for a list also effects the lists drived from it.
+    \# Changing the values for a list also effects the lists derived from it.
     
 4. Get the values as a list like Object
    
@@ -79,7 +79,8 @@ including \_\_delitem\_\_, \_\_delslice\_\_, clear(), pop(), popitem(), remove()
 
 Methods that increase the size of a dimension are not supported
 including extend, append, and \_\_set\_\_ with a new key
-One exception is that Dict[str] = xyz is supported as only as Dict is an orginal and not a view
+One exception is that Dict[str] = xyz is supported as only as Dict is an 
+original and not a view
 
 Methods that change the order of a list are not supported
 including reverse and sort

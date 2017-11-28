@@ -13,21 +13,21 @@ class RangeDictionary(AbstractDict, AbstractSized):
 
     Keys in the dictionary must be str object and can not be removed.
 
-    New keys can be added using the dict[str] = xyz format
+    New keys can be added using the dict[str] = value format
 
-    The size (length of the list) is fixed and set at init time.
+    The size (length of the list) is fixed and set at initialisation time.
     """
 
     def __init__(self, size, defaults=None):
         """
         Main constructor for a Ranged Dictionary
 
-        The Object is set up initially where every id in the range will share
+        The Object is set up initially where every id in the range will share\
         the same value for each key.
-        All keys must be or type str
-        The default Values can be anything including None
+        All keys must be of type str.
+        The default Values can be anything including None.
 
-        :param size: Fixed number of ids/ Length of lists
+        :param size: Fixed number of ids / Length of lists
         :type size: int
         :param defaults: Default dictionary where all keys must be str
         :type defaults: dict
@@ -35,7 +35,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         AbstractSized.__init__(self, size)
         self._value_lists = dict()
         if defaults is not None:
-            for key, value in defaults.items():
+            for key, value in defaults.iteritems():
                 self._value_lists[key] = RangedList(
                     size=size, value=value, key=key)
 
@@ -46,7 +46,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         This is the preferred way of creating new views as it check parameters
         and returns the most efficient view.
 
-        Note the __getitem__ methods called by Object[id] and similar deffer
+        Note the __getitem__ methods called by Object[id] and similar defer
         to this method so are fine to use.
 
         The id(s) used are the actual ids in the Range and not indexes on
@@ -55,31 +55,47 @@ class RangeDictionary(AbstractDict, AbstractSized):
         :param key: A single int id, a Slice object or an Iterable of int ids
         :return: A view over the Range
         """
+        # Key is an int - return single view
         if isinstance(key, int):
-            self._check_id(key)
+            self._check_id_in_range(key)
             return _SingleView(range_dict=self, id=key)
+
+        # Key is a slice - return a sliced view
         if isinstance(key, slice):
-            slice_start, slice_stop = self._check_slice(
+            slice_start, slice_stop = self._check_slice_in_range(
                key.start, key.stop)
+
+            # Slice is really just one item - return a single view
             if slice_start == slice_stop:
                 return _SingleView(range_dict=self, id=slice_start)
+
+            # Slice is continuous - return a slice view
             elif key.step is None or key.step == 1:
                 return _SliceView(range_dict=self, start=slice_start,
                                   stop=slice_stop)
-            else:
-                key = range(self._size)[key]
+
+            # Slice is really a list of integers - change it and continue below
+            key = range(self._size)[key]
+
+        # Key can only now be an iterable of ints so make it a list and check
+        key = list(key)
         if not all(isinstance(x, int) for x in key):
             raise KeyError("Only list/tuple of int are supported")
+
+        # Key is really just a single int - return single view
         if len(key) == 1:
             return _SingleView(range_dict=self, id=key[0])
-        key = list(key)
+
+        # Key is really just a slice (i.e. one of each key in order without
+        # holes) - return a slice view
         if len(key) == key[-1] - key[0] + 1:
             in_order = sorted(key)
             if in_order == key:
                 return _SliceView(
                     range_dict=self, start=key[0], stop=key[-1] + 1)
-        else:
-            return _IdsView(range_dict=self, ids=key)
+
+        # Random jumble of ints - return an IDs view
+        return _IdsView(range_dict=self, ids=key)
 
     def __getitem__(self, key):
         """
@@ -147,8 +163,8 @@ class RangeDictionary(AbstractDict, AbstractSized):
         but limited to a collection of ids and update safe
 
         """
-        for id in ids:  # @ReservedAssignment
-            yield self.get_values_by_id(key=key, id=id)
+        for id_value in ids:  # @ReservedAssignment
+            yield self.get_values_by_id(key=key, id=id_value)
 
     def iter_all_values(self, key=None, update_save=False):
         """
@@ -219,7 +235,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         then it must be exactly the size of all lists in this dictionary.
         value can be an AbstractList
 
-        :param key: Existing or NEW str dictionary kay
+        :param key: Existing or NEW str dictionary key
         :type key: str
         :param value: List or value to create list based on
         :return:
@@ -236,7 +252,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
                                           key=key)
                     self._value_lists[key] = new_list
         elif isinstance(key, (slice, int, tuple, list)):
-            raise KeyError("Settting of a slice/ids not supported")
+            raise KeyError("Setting of a slice/ids not supported")
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
 
@@ -319,13 +335,13 @@ class RangeDictionary(AbstractDict, AbstractSized):
         """
         Same AbstractDict.iter_ranges but limited to a simple slice
 
-        slice_start amd slice_stop are actual id values and
+        slice_start and slice_stop are actual id values and
         not indexes into the ids
-        They must also be actual values, so None, maxint, and\
+        They must also be actual values, so None, max_int, and\
         negative numbers are not supported.
 
         :param key: see AbstractDict.iter_ranges param key
-        :param slice_start: Inclusive ie first id
+        :param slice_start: Inclusive i.e. first id
         :param slice_stop:  Exclusive to last id + 1
         :return: see AbstractDict.iter_ranges
         """

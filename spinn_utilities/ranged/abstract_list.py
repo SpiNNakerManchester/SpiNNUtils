@@ -9,7 +9,7 @@ from six import add_metaclass
 @add_metaclass(AbstractBase)
 class AbstractList(AbstractSized):
     """
-    A ranged implemantation of list.
+    A ranged implementation of list.
 
     Functions that change the size of the list are NOT Supported.
     These include
@@ -50,7 +50,7 @@ class AbstractList(AbstractSized):
         All list must implement all the range functions, \
         but there are times when using ranges will probably be slower than \
         using individual values.
-        For example the indivudual values may be stored in a list in which \
+        For example the individual values may be stored in a list in which \
         case the ranges are created on demand.
 
         :return: True if and only if Ranged based calls are recommended.
@@ -76,12 +76,12 @@ class AbstractList(AbstractSized):
         :raises MultipleValuesException If even one elements has a different\
             value
         """
-        # This is not ellegant code but as the ranges could be created on the
+        # This is not elegant code but as the ranges could be created on the
         # fly the best way.
-        iter = self.iter_ranges()
-        only_range = iter.next()
+        iterator = self.iter_ranges()
+        only_range = iterator.next()
         try:
-            one_too_many = iter.next()
+            one_too_many = iterator.next()
             raise MultipleValuesException(
                 self._key, only_range[2], one_too_many[2])
         except StopIteration:
@@ -163,15 +163,15 @@ class AbstractList(AbstractSized):
         """
         ranges = self.iter_ranges()
         current = ranges.next()
-        for id in ids:  # @ReservedAssignment
+        for id_value in ids:
             # check if ranges reset so too far ahead
-            if id < current[0]:
+            if id_value < current[0]:
                 ranges = self.iter_ranges()
                 current = ranges.next()
-                while id > current[0]:
+                while id_value > current[0]:
                     current = ranges.next()
             # check if pointer needs to move on
-            while id >= current[1]:
+            while id_value >= current[1]:
                 current = ranges.next()
             yield current[2]
 
@@ -183,8 +183,8 @@ class AbstractList(AbstractSized):
 
         :return: yields each element one by one
         """
-        for id in xrange(self._size):  # @ReservedAssignment
-            yield self.get_value_by_id(id)
+        for id_value in xrange(self._size):
+            yield self.get_value_by_id(id_value)
 
     def __iter__(self):
         """
@@ -199,8 +199,8 @@ class AbstractList(AbstractSized):
                 for _ in xrange(stop - start):
                     yield value
         else:
-            for id in xrange(self._size):  # @ReservedAssignment
-                yield self.get_value_by_id(id)
+            for id_value in xrange(self._size):
+                yield self.get_value_by_id(id_value)
 
     def iter_by_slice(self, slice_start, slice_stop):
         """
@@ -210,15 +210,16 @@ class AbstractList(AbstractSized):
 
         :return: yields each element one by one
         """
-        slice_start, slice_stop = self._check_slice(slice_start, slice_stop)
+        slice_start, slice_stop = self._check_slice_in_range(
+            slice_start, slice_stop)
         if self.range_based():
             for (start, stop, value) in \
                     self.iter_ranges_by_slice(slice_start, slice_stop):
                 for _ in xrange(start, stop):
                     yield value
         else:
-            for id in xrange(slice_start, slice_stop):  # @ReservedAssignment
-                yield self.get_value_by_id(id)
+            for id_value in xrange(slice_start, slice_stop):
+                yield self.get_value_by_id(id_value)
 
     def __contains__(self, item):
         for (_, _, value) in self.iter_ranges():
@@ -242,6 +243,7 @@ class AbstractList(AbstractSized):
     def index(self, x):
         """
         Finds the first id of the first element in the list with value x
+
         :param x:
         :return:
         """
@@ -271,7 +273,7 @@ class AbstractList(AbstractSized):
         :return: yields the one range
         """
 
-        self._check_id(id)
+        self._check_id_in_range(id)
         for (_, stop, value) in self.iter_ranges():
             if id < stop:
                 yield (id, id + 1, value)
@@ -304,22 +306,22 @@ class AbstractList(AbstractSized):
         range_pointer = 0
         result = None
         ranges = list(self.iter_ranges())
-        for id in ids:  # @ReservedAssignment
+        for id_value in ids:
             # check if ranges reset so too far ahead
-            if id < ranges[range_pointer][0]:
+            if id_value < ranges[range_pointer][0]:
                 range_pointer = 0
-                while id > ranges[range_pointer][0]:
+                while id_value > ranges[range_pointer][0]:
                     range_pointer += 1
             # check if pointer needs to move on
-            while id >= ranges[range_pointer][1]:
+            while id_value >= ranges[range_pointer][1]:
                 range_pointer += 1
             if result is not None:
-                if (result[1] == id and
+                if (result[1] == id_value and
                         result[2] == ranges[range_pointer][2]):
-                    result = (result[0], id + 1, result[2])
+                    result = (result[0], id_value + 1, result[2])
                     continue
                 yield result
-            result = (id, id + 1, ranges[range_pointer][2])
+            result = (id_value, id_value + 1, ranges[range_pointer][2])
         yield result
 
     @abstractmethod
@@ -335,11 +337,11 @@ class AbstractList(AbstractSized):
 
     def __add__(self, other):
         """
-        Support for newlist = list1 + list2
+        Support for new_list = list1 + list2
 
         Applied the add operator over this and other to create a new list
 
-        The values of the new list are created on the fly so any changes to
+        The values of the new list are created on the fly so any changes to\
         the original lists are reflected.
 
         :param other: another list
@@ -354,11 +356,11 @@ class AbstractList(AbstractSized):
 
     def __sub__(self, other):
         """
-        Support for newlist = list1 - list2
+        Support for new_list = list1 - list2
 
         Applied the add operator over this and other to create a new list
 
-        The values of the new list are created on the fly so any changes to
+        The values of the new list are created on the fly so any changes to\
         the original lists are reflected.
 
         :param other: another list
@@ -373,11 +375,11 @@ class AbstractList(AbstractSized):
 
     def __mul__(self, other):
         """
-        Support for newlist = list1 * list2
+        Support for new_list = list1 * list2
 
         Applied the multiplication operator over this and other
 
-        The values of the new list are created on the fly so any changes to
+        The values of the new list are created on the fly so any changes to\
         the original lists are reflected.
 
         :param other: another list
@@ -392,11 +394,11 @@ class AbstractList(AbstractSized):
 
     def __div__(self, other):
         """
-        Support for newlist = list1 / list2
+        Support for new_list = list1 / list2
 
         Applied the division operator over this and other to create a new list
 
-        The values of the new list are created on the fly so any changes to
+        The values of the new list are created on the fly so any changes to\
         the original lists are reflected.
 
         :param other: another list
@@ -411,7 +413,7 @@ class AbstractList(AbstractSized):
 
     def __floordiv__(self, other):
         """
-        Support for newlist = list1 // list2
+        Support for new_list = list1 // list2
 
         Applied the floor division operator over this and other
 
@@ -432,8 +434,9 @@ class AbstractList(AbstractSized):
         The values of the new list are created on the fly so any changes to
         the original lists are reflected.
 
-        :param operation: A function that can be applied over the indvidual
-        values to create new ones.
+        :param operation: \
+            A function that can be applied over the individual values to\
+            create new ones.
         :return: new list
         :rtype AbstractList
         """

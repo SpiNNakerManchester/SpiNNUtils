@@ -6,13 +6,18 @@ from six import add_metaclass
 
 @add_metaclass(AbstractBase)
 class SingleList(AbstractList):
+    """ A List that performs an operation on the elements of another list
+    """
 
     def __init__(self, a_list, operation, key=None):
         """
-        Constructor for a ranged list.
 
+        :param a_list: The list to perform the operation on
+        :param operation:\
+            A function which takes a single value and returns the result of\
+            the operation on that value
         :param key: The dict key this list covers.
-        This is used only for better Exception messages
+            This is used only for better Exception messages
         """
         AbstractList.__init__(self, size=a_list._size, key=key)
         self._a_list = a_list

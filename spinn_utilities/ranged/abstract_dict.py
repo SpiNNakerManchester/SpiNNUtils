@@ -28,15 +28,6 @@ class AbstractDict(object):
         pass
 
     @abstractmethod
-    def keys(self):
-        """
-        Returns the keys in the dictionary
-
-        :return: keys in the dict
-        """
-        pass
-
-    @abstractmethod
     def set_value(self, key, value):
         """
         Resets a already existing key to the new value
@@ -55,10 +46,17 @@ class AbstractDict(object):
         :param value: any object
         :raise KeyError: If a new key is being used.
         """
-
         pass
 
     @abstractmethod
+    def iterids(self):
+        """
+        Returns an iterator over the ids in range or view.
+
+        :return: Generator of ids
+        """
+        pass
+
     def ids(self):
         """
         Returns the ids in range or view.
@@ -74,7 +72,15 @@ class AbstractDict(object):
         :rtype: list(int)
 
         """
-        pass
+        return list(self.iterids())
+
+    @abstractmethod
+    def has_id(self, id_value):
+        """
+        Returns True if the given ID is in the range or view
+
+        :rtype: bool
+        """
 
     @abstractmethod
     def iter_all_values(self, key, update_save=False):
@@ -171,7 +177,7 @@ class AbstractDict(object):
             values set.
         """
         results = []
-        for key in self.keys():
+        for key in self.iterkeys():
             value = self.get_value(key)
             results.append((key, value))
         return results
@@ -193,7 +199,7 @@ class AbstractDict(object):
         :raises MultipleValuesException If even one of the keys has multiple\
             values set.
         """
-        for key in self.keys():
+        for key in self.iterkeys():
             yield (key, self.get_value(key))
 
     def values(self):
@@ -211,7 +217,7 @@ class AbstractDict(object):
             values set.
         """
         results = []
-        for key in self.keys():
+        for key in self.iterkeys():
             value = self.get_value(key)
             results.append(value)
         return results
@@ -233,7 +239,7 @@ class AbstractDict(object):
         :raises MultipleValuesException If even one of the keys has multiple\
             values set.
         """
-        for key in self.keys():
+        for key in self.iterkeys():
             yield self.get_value(key)
 
     def __contains__(self, key):
@@ -246,11 +252,12 @@ class AbstractDict(object):
             if the int key is one of the range ids. Otherwise False
         """
         if isinstance(key, str):
-            return key in self.keys()
+            return self.has_key(key)  # @IgnorePep8
         if isinstance(key, int):
-            return key in self.ids
+            return key in self.has_id(id)
         raise KeyError("Unexpected key type: {}".format(type(key)))
 
+    @abstractmethod
     def has_key(self, key):
         """
         As the Deprecated dict has_keys function
@@ -261,14 +268,22 @@ class AbstractDict(object):
         :type str
         :return:
         """
-        return key in self.keys()
 
+    def keys(self):
+        """
+        Returns the keys in the dictionary
+
+        :return: keys in the dict
+        """
+        return list(self.iterkeys())
+
+    @abstractmethod
     def iterkeys(self):
         """
         Iterates over the dictionary keys
         :return: yield of each key
         """
-        return self.keys().iter()
+        pass
 
     def reset(self, key):
         """
@@ -279,3 +294,10 @@ class AbstractDict(object):
         :param default: Value to be used by reset
         """
         self.set_value(key, self.get_default(key=key))
+
+    @abstractmethod
+    def viewkeys(self):
+        """
+        Get a view of the dictionary keys that updates when the dictionary\
+        changes
+        """

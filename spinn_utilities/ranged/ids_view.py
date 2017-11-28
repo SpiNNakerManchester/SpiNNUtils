@@ -13,8 +13,8 @@ class _IdsView(AbstractView):
     def __str__(self):
         return "View with ids: {}".format(self._ids)
 
-    def ids(self):
-        return list(self._ids)
+    def iterids(self):
+        return iter(self._ids)
 
     def get_value(self, key):
         return self._range_dict.get_list(key).get_value_by_ids(self._ids)

@@ -14,8 +14,8 @@ class _SingleView(AbstractView):
     def __str__(self):
         return "View with id: {}".format(self._id)
 
-    def ids(self):
-        return [self._id]
+    def iterids(self):
+        return iter([self._id])
 
     def get_value(self, key):
         return self._range_dict.get_list(key).get_value_by_id(id=self._id)

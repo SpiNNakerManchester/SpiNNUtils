@@ -14,8 +14,8 @@ class _SliceView(AbstractView):
     def __str__(self):
         return "View with range: {} to {}".format(self._start, self._stop)
 
-    def ids(self):
-        return range(self._start, self._stop)
+    def iterids(self):
+        return xrange(self._start, self._stop)
 
     def get_value(self, key):
         return self._range_dict.get_list(key).get_value_by_slice(

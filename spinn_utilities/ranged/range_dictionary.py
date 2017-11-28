@@ -123,7 +123,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         if isinstance(key, str):
             return self._value_lists[key].get_value_all()
         if key is None:
-            key = self.keys()
+            key = self.iterkeys()
         results = dict()
         for a_key in key:
             results[a_key] = self._value_lists[a_key].get_value_all()
@@ -140,7 +140,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         if isinstance(key, str):
             return self._value_lists[key].get_value_by_id(id)
         if key is None:
-            key = self.keys()
+            key = self.iterkeys()
         results = dict()
         for a_key in key:
             results[a_key] = self._value_lists[a_key].get_value_by_id(id)
@@ -256,22 +256,17 @@ class RangeDictionary(AbstractDict, AbstractSized):
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
 
-    def ids(self):
-        """
-        Returns a list of the ids in this Range
-        :return:a list of the ids in this Range
-        :rtype list(int)
-        """
-        return range(self._size)
+    def iterids(self):
+        return xrange(self._size)
 
-    def has_key(self, key):
-        return key in self._value_lists
-
-    def keys(self):
-        return self._value_lists.keys()
+    def has_id(self, id_value):
+        return id_value >= 0 and id_value < self._size
 
     def iterkeys(self):
         return self._value_lists.iterkeys()
+
+    def has_key(self, key):
+        return key in self._value_lists
 
     def viewkeys(self):
         return self._value_lists.viewkeys()
@@ -308,7 +303,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges()
         if key is None:
-            key = self.keys()
+            key = self.iterkeys()
         ranges = dict()
         for a_key in key:
             ranges[a_key] = self._value_lists[a_key].iter_ranges()
@@ -325,7 +320,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_id(id=id)
         if key is None:
-            key = self.keys()
+            key = self.iterkeys()
         ranges = dict()
         for a_key in key:
             ranges[a_key] = self._value_lists[a_key].iter_ranges_by_id(id=id)
@@ -349,7 +344,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
             return self._value_lists[key].iter_ranges_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop)
         if key is None:
-            key = self.keys()
+            key = self.iterkeys()
         ranges = dict()
         for a_key in key:
             ranges[a_key] = self._value_lists[a_key].iter_ranges_by_slice(
@@ -369,7 +364,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_ids(ids=ids)
         if key is None:
-            key = self.keys()
+            key = self.iterkeys()
         ranges = dict()
         for a_key in key:
             ranges[a_key] = self._value_lists[a_key].\

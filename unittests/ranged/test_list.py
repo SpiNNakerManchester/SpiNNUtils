@@ -190,3 +190,29 @@ def test_update_slice_with_list():
     rl = RangedList(size=10, value="a", key="alpha")
     rl[2:5] = [2, 3, 4]
     assert ["a", "a", 2, 3, 4, "a", "a", "a",  "a", "a"] == list(rl)
+
+
+def test_iter_by_ids():
+    rl = RangedList(size=10, value="a", key="alpha")
+    rl[5:10] = "b"
+    assert rl[5:10] == ["b", "b", "b", "b", "b"]
+    assert rl[0:5] == ["a", "a", "a", "a", "a"]
+    assert list(rl.iter_by_ids([9, 1, 2, 5])) == ["b", "a", "a", "b"]
+
+
+def test_set_value_by_slice():
+    rl = RangedList(size=10, value="a", key="alpha")
+    rl.set_value_by_slice(2, 7, "b")
+    assert list(rl) == ["a", "a", "b", "b", "b", "b", "b", "a", "a", "a"]
+    rl.set_value_by_slice(3, 7, "c")
+    assert list(rl) == ["a", "a", "b", "c", "c", "c", "c", "a", "a", "a"]
+    rl.set_value_by_slice(5, 8, "d")
+    assert list(rl) == ["a", "a", "b", "c", "c", "d", "d", "d", "a", "a"]
+    rl.set_value_by_slice(4, 6, "c")
+    assert list(rl) == ["a", "a", "b", "c", "c", "c", "d", "d", "a", "a"]
+
+
+def test_index():
+    rl = RangedList(size=10, value="a", key="alpha")
+    rl[6] = "b"
+    assert rl.index("b") == 6

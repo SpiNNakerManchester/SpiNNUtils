@@ -79,11 +79,18 @@ class AbstractList(AbstractSized):
         # This is not elegant code but as the ranges could be created on the
         # fly the best way.
         iterator = self.iter_ranges()
+
+        # This should be the only range
         only_range = iterator.next()
+
+        # If we can get another range, there must be more than one value,
+        # so raise the exception
         try:
             one_too_many = iterator.next()
             raise MultipleValuesException(
                 self._key, only_range[2], one_too_many[2])
+
+        # If there isn't another range, return the value from the only range
         except StopIteration:
             return only_range[2]
 
@@ -139,14 +146,24 @@ class AbstractList(AbstractSized):
         :param key: The int id, slice
         :return: The element[key] or the slice
         """
+
+        # If the key is a slice, get the values from the slice
         if isinstance(key, slice):
+
+            # If the slice is continuous, use the continuous slice getter
             if slice.step is None or slice.step == 1:
                 return list(self.iter_by_slice(
                     slice_start=slice.start, slice_stop=slice.stop))
-            # Get the start, stop, and step from the slice
-            return [self[ii] for ii in xrange(*key.indices(self._size))]
+
+            # Otherwise get the items one by one using the start, stop, and
+            # step from the slice
+            return [self[i] for i in xrange(*key.indices(self._size))]
+
+        # If the key is an int, get the single value
         elif isinstance(key, int):
-            if key < 0:  # Handle negative indices
+
+            # Handle negative indices
+            if key < 0:
                 key += len(self)
             return self.get_value_by_id(key)
         else:
@@ -162,18 +179,19 @@ class AbstractList(AbstractSized):
         :return: yields the elements pointed to by ids
         """
         ranges = self.iter_ranges()
-        current = ranges.next()
+        (_, stop, value) = ranges.next()
         for id_value in ids:
-            # check if ranges reset so too far ahead
-            if id_value < current[0]:
+
+            # If range is too far ahead, reset to start
+            if id_value < stop:
                 ranges = self.iter_ranges()
-                current = ranges.next()
-                while id_value > current[0]:
-                    current = ranges.next()
-            # check if pointer needs to move on
-            while id_value >= current[1]:
-                current = ranges.next()
-            yield current[2]
+                (_, stop, value) = ranges.next()
+
+            # Move on until the id is in range
+            while id_value >= stop:
+                (_, stop, value) = ranges.next()
+
+            yield value
 
     def iter(self):
         """
@@ -307,11 +325,13 @@ class AbstractList(AbstractSized):
         result = None
         ranges = list(self.iter_ranges())
         for id_value in ids:
+
             # check if ranges reset so too far ahead
             if id_value < ranges[range_pointer][0]:
                 range_pointer = 0
                 while id_value > ranges[range_pointer][0]:
                     range_pointer += 1
+
             # check if pointer needs to move on
             while id_value >= ranges[range_pointer][1]:
                 range_pointer += 1

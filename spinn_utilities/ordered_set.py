@@ -90,10 +90,14 @@ class OrderedSet(collections.MutableSet):
             curr = curr.prev_node
 
     def pop(self, last=True):
+        key = self.peek(last)
+        self.discard(key)
+        return key
+
+    def peek(self, last=True):
         if len(self._map) == 0:
             raise KeyError('set is empty')
         key = self._end.prev_node.key if last else self._end.next_node.key
-        self.discard(key)
         return key
 
     def __repr__(self):

@@ -12,7 +12,7 @@ class RangedList(AbstractList):
         :param size: Fixed length of the list
         :param value: value to given to all elements in the list
         :param key: The dict key this list covers.
-        This is used only for better Exception messages
+            This is used only for better Exception messages
         """
         AbstractList.__init__(self, size=size, key=key)
         if not hasattr(value, '__iter__'):

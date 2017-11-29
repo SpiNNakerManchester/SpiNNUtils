@@ -262,8 +262,8 @@ class RangeDictionary(AbstractDict, AbstractSized):
                     assert self._size == value._size
                     self._value_lists[key] = value
                 else:
-                    new_list = self.list_factory(size=self._size, value=value,
-                                          key=key)
+                    new_list = self.list_factory(
+                        size=self._size, value=value, key=key)
                     self._value_lists[key] = new_list
         elif isinstance(key, (slice, int, tuple, list)):
             raise KeyError("Setting of a slice/ids not supported")

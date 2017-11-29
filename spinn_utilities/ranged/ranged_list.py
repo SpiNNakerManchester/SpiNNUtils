@@ -222,9 +222,15 @@ class RangedList(AbstractList):
 
         # If non-range based, just go through the values
         else:
+            previous_value = self._ranges[slice_start]
+            previous_start = slice_start
             for index, value in \
                     enumerate(self._ranges[slice_start: slice_stop]):
-                yield (slice_start + index, slice_start + index + 1, value)
+                if value != previous_value:
+                    yield (previous_start, slice_start + index + 1,
+                           previous_value)
+                    previous_start = slice_start + index + 1
+                    previous_value = value
 
     @staticmethod
     def _is_list(value, size):

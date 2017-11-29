@@ -1,7 +1,6 @@
 from spinn_utilities.ranged.abstract_list import AbstractList
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
-import inspect
 
 
 class RangedList(AbstractList):
@@ -227,16 +226,22 @@ class RangedList(AbstractList):
             for index, value in \
                     enumerate(self._ranges[slice_start: slice_stop]):
                 if value != previous_value:
-                    yield (previous_start, slice_start + index + 1,
-                           previous_value)
-                    previous_start = slice_start + index + 1
+                    # Index is one ahead so no need for a + 1 here
+                    yield (previous_start, slice_start + index, previous_value)
+                    previous_start = slice_start + index
                     previous_value = value
+            yield (previous_start, slice_stop, previous_value)
 
     @staticmethod
-    def _is_list(value, size):
-        """ Determines if the value is a list of a given size.
-            An exception is raised if value *is* a list but is shorter\
+    def is_list(value, size):
+        """
+        Determines if the value is a list of a given size.
+
+        An exception is raised if value *is* a list but is shorter\
             than size
+
+        is_list can be Extended to add other checks for list\
+            in which case as_list must also be extended
         """
 
         # If the item is a list, check the size is valid
@@ -247,34 +252,23 @@ class RangedList(AbstractList):
             else:
                 return True
 
-        # If the item has a "next" method with an argument "n" it is assumed
-        # that the value of size can be passed as the argument "n" to create
-        # a list of the correct size
-        if hasattr(value, 'next'):
-            arg_spec = inspect.getargspec(value.next)
-            if "n" in arg_spec.args:
-                return True
         return False
 
     @staticmethod
-    def _as_list(value, size):
+    def as_list(value, size):
         """
         Converts if required the value into a list
 
-        Assumes that _is_list has been called and returned True
+        Assumes that is_list has been called and returned True
         So does not repeat the checks there unless required
 
+        as_list can be Extended to add other conversion to list\
+            in which case is_list must also be extended
         :param value:
-        :return:
+        :return: value as a list
         """
 
-        # If the list has a "next" method with an argument "n", call the
-        # next method with n set to size of list
-        if hasattr(value, 'next'):
-            arg_spec = inspect.getargspec(value.next)
-            if "n" in arg_spec.args:
-                return value.next(n=size)
-        return value
+        return list(value)
 
     def set_value(self, value):
         """
@@ -286,8 +280,8 @@ class RangedList(AbstractList):
         """
 
         # If the value to set is a list, just copy the values
-        if self._is_list(value, self._size):
-            self._ranges = self._as_list(value, self._size)
+        if self.is_list(value, self._size):
+            self._ranges = self.as_list(value, self._size)
             self._ranged_based = False
 
         # Otherwise store the value directly assuming it is the same value
@@ -376,7 +370,7 @@ class RangedList(AbstractList):
             slice_start, slice_stop)
 
         # If the value to set is a list, set the values directly
-        if self._is_list(value, size=slice_stop - slice_start):
+        if self.is_list(value, size=slice_stop - slice_start):
             return self._set_values_list(range(slice_start, slice_stop), value)
 
         # If non-ranged-based, set the values directly
@@ -441,12 +435,12 @@ class RangedList(AbstractList):
                                self._ranges[index][1], value)
 
     def _set_values_list(self, ids, value):
-        values = self._as_list(value=value, size=len(ids))
+        values = self.as_list(value=value, size=len(ids))
         for id_value, value in zip(ids, values):
             self.set_value_by_id(id_value, value)
 
     def set_value_by_ids(self, ids, value):
-        if self._is_list(value, len(ids)):
+        if self.is_list(value, len(ids)):
             self._set_values_list(ids, value)
         else:
             for id_value in ids:

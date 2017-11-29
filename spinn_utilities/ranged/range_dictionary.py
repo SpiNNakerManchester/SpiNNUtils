@@ -36,8 +36,22 @@ class RangeDictionary(AbstractDict, AbstractSized):
         self._value_lists = dict()
         if defaults is not None:
             for key, value in defaults.iteritems():
-                self._value_lists[key] = RangedList(
+                self._value_lists[key] = self.list_factory(
                     size=size, value=value, key=key)
+
+    def list_factory(self, size, value, key):
+        """
+        Defines which class or subclass of RangedList to use
+
+        Main purpose is for subclasses to use a subclass or RangedList
+        All parameters are pass through ones to the List constructor
+
+        :param size: Fixed length of the list
+        :param value: value to given to all elements in the list
+        :param key: The dict key this list covers.
+        :return: AbstractList in this case a RangedList
+        """
+        return RangedList(size, value, key)
 
     def view_factory(self, key):
         """
@@ -248,7 +262,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
                     assert self._size == value._size
                     self._value_lists[key] = value
                 else:
-                    new_list = RangedList(size=self._size, value=value,
+                    new_list = self.list_factory(size=self._size, value=value,
                                           key=key)
                     self._value_lists[key] = new_list
         elif isinstance(key, (slice, int, tuple, list)):

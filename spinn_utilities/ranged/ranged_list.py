@@ -235,32 +235,24 @@ class RangedList(AbstractList):
     @staticmethod
     def is_list(value, size):
         """
-        Determines if the value is a list of a given size.
-
-        An exception is raised if value *is* a list but is shorter\
-            than size
+        Determines if the value should be treated as a list
 
         is_list can be Extended to add other checks for list\
             in which case as_list must also be extended
         """
 
-        # If the item is a list, check the size is valid
+        # Assume any iterable is a list
         if hasattr(value, '__iter__'):
-            if len(value) != size:
-                raise Exception(
-                    "The number of values does not equal the size")
-            else:
-                return True
+            return True
 
         return False
 
     @staticmethod
     def as_list(value, size):
         """
-        Converts if required the value into a list
+        Converts if required the value into a list of a given size
 
-        Assumes that is_list has been called and returned True
-        So does not repeat the checks there unless required
+        An exception is raised if value cannot be given size elements
 
         as_list can be Extended to add other conversion to list\
             in which case is_list must also be extended
@@ -268,7 +260,11 @@ class RangedList(AbstractList):
         :return: value as a list
         """
 
-        return list(value)
+        values = list(value)
+        if len(values) != size:
+            raise Exception(
+                "The number of values does not equal the size")
+        return values
 
     def set_value(self, value):
         """

@@ -1,15 +1,18 @@
 language: python
-matrix:
-  include:
-    - python: "2.7"
-    - pytest
+python: "2.7"
+dist: trusty
 
-virtualenv:
-  system_site_packages: true
+### Don't need this at the moment
+# before_install:
+#   # Bring pip up to date 
+#   - pip install --upgrade pip setuptools wheel
+#   - pip install --only-binary=numpy,scipy numpy scipy
+#   - git clone https://github.com/SpiNNakerManchester/SupportScripts.git support
 
-before_script:
+install:
   - python ./setup.py install
   - pip install -r requirements-test.txt
+
 script:
   - py.test .
   # Code quality check

@@ -1,5 +1,5 @@
 from spinn_utilities.ranged.ranged_list import RangedList
-from spinn_utilities.ranged.single_list import SingleList
+from spinn_utilities.ranged.abstract_list import SingleList
 
 
 def test_simple():

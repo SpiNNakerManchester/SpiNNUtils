@@ -309,16 +309,16 @@ def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
     cfg.read(defaults)
 
     if validation_cfg is not None:
-        validation_cfg = CaseSensitiveParser()
-        validation_cfg.read(validation_cfg)
-        default_cfg = CamelCaseConfigParser()
-        default_cfg.read(defaults)
+        v = CaseSensitiveParser()
+        v.read(validation_cfg)
+        d = CamelCaseConfigParser()
+        d.read(defaults)
     else:
-        validation_cfg = None
-        default_cfg = None
+        v = None
+        d = None
 
     for f in config_locations:
-        _read_a_config(cfg, f, validation_cfg, default_cfg)
+        _read_a_config(cfg, f, v, d)
 
     parsers = list()
     if config_parsers is not None:

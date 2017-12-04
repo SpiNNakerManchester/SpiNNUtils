@@ -1,3 +1,4 @@
+import numbers
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
 from spinn_utilities.ranged.abstract_sized import AbstractSized
@@ -369,10 +370,13 @@ class AbstractList(AbstractSized):
         :return: new list
         :rtype AbstractList
         """
-        from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x + y)
+        if isinstance(other, numbers.Number):
+            return SingleList(a_list=self, operation=lambda x: x + other)
+        raise Exception("__add__ operation only supported for other "
+                        "RangedLists and numerical Values")
 
     def __sub__(self, other):
         """
@@ -391,6 +395,10 @@ class AbstractList(AbstractSized):
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x - y)
+        if isinstance(other, numbers.Number):
+            return SingleList(a_list=self, operation=lambda x: x - other)
+        raise Exception("__sub__ operation only supported for other "
+                        "RangedLists and numerical Values")
 
     def __mul__(self, other):
         """
@@ -409,6 +417,10 @@ class AbstractList(AbstractSized):
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x * y)
+        if isinstance(other, numbers.Number):
+            return SingleList(a_list=self, operation=lambda x: x * other)
+        raise Exception("__mul__ operation only supported for other "
+                        "RangedLists and numerical Values")
 
     def __div__(self, other):
         """
@@ -427,6 +439,12 @@ class AbstractList(AbstractSized):
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x / y)
+        if isinstance(other, numbers.Number):
+            if other == 0:
+                raise ZeroDivisionError()
+            return SingleList(a_list=self, operation=lambda x: x / other)
+        raise Exception("__div__ operation only supported for other "
+                        "RangedLists and numerical Values")
 
     def __floordiv__(self, other):
         """
@@ -442,6 +460,12 @@ class AbstractList(AbstractSized):
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x // y)
+        if isinstance(other, numbers.Number):
+            if other == 0:
+                raise ZeroDivisionError()
+            return SingleList(a_list=self, operation=lambda x: x // other)
+        raise Exception("__floordiv__ operation only supported for other "
+                        "RangedLists and numerical Values")
 
     def apply_operation(self, operation):
         """

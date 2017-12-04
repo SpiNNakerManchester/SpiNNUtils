@@ -41,7 +41,7 @@ def all_modules(directory, prefix, remove_pyc_files=False):
 
 
 def load_modules(
-        directory, prefix, remove_pyc_files=False, exclusions=[],
+        directory, prefix, remove_pyc_files=False, exclusions=None,
         gather_errors=True):
     """
     Loads all the python files found in this directory giving then the prefix
@@ -56,34 +56,36 @@ def load_modules(
     :param gather_errors:\
         True if errors should be gathered, False to report on first error
     """
+    if exclusions is None:
+        exclusions = []
     modules = all_modules(directory, prefix, remove_pyc_files)
     errors = list()
     for module in modules:
         if module in exclusions:
             print "SKIPPING " + module
-        else:
-            print module
-            if gather_errors:
-                try:
-                    __import__(module)
-                except Exception:
-                    errors.append((module, sys.exc_info()))
-            else:
+            continue
+        print module
+        if gather_errors:
+            try:
                 __import__(module)
+            except Exception:
+                errors.append((module, sys.exc_info()))
+        else:
+            __import__(module)
 
     for module, (exc_type, exc_value, exc_traceback) in errors:
         print "Error importing {}:".format(module)
         for line in traceback.format_exception(
                 exc_type, exc_value, exc_traceback):
             for line_line in line.split("\n"):
-                if len(line_line) > 0:
+                if line_line:
                     print "  ", line_line.rstrip()
-    if len(errors) > 0:
+    if errors:
         raise Exception("Error when importing, starting at {}".format(prefix))
 
 
 def load_module(
-        name, remove_pyc_files=False, exclusions=[], gather_errors=True):
+        name, remove_pyc_files=False, exclusions=None, gather_errors=True):
     """
     Loads this modules and all its children
 
@@ -93,6 +95,8 @@ def load_module(
     :param gather_errors:\
         True if errors should be gathered, False to report on first error
     """
+    if exclusions is None:
+        exclusions = []
     module = __import__(name)
     path = module.__file__
     directory = os.path.dirname(path)

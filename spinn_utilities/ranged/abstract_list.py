@@ -1,3 +1,4 @@
+# pylint: disable=redefined-builtin
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
 from spinn_utilities.ranged.abstract_sized import AbstractSized
@@ -11,20 +12,20 @@ class AbstractList(AbstractSized):
     """
     A ranged implementation of list.
 
-    Functions that change the size of the list are NOT Supported.
+    Functions that change the size of the list are NOT Supported.\
     These include
-        __setitem__ where key >= len
-        __delitem__
-        append
-        extend
-        insert
-        pop
-        remove
+    * __setitem__ where key >= len
+    * __delitem__
+    * append
+    * extend
+    * insert
+    * pop
+    * remove
 
-    Function that manipulate the list based on values are not supported.
+    Function that manipulate the list based on values are not supported.\
     These include
-        reverse, __reversed__
-        sort
+    * reverse, __reversed__
+    * sort
 
     In the current version the ids are zero base consecutive numbers so there\
     is no difference between value based ids and index based ids\
@@ -37,7 +38,7 @@ class AbstractList(AbstractSized):
 
         :param size: Fixed length of the list
         :param key: The dict key this list covers.\
-        This is used only for better Exception messages
+            This is used only for better Exception messages
         """
         AbstractSized.__init__(self, size)
         self._key = key
@@ -73,7 +74,7 @@ class AbstractList(AbstractSized):
         or one of the iter_ranges methods
 
         :return: Value shared by all elements in the list
-        :raises MultipleValuesException If even one elements has a different\
+        :raises MultipleValuesException: If even one elements has a different\
             value
         """
         # This is not elegant code but as the ranges could be created on the
@@ -114,8 +115,8 @@ class AbstractList(AbstractSized):
         or one of the iter_ranges methods
 
         :return: Value shared by all elements in the slice
-        :raises MultipleValuesException If even one elements has a different\
-            value.
+        :raises MultipleValuesException: If even one elements has a different\
+            value.\
             Not thrown if elements outside of the slice have a different value
         """
         pass
@@ -132,8 +133,8 @@ class AbstractList(AbstractSized):
         or one of the iter_ranges methods
 
         :return: Value shared by all elements with these ids
-        :raises MultipleValuesException If even one elements has a different\
-            value.
+        :raises MultipleValuesException: If even one elements has a different\
+            value.\
             Not thrown if elements outside of the ids have a different value,\
             even if these elements are between the ones pointed to by ids
         """
@@ -367,7 +368,7 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype AbstractList
+        :rtype: AbstractList
         """
         from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
@@ -386,7 +387,7 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype AbstractList
+        :rtype: AbstractList
         """
         from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
@@ -424,7 +425,7 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype AbstractList
+        :rtype: AbstractList
         """
         from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
@@ -440,7 +441,7 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype AbstractList
+        :rtype: AbstractList
         """
         from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
@@ -458,7 +459,7 @@ class AbstractList(AbstractSized):
             A function that can be applied over the individual values to\
             create new ones.
         :return: new list
-        :rtype AbstractList
+        :rtype: AbstractList
         """
         from spinn_utilities.ranged.single_list import SingleList
         return SingleList(a_list=self, operation=operation)

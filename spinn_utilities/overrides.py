@@ -42,6 +42,14 @@ class overrides(object):
         if isinstance(super_class_method, property):
             self._super_class_method = super_class_method.fget
 
+    @staticmethod
+    def __match_defaults(default_args, super_defaults):
+        if default_args is None:
+            return super_defaults is None
+        elif super_defaults is None:
+            return False
+        return len(default_args) == len(super_defaults)
+
     def __call__(self, method):
 
         # Check and fail if this is a property
@@ -65,14 +73,12 @@ class overrides(object):
             super_args = inspect.getargspec(self._super_class_method)
             all_args = [
                 arg for arg in method_args.args
-                if arg not in self._additional_arguments
-            ]
+                if arg not in self._additional_arguments]
             default_args = None
             if method_args.defaults is not None:
                 default_args = [
                     arg for arg in method_args.defaults
-                    if arg not in self._additional_arguments
-                ]
+                    if arg not in self._additional_arguments]
             if len(all_args) != len(super_args.args):
                 raise AttributeError(
                     "Method has {} arguments but super class method has {}"
@@ -82,14 +88,7 @@ class overrides(object):
                 if arg != super_arg:
                     raise AttributeError(
                         "Missing argument {}".format(super_arg))
-            if ((default_args is None and
-                super_args.defaults is not None) or
-                (default_args is not None and
-                    super_args.defaults is None) or
-                    (default_args is not None and
-                        super_args.defaults is not None and
-                        len(default_args) !=
-                        len(super_args.defaults))):
+            if not self.__match_defaults(default_args, super_args.defaults):
                 raise AttributeError(
                     "Default arguments don't match super class method")
 
@@ -100,6 +99,5 @@ class overrides(object):
                 self._super_class_method.__doc__ is not None):
             method.__doc__ = (
                 self._super_class_method.__doc__ +
-                method.__doc__
-            )
+                method.__doc__)
         return method

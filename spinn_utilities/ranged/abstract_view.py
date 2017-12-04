@@ -25,7 +25,7 @@ class AbstractView(AbstractDict):
 
         :param key: str, int or collection of int
         :return: the single value for the str key or a view
-        :raises MultipleValuesException If the keys has multiple values set.\
+        :raises MultipleValuesException: If the keys has multiple values set.\
             But not if other keys not asked for have multiple values
         """
         if isinstance(key, str):

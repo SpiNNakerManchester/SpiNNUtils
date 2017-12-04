@@ -1,3 +1,4 @@
+# pylint: disable=redefined-builtin
 from spinn_utilities.ranged.abstract_list import AbstractList
 from spinn_utilities.abstract_base import AbstractBase
 
@@ -16,10 +17,10 @@ class SingleList(AbstractList):
         :param operation:\
             A function which takes a single value and returns the result of\
             the operation on that value
-        :param key: The dict key this list covers.
+        :param key: The dict key this list covers.\
             This is used only for better Exception messages
         """
-        AbstractList.__init__(self, size=a_list._size, key=key)
+        AbstractList.__init__(self, size=len(a_list), key=key)
         self._a_list = a_list
         self._operation = operation
 

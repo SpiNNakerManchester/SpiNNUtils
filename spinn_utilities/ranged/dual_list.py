@@ -1,3 +1,4 @@
+# pylint: disable=redefined-builtin
 from spinn_utilities.ranged.abstract_list import AbstractList
 from spinn_utilities.abstract_base import AbstractBase
 
@@ -21,9 +22,9 @@ class DualList(AbstractList):
             The dict key this list covers.
             This is used only for better Exception messages
         """
-        if left._size != right._size:
+        if len(left) != len(right):
             raise Exception("Two list must have the same size")
-        AbstractList.__init__(self, size=left._size, key=key)
+        AbstractList.__init__(self, size=len(left), key=key)
         self._left = left
         self._right = right
         self._operation = operation

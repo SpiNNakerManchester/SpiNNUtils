@@ -4,7 +4,7 @@ import sys
 
 class AbstractSized(object):
     """
-    Based class for slice and id checking against size
+    Base class for slice and id checking against size.
     """
 
     __slots__ = ("_size", )

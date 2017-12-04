@@ -17,7 +17,7 @@ class SingleList(AbstractList):
         :param operation:\
             A function which takes a single value and returns the result of\
             the operation on that value
-        :param key: The dict key this list covers.
+        :param key: The dict key this list covers.\
             This is used only for better Exception messages
         """
         AbstractList.__init__(self, size=len(a_list), key=key)

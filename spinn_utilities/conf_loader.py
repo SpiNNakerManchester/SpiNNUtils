@@ -31,13 +31,13 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
 
     :param filename: Name under which to save the new config file
     :type filename: str
-    :param defaults: List of full paths to the default config files.
-        Each of which MUST have an associated template file with exactly the
+    :param defaults: List of full paths to the default config files.\
+        Each of which MUST have an associated template file with exactly the\
         same path plus .template
     :type defaults: List[str]
-    :param config_locations: List of paths the user configs where looked for,
+    :param config_locations: List of paths the user configs where looked for,\
         Onlty used for the message
-    raise NoConfigFoundException: Always raised
+    :raise NoConfigFoundException: Always raised
     """
     home_cfg = os.path.join(os.path.expanduser("~"), ".{}".format(filename))
 
@@ -143,16 +143,16 @@ def _outdated_config(cfg_file, validation_cfg, default_cfg):
     Reports errors in this config based on the validation_cfg and the\
         defaults_configs
 
-    Reports any values listed as PreviousValues.
-        These are specific values in specific options no longer supported
+    Reports any values listed as PreviousValues.\
+        These are specific values in specific options no longer supported.\
         For example old algorithm names
 
-    Checks all sections not defined as UserSections (Default Machine)
-        IE ones the user is expected to change
+    Checks all sections not defined as UserSections (Default Machine)\
+        i.e., ones the user is expected to change
 
     Any sect specific list as Dead will be reported
 
-    Any sect in the default config is compared
+    Any sect in the default config is compared.
         reporting any unexpected values
         reporting the smaller of values non default or values same as default
 
@@ -209,11 +209,11 @@ def _check_config(cfg, cfg_file, validation_cfg, default_cfg):
 
      Any sect specific list as Dead will cause a error
 
-     Any sect in the default_cfg should not have extra values.
+     Any sect in the default_cfg should not have extra values.\
         It will never have less as the default_cfg are in the cfg
 
-    Errors on any values listed as PreviousValues.
-        These are specific values in specific options no longer supported
+    Errors on any values listed as PreviousValues.\
+        These are specific values in specific options no longer supported.\
         For example old algorithm names
 
     :param cfg: Config as read in up to this point

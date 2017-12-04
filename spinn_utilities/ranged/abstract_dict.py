@@ -18,11 +18,11 @@ class AbstractDict(object):
 
         :param key: The key or keys to get the value of. Use None for all
         :type key: str, iterable of str, or None
-        :return: If key is a str this returns the single object.
+        :return: If key is a str this returns the single object.\
             If key is iterable (list, tuple, set, etc) of str (or None)\
             returns a dictionary object
-        :raises MultipleValuesException If even one of the keys has multiple\
-            values set.
+        :raises MultipleValuesException: If even one of the keys has multiple\
+            values set.\
             But not if other keys not asked for have multiple values
         """
         pass
@@ -43,7 +43,7 @@ class AbstractDict(object):
 
         All ids in the whole range or view will have this key set
 
-        WARNING: This method does not allow adding keys.
+        WARNING: This method does not allow adding keys.\
         The dict[str] = will add a new key but is not supported for views
 
         WARNING: If a View is created over multiple ranges this method would\
@@ -55,7 +55,6 @@ class AbstractDict(object):
         :param value: any object
         :raise KeyError: If a new key is being used.
         """
-
         pass
 
     @abstractmethod
@@ -72,7 +71,6 @@ class AbstractDict(object):
 
         :return: list of ids
         :rtype: list(int)
-
         """
         pass
 
@@ -84,13 +82,13 @@ class AbstractDict(object):
         There will be one yield for each id even if values are repeated.
 
         :param key: The key or keys to get the value of. Use None for all
-        :type key: str, iterable of str, or None
-            None is assumed to mean all keys.
+        :type key: str, iterable of str, or None\
+            (None is assumed to mean all keys)
         :param update_save: If set True the iteration will work even if values\
             are updated during iteration. If left False the iterator may be\
             faster but behaviour is UNDEFINED and UNCHECKED if ANY values are\
             changed during iteration.
-        :return: If key is a str this yields single objects.
+        :return: If key is a str this yields single objects.\
             If key is iterable (list, tuple, set, etc) of str (or None)\
             yields dictionary objects
         """
@@ -108,10 +106,10 @@ class AbstractDict(object):
 
         :param key: The key or keys to get the value of. Use None for all
         :type key: str, iterable of str, or None
-        :return: List of tuples of (start, stop, value)
-            start is INCLUSIVE so is the first id in the range
-            stop is EXCLUSIVE so is the last id in the range + 1
-            If key is a str this value is a single object.
+        :return: List of tuples of (start, stop, value).\
+            start is INCLUSIVE so is the first id in the range.\
+            stop is EXCLUSIVE so is the last id in the range + 1.\
+            If key is a str this value is a single object.\
             If key is iterable (list, tuple, set, etc) of str (or None) \
             value is a dictionary object
         """
@@ -131,10 +129,10 @@ class AbstractDict(object):
 
         :param key: The key or keys to get the value of. Use None for all
         :type key: str, iterable of str, or None
-        :return: yields tuples of (start, stop, value)
-            start is INCLUSIVE so is the first id in the range
-            stop is EXCLUSIVE so is the last id in the range + 1
-            If key is a str this value is a single object.
+        :return: yields tuples of (start, stop, value).\
+            start is INCLUSIVE so is the first id in the range.\
+            stop is EXCLUSIVE so is the last id in the range + 1.\
+            If key is a str this value is a single object.\
             If key is iterable (list, tuple, set, etc) of str (or None)\
             value is a dictionary object
         """
@@ -167,7 +165,7 @@ class AbstractDict(object):
         values are dictionary objects
 
         :return: List of (key, value) tuples
-        :raises MultipleValuesException If even one of the keys has multiple\
+        :raises MultipleValuesException: If even one of the keys has multiple\
             values set.
         """
         results = []
@@ -190,7 +188,7 @@ class AbstractDict(object):
         added during iteration.
 
         :return: yield (key, value) tuples
-        :raises MultipleValuesException If even one of the keys has multiple\
+        :raises MultipleValuesException: If even one of the keys has multiple\
             values set.
         """
         for key in self.keys():
@@ -198,7 +196,7 @@ class AbstractDict(object):
 
     def values(self):
         """
-        Returns a list of value
+        Returns a list of values.
 
         Works only if the whole ranges/view has single values.
 
@@ -207,7 +205,7 @@ class AbstractDict(object):
         values are dictionary objects
 
         :return: List of values
-        :raises MultipleValuesException If even one of the keys has multiple\
+        :raises MultipleValuesException: If even one of the keys has multiple\
             values set.
         """
         results = []
@@ -230,7 +228,7 @@ class AbstractDict(object):
         added during iteration.
 
         :return: yield values
-        :raises MultipleValuesException If even one of the keys has multiple\
+        :raises MultipleValuesException: If even one of the keys has multiple\
             values set.
         """
         for key in self.keys():
@@ -244,6 +242,7 @@ class AbstractDict(object):
         :type key: str or int
         :return: True if the str key is one of the dict keys or\
             if the int key is one of the range ids. Otherwise False
+        :rtype: bool
         """
         if isinstance(key, str):
             return key in self.keys()
@@ -258,8 +257,9 @@ class AbstractDict(object):
         Note: Int keys to ids are not supported
 
         :param key: the key
-        :type str
-        :return:
+        :type key: str
+        :return: If the key is in dict
+        :rtype: bool
         """
         return key in self.keys()
 

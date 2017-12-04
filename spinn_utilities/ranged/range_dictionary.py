@@ -166,16 +166,16 @@ class RangeDictionary(AbstractDict, AbstractSized):
 
         Mainly intended by Views to access the data for one key directly
 
-        :param key: str which must be a key in the dict
-        :rtype RangedList
+        :param key: a key which must be present in the dict
+        :type key: str
+        :rtype: RangedList
         """
         return self._value_lists[key]
 
     def update_safe_iter_all_values(self, key, ids):
         """
-        Same as AbstractDict.iter_all_values
+        Same as AbstractDict.iter_all_values \
         but limited to a collection of ids and update safe
-
         """
         for id_value in ids:  # @ReservedAssignment
             yield self.get_values_by_id(key=key, id=id_value)
@@ -197,9 +197,8 @@ class RangeDictionary(AbstractDict, AbstractSized):
     def iter_values_by_slice(
             self, slice_start, slice_stop, key=None, update_save=False):
         """
-        Same as AbstractDict.iter_all_values
+        Same as AbstractDict.iter_all_values \
         but limited to a simple slice
-
         """
         if isinstance(key, str) and not update_save:
             return self._value_lists[key].iter_by_slice(
@@ -212,9 +211,8 @@ class RangeDictionary(AbstractDict, AbstractSized):
 
     def iter_values_by_ids(self, ids, key=None, update_save=False):
         """
-        Same as AbstractDict.iter_all_values
+        Same as AbstractDict.iter_all_values \
         but limited to a simple slice
-
         """
         if update_save:
             return self.update_safe_iter_all_values(key, ids)
@@ -229,7 +227,6 @@ class RangeDictionary(AbstractDict, AbstractSized):
     def set_value(self, key, value):
         """
         see AbstractDict.set_value
-
         """
         self._value_lists[key].set_value(value)
 
@@ -269,8 +266,9 @@ class RangeDictionary(AbstractDict, AbstractSized):
     def ids(self):
         """
         Returns a list of the ids in this Range
-        :return:a list of the ids in this Range
-        :rtype list(int)
+
+        :return: a list of the ids in this Range
+        :rtype: list(int)
         """
         return range(self._size)
 

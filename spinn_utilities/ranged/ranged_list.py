@@ -12,7 +12,7 @@ class RangedList(AbstractList):
 
         :param size: Fixed length of the list
         :param value: value to given to all elements in the list
-        :param key: The dict key this list covers.
+        :param key: The dict key this list covers.\
             This is used only for better Exception messages
         """
         AbstractList.__init__(self, size=size, key=key)
@@ -53,8 +53,8 @@ class RangedList(AbstractList):
          or one of the iter_ranges methods
 
          :return: Value shared by all elements in the slice
-         :raises MultipleValuesException If even one elements has a different
-         value.
+         :raises MultipleValuesException: If even one elements has a different\
+         value.\
          Not thrown if elements outside of the slice have a different value
 
          """
@@ -109,7 +109,7 @@ class RangedList(AbstractList):
         or one of the iter_ranges methods
 
         :return: Value shared by all elements with these ids
-        :raises MultipleValuesException: If one element has a different value.
+        :raises MultipleValuesException: If one element has a different value.\
             Not thrown if elements outside of the ids have a different value,\
             even if these elements are between the ones pointed to by ids
 
@@ -261,6 +261,7 @@ class RangedList(AbstractList):
 
         as_list can be Extended to add other conversion to list\
             in which case is_list must also be extended
+
         :param value:
         :return: value as a list
         """
@@ -296,12 +297,12 @@ class RangedList(AbstractList):
         """
         Sets the value for a single id to the new value.
 
-        Note: This method only works for a single positive int id.
+        Note: This method only works for a single positive int id.\
         use set or __set__ for slices, tuples, lists and negative indexes
 
         :param id: Single id
-        :type id:int
-        :param value:  The value to save
+        :type id: int
+        :param value: The value to save
         :type value: anything
         """
         self._check_id_in_range(id)
@@ -357,14 +358,14 @@ class RangedList(AbstractList):
         """
         Sets the value for a single range to the new value.
 
-        Note: This method only works for a single positive int id.
+        Note: This method only works for a single positive int id.\
         use set or __set__ for slices, tuples, lists and negative indexes
 
         :param slice_start: Start of the range
-        :type slice_start:int
+        :type slice_start: int
         :param slice_stop: Exclusive end of the range
-        :type slice_stop:int
-        :param value:  The value to save
+        :type slice_stop: int
+        :param value: The value to save
         :type value: anything
         """
         slice_start, slice_stop = self._check_slice_in_range(

@@ -24,7 +24,8 @@ class _IdsView(AbstractView):
         for id_value in self._ids:
             ranged_list.set_value_by_id(id=id_value, value=value)
 
-    def set_value_by_ids(self, key, ids, value):  # @UnusedVariable
+    def set_value_by_ids(self, key, ids, value):
+        for id in ids:
             self._value_lists[key].set_value_id(id=id, value=value)
 
     def iter_all_values(self, key, update_save=False):

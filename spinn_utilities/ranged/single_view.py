@@ -1,3 +1,4 @@
+# pylint: disable=redefined-builtin
 from spinn_utilities.ranged.abstract_view import AbstractView
 
 

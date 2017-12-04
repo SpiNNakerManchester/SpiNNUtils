@@ -1,3 +1,4 @@
+# pylint: disable=redefined-builtin
 from spinn_utilities.ranged.abstract_list import AbstractList
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
@@ -97,8 +98,7 @@ class RangedList(AbstractList):
         result = self._ranges[slice_start]
         for _value in self._ranges[slice_start+1: slice_stop]:
             if result != _value:
-                    raise MultipleValuesException(
-                        self._key, result, _value)
+                raise MultipleValuesException(self._key, result, _value)
         return result
 
     def get_value_by_ids(self, ids):
@@ -188,12 +188,16 @@ class RangedList(AbstractList):
         else:
             previous_value = self._ranges[0]
             previous_start = 0
+            current_start = 0
+            current_value = None
             for start, value in enumerate(self._ranges):
+                current_start = start
+                current_value = value
                 if value != previous_value:
                     yield (previous_start, start, previous_value)
                     previous_start = start
                     previous_value = value
-            yield (previous_start, start + 1, value)
+            yield (previous_start, current_start + 1, current_value)
 
     def iter_ranges_by_slice(self, slice_start, slice_stop):
         """
@@ -232,8 +236,9 @@ class RangedList(AbstractList):
                     previous_value = value
             yield (previous_start, slice_stop, previous_value)
 
+    # pylint: disable=unused-argument
     @staticmethod
-    def is_list(value, size):
+    def is_list(value, size):  # @UnusedVariable
         """
         Determines if the value should be treated as a list
 
@@ -432,8 +437,8 @@ class RangedList(AbstractList):
 
     def _set_values_list(self, ids, value):
         values = self.as_list(value=value, size=len(ids))
-        for id_value, value in zip(ids, values):
-            self.set_value_by_id(id_value, value)
+        for id_value, val in zip(ids, values):
+            self.set_value_by_id(id_value, val)
 
     def set_value_by_ids(self, ids, value):
         if self.is_list(value, len(ids)):
@@ -484,8 +489,7 @@ class RangedList(AbstractList):
         """
         if self._ranged_based:
             return list(self._ranges)
-        else:
-            return list(self.iter_ranges())
+        return list(self.iter_ranges())
 
     def set_default(self, default):
         """

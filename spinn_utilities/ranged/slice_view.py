@@ -1,3 +1,4 @@
+# pylint: disable=redefined-builtin
 from spinn_utilities.ranged.abstract_view import AbstractView
 
 
@@ -30,13 +31,11 @@ class _SliceView(AbstractView):
         if isinstance(key, str):
             if update_save:
                 return self.update_save_iter_all_values(key)
-            else:
-                return self._range_dict.get_list(key).iter_by_slice(
-                    slice_start=self._start, slice_stop=self._stop)
-        else:
-            return self._range_dict.iter_values_by_slice(
-                key=key, slice_start=self._start, slice_stop=self._stop,
-                update_save=update_save)
+            return self._range_dict.get_list(key).iter_by_slice(
+                slice_start=self._start, slice_stop=self._stop)
+        return self._range_dict.iter_values_by_slice(
+            key=key, slice_start=self._start, slice_stop=self._stop,
+            update_save=update_save)
 
     def set_value(self, key, value):
         self._range_dict.get_list(key).set_value_by_slice(

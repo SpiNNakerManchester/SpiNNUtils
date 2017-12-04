@@ -1,3 +1,4 @@
+# pylint: disable=redefined-builtin
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
 from spinn_utilities.ranged.abstract_sized import AbstractSized

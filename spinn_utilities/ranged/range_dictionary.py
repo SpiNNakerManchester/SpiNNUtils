@@ -1,3 +1,4 @@
+# pylint: disable=redefined-builtin
 from spinn_utilities.ranged.ranged_list import RangedList
 from spinn_utilities.ranged.abstract_list import AbstractList
 from spinn_utilities.ranged.single_view import _SingleView
@@ -127,8 +128,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         """
         if isinstance(key, str):
             return self._value_lists[key]
-        else:
-            return self.view_factory(key=key)
+        return self.view_factory(key=key)
 
     def get_value(self, key=None):
         """
@@ -187,14 +187,12 @@ class RangeDictionary(AbstractDict, AbstractSized):
         if isinstance(key, str):
             if update_save:
                 return self._value_lists[key].iter()
-            else:
-                return self._value_lists[key].__iter__()
+            return self._value_lists[key].__iter__()
         else:
             if update_save:
                 return self.update_safe_iter_all_values(
                     key, xrange(self._size))
-            else:
-                return self._values_from_ranges(self.iter_ranges(key))
+            return self._values_from_ranges(self.iter_ranges(key))
 
     def iter_values_by_slice(
             self, slice_start, slice_stop, key=None, update_save=False):
@@ -209,9 +207,8 @@ class RangeDictionary(AbstractDict, AbstractSized):
         if update_save:
             return self.update_safe_iter_all_values(
                 key, xrange(slice_start, slice_stop))
-        else:
-            return self._values_from_ranges(self.iter_ranges_by_slice(
-                slice_start=slice_start, slice_stop=slice_stop, key=key))
+        return self._values_from_ranges(self.iter_ranges_by_slice(
+            slice_start=slice_start, slice_stop=slice_stop, key=key))
 
     def iter_values_by_ids(self, ids, key=None, update_save=False):
         """
@@ -221,9 +218,8 @@ class RangeDictionary(AbstractDict, AbstractSized):
         """
         if update_save:
             return self.update_safe_iter_all_values(key, ids)
-        else:
-            return self._values_from_ranges(self.iter_ranges_by_ids(
-                key=key, ids=ids))
+        return self._values_from_ranges(self.iter_ranges_by_ids(
+            key=key, ids=ids))
 
     def _values_from_ranges(self, ranges):
         for (start, stop, value) in ranges:
@@ -259,7 +255,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
                 self.set_value(key=key, value=value)
             else:
                 if isinstance(value, AbstractList):
-                    assert self._size == value._size
+                    assert self._size == len(value)
                     self._value_lists[key] = value
                 else:
                     new_list = self.list_factory(

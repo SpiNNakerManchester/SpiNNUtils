@@ -49,4 +49,5 @@ class SafeEval(object):
             individual evaluation run.
         :return: The expression result
         """
+        # pylint: disable=eval-used
         return eval(expression, self._environment, kwargs)

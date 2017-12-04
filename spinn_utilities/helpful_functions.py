@@ -135,7 +135,7 @@ def set_up_report_specifics(
             os.makedirs(report_default_directory)
 
     # clear and clean out folders considered not useful anymore
-    if not created_folder and len(os.listdir(report_default_directory)) > 0:
+    if not created_folder and list(os.listdir(report_default_directory)):
         _remove_excess_folders(max_reports_kept, report_default_directory)
 
     # determine the time slot for later

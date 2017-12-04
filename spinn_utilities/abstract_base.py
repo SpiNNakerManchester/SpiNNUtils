@@ -58,23 +58,28 @@ class abstractproperty(property):
 class AbstractBase(type):
     """ Metaclass for defining Abstract Base Classes (AbstractBases).
 
-        Use this metaclass to create an AbstractBase.\
-        An AbstractBase can be subclassed directly,\
-        and then acts as a mix-in class.
+        Use this metaclass to create an AbstractBase. An AbstractBase can\
+        be subclassed directly, and then acts as a mix-in class.
 
         This is a trimmed down version of ABC.\
         Unlike ABC you can not register unrelated concrete classes.
     """
 
     def __new__(cls, name, bases, namespace):
+        # Actually make the class
         abs_cls = super(AbstractBase, cls).__new__(cls, name, bases, namespace)
 
-        abstracts = set(name for name, value in namespace.items() if
-                        getattr(value, "__isabstractmethod__", False))
+        # Get set of abstract methods from namespace
+        abstracts = set(nm for nm, val in namespace.items()
+                        if getattr(val, "__isabstractmethod__", False))
+
+        # Augment with abstract methods from superclasses
         for base in bases:
-            for name in getattr(base, "__abstractmethods__", set()):
-                value = getattr(abs_cls, name, None)
-                if getattr(value, "__isabstractmethod__", False):
-                    abstracts.add(name)
+            for nm in getattr(base, "__abstractmethods__", set()):
+                val = getattr(abs_cls, nm, None)
+                if getattr(val, "__isabstractmethod__", False):
+                    abstracts.add(nm)
+
+        # Lock down the set
         abs_cls.__abstractmethods__ = frozenset(abstracts)
         return abs_cls

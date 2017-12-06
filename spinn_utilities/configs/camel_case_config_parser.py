@@ -1,5 +1,5 @@
 from ConfigParser import RawConfigParser
-from distutils.util import strtobool
+import distutils.util
 
 
 class CamelCaseConfigParser(RawConfigParser):
@@ -81,6 +81,6 @@ class CamelCaseConfigParser(RawConfigParser):
         if value == self._none_marker:
             return None
         try:
-            return bool(strtobool(str(value)))
+            return bool(distutils.util.strtobool(str(value)))
         except ValueError:
             return bool(value)

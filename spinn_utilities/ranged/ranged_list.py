@@ -1,3 +1,4 @@
+# pylint: disable=redefined-builtin
 from spinn_utilities.ranged.abstract_list import AbstractList
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
@@ -11,7 +12,7 @@ class RangedList(AbstractList):
 
         :param size: Fixed length of the list
         :param value: value to given to all elements in the list
-        :param key: The dict key this list covers.
+        :param key: The dict key this list covers.\
             This is used only for better Exception messages
         """
         AbstractList.__init__(self, size=size, key=key)
@@ -52,8 +53,8 @@ class RangedList(AbstractList):
          or one of the iter_ranges methods
 
          :return: Value shared by all elements in the slice
-         :raises MultipleValuesException If even one elements has a different
-         value.
+         :raises MultipleValuesException: If even one elements has a different\
+         value.\
          Not thrown if elements outside of the slice have a different value
 
          """
@@ -97,8 +98,7 @@ class RangedList(AbstractList):
         result = self._ranges[slice_start]
         for _value in self._ranges[slice_start+1: slice_stop]:
             if result != _value:
-                    raise MultipleValuesException(
-                        self._key, result, _value)
+                raise MultipleValuesException(self._key, result, _value)
         return result
 
     def get_value_by_ids(self, ids):
@@ -109,7 +109,7 @@ class RangedList(AbstractList):
         or one of the iter_ranges methods
 
         :return: Value shared by all elements with these ids
-        :raises MultipleValuesException: If one element has a different value.
+        :raises MultipleValuesException: If one element has a different value.\
             Not thrown if elements outside of the ids have a different value,\
             even if these elements are between the ones pointed to by ids
 
@@ -188,12 +188,16 @@ class RangedList(AbstractList):
         else:
             previous_value = self._ranges[0]
             previous_start = 0
+            current_start = 0
+            current_value = None
             for start, value in enumerate(self._ranges):
+                current_start = start
+                current_value = value
                 if value != previous_value:
                     yield (previous_start, start, previous_value)
                     previous_start = start
                     previous_value = value
-            yield (previous_start, start + 1, value)
+            yield (previous_start, current_start + 1, current_value)
 
     def iter_ranges_by_slice(self, slice_start, slice_stop):
         """
@@ -232,8 +236,9 @@ class RangedList(AbstractList):
                     previous_value = value
             yield (previous_start, slice_stop, previous_value)
 
+    # pylint: disable=unused-argument
     @staticmethod
-    def is_list(value, size):
+    def is_list(value, size):  # @UnusedVariable
         """
         Determines if the value should be treated as a list
 
@@ -256,6 +261,7 @@ class RangedList(AbstractList):
 
         as_list can be Extended to add other conversion to list\
             in which case is_list must also be extended
+
         :param value:
         :return: value as a list
         """
@@ -291,12 +297,12 @@ class RangedList(AbstractList):
         """
         Sets the value for a single id to the new value.
 
-        Note: This method only works for a single positive int id.
+        Note: This method only works for a single positive int id.\
         use set or __set__ for slices, tuples, lists and negative indexes
 
         :param id: Single id
-        :type id:int
-        :param value:  The value to save
+        :type id: int
+        :param value: The value to save
         :type value: anything
         """
         self._check_id_in_range(id)
@@ -352,14 +358,14 @@ class RangedList(AbstractList):
         """
         Sets the value for a single range to the new value.
 
-        Note: This method only works for a single positive int id.
+        Note: This method only works for a single positive int id.\
         use set or __set__ for slices, tuples, lists and negative indexes
 
         :param slice_start: Start of the range
-        :type slice_start:int
+        :type slice_start: int
         :param slice_stop: Exclusive end of the range
-        :type slice_stop:int
-        :param value:  The value to save
+        :type slice_stop: int
+        :param value: The value to save
         :type value: anything
         """
         slice_start, slice_stop = self._check_slice_in_range(
@@ -432,8 +438,8 @@ class RangedList(AbstractList):
 
     def _set_values_list(self, ids, value):
         values = self.as_list(value=value, size=len(ids))
-        for id_value, value in zip(ids, values):
-            self.set_value_by_id(id_value, value)
+        for id_value, val in zip(ids, values):
+            self.set_value_by_id(id_value, val)
 
     def set_value_by_ids(self, ids, value):
         if self.is_list(value, len(ids)):
@@ -484,8 +490,7 @@ class RangedList(AbstractList):
         """
         if self._ranged_based:
             return list(self._ranges)
-        else:
-            return list(self.iter_ranges())
+        return list(self.iter_ranges())
 
     def set_default(self, default):
         """

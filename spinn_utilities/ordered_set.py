@@ -58,20 +58,20 @@ class OrderedSet(collections.MutableSet):
     def __contains__(self, key):
         return key in self._map
 
-    def add(self, key):
-        if key not in self._map:
+    def add(self, value):
+        if value not in self._map:
             end_prev = self._end.prev_node
-            new_node = _Node(key, end_prev, self._end)
-            self._map[key] = new_node
+            new_node = _Node(value, end_prev, self._end)
+            self._map[value] = new_node
             end_prev.next_node = new_node
             self._end.prev_node = new_node
 
     def update(self, iterable):
         map(self.add, iterable)
 
-    def discard(self, key):
-        if key in self._map:
-            node = self._map.pop(key)
+    def discard(self, value):
+        if value in self._map:
+            node = self._map.pop(value)
             prev_node = node.prev_node
             next_node = node.next_node
             node.prev_node.next_node = next_node
@@ -89,16 +89,15 @@ class OrderedSet(collections.MutableSet):
             yield curr.key
             curr = curr.prev_node
 
-    def pop(self, last=True):
+    def pop(self, last=True):  # pylint: disable=arguments-differ
         key = self.peek(last)
         self.discard(key)
         return key
 
     def peek(self, last=True):
-        if len(self._map) == 0:
+        if not self._map:
             raise KeyError('set is empty')
-        key = self._end.prev_node.key if last else self._end.next_node.key
-        return key
+        return self._end.prev_node.key if last else self._end.next_node.key
 
     def __repr__(self):
         if not self:

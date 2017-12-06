@@ -1,5 +1,5 @@
 from ConfigParser import RawConfigParser
-import distutils
+import distutils.util
 
 
 class CamelCaseConfigParser(RawConfigParser):

@@ -1,4 +1,4 @@
-# pylint: disable=redefined-builtin
+import numbers
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
 from spinn_utilities.ranged.abstract_sized import AbstractSized
@@ -12,20 +12,20 @@ class AbstractList(AbstractSized):
     """
     A ranged implementation of list.
 
-    Functions that change the size of the list are NOT Supported.\
+    Functions that change the size of the list are NOT Supported.
     These include
-    * __setitem__ where key >= len
-    * __delitem__
-    * append
-    * extend
-    * insert
-    * pop
-    * remove
+        __setitem__ where key >= len
+        __delitem__
+        append
+        extend
+        insert
+        pop
+        remove
 
-    Function that manipulate the list based on values are not supported.\
+    Function that manipulate the list based on values are not supported.
     These include
-    * reverse, __reversed__
-    * sort
+        reverse, __reversed__
+        sort
 
     In the current version the ids are zero base consecutive numbers so there\
     is no difference between value based ids and index based ids\
@@ -38,7 +38,7 @@ class AbstractList(AbstractSized):
 
         :param size: Fixed length of the list
         :param key: The dict key this list covers.\
-            This is used only for better Exception messages
+        This is used only for better Exception messages
         """
         AbstractSized.__init__(self, size)
         self._key = key
@@ -74,7 +74,7 @@ class AbstractList(AbstractSized):
         or one of the iter_ranges methods
 
         :return: Value shared by all elements in the list
-        :raises MultipleValuesException: If even one elements has a different\
+        :raises MultipleValuesException If even one elements has a different\
             value
         """
         # This is not elegant code but as the ranges could be created on the
@@ -115,8 +115,8 @@ class AbstractList(AbstractSized):
         or one of the iter_ranges methods
 
         :return: Value shared by all elements in the slice
-        :raises MultipleValuesException: If even one elements has a different\
-            value.\
+        :raises MultipleValuesException If even one elements has a different\
+            value.
             Not thrown if elements outside of the slice have a different value
         """
         pass
@@ -133,8 +133,8 @@ class AbstractList(AbstractSized):
         or one of the iter_ranges methods
 
         :return: Value shared by all elements with these ids
-        :raises MultipleValuesException: If even one elements has a different\
-            value.\
+        :raises MultipleValuesException If even one elements has a different\
+            value.
             Not thrown if elements outside of the ids have a different value,\
             even if these elements are between the ones pointed to by ids
         """
@@ -368,12 +368,15 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype: AbstractList
+        :rtype AbstractList
         """
-        from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x + y)
+        if isinstance(other, numbers.Number):
+            return SingleList(a_list=self, operation=lambda x: x + other)
+        raise Exception("__add__ operation only supported for other "
+                        "RangedLists and numerical Values")
 
     def __sub__(self, other):
         """
@@ -387,12 +390,15 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype: AbstractList
+        :rtype AbstractList
         """
-        from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x - y)
+        if isinstance(other, numbers.Number):
+            return SingleList(a_list=self, operation=lambda x: x - other)
+        raise Exception("__sub__ operation only supported for other "
+                        "RangedLists and numerical Values")
 
     def __mul__(self, other):
         """
@@ -408,10 +414,13 @@ class AbstractList(AbstractSized):
         :return: new list
         :rtype AbstractList
         """
-        from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x * y)
+        if isinstance(other, numbers.Number):
+            return SingleList(a_list=self, operation=lambda x: x * other)
+        raise Exception("__mul__ operation only supported for other "
+                        "RangedLists and numerical Values")
 
     def __div__(self, other):
         """
@@ -425,12 +434,17 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype: AbstractList
+        :rtype AbstractList
         """
-        from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x / y)
+        if isinstance(other, numbers.Number):
+            if other == 0:
+                raise ZeroDivisionError()
+            return SingleList(a_list=self, operation=lambda x: x / other)
+        raise Exception("__div__ operation only supported for other "
+                        "RangedLists and numerical Values")
 
     def __floordiv__(self, other):
         """
@@ -441,12 +455,17 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype: AbstractList
+        :rtype AbstractList
         """
-        from spinn_utilities.ranged.dual_list import DualList
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x // y)
+        if isinstance(other, numbers.Number):
+            if other == 0:
+                raise ZeroDivisionError()
+            return SingleList(a_list=self, operation=lambda x: x // other)
+        raise Exception("__floordiv__ operation only supported for other "
+                        "RangedLists and numerical Values")
 
     def apply_operation(self, operation):
         """
@@ -459,7 +478,167 @@ class AbstractList(AbstractSized):
             A function that can be applied over the individual values to\
             create new ones.
         :return: new list
-        :rtype: AbstractList
+        :rtype AbstractList
         """
-        from spinn_utilities.ranged.single_list import SingleList
         return SingleList(a_list=self, operation=operation)
+
+
+@add_metaclass(AbstractBase)
+class SingleList(AbstractList):
+    """ A List that performs an operation on the elements of another list
+    """
+
+    def __init__(self, a_list, operation, key=None):
+        """
+
+        :param a_list: The list to perform the operation on
+        :param operation:\
+            A function which takes a single value and returns the result of\
+            the operation on that value
+        :param key: The dict key this list covers.
+            This is used only for better Exception messages
+        """
+        AbstractList.__init__(self, size=a_list._size, key=key)
+        self._a_list = a_list
+        self._operation = operation
+
+    def range_based(self):
+        return self._a_list.range_based()
+
+    def get_value_by_id(self, id):  # @ReservedAssignment
+        return self._operation(self._a_list.get_value_by_id(id))
+
+    def get_value_by_slice(self, slice_start, slice_stop):
+        return self._operation(self._a_list.get_value_by_slice(
+            slice_start, slice_stop))
+
+    def get_value_by_ids(self, ids):
+        return self._operation(self._a_list.get_value_by_ids(ids))
+
+    def iter_ranges(self):
+        for (start, stop, value) in self._a_list.iter_ranges():
+            yield (start, stop, self._operation(value))
+
+    def get_default(self):
+        self._operation(self._a_list.get_default())
+
+    def iter_ranges_by_slice(self, slice_start, slice_stop):
+        for (start, stop, value) in \
+                self._a_list.iter_ranges_by_slice(slice_start, slice_stop):
+            yield (start, stop, self._operation(value))
+
+
+@add_metaclass(AbstractBase)
+class DualList(AbstractList):
+    """ A list which combines two other lists with an operation.
+    """
+
+    def __init__(self, left, right, operation, key=None):
+        """
+
+        :param left: The first list to combine
+        :param right: The second list to combine
+        :param operation:\
+            The operation to perform as a function that takes two values and\
+            returns the result of the operation
+        :param key:\
+            The dict key this list covers.
+            This is used only for better Exception messages
+        """
+        if left._size != right._size:
+            raise Exception("Two list must have the same size")
+        AbstractList.__init__(self, size=left._size, key=key)
+        self._left = left
+        self._right = right
+        self._operation = operation
+
+    def range_based(self):
+        return self._left.range_based() and self._right.range_based()
+
+    def get_value_by_id(self, id):  # @ReservedAssignment
+        return self._operation(
+            self._left.get_value_by_id(id), self._right.get_value_by_id(id))
+
+    def get_value_by_slice(self, slice_start, slice_stop):
+        return self._operation(
+            self._left.get_value_by_slice(slice_start, slice_stop),
+            self._right.get_value_by_slice(slice_start, slice_stop))
+
+    def get_value_by_ids(self, ids):
+        return self._operation(
+            self._left.get_value_by_ids(ids),
+            self._right.get_value_by_ids(ids))
+
+    def iter_by_slice(self, slice_start, slice_stop):
+        """
+        Fast NOT update safe iterator of all elements in the slice
+
+        Note: Duplicate/Repeated elements are yielded for each id
+
+        :return: yields each element one by one
+        """
+        slice_start, slice_stop = self._check_slice_in_range(
+            slice_start, slice_stop)
+        if self._left.range_based():
+            if self._right.range_based():
+
+                # Both lists are range based
+                for (start, stop, value) in \
+                        self.iter_ranges_by_slice(slice_start, slice_stop):
+                    for _ in range(start, stop):
+                        yield value
+            else:
+
+                # Left list is range based, right is not
+                left_iter = self._left.iter_ranges_by_slice(
+                    slice_start, slice_stop)
+                right_iter = self._right.iter_by_slice(slice_start, slice_stop)
+                for (start, stop, left_value) in left_iter:
+                    for _ in range(start, stop):
+                        yield self._operation(left_value, right_iter.next())
+        else:
+            if self._right.range_based():
+
+                # Right list is range based left is not
+                left_iter = self._left.iter_by_slice(
+                    slice_start, slice_stop)
+                right_iter = self._right.iter_ranges_by_slice(
+                    slice_start, slice_stop)
+                for (start, stop, right_value) in right_iter:
+                    for _ in range(start, stop):
+                        yield self._operation(left_iter.next(), right_value)
+            else:
+
+                # Neither list is range based
+                left_iter = self._left.iter_by_slice(slice_start, slice_stop)
+                right_iter = self._right.iter_by_slice(slice_start, slice_stop)
+                while True:
+                    yield self._operation(left_iter.next(), right_iter.next())
+
+    def iter_ranges(self):
+        left_iter = self._left.iter_ranges()
+        right_iter = self._right.iter_ranges()
+        return self._merge_ranges(left_iter, right_iter)
+
+    def iter_ranges_by_slice(self, slice_start, slice_stop):
+        left_iter = self._left.iter_ranges_by_slice(slice_start, slice_stop)
+        right_iter = self._right.iter_ranges_by_slice(slice_start, slice_stop)
+        return self._merge_ranges(left_iter, right_iter)
+
+    def _merge_ranges(self, left_iter, right_iter):
+        (left_start, left_stop, left_value) = left_iter.next()
+        (right_start, right_stop, right_value) = right_iter.next()
+        while True:
+            yield (max(left_start, right_start),
+                   min(left_stop, right_stop),
+                   self._operation(left_value, right_value))
+            if left_stop < right_stop:
+                (left_start, left_stop, left_value) = left_iter.next()
+            elif left_stop > right_stop:
+                (right_start, right_stop, right_value) = right_iter.next()
+            else:
+                (left_start, left_stop, left_value) = left_iter.next()
+                (right_start, right_stop, right_value) = right_iter.next()
+
+    def get_default(self):
+        self._operation(self._left.get_default(), self._right.get_default())

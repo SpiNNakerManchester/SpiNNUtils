@@ -1,5 +1,6 @@
 import logging
 import re
+from inspect import getargspec
 
 levels = {
     'debug': logging.DEBUG,
@@ -91,3 +92,51 @@ class ConfiguredFormatter(logging.Formatter):
             return None
 
         return parents[parent]
+
+
+class _BraceMessage(object):
+    """ A message that converts a python format string to a string
+    """
+
+    def __init__(self, fmt, args, kwargs):
+        self.fmt = fmt
+        self.args = args
+        self.kwargs = kwargs
+
+    def __str__(self):
+        return str(self.fmt).format(*self.args, **self.kwargs)
+
+
+class FormatAdapter(logging.LoggerAdapter):
+    """ An adaptor for logging with messages that uses python format strings
+    """
+
+    def __init__(self, logger):
+        self.logger = logger
+
+    def critical(self, msg, *args, **kwargs):
+        self.log(logging.CRITICAL, msg, *args, **kwargs)
+
+    def debug(self, msg, *args, **kwargs):
+        self.log(logging.DEBUG, msg, *args, **kwargs)
+
+    def error(self, msg, *args, **kwargs):
+        self.log(logging.ERROR, msg, *args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        self.log(logging.INFO, msg, *args, **kwargs)
+
+    def warning(self, msg, *args, **kwargs):
+        self.log(logging.WARNING, msg, *args, **kwargs)
+
+    def log(self, level, msg, *args, **kwargs):
+        if self.isEnabledFor(level):
+            msg, log_kwargs = self.process(msg, kwargs)
+            self.logger._log(
+                level, _BraceMessage(msg, args, kwargs), (), **log_kwargs)
+
+    def process(self, msg, kwargs):
+        return msg, {
+            key: kwargs[key]
+            for key in getargspec(self.logger._log).args[1:]
+            if key in kwargs}

@@ -9,12 +9,12 @@ class CamelCaseConfigParser(RawConfigParser):
         return lower.replace("_", "")
 
     def __init__(self, defaults=None, none_marker="None"):
-        RawConfigParser.__init__(self, defaults)
+        super(CamelCaseConfigParser, self).__init__(defaults)
         self._none_marker = none_marker
         self.read_files = list()
 
     def read(self, filenames):
-        new_files = RawConfigParser.read(self, filenames)
+        new_files = super(CamelCaseConfigParser, self).read(filenames)
         self.read_files.extend(new_files)
         return new_files
 

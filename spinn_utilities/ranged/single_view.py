@@ -3,13 +3,15 @@ from spinn_utilities.ranged.abstract_view import AbstractView
 
 
 class _SingleView(AbstractView):
+    __slots__ = [
+        "_id"]
 
     def __init__(self, range_dict, id):  # @ReservedAssignment
         """
         USE RangeDictionary.view_factory to create views
         """
-        print "Single"
-        AbstractView.__init__(self, range_dict)
+        # print "Single"
+        super(_SingleView, self).__init__(range_dict)
         self._id = id
 
     def __str__(self):

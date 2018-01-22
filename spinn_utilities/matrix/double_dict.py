@@ -3,6 +3,8 @@ from spinn_utilities.matrix.y_view import YView
 
 
 class DoubleDict(object):
+    __slots__ = [
+        "_matrix", "_xtype", "_ytype"]
 
     def __init__(self, xtype, ytype, matrix):
         self._xtype = xtype
@@ -22,16 +24,16 @@ class DoubleDict(object):
                 correct = all(isinstance(y, self._ytype) for y in value.keys())
                 if not correct:
                     raise ValueError(
-                        "All keys in the vaklue must be of type {}"
-                        "".format(self._ytype))
+                        "All keys in the value must be of type {}".format(
+                            self._ytype))
                 for y in value.keys():
                     self._matrix.set_data(x=key, y=y, value=value[y])
             elif isinstance(key, self._ytype):
                 correct = all(isinstance(x, self._xtype) for x in value.keys())
                 if not correct:
                     raise ValueError(
-                        "All keys in the vaklue must be of type {}"
-                        "".format(self._xtype))
+                        "All keys in the value must be of type {}".format(
+                            self._xtype))
                 for x in value.keys():
                     self._matrix.set_data(x=x, y=key, value=value[x])
             else:

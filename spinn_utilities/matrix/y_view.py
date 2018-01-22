@@ -1,4 +1,6 @@
 class YView(object):
+    __slots__ = [
+        "_matrix", "_y"]
 
     def __init__(self, y, matrix):
         self._y = y

@@ -8,7 +8,7 @@ from spinn_utilities.ranged.abstract_dict import AbstractDict
 from spinn_utilities.ranged.abstract_sized import AbstractSized
 
 
-class RangeDictionary(AbstractDict, AbstractSized):
+class RangeDictionary(AbstractSized, AbstractDict):
     """
     Main holding class for a range of similar Dictionary object.
 
@@ -18,22 +18,23 @@ class RangeDictionary(AbstractDict, AbstractSized):
 
     The size (length of the list) is fixed and set at initialisation time.
     """
+    __slots__ = [
+        "_value_lists"]
 
     def __init__(self, size, defaults=None):
         """
         Main constructor for a Ranged Dictionary
 
         The Object is set up initially where every id in the range will share\
-        the same value for each key.
-        All keys must be of type str.
-        The default Values can be anything including None.
+        the same value for each key. All keys must be of type str. The\
+        default Values can be anything including None.
 
         :param size: Fixed number of ids / Length of lists
         :type size: int
         :param defaults: Default dictionary where all keys must be str
         :type defaults: dict
         """
-        AbstractSized.__init__(self, size)
+        super(RangeDictionary, self).__init__(size)
         self._value_lists = dict()
         if defaults is not None:
             for key, value in defaults.iteritems():
@@ -44,7 +45,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
         """
         Defines which class or subclass of RangedList to use
 
-        Main purpose is for subclasses to use a subclass or RangedList
+        Main purpose is for subclasses to use a subclass or RangedList.\
         All parameters are pass through ones to the List constructor
 
         :param size: Fixed length of the list
@@ -58,13 +59,13 @@ class RangeDictionary(AbstractDict, AbstractSized):
         """
         Main function for creating views.
 
-        This is the preferred way of creating new views as it check parameters
-        and returns the most efficient view.
+        This is the preferred way of creating new views as it checks\
+        parameters and returns the most efficient view.
 
-        Note the __getitem__ methods called by Object[id] and similar defer
+        Note the __getitem__ methods called by Object[id] and similar defer\
         to this method so are fine to use.
 
-        The id(s) used are the actual ids in the Range and not indexes on
+        The id(s) used are the actual ids in the Range and not indexes on\
         the list of ids
 
         :param key: A single int id, a Slice object or an Iterable of int ids
@@ -250,14 +251,13 @@ class RangeDictionary(AbstractDict, AbstractSized):
         if isinstance(key, str):
             if key in self:
                 self.set_value(key=key, value=value)
+            elif isinstance(value, AbstractList):
+                assert self._size == len(value)
+                self._value_lists[key] = value
             else:
-                if isinstance(value, AbstractList):
-                    assert self._size == len(value)
-                    self._value_lists[key] = value
-                else:
-                    new_list = self.list_factory(
-                        size=self._size, value=value, key=key)
-                    self._value_lists[key] = new_list
+                new_list = self.list_factory(
+                    size=self._size, value=value, key=key)
+                self._value_lists[key] = new_list
         elif isinstance(key, (slice, int, tuple, list)):
             raise KeyError("Setting of a slice/ids not supported")
         else:
@@ -343,8 +343,8 @@ class RangeDictionary(AbstractDict, AbstractSized):
         """
         Same AbstractDict.iter_ranges but limited to a simple slice
 
-        slice_start and slice_stop are actual id values and
-        not indexes into the ids
+        slice_start and slice_stop are actual id values and\
+        not indexes into the ids.
         They must also be actual values, so None, max_int, and\
         negative numbers are not supported.
 
@@ -388,10 +388,10 @@ class RangeDictionary(AbstractDict, AbstractSized):
         """
         Sets the default value for a single key.
 
-        Note: Does not change any values
+        Note: Does not change any values\
         but only changes what reset_value would do
 
-        WARNING: If called on a View it sets the default for the WHOLE range
+        WARNING: If called on a View it sets the default for the WHOLE range\
         and not just the view.
 
         :param key: Existing dict key

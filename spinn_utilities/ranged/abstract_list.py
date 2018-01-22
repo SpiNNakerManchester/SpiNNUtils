@@ -31,6 +31,8 @@ class AbstractList(AbstractSized):
     is no difference between value based ids and index based ids\
     but this could change in the future
     """
+    __slots__ = [
+        "_key"]
 
     def __init__(self, size, key=None):
         """
@@ -38,7 +40,7 @@ class AbstractList(AbstractSized):
 
         :param size: Fixed length of the list
         :param key: The dict key this list covers.\
-        This is used only for better Exception messages
+            This is used only for better Exception messages
         """
         AbstractSized.__init__(self, size)
         self._key = key
@@ -115,7 +117,7 @@ class AbstractList(AbstractSized):
         or one of the iter_ranges methods
 
         :return: Value shared by all elements in the slice
-        :raises MultipleValuesException If even one elements has a different\
+        :raises MultipleValuesException: If even one elements has a different\
             value.
             Not thrown if elements outside of the slice have a different value
         """
@@ -133,7 +135,7 @@ class AbstractList(AbstractSized):
         or one of the iter_ranges methods
 
         :return: Value shared by all elements with these ids
-        :raises MultipleValuesException If even one elements has a different\
+        :raises MultipleValuesException: If even one elements has a different\
             value.
             Not thrown if elements outside of the ids have a different value,\
             even if these elements are between the ones pointed to by ids
@@ -487,6 +489,8 @@ class AbstractList(AbstractSized):
 class SingleList(AbstractList):
     """ A List that performs an operation on the elements of another list
     """
+    __slots__ = [
+        "_a_list", "_operation"]
 
     def __init__(self, a_list, operation, key=None):
         """
@@ -498,7 +502,7 @@ class SingleList(AbstractList):
         :param key: The dict key this list covers.
             This is used only for better Exception messages
         """
-        AbstractList.__init__(self, size=a_list._size, key=key)
+        super(SingleList, self).__init__(size=a_list._size, key=key)
         self._a_list = a_list
         self._operation = operation
 
@@ -532,6 +536,8 @@ class SingleList(AbstractList):
 class DualList(AbstractList):
     """ A list which combines two other lists with an operation.
     """
+    __slots__ = [
+        "_left", "_operation", "_right"]
 
     def __init__(self, left, right, operation, key=None):
         """
@@ -547,7 +553,7 @@ class DualList(AbstractList):
         """
         if left._size != right._size:
             raise Exception("Two list must have the same size")
-        AbstractList.__init__(self, size=left._size, key=key)
+        super(DualList, self).__init__(size=left._size, key=key)
         self._left = left
         self._right = right
         self._operation = operation

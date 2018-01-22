@@ -5,6 +5,8 @@ from spinn_utilities.ranged.multiple_values_exception \
 
 
 class RangedList(AbstractList):
+    __slots__ = [
+        "_default", "_key", "_ranged_based", "_ranges"]
 
     def __init__(self, size, value, key=None):
         """
@@ -15,7 +17,7 @@ class RangedList(AbstractList):
         :param key: The dict key this list covers.\
             This is used only for better Exception messages
         """
-        AbstractList.__init__(self, size=size, key=key)
+        super(RangedList, self).__init__(size=size, key=key)
         if not hasattr(value, '__iter__'):
             self._default = value
         self.set_value(value)
@@ -74,10 +76,9 @@ class RangedList(AbstractList):
 
                     # If we have already found a range in the slice, check the
                     # value is the same
-                    if found_value:
-                        if result != value:
-                            raise MultipleValuesException(
-                                self._key, result, value)
+                    if found_value and result != value:
+                        raise MultipleValuesException(
+                            self._key, result, value)
 
                     # If this is the first range in the slice, store it
                     else:

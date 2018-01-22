@@ -7,7 +7,8 @@ class AbstractSized(object):
     Base class for slice and id checking against size.
     """
 
-    __slots__ = ("_size", )
+    __slots__ = [
+        "_size"]
 
     def __init__(self, size):
         """

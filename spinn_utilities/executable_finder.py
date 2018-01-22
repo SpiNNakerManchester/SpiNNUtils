@@ -6,6 +6,8 @@ class ExecutableFinder(object):
     """ Manages a set of folders in which to search for binaries,\
         and allows for binaries to be discovered within this path
     """
+    __slots__ = [
+        "_binary_search_paths"]
 
     def __init__(self, binary_search_paths):
         """

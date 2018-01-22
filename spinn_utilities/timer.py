@@ -30,7 +30,7 @@ class Timer(object):
         self.start_timing()
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, *_args):
         self._measured_section_interval = self.take_sample()
         return False
 

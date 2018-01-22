@@ -10,6 +10,7 @@ class AbstractDict(object):
 
     This allows the users to not have to worry if they have a view.
     """
+    __slots__ = []
 
     @abstractmethod
     def get_value(self, key):

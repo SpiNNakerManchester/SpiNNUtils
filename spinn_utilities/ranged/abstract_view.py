@@ -2,6 +2,8 @@ from spinn_utilities.ranged.abstract_dict import AbstractDict
 
 
 class AbstractView(AbstractDict):
+    __slots__ = [
+        "_range_dict"]
 
     def __init__(self, range_dict):
         """

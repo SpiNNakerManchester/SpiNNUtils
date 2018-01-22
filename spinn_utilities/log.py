@@ -12,6 +12,9 @@ levels = {
 
 
 class ConfiguredFilter(object):
+    __slots__ = [
+        "_default_level", "_levels"]
+
     def __init__(self, conf):
         self._levels = ConfiguredFormatter.construct_logging_parents(conf)
         self._default_level = levels[conf.get("Logging", "default")]
@@ -97,6 +100,8 @@ class ConfiguredFormatter(logging.Formatter):
 class _BraceMessage(object):
     """ A message that converts a python format string to a string
     """
+    __slots__ = [
+        "args", "fmt", "kwargs"]
 
     def __init__(self, fmt, args, kwargs):
         self.fmt = fmt
@@ -108,7 +113,7 @@ class _BraceMessage(object):
 
 
 class FormatAdapter(logging.LoggerAdapter):
-    """ An adaptor for logging with messages that uses python format strings
+    """ An adaptor for logging with messages that uses Python format strings.
     """
 
     def __init__(self, logger):

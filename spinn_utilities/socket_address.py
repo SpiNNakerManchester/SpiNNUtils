@@ -1,7 +1,10 @@
-
 class SocketAddress(object):
     """ Data holder for a socket interface for notification protocol.
     """
+    __slots__ = [
+        "_listen_port",
+        "_notify_host_name",
+        "_notify_port_no"]
 
     def __init__(self, notify_host_name, notify_port_no, listen_port):
         self._notify_host_name = notify_host_name

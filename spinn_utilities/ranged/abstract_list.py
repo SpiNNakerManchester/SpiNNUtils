@@ -12,7 +12,7 @@ class AbstractList(AbstractSized):
     """
     A ranged implementation of list.
 
-    Functions that change the size of the list are NOT Supported.
+    Functions that change the size of the list are NOT Supported.\
     These include
         __setitem__ where key >= len
         __delitem__
@@ -22,7 +22,7 @@ class AbstractList(AbstractSized):
         pop
         remove
 
-    Function that manipulate the list based on values are not supported.
+    Function that manipulate the list based on values are not supported.\
     These include
         reverse, __reversed__
         sort
@@ -42,7 +42,7 @@ class AbstractList(AbstractSized):
         :param key: The dict key this list covers.\
             This is used only for better Exception messages
         """
-        AbstractSized.__init__(self, size)
+        super(AbstractList, self).__init__(size)
         self._key = key
 
     @abstractmethod
@@ -52,7 +52,7 @@ class AbstractList(AbstractSized):
 
         All list must implement all the range functions, \
         but there are times when using ranges will probably be slower than \
-        using individual values.
+        using individual values.\
         For example the individual values may be stored in a list in which \
         case the ranges are created on demand.
 
@@ -76,8 +76,8 @@ class AbstractList(AbstractSized):
         or one of the iter_ranges methods
 
         :return: Value shared by all elements in the list
-        :raises MultipleValuesException If even one elements has a different\
-            value
+        :raises MultipleValuesException: \
+            If even one elements has a different value
         """
         # This is not elegant code but as the ranges could be created on the
         # fly the best way.
@@ -118,7 +118,7 @@ class AbstractList(AbstractSized):
 
         :return: Value shared by all elements in the slice
         :raises MultipleValuesException: If even one elements has a different\
-            value.
+            value. \
             Not thrown if elements outside of the slice have a different value
         """
         pass
@@ -136,7 +136,7 @@ class AbstractList(AbstractSized):
 
         :return: Value shared by all elements with these ids
         :raises MultipleValuesException: If even one elements has a different\
-            value.
+            value. \
             Not thrown if elements outside of the ids have a different value,\
             even if these elements are between the ones pointed to by ids
         """
@@ -370,7 +370,7 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype AbstractList
+        :rtype: AbstractList
         """
         if isinstance(other, AbstractList):
             return DualList(
@@ -392,7 +392,7 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype AbstractList
+        :rtype: AbstractList
         """
         if isinstance(other, AbstractList):
             return DualList(
@@ -414,7 +414,7 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype AbstractList
+        :rtype: AbstractList
         """
         if isinstance(other, AbstractList):
             return DualList(
@@ -436,7 +436,7 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype AbstractList
+        :rtype: AbstractList
         """
         if isinstance(other, AbstractList):
             return DualList(
@@ -457,7 +457,7 @@ class AbstractList(AbstractSized):
         :param other: another list
         :type other: AbstractList
         :return: new list
-        :rtype AbstractList
+        :rtype: AbstractList
         """
         if isinstance(other, AbstractList):
             return DualList(
@@ -480,7 +480,7 @@ class AbstractList(AbstractSized):
             A function that can be applied over the individual values to\
             create new ones.
         :return: new list
-        :rtype AbstractList
+        :rtype: AbstractList
         """
         return SingleList(a_list=self, operation=operation)
 

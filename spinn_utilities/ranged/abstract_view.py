@@ -22,8 +22,9 @@ class AbstractView(AbstractDict):
         For int and int collections a new view will be returned using\
         RangeDictionary.view_factory
 
-        NOTE int are indexes into the list of ids not id values\
-        So for a view with ids [2,3,4,5] view[2] will have an id of 4
+        .. note::
+            int are indexes into the list of ids not id values\
+            So for a view with ids [2,3,4,5] view[2] will have an id of 4
 
         :param key: str, int or collection of int
         :return: the single value for the str key or a view
@@ -41,19 +42,18 @@ class AbstractView(AbstractDict):
         return self._range_dict.view_factory(selected)
 
     def __setitem__(self, key, value):
-        """
-        See AbstractDict.set_value
+        """ See AbstractDict.set_value
 
-        Note: Unlike __getitem__ int based ids are NOT supported so\
-        view[int] == will raise and exception
+        .. note::
+            Unlike __getitem__ int based ids are NOT supported so\
+            view[int] == will raise and exception
 
         """
         if isinstance(key, str):
             return self.set_value(key=key, value=value)
         if isinstance(key, (slice, int, tuple, list)):
             raise KeyError("Setting of a slice/ids not supported")
-        else:
-            raise KeyError("Unexpected key type: {}".format(type(key)))
+        raise KeyError("Unexpected key type: {}".format(type(key)))
 
     def viewkeys(self):
         return self._range_dict.viewkeys()

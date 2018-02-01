@@ -385,14 +385,15 @@ class RangeDictionary(AbstractSized, AbstractDict):
         return self._merge_ranges(ranges)
 
     def set_default(self, key, default):
-        """
-        Sets the default value for a single key.
+        """ Sets the default value for a single key.
 
-        Note: Does not change any values\
-        but only changes what reset_value would do
+        .. note::
+            Does not change any values but only changes what reset_value\
+            would do
 
-        WARNING: If called on a View it sets the default for the WHOLE range\
-        and not just the view.
+        .. warning::
+            If called on a View it sets the default for the WHOLE range\
+            and not just the view.
 
         :param key: Existing dict key
         :type key: str

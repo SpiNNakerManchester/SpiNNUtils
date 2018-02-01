@@ -11,16 +11,14 @@ class AbstractSized(object):
         "_size"]
 
     def __init__(self, size):
-        """
-        Constructor for a ranged list.
+        """ Constructor for a ranged list.
 
         :param size: Fixed length of the list
         """
         self._size = max((int(round(size)), 0))
 
     def __len__(self):
-        """
-        Size of the list, irrespective of actual values
+        """ Size of the list, irrespective of actual values
 
         :return: the initial and Fixed size of the list
         """

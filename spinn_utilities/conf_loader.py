@@ -8,26 +8,21 @@ import string
 import sys
 
 from spinn_utilities import log
-from spinn_utilities.configs.camel_case_config_parser import \
-    CamelCaseConfigParser
-from spinn_utilities.configs.case_sensitive_parser import CaseSensitiveParser
-from spinn_utilities.configs.unexpected_config_exception import \
-    UnexpectedConfigException
-from spinn_utilities.configs.no_config_found_exception import \
-    NoConfigFoundException
+from spinn_utilities.configs import \
+    CamelCaseConfigParser, CaseSensitiveParser
+from spinn_utilities.configs import \
+    NoConfigFoundException, UnexpectedConfigException
 
 logger = logging.getLogger(__name__)
 
 
 def install_cfg_and_IOError(filename, defaults, config_locations):
-    """
-    Installs a local config based on the tamplates and thorws an Error
+    """ Installs a local config based on the templates and raises an exception.
 
     This method is called when no user config is found.
 
-    It will create a file in the users home directory based on the defaults.
-
-    Then it prints a helpful messages and thros and error with the same message
+    It will create a file in the users home directory based on the defaults.\
+    Then it prints a helpful message and throws an error with the same message.
 
     :param filename: Name under which to save the new config file
     :type filename: str
@@ -36,7 +31,7 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
         same path plus .template
     :type defaults: List[str]
     :param config_locations: List of paths the user configs where looked for,\
-        Onlty used for the message
+        Only used for the message
     :raise NoConfigFoundException: Always raised
     """
     home_cfg = os.path.join(os.path.expanduser("~"), ".{}".format(filename))
@@ -72,7 +67,7 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
 def logging_parser(config):
     """ Create the root logger with the given level.
 
-        Create filters based on logging levels
+    Create filters based on logging levels
     """
     try:
         if config.getboolean("Logging", "instantiate"):
@@ -135,8 +130,7 @@ def _outdated_config_section(validation_config, defaults, config, skip,
 
 
 def _outdated_config(cfg_file, validation_cfg, default_cfg):
-    """
-    Prints why a config file is outdated and raises an exception
+    """ Prints why a config file is outdated and raises an exception.
 
     Reads a config file by itself (Without others)
 
@@ -150,18 +144,19 @@ def _outdated_config(cfg_file, validation_cfg, default_cfg):
     Checks all sections not defined as UserSections (Default Machine)\
         i.e., ones the user is expected to change
 
-    Any sect specific list as Dead will be reported
+    Any section specifically listed as Dead will be reported
 
-    Any sect in the default config is compared.
+    Any section in the default config is compared.
         reporting any unexpected values
         reporting the smaller of values non default or values same as default
 
-    Any other sect is ignored as assumed being used by an extension
+    Any other section is ignored as assumed being used by an extension
 
     :param cfg_file: Path to be checked
     :param validation_cfg: Path containing the validation rules
     :param default_cfg: List of Paths to default_cfg
-    :return:
+    :return: an exception
+    :rtype: spinn_utilities.configs.UnexpectedConfigException
     """
 
     try:
@@ -201,15 +196,14 @@ def _outdated_config(cfg_file, validation_cfg, default_cfg):
 
 
 def _check_config(cfg, cfg_file, validation_cfg, default_cfg):
-    """
-    Checks the cfg read up to this point to see if it is outdated
+    """ Checks the configuraion read up to this point to see if it is outdated
 
     Once one difference is found a full reports is generated and an error\
-        raised
+        raised.
 
-     Any sect specific list as Dead will cause a error
+     Any section specifically listed as Dead will cause a error
 
-     Any sect in the default_cfg should not have extra values.\
+     Any section in the default_cfg should not have extra values.\
         It will never have less as the default_cfg are in the cfg
 
     Errors on any values listed as PreviousValues.\
@@ -253,11 +247,11 @@ def _check_config(cfg, cfg_file, validation_cfg, default_cfg):
 def _read_a_config(config, cfg_file, validation_cfg, default_cfg):
     """ Reads in a config file and then directly its machine_spec_file
 
-    :param config: config to do the reading
+    :param config: config to be updated by the reading
     :param cfg_file: path to file which should be read in
     :param validation_cfg: ?
     :param default_cfg: ?
-    :return: list of files read including and machine_spec_files
+    :return: None
     """
     config.read(cfg_file)
     _check_config(config, cfg_file, validation_cfg, default_cfg)
@@ -297,6 +291,7 @@ def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
         (section name, parser); cfg will only be parsed if the\
         section_name is found in the configuration files already loaded
     :type config_parsers: list of (str, ConfigParser)
+    :return: the fully-loaded and checked configuration
     """
 
     cfg = CamelCaseConfigParser()

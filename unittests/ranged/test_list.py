@@ -216,3 +216,10 @@ def test_index():
     rl = RangedList(size=10, value="a", key="alpha")
     rl[6] = "b"
     assert rl.index("b") == 6
+
+
+def test_slice_by_list():
+    rl = RangedList(size=5, value="a", key="alpha")
+    assert list(rl) == ["a", "a", "a", "a", "a"]
+    rl[2:4] = ["b", "c"]
+    assert list(rl) == ["a", "a", "b", "c", "a"]

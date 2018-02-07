@@ -40,7 +40,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
                 self._value_lists[key] = self.list_factory(
                     size=size, value=value, key=key)
 
-    def list_factory(self, size, value, key):
+    def list_factory(self, size=None, value=None, key=None):
         """
         Defines which class or subclass of RangedList to use
 

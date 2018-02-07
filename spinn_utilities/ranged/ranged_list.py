@@ -6,7 +6,7 @@ from spinn_utilities.ranged.multiple_values_exception \
 
 class RangedList(AbstractList):
 
-    def __init__(self, size, value, key=None):
+    def __init__(self, size=None, value=None, key=None):
         """
         Constructor for a ranged list.
 
@@ -15,6 +15,12 @@ class RangedList(AbstractList):
         :param key: The dict key this list covers.\
             This is used only for better Exception messages
         """
+        if size is None:
+            try:
+                size = len(value)
+            except TypeError:
+                raise ValueError("value parameter must have a length to "
+                                 "dettermine the unsupplied size ")
         AbstractList.__init__(self, size=size, key=key)
         if not hasattr(value, '__iter__'):
             self._default = value

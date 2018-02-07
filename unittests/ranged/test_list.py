@@ -223,3 +223,14 @@ def test_slice_by_list():
     assert list(rl) == ["a", "a", "a", "a", "a"]
     rl[2:4] = ["b", "c"]
     assert list(rl) == ["a", "a", "b", "c", "a"]
+
+
+def test_set_ids__with_list():
+    rl = RangedList(size=5, value="a", key="alpha")
+    rl.set_value_by_ids([2, 1, 4], ["b", "c", "d"])
+    assert list(rl) == ["a", "c", "b", "a", "d"]
+
+
+def test_no_size():
+    rl = RangedList(value=["a", "b", "c"])
+    assert list(rl) == ["a", "b", "c"]

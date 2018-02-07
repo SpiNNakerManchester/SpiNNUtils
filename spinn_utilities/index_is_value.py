@@ -1,3 +1,6 @@
+import sys
+
+
 class IndexIsValue(object):
     """
     Tiny support class that implements object[x] by just returning x
@@ -9,3 +12,6 @@ class IndexIsValue(object):
 
     def __getitem__(self, key):
         return key
+
+    def __len__(self):
+        return sys.maxint

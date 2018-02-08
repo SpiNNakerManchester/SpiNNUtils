@@ -24,4 +24,5 @@ script:
   - sphinx-build -T -b singlehtml -d _build/doctrees-readthedocssinglehtmllocalmedia -D language=en . _build/localmedia
 
 after_success:
+  - cd $TRAVIS_BUILD_DIR
   - coveralls

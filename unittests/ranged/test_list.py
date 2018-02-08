@@ -99,6 +99,38 @@ def test_insert_slice_to_previous():
     assert rl.get_ranges() == [(0, 5, "a"), (5, 7, "b"), (7, 10, "a")]
 
 
+def test_insert_slice_to_big():
+    rl = RangedList(2, "a")
+    rl[1:3] = "b"
+    assert rl.get_ranges() == [(0, 1, "a"), (1, 2, "b")]
+    assert list(rl) == ["a", "b"]
+
+
+def test_insert_slice_to_far():
+    rl = RangedList(2, "a")
+    rl[3:6] = "b"
+    assert rl.get_ranges() == [(0, 2, "a")]
+    assert list(rl) == ["a", "a"]
+
+
+def test_insert_slice_inverted():
+    rl = RangedList(4, "a")
+    rl[2:1] = "b"
+    assert rl.get_ranges() == [(0, 4, "a")]
+
+
+def test_insert_slice_stop_too_negative():
+    rl = RangedList(4, "a")
+    rl[2:-5] = "b"
+    assert rl.get_ranges() == [(0, 4, "a")]
+
+
+def test_insert_slice_start_too_negative():
+    rl = RangedList(4, "a")
+    rl[-6:3] = "b"
+    assert rl.get_ranges() == [(0, 3, "b"), (3, 4, "a")]
+
+
 def test_insert_end():
     rl = RangedList(10, "a")
     rl[1] = "b"

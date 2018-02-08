@@ -121,9 +121,6 @@ class AbstractList(AbstractSized):
         """
         pass
 
-    def __getslice__(self, start, stop):
-        return list(self.iter_by_slice(start, stop))
-
     @abstractmethod
     def get_value_by_ids(self, ids):
         """
@@ -140,16 +137,16 @@ class AbstractList(AbstractSized):
         """
         pass
 
-    def __getitem__(self, key):
+    def get_value_by_selector(self, selector):
         """
         Supports the list[x] to return an element or slice of the list
 
-        :param key: The int id, slice
+        :param selector: The int id, slice
         :return: The element[key] or the slice
         """
 
         # If the key is a slice, get the values from the slice
-        if isinstance(key, slice):
+        if isinstance(selector, slice):
 
             # If the slice is continuous, use the continuous slice getter
             if slice.step is None or slice.step == 1:
@@ -158,17 +155,19 @@ class AbstractList(AbstractSized):
 
             # Otherwise get the items one by one using the start, stop, and
             # step from the slice
-            return [self[i] for i in xrange(*key.indices(self._size))]
+            return [self[i] for i in xrange(*selector.indices(self._size))]
 
         # If the key is an int, get the single value
-        elif isinstance(key, int):
+        elif isinstance(selector, int):
 
             # Handle negative indices
-            if key < 0:
-                key += len(self)
-            return self.get_value_by_id(key)
+            if selector < 0:
+                selector += len(self)
+            return self.get_value_by_id(selector)
         else:
             raise TypeError("Invalid argument type.")
+
+    __getitem__ = get_value_by_selector
 
     def iter_by_ids(self, ids):
         """

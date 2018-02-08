@@ -376,6 +376,8 @@ class RangedList(AbstractList):
         """
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
+        if (slice_start == slice_stop):
+            return  # Empty list so do nothing
 
         # If the value to set is a list, set the values directly
         if self.is_list(value, size=slice_stop - slice_start):
@@ -454,37 +456,36 @@ class RangedList(AbstractList):
             for id_value in ids:
                 self.set_value_by_id(id_value, value)
 
-    def __setitem__(self, id, value):  # @ReservedAssignment
+    def set_value_by_selector(self, selector, value):
         """
         Support for the list[x] == format
 
-        :param id: A single id, a slice of ids or a list of ids
+        :param selector: A single id, a slice of ids or a list of ids
         :param value:
         :return:
         """
 
         # Handle a slice
-        if isinstance(id, slice):
-            if slice.step is None or slice.step == 1:
-                self.set_value_by_slice(slice.start, slice.stop, value)
+        if isinstance(selector, slice):
+            if selector.step is None or selector.step == 1:
+                self.set_value_by_slice(selector.start, selector.stop, value)
             else:
-                ids = range(*id.indices(len(self)))
+                ids = range(*selector.indices(len(self)))
                 self.set_value_by_ids(ids=ids, value=value)
 
         # Handle a single int
-        elif isinstance(id, int):
+        elif isinstance(selector, int):
 
             # Handle negative indices
-            if id < 0:
-                id += len(self)
-            self.set_value_by_id(id=id, value=value)
+            if selector < 0:
+                selector += len(self)
+            self.set_value_by_id(id=selector, value=value)
 
         # Handle a list of ids
         else:
-            self.set_value_by_ids(ids=id, value=value)
+            self.set_value_by_ids(ids=selector, value=value)
 
-    def __setslice__(self, start, stop, value):
-        self.set_value_by_slice(start, stop, value)
+    __setitem__ = set_value_by_selector
 
     def get_ranges(self):
         """

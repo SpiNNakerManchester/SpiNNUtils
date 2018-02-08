@@ -1,5 +1,8 @@
 # pylint: disable=redefined-builtin
+import logging
 import sys
+
+logger = logging.getLogger(__file__)
 
 
 class AbstractSized(object):
@@ -43,30 +46,43 @@ class AbstractSized(object):
         elif slice_start < 0:
             slice_start = self._size + slice_start
             if slice_start < 0:
-                if isinstance(slice_start, (int, long)):
-                    raise IndexError(
-                        "The range_start {} is out of range.".format(
-                            slice_start))
-                raise TypeError("Invalid argument type {}.".format(
-                    type(slice_start)))
+                msg = "Specified slice start was {} while size is only {}. " \
+                      "Therefore slice will start at index 0" \
+                      "".format(slice_start - self._size, self._size)
+                logger.warn(msg)
+                slice_start = 0
+        elif slice_start >= len(self):
+            msg = "Specified slice start was {} while size is only {}. " \
+                  "Therefore slice will be empty" \
+                  "".format(slice_start - self._size, self._size)
+            logger.warn(msg)
+            return (0, 0)
+
         if slice_stop is None or slice_stop == sys.maxsize:
             slice_stop = self._size
         elif slice_stop < 0:
             slice_stop = self._size + slice_stop
-        if slice_start > slice_stop:
-            if not isinstance(slice_start, (int, long)):
-                raise TypeError("Invalid argument type {}.".format(
-                    type(slice_start)))
-            if not isinstance(slice_stop, (int, long)):
-                raise TypeError("Invalid argument type {}.".format(
-                    type(slice_start)))
-            raise IndexError(
-                "The range_start {} is after the range stop {}.".format(
-                    slice_start, slice_stop))
-        if slice_stop > len(self):
-            if isinstance(slice_stop, (int, long)):
-                raise IndexError("The range_stop {} is out of range.".format(
-                    slice_stop))
-            raise TypeError("Invalid argument type {}.".format(
-                type(slice_stop)))
+            if slice_stop < 0:
+                msg = "Specified slice stop was {} while size is only {}. " \
+                      "Therefore slice will be empty" \
+                      "".format(slice_stop-self._size, self._size)
+                logger.warn(msg)
+                return (0, 0)
+        elif slice_start > slice_stop:
+            msg = "Specified slice has a start {} greater than its stop {} " \
+                  "(based on size {}). Therefore slice will be empty" \
+                  "".format(slice_start, slice_stop, self._size)
+            logger.warn(msg)
+            return (0, 0)
+        elif slice_start == slice_stop:
+            msg = "Specified slice has a start {} equal to its stop {} " \
+                  "(based on size {}). Therefore slice will be empty" \
+                  "".format(slice_start, slice_stop, self._size)
+            logger.warn(msg)
+        elif slice_stop > len(self):
+            msg = "Specified slice stop was {} while size is only {}. " \
+                  "Therefore slice will be truncated" \
+                  "".format(slice_stop, self._size)
+            logger.warn(msg)
+            slice_stop = self._size
         return slice_start, slice_stop

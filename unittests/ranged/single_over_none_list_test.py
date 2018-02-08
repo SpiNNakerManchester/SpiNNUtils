@@ -5,18 +5,18 @@ from spinn_utilities.ranged.abstract_list import SingleList
 def test_simple():
     a_list = RangedList(5, [0, 1, 2, 3, 4], "many")
     single = SingleList(a_list=a_list, operation=lambda x: x + 5)
-    assert list(single) == [5, 6, 7, 8, 9]
+    assert single == [5, 6, 7, 8, 9]
 
 
 def test_muliple():
     a_list = RangedList(5, [0, 1, 2, 3, 4], "many")
     q = 2
     single = SingleList(a_list=a_list, operation=lambda x: x * q)
-    assert list(single) == [0, 2, 4, 6, 8]
+    assert single == [0, 2, 4, 6, 8]
     a_list[1] = 6
     a_list[2] = 3.0
     a_list[3] = 8
-    assert list(single) == [0, 12, 6.0, 16, 8]
+    assert single == [0, 12, 6.0, 16, 8]
 
 
 def create_lambda():
@@ -28,7 +28,7 @@ def create_lambda():
 def test_complex():
     a_list = RangedList(5, [2, 1, 2, 3, 4], "many")
     single = SingleList(a_list=a_list, operation=create_lambda())
-    assert list(single) == [0.60653065971263342, 0.36787944117144233,
+    assert single == [0.60653065971263342, 0.36787944117144233,
                             0.60653065971263342, 0.716531310573789272,
                             0.77880078307140488]
 

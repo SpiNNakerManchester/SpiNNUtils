@@ -96,7 +96,7 @@ def test_ranges_all():
 def test_set_range():
     rd1 = RangeDictionary(10, defaults)
     rd1["a"] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    assert list(rd1["a"]) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    assert rd1["a"] == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
 def test_set_list():

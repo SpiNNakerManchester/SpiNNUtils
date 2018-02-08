@@ -5,7 +5,7 @@ from spinn_utilities.ranged.abstract_list import SingleList
 def test_simple():
     a_list = RangedList(5, 12, "twelve")
     single = SingleList(a_list=a_list, operation=lambda x: x + 5)
-    assert list(single) == [17, 17, 17, 17, 17]
+    assert single == [17, 17, 17, 17, 17]
 
 
 def test_muliple():
@@ -16,7 +16,7 @@ def test_muliple():
     a_list[1] = 6
     a_list[2] = 3.0
     a_list[3] = 8
-    assert list(single) == [6, 3, 1.5, 4, 6]
+    assert single == [6, 3, 1.5, 4, 6]
 
 
 def create_lambda():
@@ -26,21 +26,21 @@ def create_lambda():
 
 
 def test_complex():
-    a_list = RangedList(5, 20, "twelve")
+    a_list = RangedList(5, 20, "twenty")
     single = SingleList(a_list=a_list, operation=create_lambda())
-    assert list(single) == [0.95122942450071402, 0.95122942450071402,
+    assert single == [0.95122942450071402, 0.95122942450071402,
                             0.95122942450071402, 0.95122942450071402,
                             0.95122942450071402]
 
 
 def test_get_value():
-    a_list = RangedList(5, 20, "twelve")
+    a_list = RangedList(5, 20, "twenty")
     single = SingleList(a_list=a_list, operation=create_lambda())
     assert single[2] == 0.95122942450071402
 
 
 def test_apply_operation():
-    a_list = RangedList(5, 20, "twelve")
+    a_list = RangedList(5, 20, "twenty")
     single = a_list.apply_operation(operation=create_lambda())
     assert single[2] == 0.95122942450071402
 
@@ -82,3 +82,10 @@ def test_iter_by_slice():
     assert [2, 4, 4] == list(single.iter_by_slice(2, 5))
     a_list[4:] = 24
     assert [2, 4, 8] == list(single.iter_by_slice(2, 5))
+
+
+def test_equals():
+    a_list = RangedList(5, 12, "twelve")
+    double = SingleList(a_list=a_list, operation=lambda x: x * 2)
+    half_double = SingleList(a_list=double, operation=lambda x: x / 2)
+    assert a_list == half_double

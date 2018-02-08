@@ -66,6 +66,18 @@ class AbstractList(AbstractSized):
         """
         return self._size
 
+    def __eq__(self, other):
+        if isinstance(other, AbstractList):
+            if self.range_based and other.range_based:
+                 return list(self.iter_ranges()) == list(other.iter_ranges())
+        return list(self) == list(other)
+
+    def __str__(self):
+        return str(list(self))
+
+    def __repr__(self):
+        return repr(list(self))
+
     def get_value_all(self):
         """
         If possible returns a single value shared by the whole list.

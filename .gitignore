@@ -5,3 +5,4 @@
 __pycache__
 /SpiNNUtilities.egg-info/
 /dist/
+/.coverage

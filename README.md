@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/SpiNNakerManchester/SpiNNUtils.svg?branch=master)](https://travis-ci.org/SpiNNakerManchester/SpiNNUtils)
+[![Coverage Status](https://coveralls.io/repos/github/SpiNNakerManchester/SpiNNUtils/badge.svg?branch=master)](https://coveralls.io/github/SpiNNakerManchester/SpiNNUtils?branch=master)
 
 SpiNNUtils
 ==========

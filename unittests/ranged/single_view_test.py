@@ -34,7 +34,7 @@ def test_values():
 
 def test_set():
     rd1 = RangeDictionary(10, defaults)
-    single1 = rd1[4]
+    single1 = rd1.view_factory([4])
     assert single1.get_value("a") == "alpha"
     single1["a"] = "foo"
     assert single1.get_value("a") == "foo"

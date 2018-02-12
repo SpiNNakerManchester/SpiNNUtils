@@ -57,7 +57,7 @@ class AbstractView(AbstractDict):
         return self._range_dict.viewkeys()
 
     def get_default(self, key):
-        self._range_dict.get_default(key)
+        return self._range_dict.get_default(key)
 
     def keys(self):
         return self._range_dict.keys()

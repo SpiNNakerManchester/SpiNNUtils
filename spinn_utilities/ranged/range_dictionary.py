@@ -192,7 +192,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
             if update_save:
                 return self._value_lists[key].iter()
             return self._value_lists[key].__iter__()
-        else:
+        else:  # Sub methods will check key type
             if update_save:
                 return self.update_safe_iter_all_values(
                     key, xrange(self._size))
@@ -206,7 +206,8 @@ class RangeDictionary(AbstractDict, AbstractSized):
         """
         if isinstance(key, str) and not update_save:
             return self._value_lists[key].iter_by_slice(
-                self, slice_start=slice_start, slice_stop=slice_stop)
+                slice_start=slice_start, slice_stop=slice_stop)
+        # Sub methods will check key type
         if update_save:
             return self.update_safe_iter_all_values(
                 key, xrange(slice_start, slice_stop))

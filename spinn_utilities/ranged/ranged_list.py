@@ -43,10 +43,10 @@ class RangedList(AbstractList):
         if self._ranged_based:
             for (_, stop, value) in self._ranges:
                 if id < stop:
-                    return value
+                    return value  # pragma: no cover
 
             # Must never get here because the id is in range
-            raise ValueError
+            raise ValueError  # pragma: no cover
 
         # Non-range-based so just return the value
         return self._ranges[id]
@@ -97,7 +97,7 @@ class RangedList(AbstractList):
 
             # This must be never possible, as the slices must be in range of
             # the list
-            raise ValueError
+            raise ValueError  # pragma: no cover
 
         # A non-range based list just has lots of single values, so check
         # they are all the same within the slice
@@ -433,6 +433,7 @@ class RangedList(AbstractList):
             self._ranges[index-1] = (self._ranges[index-1][0], slice_stop,
                                      value)
             self._ranges.pop(index)
+            index -= 1
 
         # merge with next if same value
         if index < len(self._ranges) - 1 and self._ranges[index+1][2] == value:

@@ -199,6 +199,7 @@ def test_ranges_by_slice():
     rl = RangedList(size=10, value="a", key="alpha")
     assert [(3, 8, "a")] == list(rl.iter_ranges_by_slice(3, 8))
     rl[5] = "foo"
+    rl[5] = "foo"
     assert [(3, 5, "a"), (5, 6, "foo"), (6, 8, "a")] == \
         list(rl.iter_ranges_by_slice(3, 8))
 
@@ -275,9 +276,17 @@ def test_no_size():
     assert rl == ["a", "b", "c"]
 
 
-def test_negative_id():
+def test_bad_no_size():
+    with pytest.raises(ValueError):
+        rl = RangedList(value=35)
+
+
+def test_high_id():
     rl = RangedList(value=["a", "b", "c"])
-    assert "c" == rl[-1]
+    with pytest.raises(IndexError):
+        rl[7]
+    with pytest.raises(IndexError):
+        rl.get_value_by_id(7)
 
 
 def test_bad_ids():
@@ -318,10 +327,48 @@ def test_slice_by_selector():
 def test_negative_id():
     rl = RangedList(size=5, value=[0, 1, 2, 3, 4], key="alpha")
     assert rl.get_value_by_selector(-2) == 3
-    assert rl[-2] == 3
+    rl[-2] = 13
+    assert rl[3] == 13
+    assert rl[-2] == 13
 
 
 def test_bad_selector():
     rl = RangedList(size=5, value=[0, 1, 2, 3, 4], key="alpha")
     with pytest.raises(TypeError):
         assert rl.get_value_by_selector(None)
+
+
+def test_two_many_values_slice():
+    rl = RangedList(size=5, value=1, key="alpha")
+    rl[2] = 2
+    with pytest.raises(MultipleValuesException):
+        rl.get_value_by_slice(1, 3)
+    with pytest.raises(MultipleValuesException):
+        rl.get_value_by_ids([1, 2])
+
+
+def test_iter_by_slice_ranged():
+    rl = RangedList(size=15, value=1, key="alpha")
+    rl[2] = 2
+    rl[12] = 2
+    assert [1, 2] == list(rl.iter_by_slice(11, 13))
+
+
+def test_as_list_bad():
+    with pytest.raises(Exception):
+        RangedList.as_list([1, 2, 3], 4)
+
+
+def test_range_merge():
+    rl = RangedList(size=5, value=1, key="alpha")
+    assert [(0, 5, 1)] == rl.get_ranges()
+    rl[2: 4] = 2
+    assert [(0, 2, 1), (2, 4, 2), (4, 5, 1)] == rl.get_ranges()
+    rl[2: 4] = 1
+    assert [(0, 5, 1)] == rl.get_ranges()
+
+
+def test_no_default():
+    rl = RangedList(value=[1, 2, 3])
+    with pytest.raises(Exception):
+        rl.get_default()

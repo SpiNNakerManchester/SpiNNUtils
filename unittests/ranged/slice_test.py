@@ -113,3 +113,60 @@ def test_empty_slice():
 def test_one_slice():
     slice_view1 = rd[2: 3]
     assert isinstance(slice_view1, _SingleView)
+
+
+def test_str():
+    s = str(slice_view)
+    assert 0 < len(s)
+
+
+def test_iter_by_slice():
+    rd1 = RangeDictionary(10)
+    rd1["g"] = "gamma"
+    rd1["a"] = "alpha"
+    rd1["b"] = ["bravo0", "bravo1", "bravo2", "bravo3", "bravo4", "bravo5",
+                "bravo6", "bravo7", "bravo8+", "bravo9"]
+
+    slice_view1 = rd1[2: 4]
+    iterator = slice_view1.iter_all_values()
+    assert {"a": "alpha", "b": "bravo2", "g": "gamma"} == iterator.next()
+    assert {"a": "alpha", "b": "bravo3", "g": "gamma"} == iterator.next()
+    with pytest.raises(StopIteration):
+        assert "OVERFLOW" == iterator.next()
+
+    iterator = slice_view1.iter_all_values(update_save=True)
+    assert {"a": "alpha", "b": "bravo2", "g": "gamma"} == iterator.next()
+    rd1["b"][3] = "new3"
+    assert {"a": "alpha", "b": "new3", "g": "gamma"} == iterator.next()
+    with pytest.raises(StopIteration):
+        assert "OVERFLOW" == iterator.next()
+    rd1["b"][3] = "bravo3"
+
+    iterator = slice_view1.iter_all_values(key="b")
+    assert "bravo2" == iterator.next()
+    assert "bravo3" == iterator.next()
+    with pytest.raises(StopIteration):
+        assert "OVERFLOW" == iterator.next()
+
+    iterator = slice_view1.iter_all_values(update_save=True, key="b")
+    assert "bravo2" == iterator.next()
+    rd1["b"][3] = "new3"
+    assert "new3" == iterator.next()
+    with pytest.raises(StopIteration):
+        assert "OVERFLOW" == iterator.next()
+    rd1["b"][3] = "bravo3"
+
+    iterator = rd1.iter_values_by_slice(2, 4, key=["b", "a"])
+    assert {"a": "alpha", "b": "bravo2"} == iterator.next()
+    assert {"a": "alpha", "b": "bravo3"} == iterator.next()
+    with pytest.raises(StopIteration):
+        assert "OVERFLOW" == iterator.next()
+
+    iterator = rd1.iter_values_by_slice(
+        2, 4, key=["b", "a"], update_save=True)
+    assert {"a": "alpha", "b": "bravo2"} == iterator.next()
+    rd1["b"][3] = "new3"
+    assert {"a": "alpha", "b": "new3"} == iterator.next()
+    with pytest.raises(StopIteration):
+        assert "OVERFLOW" == iterator.next()
+    rd1["b"][3] = "bravo3"

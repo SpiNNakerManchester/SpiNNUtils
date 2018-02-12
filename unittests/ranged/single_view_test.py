@@ -82,3 +82,8 @@ def test_ranges_all():
             (5, 10, {"a": "alpha", "b": "bravo"})] == rd1.get_ranges()
     assert [(4, 5, {"a": "foo", "b": "bravo"})] == \
         single1.get_ranges()
+
+
+def test_str():
+    s = str(single)
+    assert 0 < len(s)

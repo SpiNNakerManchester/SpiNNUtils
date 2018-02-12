@@ -27,7 +27,7 @@ class _SliceView(AbstractView):
         for id in self.ids():  # @ReservedAssignment
             yield ranged_list.get_value_by_id(id=id)
 
-    def iter_all_values(self, key, update_save=False):
+    def iter_all_values(self, key=None, update_save=False):
         if isinstance(key, str):
             if update_save:
                 return self.update_save_iter_all_values(key)

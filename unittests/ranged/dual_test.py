@@ -193,4 +193,4 @@ def test_dif_size():
     left = RangedList(3, 3, "three")
     right = RangedList(2, 2, "two")
     with pytest.raises(Exception):
-        add = left + right
+        left + right

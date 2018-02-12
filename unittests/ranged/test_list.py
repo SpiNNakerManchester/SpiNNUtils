@@ -278,7 +278,7 @@ def test_no_size():
 
 def test_bad_no_size():
     with pytest.raises(ValueError):
-        rl = RangedList(value=35)
+        RangedList(value=35)
 
 
 def test_high_id():

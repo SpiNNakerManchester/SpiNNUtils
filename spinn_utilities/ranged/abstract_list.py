@@ -68,7 +68,7 @@ class AbstractList(AbstractSized):
     def __eq__(self, other):
         if isinstance(other, AbstractList):
             if self.range_based and other.range_based:
-                 return list(self.iter_ranges()) == list(other.iter_ranges())
+                return list(self.iter_ranges()) == list(other.iter_ranges())
         return list(self) == list(other)
 
     def __str__(self):
@@ -169,7 +169,7 @@ class AbstractList(AbstractSized):
 
             # Handle negative indices
             if selector < 0:
-                selector += len(self) # Herer
+                selector += len(self)
             return self.get_value_by_id(selector)
         else:
             raise TypeError("Invalid argument type.")
@@ -188,7 +188,6 @@ class AbstractList(AbstractSized):
             if selector.step is None or selector.step == 1:
                 return self.get_value_by_slice(selector.start, selector.stop)
             else:
-                ids = selector.indices(self._size)
                 return self.get_value_by_ids(range(self._size)[selector])
         # If the key is an int, get the single value
         elif isinstance(selector, int):
@@ -587,8 +586,6 @@ class DualList(AbstractList):
             self._left.get_value_by_id(id), self._right.get_value_by_id(id))
 
     def get_value_by_slice(self, slice_start, slice_stop):
-        left = self._left.get_value_by_slice(slice_start, slice_stop)
-        right = self._right.get_value_by_slice(slice_start, slice_stop)
         return self._operation(
             self._left.get_value_by_slice(slice_start, slice_stop),
             self._right.get_value_by_slice(slice_start, slice_stop))

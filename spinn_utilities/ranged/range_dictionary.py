@@ -85,7 +85,7 @@ class RangeDictionary(AbstractDict, AbstractSized):
                 raise KeyError(msg)
 
             # Slice is really just one item - return a single view
-            if slice_start == slice_stop -1:
+            if slice_start == slice_stop - 1:
                 return _SingleView(range_dict=self, id=slice_start)
 
             # Slice is continuous - return a slice view

@@ -12,6 +12,7 @@ ranged_view = rd[2, 3, 8]
 def test_ids():
     assert [2, 3, 8] == ranged_view.ids()
 
+
 def test_value():
     assert "alpha" == ranged_view.get_value("a")
     assert "bravo" == ranged_view.get_value("b")
@@ -88,7 +89,6 @@ def test_get_str():
 
 
 def test_no_set():
-    rd1 = RangeDictionary(10, defaults)
     with pytest.raises(KeyError):
         ranged_view[3] = "Better not be allowed"
     with pytest.raises(KeyError):

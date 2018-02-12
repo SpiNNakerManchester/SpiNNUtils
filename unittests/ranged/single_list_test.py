@@ -98,4 +98,3 @@ def test_defaults():
     assert a_list.get_default() == 12
     double = SingleList(a_list=a_list, operation=lambda x: x * 2)
     assert double.get_default() == 24
-

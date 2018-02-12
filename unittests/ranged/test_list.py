@@ -1,3 +1,7 @@
+import pytest
+
+from spinn_utilities.ranged.multiple_values_exception \
+    import MultipleValuesException
 from spinn_utilities.ranged.ranged_list import RangedList
 
 
@@ -248,6 +252,8 @@ def test_index():
     rl = RangedList(size=10, value="a", key="alpha")
     rl[6] = "b"
     assert rl.index("b") == 6
+    with pytest.raises(ValueError):
+        assert rl.index("not there") == "Oops there anyway"
 
 
 def test_slice_by_list():
@@ -255,6 +261,7 @@ def test_slice_by_list():
     assert rl == ["a", "a", "a", "a", "a"]
     rl[2:4] = ["b", "c"]
     assert rl == ["a", "a", "b", "c", "a"]
+    assert rl[2:4] == ["b", "c"]
 
 
 def test_set_ids__with_list():
@@ -266,3 +273,55 @@ def test_set_ids__with_list():
 def test_no_size():
     rl = RangedList(value=["a", "b", "c"])
     assert rl == ["a", "b", "c"]
+
+
+def test_negative_id():
+    rl = RangedList(value=["a", "b", "c"])
+    assert "c" == rl[-1]
+
+
+def test_bad_ids():
+    rl = RangedList(value=["a", "b", "c"])
+    with pytest.raises(IndexError):
+        print rl[4]
+    with pytest.raises(IndexError):
+        print rl.get_value_by_id(-1)
+    with pytest.raises(TypeError):
+        print rl.get_value_by_id("a")
+    with pytest.raises(TypeError):
+        print rl.get_value_by_id(None)
+    with pytest.raises(TypeError):
+        print rl["a"]
+
+
+def test_str():
+    rl = RangedList(value=["a", "b", "c"])
+    assert str(["a", "b", "c"]) == str(rl)
+
+
+def test_too_many():
+    rl = RangedList(value=["a", "b", "c"])
+    with pytest.raises(MultipleValuesException):
+        print rl.get_value_all()
+
+
+def test_slice_by_selector():
+    rl = RangedList(size=5, value=[0, 1, 2, 3, 4], key="alpha")
+    assert rl.get_value_by_selector(slice(2, 3)) == 2
+    with pytest.raises(MultipleValuesException):
+        assert rl.get_value_by_selector(slice(2, 4)) == [2, 3]
+    rl = RangedList(size=5, value=11, key="alpha")
+    assert rl.get_value_by_selector(slice(2, 4)) == 11
+    assert rl.get_value_by_selector(slice(1, 5, 2)) == 11
+
+
+def test_negative_id():
+    rl = RangedList(size=5, value=[0, 1, 2, 3, 4], key="alpha")
+    assert rl.get_value_by_selector(-2) == 3
+    assert rl[-2] == 3
+
+
+def test_bad_selector():
+    rl = RangedList(size=5, value=[0, 1, 2, 3, 4], key="alpha")
+    with pytest.raises(TypeError):
+        assert rl.get_value_by_selector(None)

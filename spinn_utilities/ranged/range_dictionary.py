@@ -80,8 +80,12 @@ class RangeDictionary(AbstractDict, AbstractSized):
             slice_start, slice_stop = self._check_slice_in_range(
                key.start, key.stop)
 
+            if slice_start >= slice_stop:
+                msg = "{} would result in an empty view".format(key)
+                raise KeyError(msg)
+
             # Slice is really just one item - return a single view
-            if slice_start == slice_stop:
+            if slice_start == slice_stop -1:
                 return _SingleView(range_dict=self, id=slice_start)
 
             # Slice is continuous - return a slice view

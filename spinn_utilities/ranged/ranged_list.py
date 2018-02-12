@@ -470,7 +470,7 @@ class RangedList(AbstractList):
             if selector.step is None or selector.step == 1:
                 self.set_value_by_slice(selector.start, selector.stop, value)
             else:
-                ids = range(*selector.indices(len(self)))
+                ids = range(self._size)[selector]
                 self.set_value_by_ids(ids=ids, value=value)
 
         # Handle a single int

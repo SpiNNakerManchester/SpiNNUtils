@@ -25,7 +25,6 @@ class AbstractDict(object):
             values set.\
             But not if other keys not asked for have multiple values
         """
-        pass
 
     @abstractmethod
     def keys(self):
@@ -34,7 +33,6 @@ class AbstractDict(object):
 
         :return: keys in the dict
         """
-        pass
 
     @abstractmethod
     def set_value(self, key, value):
@@ -55,7 +53,6 @@ class AbstractDict(object):
         :param value: any object
         :raise KeyError: If a new key is being used.
         """
-        pass
 
     @abstractmethod
     def ids(self):
@@ -72,7 +69,6 @@ class AbstractDict(object):
         :return: list of ids
         :rtype: list(int)
         """
-        pass
 
     @abstractmethod
     def iter_all_values(self, key, update_save=False):
@@ -92,7 +88,6 @@ class AbstractDict(object):
             If key is iterable (list, tuple, set, etc) of str (or None)\
             yields dictionary objects
         """
-        pass
 
     def get_ranges(self, key=None):
         """
@@ -136,7 +131,6 @@ class AbstractDict(object):
             If key is iterable (list, tuple, set, etc) of str (or None)\
             value is a dictionary object
         """
-        pass
 
     @abstractmethod
     def get_default(self, key):
@@ -152,7 +146,6 @@ class AbstractDict(object):
         :type key: str
         :return: default for this key.
         """
-        pass
 
     def items(self):
         """
@@ -247,7 +240,7 @@ class AbstractDict(object):
         if isinstance(key, str):
             return key in self.keys()
         if isinstance(key, int):
-            return key in self.ids
+            return key in self.ids()
         raise KeyError("Unexpected key type: {}".format(type(key)))
 
     def has_key(self, key):
@@ -268,7 +261,7 @@ class AbstractDict(object):
         Iterates over the dictionary keys
         :return: yield of each key
         """
-        return self.keys().iter()
+        return iter(self.keys())
 
     def reset(self, key):
         """

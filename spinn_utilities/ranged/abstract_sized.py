@@ -33,11 +33,12 @@ class AbstractSized(object):
             if isinstance(id, (int, long)):
                 raise IndexError(
                     "The index {} is out of range.".format(id))
+            # pragma: no cover
             raise TypeError("Invalid argument type {}.".format(type(id)))
         if id >= self._size:
             if isinstance(id, (int, long)):
                 raise IndexError(
-                    "The index {0!d} is out of range.".format(id))
+                    "The index {0} is out of range.".format(id))
             raise TypeError("Invalid argument type {}.".format(type(id)))
 
     def _check_slice_in_range(self, slice_start, slice_stop):

@@ -29,8 +29,8 @@ def test_complex():
     a_list = RangedList(5, [2, 1, 2, 3, 4], "many")
     single = SingleList(a_list=a_list, operation=create_lambda())
     assert single == [0.60653065971263342, 0.36787944117144233,
-                            0.60653065971263342, 0.716531310573789272,
-                            0.77880078307140488]
+                      0.60653065971263342, 0.716531310573789272,
+                      0.77880078307140488]
 
 
 def test_get_value():

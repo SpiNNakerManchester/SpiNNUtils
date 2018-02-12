@@ -1,3 +1,5 @@
+import pytest
+
 from spinn_utilities.ranged.range_dictionary import RangeDictionary
 from spinn_utilities.ranged.ranged_list import RangedList
 
@@ -116,3 +118,53 @@ def test_empty():
                 "bravo", "bravo", "bravo"]
     new_dict = {"a": "alpha", "b": "bravo", "g": "gamma"}
     assert new_dict == rd1.get_value()
+
+
+def test_iter_tests():
+    rd1 = RangeDictionary(10)
+    rl = RangedList(10, "gamma")
+    rd1["g"] = rl
+    rd1["a"] = "alpha"
+    rd1["b"] = ["bravo", "bravo", "bravo", "bravo", "bravo", "bravo", "bravo",
+                "bravo", "bravo", "bravo"]
+    result = set(rd1.iteritems())
+    check = {('a', 'alpha'), ('b', 'bravo'), ('g', 'gamma')}
+    assert check == result
+    result = set(rd1.itervalues())
+    check = {'alpha', 'bravo', 'gamma'}
+    assert check == result
+    result = set(rd1.iterkeys())
+    check = {'a', 'b', 'g'}
+    assert check == result
+    view = rd1[2]
+    result = set(view.iterkeys())
+    check = {'a', 'b', 'g'}
+    assert check == result
+
+
+def test_contains():
+    rd1 = RangeDictionary(10)
+    rl = RangedList(10, "gamma")
+    rd1["g"] = rl
+    rd1["a"] = "alpha"
+    rd1["b"] = ["bravo", "bravo", "bravo", "bravo", "bravo", "bravo", "bravo",
+                "bravo", "bravo", "bravo"]
+    assert "a" in rd1
+    assert "alpha" not in rd1
+    assert 1 in rd1
+    assert 14 not in rd1
+    with pytest.raises(KeyError):
+        assert (rl in rd1)
+
+
+def test_reset():
+    rd1 = RangeDictionary(10)
+    rl = RangedList(10, "gamma")
+    rd1["g"] = rl
+    rd1["a"] = "alpha"
+    rd1["b"] = ["bravo", "bravo", "bravo", "bravo", "bravo", "bravo", "bravo",
+                "bravo", "bravo", "bravo"]
+    rd1["a"] = "beta"
+    rd1.reset("a")
+    assert rd1["a"] == ["alpha", "alpha", "alpha", "alpha", "alpha", "alpha",
+                        "alpha", "alpha", "alpha", "alpha"]

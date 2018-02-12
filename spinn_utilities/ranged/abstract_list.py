@@ -56,7 +56,6 @@ class AbstractList(AbstractSized):
 
         :return: True if and only if Ranged based calls are recommended.
         """
-        pass
 
     def __len__(self):
         """
@@ -75,8 +74,7 @@ class AbstractList(AbstractSized):
     def __str__(self):
         return str(list(self))
 
-    def __repr__(self):
-        return repr(list(self))
+    __repr__ = __str__
 
     def get_value_all(self):
         """
@@ -116,7 +114,6 @@ class AbstractList(AbstractSized):
         :type id: int
         :return: The value of that element
         """
-        pass
 
     @abstractmethod
     def get_value_by_slice(self, slice_start, slice_stop):
@@ -131,7 +128,6 @@ class AbstractList(AbstractSized):
             value.
             Not thrown if elements outside of the slice have a different value
         """
-        pass
 
     @abstractmethod
     def get_value_by_ids(self, ids):
@@ -147,9 +143,8 @@ class AbstractList(AbstractSized):
             Not thrown if elements outside of the ids have a different value,\
             even if these elements are between the ones pointed to by ids
         """
-        pass
 
-    def get_value_by_selector(self, selector):
+    def __getitem__(self, selector):
         """
         Supports the list[x] to return an element or slice of the list
 
@@ -161,9 +156,9 @@ class AbstractList(AbstractSized):
         if isinstance(selector, slice):
 
             # If the slice is continuous, use the continuous slice getter
-            if slice.step is None or slice.step == 1:
+            if selector.step is None or selector.step == 1:
                 return list(self.iter_by_slice(
-                    slice_start=slice.start, slice_stop=slice.stop))
+                    slice_start=selector.start, slice_stop=selector.stop))
 
             # Otherwise get the items one by one using the start, stop, and
             # step from the slice
@@ -174,12 +169,36 @@ class AbstractList(AbstractSized):
 
             # Handle negative indices
             if selector < 0:
-                selector += len(self)
+                selector += len(self) # Herer
             return self.get_value_by_id(selector)
         else:
             raise TypeError("Invalid argument type.")
 
-    __getitem__ = get_value_by_selector
+    def get_value_by_selector(self, selector):
+        """
+        If possible returns a single value shared by all the ids.
+        :param selector: The int id, slice
+        :return: The element[key] or the slice
+        """
+
+        # If the key is a slice, get the values from the slice
+        if isinstance(selector, slice):
+
+            # If the slice is continuous, use the continuous slice getter
+            if selector.step is None or selector.step == 1:
+                return self.get_value_by_slice(selector.start, selector.stop)
+            else:
+                ids = selector.indices(self._size)
+                return self.get_value_by_ids(range(self._size)[selector])
+        # If the key is an int, get the single value
+        elif isinstance(selector, int):
+
+            # Handle negative indices
+            if selector < 0:
+                selector += len(self)
+            return self.get_value_by_id(selector)
+        else:
+            raise TypeError("Invalid argument type.")
 
     def iter_by_ids(self, ids):
         """
@@ -289,7 +308,6 @@ class AbstractList(AbstractSized):
 
         :return: yields each range one by one
         """
-        pass
 
     def iter_ranges_by_id(self, id):  # @ReservedAssignment
         """
@@ -319,7 +337,6 @@ class AbstractList(AbstractSized):
 
          :return: yields each range one by one
          """
-        pass
 
     def iter_ranges_by_ids(self, ids):
         """
@@ -365,7 +382,6 @@ class AbstractList(AbstractSized):
 
         :return: Default value
         """
-        pass
 
     def __add__(self, other):
         """
@@ -531,7 +547,7 @@ class SingleList(AbstractList):
             yield (start, stop, self._operation(value))
 
     def get_default(self):
-        self._operation(self._a_list.get_default())
+        return self._operation(self._a_list.get_default())
 
     def iter_ranges_by_slice(self, slice_start, slice_stop):
         for (start, stop, value) in \
@@ -571,6 +587,8 @@ class DualList(AbstractList):
             self._left.get_value_by_id(id), self._right.get_value_by_id(id))
 
     def get_value_by_slice(self, slice_start, slice_stop):
+        left = self._left.get_value_by_slice(slice_start, slice_stop)
+        right = self._right.get_value_by_slice(slice_start, slice_stop)
         return self._operation(
             self._left.get_value_by_slice(slice_start, slice_stop),
             self._right.get_value_by_slice(slice_start, slice_stop))
@@ -652,4 +670,5 @@ class DualList(AbstractList):
                 (right_start, right_stop, right_value) = right_iter.next()
 
     def get_default(self):
-        self._operation(self._left.get_default(), self._right.get_default())
+        return self._operation(
+            self._left.get_default(), self._right.get_default())

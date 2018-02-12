@@ -1,4 +1,8 @@
+import pytest
+
 from spinn_utilities.ranged.range_dictionary import RangeDictionary
+from spinn_utilities.ranged.single_view import _SingleView
+
 
 defaults = {"a": "alpha", "b": "bravo"}
 
@@ -99,3 +103,13 @@ def test_minus_slice():
     slice_view1 = rd[-8:-4]
     assert [(2, 6, {"a": "alpha", "b": "bravo"})] == \
         list(slice_view1.iter_ranges())
+
+
+def test_empty_slice():
+    with pytest.raises(Exception):
+        print rd[2: 2]
+
+
+def test_one_slice():
+    slice_view1 = rd[2: 3]
+    assert isinstance(slice_view1, _SingleView)

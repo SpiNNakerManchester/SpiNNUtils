@@ -29,14 +29,16 @@ def test_complex():
     a_list = RangedList(5, 20, "twenty")
     single = SingleList(a_list=a_list, operation=create_lambda())
     assert single == [0.95122942450071402, 0.95122942450071402,
-                            0.95122942450071402, 0.95122942450071402,
-                            0.95122942450071402]
+                      0.95122942450071402, 0.95122942450071402,
+                      0.95122942450071402]
 
 
 def test_get_value():
     a_list = RangedList(5, 20, "twenty")
     single = SingleList(a_list=a_list, operation=create_lambda())
     assert single[2] == 0.95122942450071402
+    assert single.get_value_by_slice(2, 4) == 0.95122942450071402
+    assert single.get_value_by_ids([2, 4]) == 0.95122942450071402
 
 
 def test_apply_operation():
@@ -89,3 +91,11 @@ def test_equals():
     double = SingleList(a_list=a_list, operation=lambda x: x * 2)
     half_double = SingleList(a_list=double, operation=lambda x: x / 2)
     assert a_list == half_double
+
+
+def test_defaults():
+    a_list = RangedList(5, 12, "twelve")
+    assert a_list.get_default() == 12
+    double = SingleList(a_list=a_list, operation=lambda x: x * 2)
+    assert double.get_default() == 24
+

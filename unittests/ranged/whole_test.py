@@ -14,8 +14,8 @@ def test_ids():
 
 
 def test_value():
-    assert "alpha" == rd["a"].get_value_all()
-    assert "bravo" == rd["b"].get_value_all()
+    assert "alpha" == rd["a"].get_single_value_all()
+    assert "bravo" == rd["b"].get_single_value_all()
     assert "a" in rd
     assert "c" not in rd
     assert rd.has_key("b")  # noqa: W601
@@ -36,9 +36,9 @@ def test_values():
 
 def test_set_range_direct():
     rd1 = RangeDictionary(10, defaults)
-    assert "alpha" == rd1["a"].get_value_all()
+    assert "alpha" == rd1["a"].get_single_value_all()
     rd1["a"] = "Foo"
-    assert "Foo" == rd1["a"].get_value_all()
+    assert "Foo" == rd1["a"].get_single_value_all()
 
 
 def test_ranges_by_key():

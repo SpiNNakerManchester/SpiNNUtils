@@ -51,7 +51,7 @@ class RangedList(AbstractList):
         # Non-range-based so just return the value
         return self._ranges[id]
 
-    def get_value_by_slice(self, slice_start, slice_stop):
+    def get_single_value_by_slice(self, slice_start, slice_stop):
         """
          If possible returns a single value shared by the whole slice list.
 
@@ -107,7 +107,7 @@ class RangedList(AbstractList):
                 raise MultipleValuesException(self._key, result, _value)
         return result
 
-    def get_value_by_ids(self, ids):
+    def get_single_value_by_ids(self, ids):
         """
         If possible returns a single value shared by all the ids.
 
@@ -469,22 +469,12 @@ class RangedList(AbstractList):
         # Handle a slice
         if isinstance(selector, slice):
             if selector.step is None or selector.step == 1:
-                self.set_value_by_slice(selector.start, selector.stop, value)
-            else:
-                ids = range(self._size)[selector]
-                self.set_value_by_ids(ids=ids, value=value)
+                (start, stop, _) = selector.indices(self._size)
+                self.set_value_by_slice(start, stop, value)
+                return
 
-        # Handle a single int
-        elif isinstance(selector, int):
-
-            # Handle negative indices
-            if selector < 0:
-                selector += len(self)
-            self.set_value_by_id(id=selector, value=value)
-
-        # Handle a list of ids
-        else:
-            self.set_value_by_ids(ids=selector, value=value)
+        ids = self._selector_to_ids(selector)
+        self.set_value_by_ids(ids=ids, value=value)
 
     __setitem__ = set_value_by_selector
 

@@ -47,7 +47,7 @@ def test_iter_values():
     fast = single1.iter_all_values(key="a", update_save=True)
     assert ["alpha"] == list(fast)
     rd1["a"] = "Foo"
-    assert rd1["a"].get_value_all() == "Foo"
+    assert rd1["a"].get_single_value_all() == "Foo"
     assert ["Foo"] == list(aware)
 
 
@@ -58,7 +58,7 @@ def test_iter_values_keys():
     fast = single1.iter_all_values(key=("b", "a"), update_save=True)
     assert [{'a': 'alpha', 'b': 'bravo'}] == list(fast)
     rd1["a"] = "Foo"
-    assert rd1["a"].get_value_all() == "Foo"
+    assert rd1["a"].get_single_value_all() == "Foo"
     assert [{'a': 'Foo', 'b': 'bravo'}] == list(aware)
 
 

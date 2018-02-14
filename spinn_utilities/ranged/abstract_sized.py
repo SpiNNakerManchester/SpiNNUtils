@@ -1,4 +1,5 @@
 # pylint: disable=redefined-builtin
+import itertools
 import logging
 import sys
 
@@ -57,7 +58,7 @@ class AbstractSized(object):
                   "Therefore slice will be empty" \
                   "".format(slice_start - self._size, self._size)
             logger.warn(msg)
-            return (0, 0)
+            return (self._size, self._size)
 
         if slice_stop is None or slice_stop == sys.maxsize:
             slice_stop = self._size
@@ -68,13 +69,13 @@ class AbstractSized(object):
                       "Therefore slice will be empty" \
                       "".format(slice_stop-self._size, self._size)
                 logger.warn(msg)
-                return (0, 0)
+                return (self._size, self._size)
         elif slice_start > slice_stop:
             msg = "Specified slice has a start {} greater than its stop {} " \
                   "(based on size {}). Therefore slice will be empty" \
                   "".format(slice_start, slice_stop, self._size)
             logger.warn(msg)
-            return (0, 0)
+            return (self._size, self._size)
         elif slice_start == slice_stop:
             msg = "Specified slice has a start {} equal to its stop {} " \
                   "(based on size {}). Therefore slice will be empty" \
@@ -87,3 +88,82 @@ class AbstractSized(object):
             logger.warn(msg)
             slice_stop = self._size
         return slice_start, slice_stop
+
+    def _selector_to_ids(self, selector):
+        """
+        Gets the list of ids covered by this selector
+
+        The types of selector currently supported are:
+
+        None: returns all ids
+
+        slice: Standard python slice. \
+            negative values and values larger than size are handled using
+            slices's indices method. \
+            This could result in am empty list
+
+        int: (or long) Handles negative values as normal.
+            Check id is within expected range. \
+
+        iterator of bools: Used a mask. \
+            If the length of the mask is longer or shorted than number of ids \
+            the result is the shorter of the two, \
+            with the remainer of the longer ignored.
+
+        iterator of int (long) but not bool: \
+            Every value checked that it is with the range 0 to size. \
+            Negative values NOT allowed. \
+            Original order and duplication is respected so result may be
+            unordered and contain duplicates.
+
+        :param selector: Some object that identifies a range of ids.
+
+        :return: a (possibly sorted) list of ids
+        """
+        # Assume for now None, int and slice have been filtered out
+        # Try iterator first
+        try:
+            iterator = iter(selector)
+        except TypeError:
+            iterator = None
+        if iterator is not None:
+            # bool is superclass of int so if any are bools all must be
+            if any(isinstance(item, bool) for item in selector):
+                if all(isinstance(item, bool) for item in selector):
+                    return list(itertools.compress(
+                        xrange(self._size), selector))
+                raise TypeError(
+                    "An iterable type must be all ints or all bools")
+            elif all(isinstance(item, (int, long)) for item in selector):
+                ids = list(selector)
+                for id in ids:
+                    if id < 0:
+                        msg = "Selector includes the id {} which is less " \
+                              "than zero".format(id)
+                        raise TypeError(msg)
+                    if id >= self._size:
+                        msg = "Selector includes the id {} which not less " \
+                              "than the size {}".format(id, self._size)
+                        raise TypeError(msg)
+                return ids
+            else:
+                raise TypeError(
+                    "An iterable type must be all ints or all bools")
+
+        # OK lets try for None, int and slice after all
+        if selector is None:
+            return range(self._size)
+
+        if isinstance(selector, slice):
+            (slice_start, slice_stop, step) = selector.indices(self._size)
+            return range(slice_start, slice_stop, step)
+
+        if isinstance(selector, (int, long)):
+            if selector < 0:
+                selector = self._size + selector
+            if selector < 0 or selector >= self._size:
+                raise TypeError("Selector {} is unsupproted for size {} "
+                                "".format(selector-self._size, self._size))
+            return [selector]
+
+        raise TypeError("Unexpected selector type {}".format(type(selector)))

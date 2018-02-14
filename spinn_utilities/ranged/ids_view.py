@@ -17,7 +17,8 @@ class _IdsView(AbstractView):
         return list(self._ids)
 
     def get_value(self, key):
-        return self._range_dict.get_list(key).get_value_by_ids(self._ids)
+        return self._range_dict.get_list(key).get_single_value_by_ids(
+            self._ids)
 
     def set_value(self, key, value):
         ranged_list = self._range_dict.get_list(key)

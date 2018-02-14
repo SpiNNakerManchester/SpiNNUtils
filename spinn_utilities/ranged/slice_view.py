@@ -19,7 +19,7 @@ class _SliceView(AbstractView):
         return range(self._start, self._stop)
 
     def get_value(self, key):
-        return self._range_dict.get_list(key).get_value_by_slice(
+        return self._range_dict.get_list(key).get_single_value_by_slice(
             slice_start=self._start, slice_stop=self._stop)
 
     def update_save_iter_all_values(self, key):

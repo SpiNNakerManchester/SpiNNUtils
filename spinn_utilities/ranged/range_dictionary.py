@@ -139,12 +139,12 @@ class RangeDictionary(AbstractDict, AbstractSized):
         See AbstractDict
         """
         if isinstance(key, str):
-            return self._value_lists[key].get_value_all()
+            return self._value_lists[key].get_single_value_all()
         if key is None:
             key = self.keys()
         results = dict()
         for a_key in key:
-            results[a_key] = self._value_lists[a_key].get_value_all()
+            results[a_key] = self._value_lists[a_key].get_single_value_all()
         return results
 
     def get_values_by_id(self, key, id):  # @ReservedAssignment

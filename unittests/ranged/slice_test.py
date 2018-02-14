@@ -51,7 +51,7 @@ def test_iter_values():
     fast = slice_view1.iter_all_values("a", update_save=True)
     assert ["alpha", "alpha", "alpha"] == list(fast)
     rd1["a"] = "Foo"
-    assert rd1["a"].get_value_all() == "Foo"
+    assert rd1["a"].get_single_value_all() == "Foo"
     assert ["Foo", "Foo", "Foo"] == list(aware)
 
 
@@ -170,3 +170,13 @@ def test_iter_by_slice():
     with pytest.raises(StopIteration):
         assert "OVERFLOW" == iterator.next()
     rd1["b"][3] = "bravo3"
+
+
+def test_check_slice_in_range():
+    assert (2, 4) == rd._check_slice_in_range(2, 4)
+    assert (7, 9) == rd._check_slice_in_range(-3, -1)
+    assert (0, 4) == rd._check_slice_in_range(-18, 4)
+    assert (10, 10) == rd._check_slice_in_range(2, -13)
+    assert (2, 10) == rd._check_slice_in_range(2, 12)
+    assert (10, 10) == rd._check_slice_in_range(10, 12)
+    assert (10, 10) == rd._check_slice_in_range(4, 2)

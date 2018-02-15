@@ -70,7 +70,7 @@ def test_changes_params():
     assert e.value.message == \
         "Method has 4 arguments but super class method has 4 arguments"
     # TODO: Fix the AWFUL error message in this case!
- 
+
 
 def test_crazy_extends():
     with pytest.raises(AttributeError) as e:

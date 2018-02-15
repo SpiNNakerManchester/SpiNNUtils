@@ -115,6 +115,4 @@ def test_obscure_stuff():
     assert o == o2
     o2 |= [4]
     assert o != o2
-
-
-
+    assert repr(OrderedSet()) == "OrderedSet()"

@@ -17,22 +17,24 @@ logger = logging.getLogger(__name__)
 
 
 def install_cfg_and_IOError(filename, defaults, config_locations):
-    """ Installs a local config based on the templates and raises an exception.
+    """ Installs a local configuration file based on the templates and raises\
+    an exception.
 
-    This method is called when no user config is found.
+    This method is called when no user configuration file is found.
 
     It will create a file in the users home directory based on the defaults.\
     Then it prints a helpful message and throws an error with the same message.
 
-    :param filename: Name under which to save the new config file
+    :param filename: Name under which to save the new configuration file
     :type filename: str
-    :param defaults: List of full paths to the default config files.\
+    :param defaults: List of full paths to the default configuration files.\
         Each of which MUST have an associated template file with exactly the\
         same path plus .template
-    :type defaults: List[str]
-    :param config_locations: List of paths the user configs where looked for,\
-        Only used for the message
-    :raise NoConfigFoundException: Always raised
+    :type defaults: list(str)
+    :param config_locations: List of paths where the user configuration files\
+        were looked for. Only used for the message
+    :type config_locations: list(str)
+    :raise spinn_utilities.configs.NoConfigFoundException: Always raised
     """
     home_cfg = os.path.join(os.path.expanduser("~"), ".{}".format(filename))
 
@@ -68,6 +70,10 @@ def logging_parser(config):
     """ Create the root logger with the given level.
 
     Create filters based on logging levels
+
+    .. note::
+        You do not normally need to call this function; it is used\
+        automatically to parse Logging configuration sections.
     """
     try:
         if config.getboolean("Logging", "instantiate"):
@@ -82,7 +88,7 @@ def logging_parser(config):
 
 def _outdated_config_section(validation_config, defaults, config, skip,
                              user_sections, section):
-    """Helper for _outdated_config"""
+    """Helper for :py:func:_outdated_config"""
     if section in user_sections:
         print "Section [{}] should be kept as these need to be set " \
               "by the user".format(section)
@@ -130,25 +136,25 @@ def _outdated_config_section(validation_config, defaults, config, skip,
 
 
 def _outdated_config(cfg_file, validation_cfg, default_cfg):
-    """ Prints why a config file is outdated and raises an exception.
+    """ Prints why a configuration file is outdated and raises an exception.
 
-    Reads a config file by itself (Without others)
+    Reads a configuration file by itself (Without others)
 
-    Reports errors in this config based on the validation_cfg and the\
-        defaults_configs
+    Reports errors in this configuration file based on the validation_cfg and\
+    the default_cfg
 
     Reports any values listed as PreviousValues.\
-        These are specific values in specific options no longer supported.\
-        For example old algorithm names
+    These are specific values in specific options no longer supported.\
+    For example old algorithm names.
 
     Checks all sections not defined as UserSections (Default Machine)\
-        i.e., ones the user is expected to change
+    i.e., ones the user is expected to change
 
     Any section specifically listed as Dead will be reported
 
-    Any section in the default config is compared.
-        reporting any unexpected values
-        reporting the smaller of values non default or values same as default
+    Any section in the default configuration file is compared, reporting
+    * any unexpected values
+    * the smaller of values non default or values same as default
 
     Any other section is ignored as assumed being used by an extension
 
@@ -196,24 +202,24 @@ def _outdated_config(cfg_file, validation_cfg, default_cfg):
 
 
 def _check_config(cfg, cfg_file, validation_cfg, default_cfg):
-    """ Checks the configuraion read up to this point to see if it is outdated
+    """ Checks the configuration read up to this point to see if it is outdated
 
     Once one difference is found a full reports is generated and an error\
-        raised.
+    raised.
 
-     Any section specifically listed as Dead will cause a error
+    Any section specifically listed as Dead will cause a error
 
-     Any section in the default_cfg should not have extra values.\
-        It will never have less as the default_cfg are in the cfg
+    Any section in the default_cfg should not have extra values.\
+    It will never have less as the default_cfg are in the cfg
 
     Errors on any values listed as PreviousValues.\
-        These are specific values in specific options no longer supported.\
-        For example old algorithm names
+    These are specific values in specific options no longer supported.\
+    For example old algorithm names
 
-    :param cfg: Config as read in up to this point
+    :param cfg: Configuration as read in up to this point
     :param cfg_file: Path of last file read in
     :param validation_cfg: Path containing the validation rules
-    :param default_configs: List of Paths to default_cfg
+    :param default_cfg: The list of paths to default configurations
     """
     if validation_cfg is None or default_cfg is None:
         return
@@ -245,12 +251,12 @@ def _check_config(cfg, cfg_file, validation_cfg, default_cfg):
 
 
 def _read_a_config(config, cfg_file, validation_cfg, default_cfg):
-    """ Reads in a config file and then directly its machine_spec_file
+    """ Reads in a configuration file and then directly its machine_spec_file
 
-    :param config: config to be updated by the reading
+    :param config: configuration to be updated by the reading of a file
     :param cfg_file: path to file which should be read in
-    :param validation_cfg: ?
-    :param default_cfg: ?
+    :param validation_cfg: Path containing the validation rules
+    :param default_cfg: The list of paths to default configurations
     :return: None
     """
     config.read(cfg_file)
@@ -284,13 +290,23 @@ def _config_locations(filename):
 
 
 def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
-    """ Load the configuration
+    """ Load the configuration.
 
+    :param filename: The base name of the configuration file(s). Should not\
+        include any path components.
+    :type filename: str
+    :param defaults: The list of files to get default configurations from. 
+    :type defaults: list(str)
     :param config_parsers:\
-        The parsers to parse the cfg with, as a list of\
-        (section name, parser); cfg will only be parsed if the\
-        section_name is found in the configuration files already loaded
+        The parsers to parse the sections of the configuration file with, as\
+        a list of (section name, parser); a configuration section will only\
+        be parsed if the section_name is found in the configuration files\
+        already loaded. The standard logging parser is appended to (a copy\
+        of) this list.
     :type config_parsers: list of (str, ConfigParser)
+    :param validation_cfg: The list of files to read a validation\
+        configuration from. If omitted, no such validation is performed.
+    :type validation_cfg: list(str)
     :return: the fully-loaded and checked configuration
     """
 

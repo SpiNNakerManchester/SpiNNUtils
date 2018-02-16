@@ -1,3 +1,4 @@
+import pytest
 import unittests
 from spinn_utilities.helpful_functions import \
     get_valid_components, write_finished_file, set_up_report_specifics,\
@@ -16,7 +17,7 @@ def test_write_finished_file(tmpdir):
     assert f2.check()
 
 
-def test_set_up_report_specifics(tmpdir):
+def test_set_up_report_specifics_default(tmpdir):
     with tmpdir.as_cwd():
         base = tmpdir.join("reports")
         assert not base.check()
@@ -36,7 +37,63 @@ def test_set_up_report_specifics(tmpdir):
         assert base.join("NOW/time_stamp").read() == "app_3_NOW"
 
 
-def test_set_up_output_application_data_specifics(tmpdir):
+def test_set_up_report_specifics_reports(tmpdir):
+    with tmpdir.as_cwd():
+        base = tmpdir.join("reports")
+        assert not base.check()
+
+        a, b, c = set_up_report_specifics("REPORTS", 2, 3, 4, "NOW")
+
+        # Check expected results
+        assert a == "reports/NOW/run_4"
+        assert b == "reports/NOW"
+        assert c == "NOW"
+
+        # Check expected FS state
+        assert base.check(dir=1)
+        assert base.join("NOW").check(dir=1)
+        assert base.join("NOW/run_4").check(dir=1)
+        assert base.join("NOW/time_stamp").check(file=1)
+        assert base.join("NOW/time_stamp").read() == "app_3_NOW"
+
+
+def test_set_up_report_specifics_explicit(tmpdir):
+    base = tmpdir.join("reports")
+    assert not base.check()
+
+    a, b, c = set_up_report_specifics(str(tmpdir), 2, 3, 4, "NOW")
+
+    # Check expected results
+    assert a == base.join("NOW/run_4")
+    assert b == base.join("NOW")
+    assert c == "NOW"
+
+    # Check expected FS state
+    assert base.check(dir=1)
+    assert base.join("NOW").check(dir=1)
+    assert base.join("NOW/run_4").check(dir=1)
+    assert base.join("NOW/time_stamp").check(file=1)
+    assert base.join("NOW/time_stamp").read() == "app_3_NOW"
+
+
+def test_set_up_report_specifics_repeated(tmpdir):
+    # Checks the auto-cleaning of finished outputs
+    _, d, ts1 = set_up_report_specifics(str(tmpdir), 2, 3, 1, "NOW_1")
+    write_finished_file(d, None)
+    _, d, ts2 = set_up_report_specifics(str(tmpdir), 2, 3, 2, "NOW_2")
+    _, d, ts3 = set_up_report_specifics(str(tmpdir), 2, 3, 3, "NOW_3")
+    write_finished_file(d, None)
+    _, d, ts4 = set_up_report_specifics(str(tmpdir), 2, 3, 4, "NOW_4")
+
+    base = tmpdir.join("reports")
+    # Check expected FS state
+    assert not base.join(ts1).check(dir=1)
+    assert base.join(ts2).check(dir=1)
+    assert base.join(ts3).check(dir=1)
+    assert base.join(ts4).check(dir=1)
+
+
+def test_set_up_output_application_data_specifics_default(tmpdir):
     with tmpdir.as_cwd():
         base = tmpdir.join("application_generated_data_files")
         assert not base.check()
@@ -54,6 +111,40 @@ def test_set_up_output_application_data_specifics(tmpdir):
         assert base.join("NOW/run_4").check(dir=1)
         assert base.join("NOW/time_stamp").check(file=1)
         assert base.join("NOW/time_stamp").read() == "app_3_NOW"
+
+
+@pytest.mark.skip(reason="horrible logic bug when TEMP used")
+def test_set_up_output_application_data_specifics_temp(tmpdir):
+    with tmpdir.as_cwd():
+        a, b = set_up_output_application_data_specifics(
+            "TEMP", 2, 3, 4, "NOW")
+
+        # Check expected results
+        assert a == tmpdir.join("NOW/run_4")
+        assert b == tmpdir.join("NOW")
+
+        # Check expected FS state
+        assert tmpdir.check(dir=1)
+        assert tmpdir.join("NOW").check(dir=1)
+        assert tmpdir.join("NOW/run_4").check(dir=1)
+        assert tmpdir.join("NOW/time_stamp").check(file=1)
+        assert tmpdir.join("NOW/time_stamp").read() == "app_3_NOW"
+
+
+def test_set_up_output_application_data_specifics_explicit(tmpdir):
+    a, b = set_up_output_application_data_specifics(
+        str(tmpdir), 2, 3, 4, "NOW")
+
+    # Check expected results
+    assert a == tmpdir.join("NOW/run_4")
+    assert b == tmpdir.join("NOW")
+
+    # Check expected FS state
+    assert tmpdir.check(dir=1)
+    assert tmpdir.join("NOW").check(dir=1)
+    assert tmpdir.join("NOW/run_4").check(dir=1)
+    assert tmpdir.join("NOW/time_stamp").check(file=1)
+    assert tmpdir.join("NOW/time_stamp").read() == "app_3_NOW"
 
 
 def test_get_valid_components():

@@ -1,6 +1,9 @@
 from spinn_utilities.overrides import overrides
 import pytest
 
+WRONG_ARGS = "Method has {} arguments but super class method has 4 arguments"
+BAD_DEFS = "Default arguments don't match super class method"
+
 
 class Base(object):
     def foo(self, x, y, z):
@@ -24,97 +27,129 @@ def test_basic_use():
     assert Sub().foo(1, 2, 3) == [3, 2, 1]
 
 
-def test_doc():
+def test_doc_no_sub_extend():
     class Sub(Base):
         @overrides(Base.foo, extend_doc=True)
         def foo(self, x, y, z):
             return [z, y, x]
     assert Sub.foo.__doc__ == "this is the doc"
 
-    class Sub2(Base):
+
+def test_doc_no_sub_no_extend():
+    class Sub(Base):
         @overrides(Base.foo, extend_doc=False)
         def foo(self, x, y, z):
             return [z, y, x]
-    assert Sub2.foo.__doc__ == "this is the doc"
+    assert Sub.foo.__doc__ == "this is the doc"
 
-    class Sub3(Base):
+
+def test_doc_sub_no_extend():
+    class Sub(Base):
         @overrides(Base.foo, extend_doc=False)
         def foo(self, x, y, z):
             """(abc)"""
             return [z, y, x]
-    assert Sub3.foo.__doc__ == "(abc)"
+    assert Sub.foo.__doc__ == "(abc)"
 
-    class Sub4(Base):
+
+def test_doc_sub_extend():
+    class Sub(Base):
         @overrides(Base.foo, extend_doc=True)
         def foo(self, x, y, z):
             """(abc)"""
             return [z, y, x]
-    assert Sub4.foo.__doc__ == "this is the doc(abc)"
+    assert Sub.foo.__doc__ == "this is the doc(abc)"
 
 
-def test_changes_params():
-    wrong_args = \
-        "Method has {} arguments but super class method has 4 arguments"
-
+def test_removes_param():
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo)
             def foo(self, x, y):
                 return [y, x]
-    assert e.value.message == wrong_args.format(3)
+    assert e.value.message == WRONG_ARGS.format(3)
 
+
+def test_adds_param():
     with pytest.raises(AttributeError) as e:
-        class Sub2(Base):
+        class Sub(Base):
             @overrides(Base.foo)
             def foo(self, x, y, z, w):
                 return [w, z, y, x]
-    assert e.value.message == wrong_args.format(5)
+    assert e.value.message == WRONG_ARGS.format(5)
 
-    class Sub3(Base):
+
+def test_adds_expected_param():
+    class Sub(Base):
         @overrides(Base.foo, additional_arguments=["w"])
         def foo(self, x, y, z, w):
             return [w, z, y, x]
-    assert Sub3().foo(1, 2, 3, 4) == [4, 3, 2, 1]
+    assert Sub().foo(1, 2, 3, 4) == [4, 3, 2, 1]
 
+
+def test_renames_param():
     with pytest.raises(AttributeError) as e:
-        class Sub4(Base):
+        class Sub(Base):
+            @overrides(Base.foo)
+            def foo(self, x, y, w):
+                return [w, y, x]
+    assert e.value.message == "Missing argument z"
+
+
+def test_renames_param_expected():
+    with pytest.raises(AttributeError) as e:
+        class Sub(Base):
             @overrides(Base.foo, additional_arguments=["w"])
             def foo(self, x, y, w):
                 return [w, y, x]
-    assert e.value.message == wrong_args.format(4)
+    assert e.value.message == WRONG_ARGS.format(4)
     # TODO: Fix the AWFUL error message in this case!
 
 
 def test_changes_params_defaults():
-    bad_defs = "Default arguments don't match super class method"
-
     class Sub(Base):
         @overrides(Base.foodef)
         def foodef(self, x, y, z=False):
             return [z, y, x]
     assert Sub().foodef(1, 2) == [False, 2, 1]
 
+
+def test_undefaults_super_param():
     with pytest.raises(AttributeError) as e:
-        class Sub2(Base):
+        class Sub(Base):
             @overrides(Base.foodef)
             def foodef(self, x, y, z):
                 return [z, y, x]
-    assert e.value.message == bad_defs
+    assert e.value.message == BAD_DEFS
 
+
+def test_defaults_super_param():
     with pytest.raises(AttributeError) as e:
-        class Sub3(Base):
+        class Sub(Base):
             @overrides(Base.foodef)
             def foodef(self, x, y=1, z=2):
                 return [z, y, x]
-    assert e.value.message == bad_defs
+    assert e.value.message == BAD_DEFS
     # TODO: Should this case fail at all?
 
+
+def test_defaults_extra_param():
     with pytest.raises(AttributeError) as e:
-        class Sub4(Base):
+        class Sub(Base):
             @overrides(Base.foodef, additional_arguments=['pdq'])
             def foodef(self, x, y, z=1, pdq=2):
                 return [z, y, x, pdq]
-    assert e.value.message == bad_defs
+    assert e.value.message == BAD_DEFS
+
+
+def test_defaults_super_param_no_super_defaults():
+    with pytest.raises(AttributeError) as e:
+        class Sub(Base):
+            @overrides(Base.foo)
+            def foo(self, x, y, z=7):
+                return [z, y, x]
+    assert e.value.message == BAD_DEFS
+    # TODO: Should this case fail at all?
 
 
 def test_crazy_extends():
@@ -127,8 +162,10 @@ def test_crazy_extends():
         "Super class method name foo does not match bar. Ensure override is "\
         "the last decorator before the method declaration"
 
+
+def test_overrides_property():
     with pytest.raises(AttributeError) as e:
-        class Sub2(Base):
+        class Sub(Base):
             @overrides(Base.boo)
             @property
             def boo(self):
@@ -137,9 +174,11 @@ def test_crazy_extends():
         "Please ensure that the override decorator is the last decorator "\
         "before the method declaration"
 
-    class Sub3(Base):
+
+def test_property_overrides():
+    class Sub(Base):
         @property
         @overrides(Base.boo)
         def boo(self):
             return 1513
-    assert Sub3().boo == 1513
+    assert Sub().boo == 1513

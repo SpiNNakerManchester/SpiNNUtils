@@ -66,15 +66,15 @@ def test_get_valid_components():
 
 
 # Support class for test_get_valid_components
-class a_b(object):
+class a_b(object):  # noqa: N801
     pass
 
 
 # Support class for test_get_valid_components
-class b_c(object):
+class b_c(object):  # noqa: N801
     pass
 
 
 # Support class for test_get_valid_components
-class a_c(object):
+class a_c(object):  # noqa: N801
     pass

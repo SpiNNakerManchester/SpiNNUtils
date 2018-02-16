@@ -295,7 +295,7 @@ def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
     :param filename: The base name of the configuration file(s). Should not\
         include any path components.
     :type filename: str
-    :param defaults: The list of files to get default configurations from. 
+    :param defaults: The list of files to get default configurations from.
     :type defaults: list(str)
     :param config_parsers:\
         The parsers to parse the sections of the configuration file with, as\

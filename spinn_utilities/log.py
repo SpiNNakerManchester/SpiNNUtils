@@ -1,6 +1,7 @@
 import logging
 import re
 from inspect import getargspec
+from .overrides import overrides
 
 levels = {
     'debug': logging.DEBUG,
@@ -32,6 +33,9 @@ class ConfiguredFilter(object):
 
 
 class ConfiguredFormatter(logging.Formatter):
+    # Precompile this RE; it gets used quite a few times
+    __last_component = re.compile(r'\.[^.]+$')
+
     def __init__(self, conf):
         level = conf.get("Logging", "default")
         if level == "debug":
@@ -56,12 +60,10 @@ class ConfiguredFormatter(logging.Formatter):
 
         for label, level in levels.items():
             if conf.has_option("Logging", label):
-                modules = map(
-                    lambda s: s.strip(),
-                    conf.get('Logging', label).split(','))
+                modules = [s.strip() for s in
+                           conf.get('Logging', label).split(',')]
                 if '' not in modules:
-                    _levels.update(
-                        dict(map(lambda m, lv=level: (m, lv), modules)))
+                    _levels.update(dict((m, level) for m in modules))
         return _levels
 
     @staticmethod
@@ -75,7 +77,7 @@ class ConfiguredFormatter(logging.Formatter):
         match = child
 
         while '.' in match and match not in parents:
-            match = re.sub(r'\.[^.]+$', '', match)
+            match = ConfiguredFormatter.__last_component.sub('', match)
 
         # If no match then return None, there is no deepest parent
         if match not in parents:
@@ -116,32 +118,49 @@ class FormatAdapter(logging.LoggerAdapter):
     """ An adaptor for logging with messages that uses Python format strings.
     """
 
-    def __init__(self, logger):
-        self.logger = logger
+    def __init__(self, logger, extra=None):
+        if extra is None:
+            extra = {}
+        super(FormatAdapter, self).__init__(logger, extra)
+        self.do_log = logger._log  #pylint: disable=protected-access
 
+    @overrides(logging.LoggerAdapter.critical)
     def critical(self, msg, *args, **kwargs):
         self.log(logging.CRITICAL, msg, *args, **kwargs)
 
+    @overrides(logging.LoggerAdapter.debug)
     def debug(self, msg, *args, **kwargs):
         self.log(logging.DEBUG, msg, *args, **kwargs)
 
+    @overrides(logging.LoggerAdapter.error)
     def error(self, msg, *args, **kwargs):
         self.log(logging.ERROR, msg, *args, **kwargs)
 
+    @overrides(logging.LoggerAdapter.exception)
+    def exception(self, msg, *args, **kwargs):
+        kwargs["exc_info"] = 1
+        self.log(logging.ERROR, msg, *args, **kwargs)
+
+    @overrides(logging.LoggerAdapter.info)
     def info(self, msg, *args, **kwargs):
         self.log(logging.INFO, msg, *args, **kwargs)
 
+    @overrides(logging.LoggerAdapter.warning)
     def warning(self, msg, *args, **kwargs):
         self.log(logging.WARNING, msg, *args, **kwargs)
 
+    @overrides(logging.LoggerAdapter.log)
     def log(self, level, msg, *args, **kwargs):
         if self.isEnabledFor(level):
             msg, log_kwargs = self.process(msg, kwargs)
-            self.logger._log(
+            if "exc_info" in kwargs:
+                log_kwargs["exc_info"] = kwargs["exc_info"]
+            self.do_log(
                 level, _BraceMessage(msg, args, kwargs), (), **log_kwargs)
 
+    @overrides(logging.LoggerAdapter.process)
     def process(self, msg, kwargs):
         return msg, {
             key: kwargs[key]
-            for key in getargspec(self.logger._log).args[1:]
+            for key in getargspec(self.do_log).args[1:]
             if key in kwargs}

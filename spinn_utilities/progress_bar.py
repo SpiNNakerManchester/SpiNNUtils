@@ -129,7 +129,7 @@ class ProgressBar(object):
 
     def __enter__(self):
         """ Support method to use the progress bar as a context manager::
-        
+
             with ProgressBar(...) as p:
                 ...
                 p.update()

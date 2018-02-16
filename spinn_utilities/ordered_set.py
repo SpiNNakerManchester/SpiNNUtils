@@ -110,7 +110,7 @@ class OrderedSet(collections.MutableSet):
         return set(self) == set(other)
 
     def __ne__(self, other):
-        """ comparison  method for comparing ordered sets
+        """ comparison method for comparing ordered sets
 
         :param other: instance of OrderedSet
         :rtype: None

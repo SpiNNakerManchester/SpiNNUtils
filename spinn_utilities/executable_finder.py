@@ -11,7 +11,6 @@ class ExecutableFinder(object):
 
     def __init__(self, binary_search_paths):
         """
-
         :param binary_search_paths:\
             The initial set of folders to search for binaries.
         :type binary_search_paths: iterable of str
@@ -34,25 +33,19 @@ class ExecutableFinder(object):
 
     @property
     def binary_paths(self):
-        output = ""
-        separator = ""
-        for path in self._binary_search_paths:
-            output += separator + path
-            separator = " : "
-        return output
+        return " : ".join(self._binary_search_paths)
 
     def get_executable_path(self, executable_name):
-        """ Finds an executable within the set of folders.  The set of folders\
+        """ Finds an executable within the set of folders. The set of folders\
             is searched sequentially and the first match is returned.
 
         :param executable_name: The name of the executable to find
         :type executable_name: str
         :return:\
-            The full path of the discovered executable, or None if no \
+            The full path of the discovered executable, or ``None`` if no \
             executable was found in the set of folders
         :rtype: str
         """
-
         # Loop through search paths
         for path in self._binary_search_paths:
             # Rebuild filename

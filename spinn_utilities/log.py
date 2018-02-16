@@ -122,7 +122,7 @@ class FormatAdapter(logging.LoggerAdapter):
         if extra is None:
             extra = {}
         super(FormatAdapter, self).__init__(logger, extra)
-        self.do_log = logger._log  #pylint: disable=protected-access
+        self.do_log = logger._log  # pylint: disable=protected-access
 
     @overrides(logging.LoggerAdapter.critical)
     def critical(self, msg, *args, **kwargs):

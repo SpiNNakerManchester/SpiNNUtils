@@ -5,7 +5,7 @@ def warn_once(logger, msg):
     if msg in _already_issued:
         return
     _already_issued.add(msg)
-    logger.warn(msg)
+    logger.warning(msg)
 
 
 def reset():

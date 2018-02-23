@@ -10,7 +10,8 @@ class SocketAddress(object):
     def __init__(self, notify_host_name, notify_port_no, listen_port):
         self._notify_host_name = str(notify_host_name)
         self._notify_port_no = int(notify_port_no)
-        self._listen_port = listen_port
+        self._listen_port = (
+            listen_port if listen_port is None else int(listen_port))
         self.__hash = None
 
     @property

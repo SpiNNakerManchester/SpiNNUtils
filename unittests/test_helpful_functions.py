@@ -3,6 +3,7 @@ import unittests
 from spinn_utilities.helpful_functions import \
     get_valid_components, write_finished_file, set_up_report_specifics,\
     set_up_output_application_data_specifics
+import os
 
 
 def test_write_finished_file(tmpdir):
@@ -45,16 +46,17 @@ def test_set_up_report_specifics_reports(tmpdir):
         a, b, c = set_up_report_specifics("REPORTS", 2, 3, 4, "NOW")
 
         # Check expected results
-        assert a == "reports/NOW/run_4"
-        assert b == "reports/NOW"
+        assert a == os.path.join("reports", "NOW", "run_4")
+        assert b == os.path.join("reports", "NOW")
         assert c == "NOW"
 
         # Check expected FS state
         assert base.check(dir=1)
         assert base.join("NOW").check(dir=1)
-        assert base.join("NOW/run_4").check(dir=1)
-        assert base.join("NOW/time_stamp").check(file=1)
-        assert base.join("NOW/time_stamp").read() == "app_3_NOW"
+        assert base.join(os.path.join("NOW", "run_4")).check(dir=1)
+        assert base.join(os.path.join("NOW", "time_stamp")).check(file=1)
+        assert base.join(os.path.join("NOW", "time_stamp")).read()\
+            == "app_3_NOW"
 
 
 def test_set_up_report_specifics_explicit(tmpdir):

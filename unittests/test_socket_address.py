@@ -43,5 +43,5 @@ def test_wrong_usage():
 
     with pytest.raises(TypeError):
         SocketAddress("a", None, 1)
-    with pytest.raises(TypeError):
-        SocketAddress("a", 1, None)
+    with pytest.raises(ValueError):
+        SocketAddress("a", 1, "a")

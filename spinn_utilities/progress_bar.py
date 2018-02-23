@@ -125,23 +125,32 @@ class ProgressBar(object):
         self._print_progress_done()
 
     def __repr__(self):
-        return "progress bar for {}".format(self._string)
+        return "<ProgressBar:{}>".format(self._string)
 
     def __enter__(self):
-        """ Support method to use the with ProgressBar(...) as
+        """ Support method to use the progress bar as a context manager::
 
-        This method does not have any parameters because any parameters in the
-            with ProgressBar(...) call have been passed to the __init__
+            with ProgressBar(...) as p:
+                ...
+                p.update()
+                ...
+                p.update()
+                ...
 
-        Like the __new__ this method has to return self as in theory it
-            could pass back a different object. Welocome to Python
+        This method does not have any parameters because any parameters in the\
+        with :samp:`ProgressBar(...)` call have been passed to\
+        :py:meth:__init__
+
+        Like :samp:`__new__` this method has to return self as in theory it\
+        could pass back a different object. Welcome to Python.
+
         :return: The Progress bar
-
         """
         return self
 
-    def __exit__(self, exty, exval, traceback):
+    def __exit__(self, exty, exval, traceback):  # @UnusedVariable
         self.end()
+        return False
 
     def over(self, collection, finish_at_end=True):
         """ Simple wrapper for the cases where the progress bar is being used\
@@ -151,8 +160,8 @@ class ProgressBar(object):
 
         :param collection:\
             The base collection (any iterable) being iterated over
-        :param finish_at_end: flag to say if the bar should finish at the \
-        end of the collection
+        :param finish_at_end: \
+            Flag to say if the bar should finish at the end of the collection
         :return: An iterable. Expected to be directly used in a for.
         """
         try:
@@ -178,7 +187,7 @@ if __name__ == "__main__":
         demo.update()
     demo.end()
 
-    collection = [2, 3, 5, 7, 11, 13, 17]
-    demo = ProgressBar(collection, "Demo over a few primes")
-    for prime in demo.over(collection):
+    _collection = [2, 3, 5, 7, 11, 13, 17]
+    demo = ProgressBar(_collection, "Demo over a few primes")
+    for prime in demo.over(_collection):
         sleep(0.1)

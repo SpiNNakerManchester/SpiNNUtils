@@ -1,4 +1,6 @@
 class XView(object):
+    __slots__ = [
+        "_matrix", "_x"]
 
     def __init__(self, x, matrix):
         self._x = x

@@ -102,3 +102,17 @@ def test_update():
         assert o.pop() == item
     with pytest.raises(KeyError):
         o.pop()
+
+
+def test_obscure_stuff():
+    o = OrderedSet()
+    o.add(1)
+    o.add(2)
+    o.add(3)
+    assert [x for x in reversed(o)] == [3, 2, 1]
+    o2 = OrderedSet(o)
+    assert [x for x in o2] == [1, 2, 3]
+    assert o == o2
+    o2 |= [4]
+    assert o != o2
+    assert repr(OrderedSet()) == "OrderedSet()"

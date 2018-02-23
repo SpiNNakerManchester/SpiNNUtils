@@ -2,20 +2,20 @@ class SafeEval(object):
     """ This provides expression evaluation capabilities while allowing the\
         set of symbols exposed to the expression to be strictly controlled.
 
-    Sample of use:
+    Sample of use::
 
-    >>> import math
-    >>> def evil_func(x):
-           print "HAHA!"
-           return x/0.0
+        >>> import math
+        >>> def evil_func(x):
+               print "HAHA!"
+               return x/0.0
 
-    >>> eval_safely = SafeEval(math)
-    >>> eval_safely.eval("math.sqrt(x)", x=1.23)
-    1.1090536506409416
-    >>> eval_safely.eval("evil_func(1.23)")
-    Traceback (most recent call last):
-      ...
-    NameError: name 'evil_func' is not defined
+        >>> eval_safely = SafeEval(math)
+        >>> eval_safely.eval("math.sqrt(x)", x=1.23)
+        1.1090536506409416
+        >>> eval_safely.eval("evil_func(1.23)")
+        Traceback (most recent call last):
+          ...
+        NameError: name 'evil_func' is not defined
     """
     __slots__ = ["_environment"]
 
@@ -26,7 +26,7 @@ class SafeEval(object):
             Note that all of these symbols must support the __name__ property,\
             but that includes any function, method of an object, or module. If\
             you want to make an object available by anything other than its\
-            inherent name, define it in the eval() call.
+            inherent name, define it in the :py:meth:`eval`() call.
         :param kwargs:\
             Define the symbols with explicit names. Needed because some\
             symbols (e.g., constants in numpy) do not have names that we can\

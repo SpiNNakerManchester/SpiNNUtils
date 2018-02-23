@@ -10,15 +10,18 @@ FINISHED_FILENAME = "finished"
 
 
 def get_valid_components(module, terminator):
-    """ Get possible components
+    """ Get possible components, stripping the given suffix from their\
+        class names.
 
-    :param module:
-    :param terminator:
-    :rtype: dict
+    :param module: The module containing the classes to obtain.
+    :param terminator: \
+        Regular expression string to match the suffix. Anchoring not required.
+    :return: mapping from (shortened) name to class
+    :rtype: dict(str -> class)
     """
-    terminator = re.compile(terminator + '$')
-    return dict(map(lambda (name, router): (terminator.sub('', name), router),
-                inspect.getmembers(module, inspect.isclass)))
+    terminator_re = re.compile(terminator + '$')
+    return {terminator_re.sub('', name): router
+            for name, router in inspect.getmembers(module, inspect.isclass)}
 
 
 def set_up_output_application_data_specifics(
@@ -169,15 +172,15 @@ def set_up_report_specifics(
 
 
 def write_finished_file(app_data_runtime_folder, report_default_directory):
+    """ Writes the marker files that indicate completion to the given\
+        directories.
+    """
     # write a finished file that allows file removal to only remove folders
     # that are finished
-    app_file_name = os.path.join(app_data_runtime_folder, FINISHED_FILENAME)
-    with open(app_file_name, "w") as writer:
-        writer.writelines("finished")
-
-    app_file_name = os.path.join(report_default_directory, FINISHED_FILENAME)
-    with open(app_file_name, "w") as writer:
-        writer.writelines("finished")
+    for directory in [app_data_runtime_folder, report_default_directory]:
+        if directory is not None:
+            with open(os.path.join(directory, FINISHED_FILENAME), "w") as f:
+                f.writelines("finished")
 
 
 def _remove_excess_folders(max_to_keep, starting_directory):

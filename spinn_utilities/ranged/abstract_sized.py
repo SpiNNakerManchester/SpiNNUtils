@@ -102,7 +102,7 @@ class AbstractSized(object):
                                                       len(selector))
             logger.warning(msg)
 
-    def _selector_to_ids(self, selector, warn=False):
+    def selector_to_ids(self, selector, warn=False):
         """
         Gets the list of ids covered by this selector
 

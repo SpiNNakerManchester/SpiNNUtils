@@ -282,7 +282,7 @@ class AbstractList(AbstractSized):
                 (slice_start, slice_stop, step) = selector.indices(self._size)
                 return self.iter_by_ids(range(slice_start, slice_stop, step))
 
-        ids = self._selector_to_ids(selector)
+        ids = self.selector_to_ids(selector)
         return self.iter_by_ids(ids)
 
     def get_values(self, selector=None):

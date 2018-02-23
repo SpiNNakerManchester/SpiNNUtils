@@ -473,7 +473,7 @@ class RangedList(AbstractList):
                 self.set_value_by_slice(start, stop, value)
                 return
 
-        ids = self._selector_to_ids(selector)
+        ids = self.selector_to_ids(selector)
         self.set_value_by_ids(ids=ids, value=value)
 
     __setitem__ = set_value_by_selector

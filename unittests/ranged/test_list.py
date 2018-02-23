@@ -423,3 +423,12 @@ def test_selector_to_ids():
         rl._selector_to_ids(-7)
     with pytest.raises(TypeError):
         rl._selector_to_ids(7)
+
+
+def test_warn():
+    rl = RangedList(value=range(5))
+    assert [0, 1, 2] == rl._selector_to_ids([True, True, True, False],
+                                            warn=True)
+    assert [0, 1, 2] == rl._selector_to_ids(
+        [True, True, True, False, False, False], warn=True)
+    assert [0, 1, 2, 3, 4] == rl._selector_to_ids(None, warn=True)

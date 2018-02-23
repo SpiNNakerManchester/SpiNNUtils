@@ -89,7 +89,20 @@ class AbstractSized(object):
             slice_stop = self._size
         return slice_start, slice_stop
 
-    def _selector_to_ids(self, selector):
+    def _check_mask_size(self, selector):
+        if len(selector) < self._size:
+            msg = "The boolean mask is too short. The expected length was " \
+                  "{} but the length was only {}. All the missing entries " \
+                  "will be treated as False!".format(self._size, len(selector))
+            logger.warning(msg)
+        elif len(selector) > self._size:
+            msg = "The boolean mask is too long. The expected length was " \
+                  "{} but the length was only {}. All the missing entries " \
+                "will be ignored!".format(self._size,
+                                                      len(selector))
+            logger.warning(msg)
+
+    def _selector_to_ids(self, selector, warn=False):
         """
         Gets the list of ids covered by this selector
 
@@ -130,6 +143,8 @@ class AbstractSized(object):
             # bool is superclass of int so if any are bools all must be
             if any(isinstance(item, bool) for item in selector):
                 if all(isinstance(item, bool) for item in selector):
+                    if warn:
+                        self._check_mask_size(selector)
                     return list(itertools.compress(
                         xrange(self._size), selector))
                 raise TypeError(
@@ -152,6 +167,8 @@ class AbstractSized(object):
 
         # OK lets try for None, int and slice after all
         if selector is None:
+            if warn:
+                logger.warning("None selector taken as all ids")
             return range(self._size)
 
         if isinstance(selector, slice):

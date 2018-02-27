@@ -1,3 +1,4 @@
+import pytest
 from spinn_utilities.ranged.ranged_list import RangedList
 
 
@@ -210,6 +211,26 @@ def test_set_value_by_slice():
     assert list(rl) == ["a", "a", "b", "c", "c", "d", "d", "d", "a", "a"]
     rl.set_value_by_slice(4, 6, "c")
     assert list(rl) == ["a", "a", "b", "c", "c", "c", "d", "d", "a", "a"]
+
+
+def test_set_value_by_callable():
+    rl = RangedList(size=10, value="a", key="alpha")
+    rl.set_value(lambda x: x * 2)
+    assert list(rl) == [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+    rl.set_value_by_slice(4, 6, lambda x: x * 3)
+    assert list(rl) == [0, 2, 4, 6, 12, 15, 12, 14, 16, 18]
+    rl.set_value_by_ids([1, 8, 2], lambda x: x * 4)
+    assert list(rl) == [0, 4, 8, 6, 12, 15, 12, 14, 32, 18]
+
+
+def test_bad_callable():
+    rl = RangedList(size=10, value="a", key="alpha")
+    with pytest.raises(TypeError):
+        rl.set_value(lambda: 2)
+    with pytest.raises(TypeError):
+        rl.set_value(lambda x, y: x * y)
+    with pytest.raises(TypeError):
+        rl.set_value(lambda x: len(x))
 
 
 def test_index():

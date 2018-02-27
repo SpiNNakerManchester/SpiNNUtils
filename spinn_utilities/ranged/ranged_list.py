@@ -4,6 +4,26 @@ from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
 
 
+def function_iterator(function, size, ids=None):
+    """ Converts a function into an iterator based on size or ids
+
+    This so that the function can be used to create a list as in:
+        list(function_iterator(lambda x: x * 2 , 3, ids=[2, 4, 6)
+
+
+    :param function: A function with one integer paramter that returns a value
+    :param size: The number of elements to put in the list. If used the
+        function will be called with xrange(size). Ignored if ids provided
+    :param ids: A list of ids to call the function for or None to use the size.
+    :type ids: list of int
+    :return: a list of values
+    """
+    if ids is None:
+        ids = xrange(size)
+    for _id in ids:
+        yield function(_id)
+
+
 class RangedList(AbstractList):
     __slots__ = [
         "_default", "_key", "_ranged_based", "_ranges"]
@@ -240,10 +260,12 @@ class RangedList(AbstractList):
         case as_list must also be extended
         """
         # Assume any iterable is a list
+        if callable(value):
+            return True
         return hasattr(value, '__iter__')
 
     @staticmethod
-    def as_list(value, size):
+    def as_list(value, size, ids=None):
         """ Converts if required the value into a list of a given size
 
         An exception is raised if value cannot be given size elements
@@ -254,8 +276,10 @@ class RangedList(AbstractList):
         :param value:
         :return: value as a list
         """
-
-        values = list(value)
+        if callable(value):
+            values = list(function_iterator(value, size, ids))
+        else:
+            values = list(value)
         if len(values) != size:
             raise Exception("The number of values does not equal the size")
         return values
@@ -425,7 +449,7 @@ class RangedList(AbstractList):
                                self._ranges[index][1], value)
 
     def _set_values_list(self, ids, value):
-        values = self.as_list(value=value, size=len(ids))
+        values = self.as_list(value=value, size=len(ids), ids=ids)
         for id_value, val in zip(ids, values):
             self.set_value_by_id(id_value, val)
 

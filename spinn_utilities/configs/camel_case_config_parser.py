@@ -3,6 +3,8 @@ import distutils.util
 
 
 class CamelCaseConfigParser(RawConfigParser):
+    # RawConfigParser is a classobj in Python 2.7, not a type (i.e., it
+    # doesn't inherit from object), and so cannot be used with super().
 
     def optionxform(self, optionstr):
         lower = optionstr.lower()

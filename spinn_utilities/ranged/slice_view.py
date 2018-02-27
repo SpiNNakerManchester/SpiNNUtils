@@ -3,12 +3,14 @@ from spinn_utilities.ranged.abstract_view import AbstractView
 
 
 class _SliceView(AbstractView):
+    __slots__ = [
+        "_start", "_stop"]
 
     def __init__(self, range_dict, start, stop):
         """
         USE RangeDictionary.view_factory to create views
         """
-        AbstractView.__init__(self, range_dict)
+        super(_SliceView, self).__init__(range_dict)
         self._start = start
         self._stop = stop
 

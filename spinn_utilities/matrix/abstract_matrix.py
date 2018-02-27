@@ -5,6 +5,7 @@ from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 @add_metaclass(AbstractBase)
 class AbstractMatrix(object):
+    __slots__ = []
 
     @abstractmethod
     def get_data(self, x, y):

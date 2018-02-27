@@ -95,12 +95,12 @@ class OrderedSet(collections.MutableSet):
         return key
 
     def peek(self, last=True):
-        if not self._map:
+        if not self._map:  # i.e., is self._map empty?
             raise KeyError('set is empty')
         return self._end.prev_node.key if last else self._end.next_node.key
 
     def __repr__(self):
-        if not self:
+        if not self._map:  # i.e., is self._map empty?
             return '%s()' % (self.__class__.__name__,)
         return '%s(%r)' % (self.__class__.__name__, list(self))
 
@@ -110,7 +110,7 @@ class OrderedSet(collections.MutableSet):
         return set(self) == set(other)
 
     def __ne__(self, other):
-        """ comparison  method for comparing ordered sets
+        """ comparison method for comparing ordered sets
 
         :param other: instance of OrderedSet
         :rtype: None

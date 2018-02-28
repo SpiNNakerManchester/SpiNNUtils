@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 _WRITE_LOGS_TO_STDOUT = True
 
 

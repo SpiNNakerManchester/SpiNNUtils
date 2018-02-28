@@ -1,7 +1,11 @@
 # pylint: disable=too-many-arguments
+from __future__ import print_function
 import appdirs
 import collections
-import ConfigParser
+try:
+    import ConfigParser
+except:
+    import configparser as ConfigParser
 import logging
 import os
 import string

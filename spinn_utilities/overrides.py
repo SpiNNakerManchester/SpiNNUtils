@@ -49,8 +49,14 @@ class overrides(object):
 
     def __verify_method_arguments(self, method):
         """ Check that the arguments match. """
-        method_args = inspect.getargspec(method)
-        super_args = inspect.getargspec(self._superclass_method)
+        
+        try:
+            # pylint: disable=no-member
+            introspector = inspect.getfullargspec  # @UndefinedVariable
+        except:  # pylint: disable=bare-except
+            introspector = inspect.getargspec
+        method_args = introspector(method)
+        super_args = introspector(self._superclass_method)
         all_args = [
             arg for arg in method_args.args
             if arg not in self._additional_arguments]

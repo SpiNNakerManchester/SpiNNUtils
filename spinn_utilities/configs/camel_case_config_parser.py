@@ -8,7 +8,7 @@ import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
 class CamelCaseConfigParser(parser):
     # RawConfigParser is a classobj in Python 2.7, not a type (i.e., it
     # doesn't inherit from object), and so cannot be used with super().
-    __slots__ = ["_none_marker", "read_files"]
+    __slots__ = ["_none_marker", "_read_files"]
 
     def optionxform(self, optionstr):
         lower = optionstr.lower()
@@ -17,11 +17,11 @@ class CamelCaseConfigParser(parser):
     def __init__(self, defaults=None, none_marker="None"):
         parser.__init__(self, defaults)
         self._none_marker = none_marker
-        self.read_files = list()
+        self._read_files = list()
 
     def read(self, filenames):
         new_files = parser.read(self, filenames)
-        self.read_files.extend(new_files)
+        self._read_files.extend(new_files)
         return new_files
 
     @property

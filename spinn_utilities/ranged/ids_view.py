@@ -2,12 +2,14 @@ from spinn_utilities.ranged.abstract_view import AbstractView
 
 
 class _IdsView(AbstractView):
+    __slots__ = [
+        "_ids"]
 
     def __init__(self, range_dict, ids):
         """
         USE RangeDictionary.view_factory to create views
         """
-        AbstractView.__init__(self, range_dict)
+        super(_IdsView, self).__init__(range_dict)
         self._ids = ids
 
     def __str__(self):
@@ -21,11 +23,12 @@ class _IdsView(AbstractView):
 
     def set_value(self, key, value):
         ranged_list = self._range_dict.get_list(key)
-        for id_value in self._ids:
-            ranged_list.set_value_by_id(id=id_value, value=value)
+        for _id in self._ids:
+            ranged_list.set_value_by_id(id=_id, value=value)
 
-    def set_value_by_ids(self, key, ids, value):  # @UnusedVariable
-            self._value_lists[key].set_value_id(id=id, value=value)
+    def set_value_by_ids(self, key, ids, value):
+        for _id in ids:
+            self._value_lists[key].set_value_id(id=_id, value=value)
 
     def iter_all_values(self, key, update_save=False):
         return self._range_dict.iter_values_by_ids(

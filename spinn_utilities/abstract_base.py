@@ -6,15 +6,14 @@
 def abstractmethod(funcobj):
     """ A decorator indicating abstract methods.
 
-    Requires that the metaclass is AbstractBase or derived from it.  A\
-    class that has a metaclass derived from AbstractBase cannot be\
+    Requires that the metaclass is :py:class:AbstractBase or derived from it.\
+    A class that has a metaclass derived from :py:class:AbstractBase cannot be\
     instantiated unless all of its abstract methods are overridden.\
     The abstract methods can be called using any of the normal\
     'super' call mechanisms.
 
-    Usage:
+    Usage::
 
-    ::
         @add_metaclass(AbstractBase)
         class C:
             @abstractmethod
@@ -28,15 +27,14 @@ def abstractmethod(funcobj):
 class abstractproperty(property):
     """ A decorator indicating abstract properties.
 
-    Requires that the metaclass is AbstractBase or derived from it.  A\
-    class that has a metaclass derived from AbstractBase cannot be\
+    Requires that the metaclass is :py:class:AbstractBase or derived from it.\
+    A class that has a metaclass derived from :py:class:AbstractBase cannot be\
     instantiated unless all of its abstract properties are overridden.\
     The abstract properties can be called using any of the normal\
     'super' call mechanisms.
 
-    Usage:
+    Usage::
 
-    ::
         @add_metaclass(AbstractBase)
         class C:
             @abstractproperty
@@ -44,9 +42,8 @@ class abstractproperty(property):
                 ...
 
     This defines a read-only property; you can also define a read-write\
-    abstract property using the 'long' form of property declaration:
+    abstract property using the 'long' form of property declaration::
 
-    ::
         @add_metaclass(AbstractBase)
         class C:
             def getx(self): ...

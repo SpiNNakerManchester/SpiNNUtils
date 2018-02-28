@@ -1,5 +1,5 @@
 from spinn_utilities.ranged.ranged_list import RangedList
-from spinn_utilities.ranged.dual_list import DualList
+from spinn_utilities.ranged.abstract_list import DualList
 
 
 def test_simple():
@@ -104,3 +104,9 @@ def test_both_list_ranges_iter():
     right = RangedList(10, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "many")
     dual = DualList(left=left, right=right, operation=lambda x, y: x+y)
     assert [4, 6, 8, 10] == list(dual.iter_by_slice(2, 6))
+
+
+def test_add_number():
+    left = RangedList(10, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "many")
+    add = left + 4
+    assert [6, 7, 8, 9] == list(add.iter_by_slice(2, 6))

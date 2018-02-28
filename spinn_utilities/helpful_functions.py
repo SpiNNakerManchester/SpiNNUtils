@@ -7,12 +7,15 @@ FINISHED_FILENAME = "finished"
 
 
 def get_valid_components(module, terminator):
-    """ Get possible components
+    """ Get possible components, stripping the given suffix from their\
+        class names.
 
-    :param module:
-    :param terminator:
-    :rtype: dict
+    :param module: The module containing the classes to obtain.
+    :param terminator: \
+        Regular expression string to match the suffix. Anchoring not required.
+    :return: mapping from (shortened) name to class
+    :rtype: dict(str -> class)
     """
-    terminator = re.compile(terminator + '$')
-    return dict(map(lambda (name, router): (terminator.sub('', name), router),
-                inspect.getmembers(module, inspect.isclass)))
+    terminator_re = re.compile(terminator + '$')
+    return {terminator_re.sub('', name): router
+            for name, router in inspect.getmembers(module, inspect.isclass)}

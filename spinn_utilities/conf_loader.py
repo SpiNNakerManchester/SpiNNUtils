@@ -4,7 +4,7 @@ import appdirs
 import collections
 try:
     import ConfigParser
-except:
+except ImportError:
     import configparser as ConfigParser
 import logging
 import os

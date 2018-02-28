@@ -2,6 +2,7 @@
 from spinn_utilities.ranged.abstract_list import AbstractList
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
+from spinn_utilities.helpful_functions import is_singleton
 
 
 class RangedList(AbstractList):
@@ -18,7 +19,7 @@ class RangedList(AbstractList):
             This is used only for better Exception messages
         """
         super(RangedList, self).__init__(size=size, key=key)
-        if not hasattr(value, '__iter__'):
+        if not self.is_list(value, size):
             self._default = value
         self.set_value(value)
 
@@ -240,7 +241,7 @@ class RangedList(AbstractList):
         case as_list must also be extended
         """
         # Assume any iterable is a list
-        return hasattr(value, '__iter__')
+        return not is_singleton(value)
 
     @staticmethod
     def as_list(value, size):

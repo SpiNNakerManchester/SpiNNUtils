@@ -7,6 +7,10 @@ import shutil
 
 logger = logging.getLogger(__name__)
 FINISHED_FILENAME = "finished"
+try:
+    _str_class = basestring
+except NameError:
+    _str_class = str
 
 
 def get_valid_components(module, terminator):
@@ -207,3 +211,10 @@ def _remove_excess_folders(max_to_keep, starting_directory):
                     os.path.join(starting_directory, current_oldest_file),
                     ignore_errors=True)
                 files_removed += 1
+
+
+def is_singleton(value):
+    """ Tests whether the value is a singleton. Singleton types are integers,\
+        booleans, floats, and strings. 
+    """
+    return isinstance(value, (int, float, _str_class))

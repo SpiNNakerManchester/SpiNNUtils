@@ -4,6 +4,9 @@ python:
         - 3.6
 dist: trusty
 cache: pip
+env:
+  # don't create .pyc and .pyo files
+  - PYTHONDONTWRITEBYTECODE=True
 
 ### Don't need this at the moment
 # before_install:

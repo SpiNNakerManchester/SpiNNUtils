@@ -18,6 +18,13 @@ class MockLog(object):
         self.last_args = args
         self.last_kwargs = kwargs
 
+    def getEffectiveLevel(self):
+        return logging.INFO
+
+    @property
+    def manager(self):
+        return self
+
 
 def test_logger_adapter():
     log = MockLog()

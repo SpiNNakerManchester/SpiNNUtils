@@ -8,7 +8,6 @@ except ImportError:
     import configparser as ConfigParser
 import logging
 import os
-import string
 
 from spinn_utilities import log
 from spinn_utilities.configs import \
@@ -345,6 +344,6 @@ def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
 
     # Log which cfg files we read
     print(cfg.read_files)
-    logger.info("Read cfg files: %s", string.join(cfg.read_files, ", "))
+    logger.info("Read cfg files: %s", ", ".join(cfg.read_files))
 
     return cfg

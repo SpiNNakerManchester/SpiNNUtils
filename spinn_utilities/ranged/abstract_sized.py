@@ -2,7 +2,7 @@
 import platform
 import sys
 
-if platform.python_version().starts_with("2."):
+if platform.python_version().startswith("2."):
     _ACCEPTABLE_TYPES = [int, long]
 else:
     _ACCEPTABLE_TYPES = [int]

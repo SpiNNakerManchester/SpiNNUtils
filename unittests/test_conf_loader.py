@@ -7,7 +7,10 @@ from spinn_utilities.configs.no_config_found_exception import \
     NoConfigFoundException
 import spinn_utilities.testing.log_checker as log_checker
 
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import os
 import pytest
 

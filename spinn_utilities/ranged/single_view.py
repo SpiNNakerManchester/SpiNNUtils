@@ -10,7 +10,7 @@ class _SingleView(AbstractView):
         """
         USE RangeDictionary.view_factory to create views
         """
-        # print "Single"
+        # print("Single")
         super(_SingleView, self).__init__(range_dict)
         self._id = id
 

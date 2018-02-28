@@ -77,21 +77,21 @@ class AbstractList(AbstractSized):
         """
         # This is not elegant code but as the ranges could be created on the
         # fly the best way.
-        iterator = self.iter_ranges()
-
-        # This should be the only range
-        only_range = iterator.next()
-
-        # If we can get another range, there must be more than one value,
-        # so raise the exception
-        try:
-            one_too_many = iterator.next()
-            raise MultipleValuesException(
-                self._key, only_range[2], one_too_many[2])
-
-        # If there isn't another range, return the value from the only range
-        except StopIteration:
-            return only_range[2]
+        have_item = False
+        only_range = None
+        for this_range in self.iter_ranges():
+            if have_item:
+                # If we can get another range, there must be more than one
+                # value, so raise the exception
+                raise MultipleValuesException(
+                    self._key, only_range[2], this_range[2])
+            have_item = True
+            only_range = this_range
+        if not have_item:
+            # Pretend we totally failed
+            raise StopIteration()
+        # There isn't another range, so return the value from the only range
+        return only_range[2]
 
     @abstractmethod
     def get_value_by_id(self, id):  # @ReservedAssignment
@@ -260,8 +260,7 @@ class AbstractList(AbstractSized):
         for (start, _, value) in self.iter_ranges():
             if value == x:
                 return start
-        else:
-            raise ValueError("{} is not in list".format(x))
+        raise ValueError("{} is not in list".format(x))
 
     @abstractmethod
     def iter_ranges(self):

@@ -25,6 +25,10 @@ class MockLog(object):
     def manager(self):
         return self
 
+    @property
+    def disable(self):
+        return logging.INFO
+
 
 def test_logger_adapter():
     log = MockLog()

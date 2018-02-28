@@ -26,7 +26,7 @@ class CamelCaseConfigParser(parser):
 
     @property
     def read_files(self):
-        return self.read_files
+        return self._read_files
 
     def get_str(self, section, option):
         """Get the string value of an option.

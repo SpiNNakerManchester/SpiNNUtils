@@ -191,7 +191,7 @@ def _remove_excess_folders(max_to_keep, starting_directory):
 
         # sort files into time frame
         files_in_report_folder.sort(
-            cmp, key=lambda temp_file:
+            key=lambda temp_file:
             os.path.getmtime(os.path.join(starting_directory, temp_file)))
 
         # remove only the number of files required, and only if they have

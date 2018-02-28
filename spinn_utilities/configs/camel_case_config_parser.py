@@ -1,8 +1,11 @@
-from ConfigParser import RawConfigParser
-import distutils.util
+try:
+    from ConfigParser import RawConfigParser as parser
+except ImportError:
+    from configparser import RawConfigParser as parser
+import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
 
 
-class CamelCaseConfigParser(RawConfigParser):
+class CamelCaseConfigParser(parser):
     # RawConfigParser is a classobj in Python 2.7, not a type (i.e., it
     # doesn't inherit from object), and so cannot be used with super().
 
@@ -11,12 +14,12 @@ class CamelCaseConfigParser(RawConfigParser):
         return lower.replace("_", "")
 
     def __init__(self, defaults=None, none_marker="None"):
-        RawConfigParser.__init__(self, defaults)
+        parser.__init__(self, defaults)
         self._none_marker = none_marker
         self.read_files = list()
 
     def read(self, filenames):
-        new_files = RawConfigParser.read(self, filenames)
+        new_files = parser.read(self, filenames)
         self.read_files.extend(new_files)
         return new_files
 
@@ -83,6 +86,6 @@ class CamelCaseConfigParser(RawConfigParser):
         if value == self._none_marker:
             return None
         try:
-            return bool(distutils.util.strtobool(str(value)))
+            return bool(_du.strtobool(str(value)))
         except ValueError:
             return bool(value)

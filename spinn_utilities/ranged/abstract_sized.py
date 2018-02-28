@@ -3,7 +3,7 @@ import platform
 import sys
 
 if platform.python_version().startswith("2."):
-    _ACCEPTABLE_TYPES = [int, long]
+    _ACCEPTABLE_TYPES = [int, long]  # noqa: F821
 else:
     _ACCEPTABLE_TYPES = [int]
 

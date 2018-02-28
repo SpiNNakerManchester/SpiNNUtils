@@ -37,7 +37,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         super(RangeDictionary, self).__init__(size)
         self._value_lists = dict()
         if defaults is not None:
-            for key, value in defaults.iteritems():
+            for key, value in defaults.items():
                 self._value_lists[key] = self.list_factory(
                     size=size, value=value, key=key)
 
@@ -192,7 +192,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         else:
             if update_save:
                 return self.update_safe_iter_all_values(
-                    key, xrange(self._size))
+                    key, range(self._size))
             return self._values_from_ranges(self.iter_ranges(key))
 
     def iter_values_by_slice(
@@ -206,7 +206,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
                 self, slice_start=slice_start, slice_stop=slice_stop)
         if update_save:
             return self.update_safe_iter_all_values(
-                key, xrange(slice_start, slice_stop))
+                key, range(slice_start, slice_stop))
         return self._values_from_ranges(self.iter_ranges_by_slice(
             slice_start=slice_start, slice_stop=slice_stop, key=key))
 
@@ -222,7 +222,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
     def _values_from_ranges(self, ranges):
         for (start, stop, value) in ranges:
-            for _ in xrange(start, stop):
+            for _ in range(start, stop):
                 yield value
 
     def set_value(self, key, value):

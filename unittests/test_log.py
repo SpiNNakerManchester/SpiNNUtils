@@ -49,7 +49,8 @@ def test_logger_exception():
 
     try:
         raise Exn("hi")
-    except Exn as e:
+    except Exn as ex:
+        e = ex
         logger.exception("ho")
 
     assert e.message == "hi"

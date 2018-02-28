@@ -130,7 +130,7 @@ class RangedList(AbstractList):
         """
         if self._ranged_based:
             for (start, stop, value) in self._ranges:
-                for _ in xrange(stop - start):
+                for _ in range(stop - start):
                     yield value
         else:
             for value in self._ranges:
@@ -160,7 +160,7 @@ class RangedList(AbstractList):
             while start < slice_stop:
                 first = max(start, slice_start)
                 end_point = min(stop, slice_stop)
-                for _ in xrange(end_point - first):
+                for _ in range(end_point - first):
                     yield value
                 (start, stop, value) = ranges.next()
 
@@ -365,7 +365,7 @@ class RangedList(AbstractList):
 
         # If non-ranged-based, set the values directly
         if not self._ranged_based:
-            for id_value in xrange(slice_start, slice_stop):
+            for id_value in range(slice_start, slice_stop):
                 self._ranges[id_value] = value
             return
 

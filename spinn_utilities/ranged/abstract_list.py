@@ -152,7 +152,7 @@ class AbstractList(AbstractSized):
 
             # Otherwise get the items one by one using the start, stop, and
             # step from the slice
-            return [self[i] for i in xrange(*key.indices(self._size))]
+            return [self[i] for i in range(*key.indices(self._size))]
 
         # If the key is an int, get the single value
         elif isinstance(key, int):
@@ -196,7 +196,7 @@ class AbstractList(AbstractSized):
 
         :return: yields each element one by one
         """
-        for id_value in xrange(self._size):
+        for id_value in range(self._size):
             yield self.get_value_by_id(id_value)
 
     def __iter__(self):
@@ -209,10 +209,10 @@ class AbstractList(AbstractSized):
         """
         if self.range_based():
             for (start, stop, value) in self.iter_ranges():
-                for _ in xrange(stop - start):
+                for _ in range(stop - start):
                     yield value
         else:
-            for id_value in xrange(self._size):
+            for id_value in range(self._size):
                 yield self.get_value_by_id(id_value)
 
     def iter_by_slice(self, slice_start, slice_stop):
@@ -228,10 +228,10 @@ class AbstractList(AbstractSized):
         if self.range_based():
             for (start, stop, value) in \
                     self.iter_ranges_by_slice(slice_start, slice_stop):
-                for _ in xrange(start, stop):
+                for _ in range(start, stop):
                     yield value
         else:
-            for id_value in xrange(slice_start, slice_stop):
+            for id_value in range(slice_start, slice_stop):
                 yield self.get_value_by_id(id_value)
 
     def __contains__(self, item):

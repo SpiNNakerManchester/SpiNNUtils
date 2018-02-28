@@ -1,5 +1,6 @@
 _WRITE_LOGS_TO_STDOUT = True
 
+
 def _assert_logs_contains(level, log_records, submessage):
     for record in log_records:
         if record.levelname == level and submessage in record.getMessage():

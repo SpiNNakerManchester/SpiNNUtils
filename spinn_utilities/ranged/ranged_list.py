@@ -3,18 +3,19 @@ from spinn_utilities.ranged.abstract_list import AbstractList
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
 from spinn_utilities.helpful_functions import is_singleton
+from past.builtins import range, xrange
 
 
 def function_iterator(function, size, ids=None):
-    """ Converts a function into an iterator based on size or ids
+    """ Converts a function into an iterator based on size or IDs
 
     This so that the function can be used to create a list as in:
         list(function_iterator(lambda x: x * 2 , 3, ids=[2, 4, 6)
 
 
-    :param function: A function with one integer paramter that returns a value
+    :param function: A function with one integer parameter that returns a value
     :param size: The number of elements to put in the list. If used the
-        function will be called with xrange(size). Ignored if ids provided
+        function will be called with range(size). Ignored if ids provided
     :param ids: A list of ids to call the function for or None to use the size.
     :type ids: list of int
     :return: a list of values
@@ -151,7 +152,7 @@ class RangedList(AbstractList):
         """
         if self._ranged_based:
             for (start, stop, value) in self._ranges:
-                for _ in range(stop - start):
+                for _ in xrange(stop - start):
                     yield value
         else:
             for value in self._ranges:
@@ -181,7 +182,7 @@ class RangedList(AbstractList):
             while start < slice_stop:
                 first = max(start, slice_start)
                 end_point = min(stop, slice_stop)
-                for _ in range(end_point - first):
+                for _ in xrange(end_point - first):
                     yield value
                 (start, stop, value) = next(ranges)
 
@@ -390,7 +391,7 @@ class RangedList(AbstractList):
 
         # If non-ranged-based, set the values directly
         if not self._ranged_based:
-            for id_value in range(slice_start, slice_stop):
+            for id_value in xrange(slice_start, slice_stop):
                 self._ranges[id_value] = value
             return
 

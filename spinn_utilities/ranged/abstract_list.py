@@ -430,6 +430,9 @@ class AbstractList(AbstractSized):
         raise Exception("__div__ operation only supported for other "
                         "RangedLists and numerical Values")
 
+    # Python 3 support
+    __truediv__ = __div__
+
     def __floordiv__(self, other):
         """ Support for new_list = list1 // list2
 

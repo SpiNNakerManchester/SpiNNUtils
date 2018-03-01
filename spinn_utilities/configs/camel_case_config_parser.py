@@ -1,6 +1,6 @@
 try:
     from ConfigParser import RawConfigParser
-except ImportError:
+except ImportError:  # pragma: no cover
     from configparser import RawConfigParser
 import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
 

@@ -21,7 +21,7 @@ def all_modules(directory, prefix, remove_pyc_files=False):
             results.add(prefix)
         elif module == "__init__.pyc":
             results.add(prefix)
-            if remove_pyc_files:
+            if remove_pyc_files:  # pragma: no cover
                 full_path = os.path.join(directory, module)
                 print("Deleting: " + full_path)
                 os.remove(full_path)
@@ -29,7 +29,7 @@ def all_modules(directory, prefix, remove_pyc_files=False):
             results.add(prefix + "." + module[:-3])
         elif module[-4:] == ".pyc":
             results.add(prefix + "." + module[:-4])
-            if remove_pyc_files:
+            if remove_pyc_files:  # pragma: no cover
                 full_path = os.path.join(directory, module)
                 print("Deleting: " + full_path)
                 os.remove(full_path)
@@ -105,5 +105,5 @@ def load_module(
     load_modules(directory, name, remove_pyc_files, exclusions, gather_errors)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     load_module("spinn_utilities", True)

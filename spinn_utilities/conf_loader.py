@@ -4,7 +4,7 @@ import appdirs
 import collections
 try:
     import ConfigParser
-except ImportError:
+except ImportError:  # pragma: no cover
     import configparser as ConfigParser
 import logging
 import os

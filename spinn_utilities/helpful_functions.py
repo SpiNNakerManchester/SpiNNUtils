@@ -214,7 +214,12 @@ def _remove_excess_folders(max_to_keep, starting_directory):
 
 
 def is_singleton(value):
-    """ Tests whether the value is a singleton. Singleton types are integers,\
-        booleans, floats, and strings.
+    """ Tests whether the value is a singleton.
+
+        Singleton types are strings and any other class that can not be
+        iterated.
+
+        Strings are considered singleton as rarely will someone use a String
+        to represent an iterable of characters
     """
-    return isinstance(value, (int, float, _str_class))
+    return not hasattr(value, '__iter__') or isinstance(value, _str_class)

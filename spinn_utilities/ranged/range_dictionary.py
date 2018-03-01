@@ -291,7 +291,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         stop = self._size
         keys = range_iters.keys()
         for key in keys:
-            ranges[key] = range_iters[key].next()
+            ranges[key] = next(range_iters[key])
             start = ranges[key][0]
             current[key] = ranges[key][2]
             stop = min(ranges[key][1], stop)
@@ -302,7 +302,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
             next_stop = self._size
             for key in keys:
                 if ranges[key][1] == stop:
-                    ranges[key] = range_iters[key].next()
+                    ranges[key] = next(range_iters[key])
                 start = min(max(ranges[key][0], stop), start)
                 next_stop = min(ranges[key][1], next_stop)
                 current[key] = ranges[key][2]

@@ -153,9 +153,9 @@ class RangedList(AbstractList):
 
             # Find the first range within the slice
             ranges = self.iter_ranges()
-            (start, stop, value) = ranges.next()
+            (start, stop, value) = next(ranges)
             while stop < slice_start:
-                (start, stop, value) = ranges.next()
+                (start, stop, value) = next(ranges)
 
             # Continue until outside of the slice
             while start < slice_stop:
@@ -163,7 +163,7 @@ class RangedList(AbstractList):
                 end_point = min(stop, slice_stop)
                 for _ in range(end_point - first):
                     yield value
-                (start, stop, value) = ranges.next()
+                (start, stop, value) = next(ranges)
 
         # If non-range-based, just go through the values
         else:

@@ -27,7 +27,7 @@ class MockLog(object):
 
     @property
     def disable(self):
-        return logging.INFO
+        return logging.DEBUG
 
 
 def test_logger_adapter():
@@ -64,7 +64,7 @@ def test_logger_exception():
         e = ex
         logger.exception("ho")
 
-    assert e.message == "hi"
+    assert str(e) == "hi"
     assert str(log.last_msg) == "ho"
     assert "exc_info" in log.last_kwargs
     assert log.last_level == logging.ERROR

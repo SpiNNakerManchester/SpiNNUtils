@@ -1,11 +1,11 @@
 try:
-    from ConfigParser import RawConfigParser as parser
+    from ConfigParser import RawConfigParser
 except ImportError:
-    from configparser import RawConfigParser as parser
+    from configparser import RawConfigParser
 import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
 
 
-class CamelCaseConfigParser(parser):
+class CamelCaseConfigParser(RawConfigParser):
     # RawConfigParser is a classobj in Python 2.7, not a type (i.e., it
     # doesn't inherit from object), and so cannot be used with super().
     __slots__ = ["_none_marker", "_read_files"]
@@ -15,12 +15,12 @@ class CamelCaseConfigParser(parser):
         return lower.replace("_", "")
 
     def __init__(self, defaults=None, none_marker="None"):
-        parser.__init__(self, defaults)
+        RawConfigParser.__init__(self, defaults)
         self._none_marker = none_marker
         self._read_files = list()
 
     def read(self, filenames):
-        new_files = parser.read(self, filenames)
+        new_files = RawConfigParser.read(self, filenames)
         self._read_files.extend(new_files)
         return new_files
 

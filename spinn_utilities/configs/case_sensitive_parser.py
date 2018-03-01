@@ -1,10 +1,10 @@
 try:
-    from ConfigParser import RawConfigParser as _parser
+    from ConfigParser import RawConfigParser
 except ImportError:
-    from configparser import RawConfigParser as _parser
+    from configparser import RawConfigParser
 
 
-class CaseSensitiveParser(_parser):
+class CaseSensitiveParser(RawConfigParser):
 
     def optionxform(self, optionstr):
         return optionstr

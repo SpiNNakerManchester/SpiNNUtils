@@ -14,8 +14,8 @@ def test_is_singleton():
     assert not is_singleton({1: 2, 3: 4})
     assert not is_singleton(frozenset([14]))
     assert not is_singleton((43876,))
-    assert not is_singleton(object())
-    assert not is_singleton(lambda x: x * 2 + 1)
+    assert is_singleton(object())
+    assert is_singleton(lambda x: x * 2 + 1)
 
 
 def test_get_valid_components():

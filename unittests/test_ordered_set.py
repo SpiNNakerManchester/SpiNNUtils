@@ -99,6 +99,7 @@ def test_update():
     o.add(3)
     o.update([3, 4, 5])
     for item in (5, 4, 3, 2, 1):
+        print("o={}".format(repr(o)))
         assert o.pop() == item
     with pytest.raises(KeyError):
         o.pop()

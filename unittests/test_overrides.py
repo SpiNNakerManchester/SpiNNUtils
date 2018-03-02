@@ -133,6 +133,14 @@ def test_defaults_super_param():
     # TODO: Should this case fail at all?
 
 
+def test_defaults_super_param_expected():
+    class Sub(Base):
+        @overrides(Base.foodef, extend_defaults=True)
+        def foodef(self, x, y=1, z=2):
+            return [z, y, x]
+    assert Sub().foodef(7) == [2, 1, 7]
+
+
 def test_defaults_extra_param():
     with pytest.raises(AttributeError) as e:
         class Sub(Base):

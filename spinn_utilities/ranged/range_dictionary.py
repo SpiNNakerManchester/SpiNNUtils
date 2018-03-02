@@ -15,7 +15,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
     Keys in the dictionary must be str object and can not be removed.
 
-    New keys can be added using the ``dict[str] = value``` format
+    New keys can be added using the ``dict[str] = value`` format.
 
     The size (length of the list) is fixed and set at initialisation time.
     """

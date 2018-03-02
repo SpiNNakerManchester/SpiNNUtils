@@ -6,6 +6,7 @@ from spinn_utilities.ranged.slice_view import _SliceView
 from spinn_utilities.ranged.ids_view import _IdsView
 from spinn_utilities.ranged.abstract_dict import AbstractDict
 from spinn_utilities.ranged.abstract_sized import AbstractSized
+from six import iteritems
 
 
 class RangeDictionary(AbstractSized, AbstractDict):
@@ -14,7 +15,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
     Keys in the dictionary must be str object and can not be removed.
 
-    New keys can be added using the dict[str] = value format
+    New keys can be added using the ``dict[str] = value``` format
 
     The size (length of the list) is fixed and set at initialisation time.
     """
@@ -22,14 +23,13 @@ class RangeDictionary(AbstractSized, AbstractDict):
         "_value_lists"]
 
     def __init__(self, size, defaults=None):
-        """
-        Main constructor for a Ranged Dictionary
+        """ Main constructor for a Ranged Dictionary
 
         The Object is set up initially where every id in the range will share\
         the same value for each key. All keys must be of type str. The\
         default Values can be anything including None.
 
-        :param size: Fixed number of ids / Length of lists
+        :param size: Fixed number of IDs / Length of lists
         :type size: int
         :param defaults: Default dictionary where all keys must be str
         :type defaults: dict
@@ -37,7 +37,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         super(RangeDictionary, self).__init__(size)
         self._value_lists = dict()
         if defaults is not None:
-            for key, value in defaults.items():
+            for key, value in iteritems(defaults):
                 self._value_lists[key] = self.list_factory(
                     size=size, value=value, key=key)
 

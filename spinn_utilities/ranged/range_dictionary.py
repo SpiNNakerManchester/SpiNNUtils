@@ -6,6 +6,7 @@ from spinn_utilities.ranged.slice_view import _SliceView
 from spinn_utilities.ranged.ids_view import _IdsView
 from spinn_utilities.ranged.abstract_dict import AbstractDict
 from spinn_utilities.ranged.abstract_sized import AbstractSized
+from past.builtins import xrange
 from six import iteritems
 
 
@@ -192,7 +193,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         else:
             if update_save:
                 return self.update_safe_iter_all_values(
-                    key, range(self._size))
+                    key, xrange(self._size))
             return self._values_from_ranges(self.iter_ranges(key))
 
     def iter_values_by_slice(
@@ -206,7 +207,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
                 self, slice_start=slice_start, slice_stop=slice_stop)
         if update_save:
             return self.update_safe_iter_all_values(
-                key, range(slice_start, slice_stop))
+                key, xrange(slice_start, slice_stop))
         return self._values_from_ranges(self.iter_ranges_by_slice(
             slice_start=slice_start, slice_stop=slice_stop, key=key))
 
@@ -222,7 +223,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
     def _values_from_ranges(self, ranges):
         for (start, stop, value) in ranges:
-            for _ in range(start, stop):
+            for _ in xrange(start, stop):
                 yield value
 
     def set_value(self, key, value):

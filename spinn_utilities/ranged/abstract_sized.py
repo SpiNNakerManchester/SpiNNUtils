@@ -9,8 +9,7 @@ else:
 
 
 class AbstractSized(object):
-    """
-    Base class for slice and id checking against size.
+    """ Base class for slice and ID checking against size.
     """
 
     __slots__ = [
@@ -30,14 +29,19 @@ class AbstractSized(object):
         """
         return self._size
 
+    @staticmethod
+    def _is_id_type(id):  # @ReservedAssignment
+        """ Check if the given ID has a type acceptable for IDs. """
+        return isinstance(id, _ACCEPTABLE_TYPES)
+
     def _check_id_in_range(self, id):  # @ReservedAssignment
         if id < 0:
-            if isinstance(id, _ACCEPTABLE_TYPES):
+            if self._is_id_type(id):
                 raise IndexError(
                     "The index {} is out of range.".format(id))
             raise TypeError("Invalid argument type {}.".format(type(id)))
         if id >= self._size:
-            if isinstance(id, _ACCEPTABLE_TYPES):
+            if self._is_id_type(id):
                 raise IndexError(
                     "The index {0!d} is out of range.".format(id))
             raise TypeError("Invalid argument type {}.".format(type(id)))
@@ -48,7 +52,7 @@ class AbstractSized(object):
         elif slice_start < 0:
             slice_start = self._size + slice_start
             if slice_start < 0:
-                if isinstance(slice_start, _ACCEPTABLE_TYPES):
+                if self._is_id_type(slice_start):
                     raise IndexError(
                         "The range_start {} is out of range.".format(
                             slice_start))
@@ -59,17 +63,17 @@ class AbstractSized(object):
         elif slice_stop < 0:
             slice_stop = self._size + slice_stop
         if slice_start > slice_stop:
-            if not isinstance(slice_start, _ACCEPTABLE_TYPES):
+            if not self._is_id_type(slice_start):
                 raise TypeError("Invalid argument type {}.".format(
                     type(slice_start)))
-            if not isinstance(slice_stop, _ACCEPTABLE_TYPES):
+            if not self._is_id_type(slice_stop):
                 raise TypeError("Invalid argument type {}.".format(
                     type(slice_start)))
             raise IndexError(
                 "The range_start {} is after the range stop {}.".format(
                     slice_start, slice_stop))
         if slice_stop > len(self):
-            if isinstance(slice_stop, _ACCEPTABLE_TYPES):
+            if self._is_id_type(slice_stop):
                 raise IndexError("The range_stop {} is out of range.".format(
                     slice_stop))
             raise TypeError("Invalid argument type {}.".format(

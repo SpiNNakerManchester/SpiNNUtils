@@ -24,7 +24,6 @@ class AbstractDict(object):
             If even one of the keys has multiple values set.\
             But not if other keys not asked for have multiple values
         """
-        pass
 
     @abstractmethod
     def keys(self):
@@ -32,7 +31,6 @@ class AbstractDict(object):
 
         :return: keys in the dict
         """
-        pass
 
     @abstractmethod
     def set_value(self, key, value):
@@ -54,7 +52,6 @@ class AbstractDict(object):
         :param value: any object
         :raise KeyError: If a new key is being used.
         """
-        pass
 
     @abstractmethod
     def ids(self):
@@ -71,7 +68,6 @@ class AbstractDict(object):
         :return: list of IDs
         :rtype: list(int)
         """
-        pass
 
     @abstractmethod
     def iter_all_values(self, key, update_save=False):
@@ -90,7 +86,6 @@ class AbstractDict(object):
             If key is iterable (list, tuple, set, etc) of str (or None)\
             yields dictionary objects
         """
-        pass
 
     def get_ranges(self, key=None):
         """ Lists the ranges(s) for all IDs covered by this view
@@ -134,7 +129,6 @@ class AbstractDict(object):
             If key is iterable (list, tuple, set, etc) of str (or None)\
             value is a dictionary object
         """
-        pass
 
     @abstractmethod
     def get_default(self, key):
@@ -150,7 +144,6 @@ class AbstractDict(object):
         :type key: str
         :return: default for this key.
         """
-        pass
 
     def items(self):
         """ Returns a list of (key, value) tuples

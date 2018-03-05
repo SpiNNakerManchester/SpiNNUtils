@@ -20,14 +20,15 @@ class overrides(object):
         # True if the doc string is to be extended, False to set if not set
         "_extend_doc",
         # Any additional arguments required by the subclass method
-        "_additional_arguments"
+        "_additional_arguments",
+        # True if the subclass method may have additional defaults
+        "_extend_defaults"
     ]
 
     def __init__(
             self, super_class_method, extend_doc=True,
-            additional_arguments=None):
+            additional_arguments=None, extend_defaults=False):
         """
-
         :param super_class_method: The method to override in the superclass
         :param extend_doc:\
             True the method doc string should be appended to the super-method\
@@ -36,21 +37,26 @@ class overrides(object):
         :param additional_arguments:\
             Additional arguments taken by the subclass method over the\
             superclass method, e.g., that are to be injected
+        :param extend_defaults: \
+            Whether the subclass may specify extra defaults for the parameters
         """
         self._superclass_method = super_class_method
         self._extend_doc = extend_doc
         self._additional_arguments = additional_arguments
+        self._extend_defaults = extend_defaults
         if additional_arguments is None:
             self._additional_arguments = {}
         if isinstance(super_class_method, property):
             self._superclass_method = super_class_method.fget
 
     @staticmethod
-    def __match_defaults(default_args, super_defaults):
+    def __match_defaults(default_args, super_defaults, extend_ok):
         if default_args is None:
             return super_defaults is None
         elif super_defaults is None:
-            return False
+            return extend_ok
+        if extend_ok:
+            return len(default_args) >= len(super_defaults)
         return len(default_args) == len(super_defaults)
 
     def __verify_method_arguments(self, method):
@@ -74,7 +80,8 @@ class overrides(object):
             if arg != super_arg:
                 raise AttributeError(
                     "Missing argument {}".format(super_arg))
-        if not self.__match_defaults(default_args, super_args.defaults):
+        if not self.__match_defaults(
+                default_args, super_args.defaults, self._extend_defaults):
             raise AttributeError(
                 "Default arguments don't match super class method")
 
@@ -105,6 +112,5 @@ class overrides(object):
         elif (self._extend_doc and
                 self._superclass_method.__doc__ is not None):
             method.__doc__ = (
-                self._superclass_method.__doc__ +
-                method.__doc__)
+                self._superclass_method.__doc__ + method.__doc__)
         return method

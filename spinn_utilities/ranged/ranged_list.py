@@ -29,8 +29,6 @@ class RangedList(AbstractList):
     __slots__ = [
         "_default", "_key", "_ranged_based", "_ranges"]
 
-    def __init__(self, size, value, key=None):
-        """ Constructor for a ranged list.
     def __init__(self, size=None, value=None, key=None):
         """
         Constructor for a ranged list.
@@ -71,8 +69,7 @@ class RangedList(AbstractList):
         # Non-range-based so just return the value
         return self._ranges[id]
 
-    @overrides(AbstractList.get_value_by_slice)
-    def get_value_by_slice(self, slice_start, slice_stop):
+    @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):
         """
          If possible returns a single value shared by the whole slice list.
@@ -129,21 +126,8 @@ class RangedList(AbstractList):
                 raise MultipleValuesException(self._key, result, _value)
         return result
 
+    @overrides(AbstractList.get_single_value_by_ids)
     def get_single_value_by_ids(self, ids):
-        """
-        If possible returns a single value shared by all the ids.
-
-        For multiple values use for x in list, iter(list) or list.iter,
-        or one of the iter_ranges methods
-
-        :return: Value shared by all elements with these ids
-        :raises MultipleValuesException: If one element has a different value.\
-            Not thrown if elements outside of the IDs have a different value,\
-            even if these elements are between the ones pointed to by IDs
-        """
-
-    @overrides(AbstractList.get_value_by_ids)
-    def get_value_by_ids(self, ids):
         # Take the first id, and then simply check all the others are the same
         # This works for both range-based and non-range-based
         result = self.get_value_by_id(ids[0])
@@ -262,10 +246,6 @@ class RangedList(AbstractList):
         """
 
         # Assume any iterable is a list
-        if hasattr(value, '__iter__'):
-            return True
-
-        return False
         if callable(value):
             return True
         return hasattr(value, '__iter__')

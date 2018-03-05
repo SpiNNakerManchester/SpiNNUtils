@@ -52,27 +52,26 @@ class AbstractSized(object):
             slice_start = self._size + slice_start
             if slice_start < 0:
                 if self._is_id_type(slice_start):
-                    raise IndexError(
-                        "The range_start {} is out of range.".format(
-                            slice_start))
-                raise TypeError("Invalid argument type {}.".format(
-                    type(slice_start)))
-                msg = "Specified slice start was {} while size is only {}. " \
-                      "Therefore slice will start at index 0" \
-                      "".format(slice_start - self._size, self._size)
-                logger.warn(msg)
-                slice_start = 0
+                    logger.warn(
+                        "Specified slice start was {} while size is only {}. "
+                        "Therefore slice will start at index 0".format(
+                            slice_start - self._size, self._size))
+                    slice_start = 0
+                else:
+                    raise TypeError("Invalid argument type {}.".format(
+                        type(slice_start)))
         elif slice_start >= len(self):
-            msg = "Specified slice start was {} while size is only {}. " \
-                  "Therefore slice will be empty" \
-                  "".format(slice_start - self._size, self._size)
-            logger.warn(msg)
+            logger.warn(
+                "Specified slice start was {} while size is only {}. "
+                "Therefore slice will be empty".format(
+                    slice_start - self._size, self._size))
             return (self._size, self._size)
 
         if slice_stop is None or slice_stop == sys.maxsize:
             slice_stop = self._size
         elif slice_stop < 0:
             slice_stop = self._size + slice_stop
+
         if slice_start > slice_stop:
             if not self._is_id_type(slice_start):
                 raise TypeError("Invalid argument type {}.".format(
@@ -80,52 +79,55 @@ class AbstractSized(object):
             if not self._is_id_type(slice_stop):
                 raise TypeError("Invalid argument type {}.".format(
                     type(slice_start)))
-            raise IndexError(
-                "The range_start {} is after the range stop {}.".format(
-                    slice_start, slice_stop))
+            logger.warn(
+                "Specified slice has a start {} greater than its stop {} "
+                "(based on size {}). Therefore slice will be empty".format(
+                    slice_start, slice_stop, self._size))
+            return (self._size, self._size)
         if slice_stop > len(self):
-            if self._is_id_type(slice_stop):
-                raise IndexError("The range_stop {} is out of range.".format(
-                    slice_stop))
-            raise TypeError("Invalid argument type {}.".format(
-                type(slice_stop)))
-            if slice_stop < 0:
-                msg = "Specified slice stop was {} while size is only {}. " \
-                      "Therefore slice will be empty" \
-                      "".format(slice_stop-self._size, self._size)
-                logger.warn(msg)
-                return (self._size, self._size)
+            if not self._is_id_type(slice_stop):
+                raise TypeError("Invalid argument type {}.".format(
+                    type(slice_start)))
+            logger.warn(
+                "Specified slice has a start {} equal to its stop {} "
+                "(based on size {}). Therefore slice will be empty".format(
+                    slice_start, slice_stop, self._size))
+        if slice_stop < 0:
+            logger.warn(
+                "Specified slice stop was {} while size is only {}. "
+                "Therefore slice will be empty".format(
+                    slice_stop-self._size, self._size))
+            return (self._size, self._size)
         elif slice_start > slice_stop:
-            msg = "Specified slice has a start {} greater than its stop {} " \
-                  "(based on size {}). Therefore slice will be empty" \
-                  "".format(slice_start, slice_stop, self._size)
-            logger.warn(msg)
+            logger.warn(
+                "Specified slice has a start {} greater than its stop {} "
+                "(based on size {}). Therefore slice will be empty".format(
+                    slice_start, slice_stop, self._size))
             return (self._size, self._size)
         elif slice_start == slice_stop:
-            msg = "Specified slice has a start {} equal to its stop {} " \
-                  "(based on size {}). Therefore slice will be empty" \
-                  "".format(slice_start, slice_stop, self._size)
-            logger.warn(msg)
+            logger.warn(
+                "Specified slice has a start {} equal to its stop {} "
+                "(based on size {}). Therefore slice will be empty".format(
+                    slice_start, slice_stop, self._size))
         elif slice_stop > len(self):
-            msg = "Specified slice stop was {} while size is only {}. " \
-                  "Therefore slice will be truncated" \
-                  "".format(slice_stop, self._size)
-            logger.warn(msg)
+            logger.warn(
+                "Specified slice stop was {} while size is only {}. "
+                "Therefore slice will be truncated".format(
+                    slice_stop, self._size))
             slice_stop = self._size
         return slice_start, slice_stop
 
     def _check_mask_size(self, selector):
         if len(selector) < self._size:
-            msg = "The boolean mask is too short. The expected length was " \
-                  "{} but the length was only {}. All the missing entries " \
-                  "will be treated as False!".format(self._size, len(selector))
-            logger.warning(msg)
+            logger.warning(
+                "The boolean mask is too short. The expected length was {} "
+                "but the length was only {}. All the missing entries will be "
+                "treated as False!".format(self._size, len(selector)))
         elif len(selector) > self._size:
-            msg = "The boolean mask is too long. The expected length was " \
-                  "{} but the length was only {}. All the missing entries " \
-                "will be ignored!".format(self._size,
-                                                      len(selector))
-            logger.warning(msg)
+            logger.warning(
+                "The boolean mask is too long. The expected length was {} "
+                "but the length was only {}. All the missing entries will be "
+                "ignored!".format(self._size, len(selector)))
 
     def selector_to_ids(self, selector, warn=False):
         """ Gets the list of ids covered by this selector
@@ -177,13 +179,13 @@ class AbstractSized(object):
                 ids = list(selector)
                 for id in ids:
                     if id < 0:
-                        msg = "Selector includes the id {} which is less " \
-                              "than zero".format(id)
-                        raise TypeError(msg)
+                        raise TypeError(
+                            "Selector includes the id {} which is less than "
+                            "zero".format(id))
                     if id >= self._size:
-                        msg = "Selector includes the id {} which not less " \
-                              "than the size {}".format(id, self._size)
-                        raise TypeError(msg)
+                        raise TypeError(
+                            "Selector includes the id {} which not less than "
+                            "the size {}".format(id, self._size))
                 return ids
             else:
                 raise TypeError(

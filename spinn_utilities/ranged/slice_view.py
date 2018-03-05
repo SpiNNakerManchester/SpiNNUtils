@@ -32,8 +32,7 @@ class _SliceView(AbstractView):
         for id in self.ids():  # @ReservedAssignment
             yield ranged_list.get_value_by_id(id=id)
 
-    @overrides(AbstractDict.iter_all_values)
-    def iter_all_values(self, key, update_save=False):
+    @overrides(AbstractDict.iter_all_values, extend_defaults=True)
     def iter_all_values(self, key=None, update_save=False):
         if isinstance(key, str):
             if update_save:

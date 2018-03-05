@@ -56,7 +56,6 @@ class AbstractList(AbstractSized):
 
         :return: True if and only if Ranged based calls are recommended.
         """
-        pass
 
     def __len__(self):
         """ Size of the list, irrespective of actual values
@@ -113,7 +112,6 @@ class AbstractList(AbstractSized):
         :type id: int
         :return: The value of that element
         """
-        pass
 
     @abstractmethod
     def get_single_value_by_slice(self, slice_start, slice_stop):
@@ -146,7 +144,6 @@ class AbstractList(AbstractSized):
             Not thrown if elements outside of the IDs have a different value,\
             even if these elements are between the ones pointed to by IDs
         """
-        pass
 
     def __getitem__(self, selector):
         """
@@ -563,18 +560,14 @@ class SingleList(AbstractList):
     def get_value_by_id(self, id):  # @ReservedAssignment
         return self._operation(self._a_list.get_value_by_id(id))
 
+    @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):
         return self._operation(self._a_list.get_single_value_by_slice(
-    @overrides(AbstractList.get_value_by_slice)
-    def get_value_by_slice(self, slice_start, slice_stop):
-        return self._operation(self._a_list.get_value_by_slice(
             slice_start, slice_stop))
 
+    @overrides(AbstractList.get_single_value_by_ids)
     def get_single_value_by_ids(self, ids):
         return self._operation(self._a_list.get_single_value_by_ids(ids))
-    @overrides(AbstractList.get_value_by_ids)
-    def get_value_by_ids(self, ids):
-        return self._operation(self._a_list.get_value_by_ids(ids))
 
     @overrides(AbstractList.iter_ranges)
     def iter_ranges(self):
@@ -627,16 +620,14 @@ class DualList(AbstractList):
         return self._operation(
             self._left.get_value_by_id(id), self._right.get_value_by_id(id))
 
+    @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):
-    @overrides(AbstractList.get_value_by_slice)
-    def get_value_by_slice(self, slice_start, slice_stop):
         return self._operation(
             self._left.get_single_value_by_slice(slice_start, slice_stop),
             self._right.get_single_value_by_slice(slice_start, slice_stop))
 
+    @overrides(AbstractList.get_single_value_by_ids)
     def get_single_value_by_ids(self, ids):
-    @overrides(AbstractList.get_value_by_ids)
-    def get_value_by_ids(self, ids):
         return self._operation(
             self._left.get_single_value_by_ids(ids),
             self._right.get_single_value_by_ids(ids))

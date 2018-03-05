@@ -1,4 +1,6 @@
 from spinn_utilities.ranged.abstract_view import AbstractView
+from spinn_utilities.overrides import overrides
+from spinn_utilities.ranged.abstract_dict import AbstractDict
 
 
 class _IdsView(AbstractView):
@@ -6,8 +8,7 @@ class _IdsView(AbstractView):
         "_ids"]
 
     def __init__(self, range_dict, ids):
-        """
-        USE RangeDictionary.view_factory to create views
+        """ Use :py:meth:`RangeDictionary.view_factory` to create views
         """
         super(_IdsView, self).__init__(range_dict)
         self._ids = ids
@@ -15,13 +16,16 @@ class _IdsView(AbstractView):
     def __str__(self):
         return "View with ids: {}".format(self._ids)
 
+    @overrides(AbstractDict.ids)
     def ids(self):
         return list(self._ids)
 
+    @overrides(AbstractDict.get_value)
     def get_value(self, key):
         return self._range_dict.get_list(key).get_single_value_by_ids(
             self._ids)
 
+    @overrides(AbstractDict.set_value)
     def set_value(self, key, value):
         ranged_list = self._range_dict.get_list(key)
         for _id in self._ids:
@@ -29,11 +33,13 @@ class _IdsView(AbstractView):
 
     def set_value_by_ids(self, key, ids, value):
         for _id in ids:
-            self._value_lists[key].set_value_id(id=_id, value=value)
+            self._range_dict[key].set_value_by_id(id=_id, value=value)
 
+    @overrides(AbstractDict.iter_all_values)
     def iter_all_values(self, key, update_save=False):
         return self._range_dict.iter_values_by_ids(
             ids=self._ids, key=key, update_save=update_save)
 
-    def iter_ranges(self, key):
+    @overrides(AbstractDict.iter_ranges)
+    def iter_ranges(self, key=None):
         return self._range_dict.iter_ranges_by_ids(key=key, ids=self._ids)

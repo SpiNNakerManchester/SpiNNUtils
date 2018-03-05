@@ -1,4 +1,5 @@
 from spinn_utilities.ranged.abstract_dict import AbstractDict
+from spinn_utilities.overrides import overrides
 
 
 class AbstractView(AbstractDict):
@@ -6,25 +7,23 @@ class AbstractView(AbstractDict):
         "_range_dict"]
 
     def __init__(self, range_dict):
-        """
-        USE RangeDictionary.view_factory to create views
+        """ Use :py:meth:`RangeDictionary.view_factory` to create views
         """
         self._range_dict = range_dict
 
     def __getitem__(self, key):
-        """
-        Support for the view[x] based the type of the key
+        """ Support for the view[x] based the type of the key
 
         key is a str is currently not supported use get_value instead. \
         In the future this may be supported to return some kind of list\
         (AbstractList) but how to handle a view there to be determined
 
         For int and int collections a new view will be returned using\
-        RangeDictionary.view_factory
+        :py:meth:`RangeDictionary.view_factory`
 
         .. note::
-            int are indexes into the list of ids not id values\
-            So for a view with ids [2,3,4,5] view[2] will have an id of 4
+            int are indexes into the list of IDs not ID values\
+            So for a view with IDs [2,3,4,5] view[2] will have an ID of 4
 
         :param key: str, int or collection of int
         :return: the single value for the str key or a view
@@ -42,12 +41,11 @@ class AbstractView(AbstractDict):
         return self._range_dict.view_factory(selected)
 
     def __setitem__(self, key, value):
-        """ See AbstractDict.set_value
+        """ See :py:meth:`AbstractDict.set_value`
 
         .. note::
-            Unlike __getitem__ int based ids are NOT supported so\
-            view[int] == will raise and exception
-
+            Unlike ``__getitem__``, int based IDs are *not* supported so\
+            ``view[int] ==`` will raise an exception
         """
         if isinstance(key, str):
             return self.set_value(key=key, value=value)
@@ -58,8 +56,10 @@ class AbstractView(AbstractDict):
     def viewkeys(self):
         return self._range_dict.viewkeys()
 
+    @overrides(AbstractDict.get_default)
     def get_default(self, key):
         return self._range_dict.get_default(key)
 
+    @overrides(AbstractDict.keys)
     def keys(self):
         return self._range_dict.keys()

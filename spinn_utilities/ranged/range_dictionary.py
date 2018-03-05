@@ -6,11 +6,12 @@ from spinn_utilities.ranged.slice_view import _SliceView
 from spinn_utilities.ranged.ids_view import _IdsView
 from spinn_utilities.ranged.abstract_dict import AbstractDict
 from spinn_utilities.ranged.abstract_sized import AbstractSized
+from spinn_utilities.overrides import overrides
+from six import iteritems
 
 
 class RangeDictionary(AbstractSized, AbstractDict):
-    """
-    Main holding class for a range of similar Dictionary object.
+    """ Main holding class for a range of similar Dictionary object.
 
     Keys in the dictionary must be str object and can not be removed.
 
@@ -22,14 +23,13 @@ class RangeDictionary(AbstractSized, AbstractDict):
         "_value_lists"]
 
     def __init__(self, size, defaults=None):
-        """
-        Main constructor for a Ranged Dictionary
+        """ Main constructor for a Ranged Dictionary
 
-        The Object is set up initially where every id in the range will share\
+        The Object is set up initially where every ID in the range will share\
         the same value for each key. All keys must be of type str. The\
         default Values can be anything including None.
 
-        :param size: Fixed number of ids / Length of lists
+        :param size: Fixed number of IDs / Length of lists
         :type size: int
         :param defaults: Default dictionary where all keys must be str
         :type defaults: dict
@@ -37,13 +37,12 @@ class RangeDictionary(AbstractSized, AbstractDict):
         super(RangeDictionary, self).__init__(size)
         self._value_lists = dict()
         if defaults is not None:
-            for key, value in defaults.iteritems():
+            for key, value in iteritems(defaults):
                 self._value_lists[key] = self.list_factory(
                     size=size, value=value, key=key)
 
-    def list_factory(self, size=None, value=None, key=None):
-        """
-        Defines which class or subclass of RangedList to use
+    def list_factory(self, size, value, key):
+        """ Defines which class or subclass of RangedList to use
 
         Main purpose is for subclasses to use a subclass or RangedList.\
         All parameters are pass through ones to the List constructor
@@ -56,17 +55,16 @@ class RangeDictionary(AbstractSized, AbstractDict):
         return RangedList(size, value, key)
 
     def view_factory(self, key):
-        """
-        Main function for creating views.
+        """ Main function for creating views.
 
         This is the preferred way of creating new views as it checks\
         parameters and returns the most efficient view.
 
-        Note the __getitem__ methods called by Object[id] and similar defer\
-        to this method so are fine to use.
+        Note the ``__getitem__`` methods called by Object[id] and similar\
+        defer to this method so are fine to use.
 
-        The id(s) used are the actual ids in the Range and not indexes on\
-        the list of ids
+        The ID(s) used are the actual IDs in the Range and not indexes on\
+        the list of IDs
 
         :param key: A single int id, a Slice object or an Iterable of int ids
         :return: A view over the Range
@@ -118,12 +116,11 @@ class RangeDictionary(AbstractSized, AbstractDict):
         return _IdsView(range_dict=self, ids=key)
 
     def __getitem__(self, key):
-        """
-        Support for the view[x] based the type of the key
+        """ Support for the view[x] based the type of the key
 
-        If key is a str a list type object of AbstractList is returned
+        If key is a str a list type object of ``AbstractList`` is returned
 
-        Otherwise a View (AbstractView) over part of the ids in the Dict is\
+        Otherwise a View (AbstractView) over part of the IDs in the Dict is\
         returned
 
         Multiple str object or None are not supported as keys here
@@ -135,10 +132,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
             return self._value_lists[key]
         return self.view_factory(key=key)
 
+    @overrides(AbstractDict.get_value, extend_defaults=True)
     def get_value(self, key=None):
-        """
-        See AbstractDict
-        """
         if isinstance(key, str):
             return self._value_lists[key].get_single_value_all()
         if key is None:
@@ -149,12 +144,12 @@ class RangeDictionary(AbstractSized, AbstractDict):
         return results
 
     def get_values_by_id(self, key, id):  # @ReservedAssignment
-        """
-        Same as AbstractDict.get_value but limited to a single id
+        """ Same as :py:meth:`AbstractDict.get_value` but limited to a single\
+            ID
 
-        :param key: as AbstractDict.get_value
-        :param id: single int id
-        :return: See AbstractDict.get_value
+        :param key: as :py:meth:`AbstractDict.get_value`
+        :param id: single int ID
+        :return: See :py:meth:`AbstractDict.get_value`
         """
         if isinstance(key, str):
             return self._value_lists[key].get_value_by_id(id)
@@ -166,8 +161,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         return results
 
     def get_list(self, key):
-        """
-        Gets the storage unit for a single key.
+        """ Gets the storage unit for a single key.
 
         Mainly intended by Views to access the data for one key directly
 
@@ -178,17 +172,14 @@ class RangeDictionary(AbstractSized, AbstractDict):
         return self._value_lists[key]
 
     def update_safe_iter_all_values(self, key, ids):
-        """
-        Same as AbstractDict.iter_all_values \
-        but limited to a collection of ids and update safe
+        """ Same as :py:meth:`AbstractDict.iter_all_values` \
+        but limited to a collection of IDs and update safe
         """
         for id_value in ids:  # @ReservedAssignment
             yield self.get_values_by_id(key=key, id=id_value)
 
+    @overrides(AbstractDict.iter_all_values, extend_defaults=True)
     def iter_all_values(self, key=None, update_save=False):
-        """
-        See AbstractDict.iter_all_values
-        """
         if isinstance(key, str):
             if update_save:
                 return self._value_lists[key].iter()
@@ -201,9 +192,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
     def iter_values_by_slice(
             self, slice_start, slice_stop, key=None, update_save=False):
-        """
-        Same as AbstractDict.iter_all_values \
-        but limited to a simple slice
+        """ Same as :py:meth:`AbstractDict.iter_all_values` \
+            but limited to a simple slice
         """
         if isinstance(key, str) and not update_save:
             return self._value_lists[key].iter_by_slice(
@@ -216,9 +206,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
             slice_start=slice_start, slice_stop=slice_stop, key=key))
 
     def iter_values_by_ids(self, ids, key=None, update_save=False):
-        """
-        Same as AbstractDict.iter_all_values \
-        but limited to a simple slice
+        """ Same as :py:meth:`AbstractDict.iter_all_values` \
+            but limited to a simple slice
         """
         if update_save:
             return self.update_safe_iter_all_values(key, ids)
@@ -230,27 +219,25 @@ class RangeDictionary(AbstractSized, AbstractDict):
             for _ in xrange(start, stop):
                 yield value
 
+    @overrides(AbstractDict.set_value)
     def set_value(self, key, value):
-        """
-        see AbstractDict.set_value
-        """
         self._value_lists[key].set_value(value)
 
     def __setitem__(self, key, value):
-        """
-        Wrapper around set_value to support range["key"] =
+        """ Wrapper around set_value to support ``range["key"] =``
 
-        NOTE: range[int] = is not supported
+        .. note:
+            ``range[int] =`` is not supported
 
-        value can be a single object or None in\
+        ``value`` can be a single object or ``None`` in\
         which case every value in the list is set to that.
-        value can be a collection but\
+        ``value`` can be a collection but\
         then it must be exactly the size of all lists in this dictionary.
-        value can be an AbstractList
+        ``value`` can be an ``AbstractList``
 
         :param key: Existing or NEW str dictionary key
         :type key: str
-        :param value: List or value to create list based on
+        :param value: List or value to create list based on.
         :return:
         """
         if isinstance(key, str):
@@ -268,21 +255,24 @@ class RangeDictionary(AbstractSized, AbstractDict):
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
 
+    @overrides(AbstractDict.ids)
     def ids(self):
-        """
-        Returns a list of the ids in this Range
+        """ Returns a list of the IDs in this Range
 
-        :return: a list of the ids in this Range
+        :return: a list of the IDs in this Range
         :rtype: list(int)
         """
         return range(self._size)
 
+    @overrides(AbstractDict.has_key)
     def has_key(self, key):
         return key in self._value_lists
 
+    @overrides(AbstractDict.keys)
     def keys(self):
         return self._value_lists.keys()
 
+    @overrides(AbstractDict.iterkeys)
     def iterkeys(self):
         return self._value_lists.iterkeys()
 
@@ -314,10 +304,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
             stop = next_stop
             yield (start, stop, current)
 
+    @overrides(AbstractDict.iter_ranges)
     def iter_ranges(self, key=None):
-        """
-        See AbstractDict.iter_ranges
-        """
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges()
         if key is None:
@@ -328,11 +316,10 @@ class RangeDictionary(AbstractSized, AbstractDict):
         return self._merge_ranges(ranges)
 
     def iter_ranges_by_id(self, key=None, id=None):  # @ReservedAssignment
-        """
-        Same AbstractDict.iter_ranges but limited to one id
+        """ Same as :py:meth:`AbstractDict.iter_ranges` but limited to one ID
 
-        :param key: see AbstractDict.iter_ranges param key
-        :param id: single id which is the actual id and not an index into ids
+        :param key: see :py:meth`AbstractDict.iter_ranges` parameter key
+        :param id: single ID which is the actual ID and not an index into IDs
         :type id: int
         """
         if isinstance(key, str):
@@ -345,18 +332,17 @@ class RangeDictionary(AbstractSized, AbstractDict):
         return self._merge_ranges(ranges)
 
     def iter_ranges_by_slice(self, key, slice_start, slice_stop):
-        """
-        Same AbstractDict.iter_ranges but limited to a simple slice
+        """ Same as :py:meth:`AbstractDict.iter_ranges` but limited to a\
+            simple slice.
 
-        slice_start and slice_stop are actual id values and\
-        not indexes into the ids.
-        They must also be actual values, so None, max_int, and\
-        negative numbers are not supported.
+        ``slice_start`` and ``slice_stop`` are actual ID values and not\
+        indexes into the IDs. They must also be actual values, so ``None``,\
+        ``max_int``, and negative numbers are not supported.
 
-        :param key: see AbstractDict.iter_ranges param key
-        :param slice_start: Inclusive i.e. first id
-        :param slice_stop:  Exclusive to last id + 1
-        :return: see AbstractDict.iter_ranges
+        :param key: see :py:meth:`AbstractDict.iter_ranges` parameter ``key``
+        :param slice_start: Inclusive i.e. first ID
+        :param slice_stop:  Exclusive to last ID + 1
+        :return: see :py:meth:`AbstractDict.iter_ranges`
         """
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_slice(
@@ -370,15 +356,15 @@ class RangeDictionary(AbstractSized, AbstractDict):
         return self._merge_ranges(ranges)
 
     def iter_ranges_by_ids(self, ids, key=None):
+        """ Same as :py:meth:`AbstractDict.iter_ranges` but limited to a\
+            collection of IDs
+
+        IDs are actual ID values and not indexes into the IDs
+
+        :param key: see :py:meth:`AbstractDict.iter_ranges` parameter ``key``
+        :param ids: Collection of IDs in the range
+        :return: see :py:meth:`AbstractDict.iter_ranges`
         """
-         Same AbstractDict.iter_ranges but limited to a collection of ids
-
-         ids are actual id values and not indexes into the ids
-
-         :param key: see AbstractDict.iter_ranges param key
-         :param ids: Collection of ids in the range
-         :return: see AbstractDict.iter_ranges
-         """
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_ids(ids=ids)
         if key is None:
@@ -393,11 +379,11 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """ Sets the default value for a single key.
 
         .. note::
-            Does not change any values but only changes what reset_value\
+            Does not change any values but only changes what ``reset_value``\
             would do
 
         .. warning::
-            If called on a View it sets the default for the WHOLE range\
+            If called on a View it sets the default for the *whole* range\
             and not just the view.
 
         :param key: Existing dict key
@@ -406,8 +392,6 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         self._value_lists[key].set_default(default)
 
+    @overrides(AbstractDict.get_default)
     def get_default(self, key):
-        """
-        See AbstractDict.get_default
-        """
         return self._value_lists[key].get_default()

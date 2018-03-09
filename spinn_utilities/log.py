@@ -124,31 +124,6 @@ class FormatAdapter(logging.LoggerAdapter):
         super(FormatAdapter, self).__init__(logger, extra)
         self.do_log = logger._log  # pylint: disable=protected-access
 
-    @overrides(logging.LoggerAdapter.critical)
-    def critical(self, msg, *args, **kwargs):
-        self.log(logging.CRITICAL, msg, *args, **kwargs)
-
-    @overrides(logging.LoggerAdapter.debug)
-    def debug(self, msg, *args, **kwargs):
-        self.log(logging.DEBUG, msg, *args, **kwargs)
-
-    @overrides(logging.LoggerAdapter.error)
-    def error(self, msg, *args, **kwargs):
-        self.log(logging.ERROR, msg, *args, **kwargs)
-
-    @overrides(logging.LoggerAdapter.exception)
-    def exception(self, msg, *args, **kwargs):
-        kwargs["exc_info"] = 1
-        self.log(logging.ERROR, msg, *args, **kwargs)
-
-    @overrides(logging.LoggerAdapter.info)
-    def info(self, msg, *args, **kwargs):
-        self.log(logging.INFO, msg, *args, **kwargs)
-
-    @overrides(logging.LoggerAdapter.warning)
-    def warning(self, msg, *args, **kwargs):
-        self.log(logging.WARNING, msg, *args, **kwargs)
-
     @overrides(logging.LoggerAdapter.log)
     def log(self, level, msg, *args, **kwargs):
         if self.isEnabledFor(level):

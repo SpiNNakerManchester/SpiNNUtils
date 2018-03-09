@@ -1,10 +1,6 @@
-try:
-    from ConfigParser import RawConfigParser
-except ImportError:  # pragma: no cover
-    from configparser import RawConfigParser
+from six.moves import configparser
 
 
-class CaseSensitiveParser(RawConfigParser):
-
+class CaseSensitiveParser(configparser.RawConfigParser):
     def optionxform(self, optionstr):
         return optionstr

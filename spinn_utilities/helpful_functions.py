@@ -1,13 +1,10 @@
 import logging
 import inspect
 import re
+from six import string_types
 
 logger = logging.getLogger(__name__)
 FINISHED_FILENAME = "finished"
-try:
-    _str_class = basestring
-except NameError:
-    _str_class = str
 
 
 def get_valid_components(module, terminator):
@@ -34,4 +31,4 @@ def is_singleton(value):
         Strings are considered singleton as rarely will someone use a String
         to represent an iterable of characters
     """
-    return not hasattr(value, '__iter__') or isinstance(value, _str_class)
+    return not hasattr(value, '__iter__') or isinstance(value, string_types)

@@ -1,11 +1,6 @@
 # pylint: disable=redefined-builtin
-import platform
 import sys
-
-if platform.python_version().startswith("2."):
-    _ACCEPTABLE_TYPES = [int, long]  # noqa: F821
-else:
-    _ACCEPTABLE_TYPES = [int]
+from six import integer_types
 
 
 class AbstractSized(object):
@@ -20,7 +15,7 @@ class AbstractSized(object):
 
         :param size: Fixed length of the list
         """
-        self._size = max((int(round(size)), 0))
+        self._size = max(int(round(size)), 0)
 
     def __len__(self):
         """ Size of the list, irrespective of actual values
@@ -32,7 +27,7 @@ class AbstractSized(object):
     @staticmethod
     def _is_id_type(id):  # @ReservedAssignment
         """ Check if the given ID has a type acceptable for IDs. """
-        return isinstance(id, _ACCEPTABLE_TYPES)
+        return isinstance(id, integer_types)
 
     def _check_id_in_range(self, id):  # @ReservedAssignment
         if id < 0:

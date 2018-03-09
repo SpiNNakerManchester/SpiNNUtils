@@ -2,10 +2,7 @@
 from __future__ import print_function
 import appdirs
 import collections
-try:
-    import ConfigParser
-except ImportError:  # pragma: no cover
-    import configparser as ConfigParser
+from six.moves import configparser
 import logging
 import os
 
@@ -84,7 +81,7 @@ def logging_parser(config):
         for handler in logging.root.handlers:
             handler.addFilter(log.ConfiguredFilter(config))
             handler.setFormatter(log.ConfiguredFormatter(config))
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         pass
 
 

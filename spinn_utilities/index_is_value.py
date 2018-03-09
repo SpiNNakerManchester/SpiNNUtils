@@ -14,4 +14,4 @@ class IndexIsValue(object):
         return key
 
     def __len__(self):
-        return sys.maxint
+        return sys.maxsize

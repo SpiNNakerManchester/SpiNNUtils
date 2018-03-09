@@ -1,11 +1,9 @@
-try:
-    from ConfigParser import RawConfigParser
-except ImportError:  # pragma: no cover
-    from configparser import RawConfigParser
+from six.moves import configparser
 import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
 
 
-class CamelCaseConfigParser(RawConfigParser):
+# pylint: disable=slots-on-old-class
+class CamelCaseConfigParser(configparser.RawConfigParser):
     # RawConfigParser is a classobj in Python 2.7, not a type (i.e., it
     # doesn't inherit from object), and so cannot be used with super().
     __slots__ = ["_none_marker", "_read_files"]
@@ -15,12 +13,12 @@ class CamelCaseConfigParser(RawConfigParser):
         return lower.replace("_", "")
 
     def __init__(self, defaults=None, none_marker="None"):
-        RawConfigParser.__init__(self, defaults)
+        configparser.RawConfigParser.__init__(self, defaults)
         self._none_marker = none_marker
         self._read_files = list()
 
     def read(self, filenames):
-        new_files = RawConfigParser.read(self, filenames)
+        new_files = configparser.RawConfigParser.read(self, filenames)
         self._read_files.extend(new_files)
         return new_files
 

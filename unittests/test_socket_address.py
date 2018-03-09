@@ -22,7 +22,7 @@ def test_correct_usage():
     assert sa1 != sa3
     assert sa1 != sa4
     assert sa1 != sa5
-    assert sa1.__repr__() == "SocketAddress('a', 2, 3)"
+    assert repr(sa1) == "SocketAddress('a', 2, 3)"
     assert str(sa1) == "SocketAddress('a', 2, 3)"
 
     # Test that we can use them as dictionary keys like a tuple

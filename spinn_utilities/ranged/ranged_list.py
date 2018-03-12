@@ -5,6 +5,7 @@ from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
 from spinn_utilities.helpful_functions import is_singleton
 from past.builtins import range, xrange
+from six import raise_from
 
 
 def function_iterator(function, size, ids=None):
@@ -488,5 +489,5 @@ class RangedList(AbstractList):
         """
         try:
             return self._default
-        except AttributeError:
-            raise Exception("Default value not set.")
+        except AttributeError as e:
+            raise_from(Exception("Default value not set."), e)

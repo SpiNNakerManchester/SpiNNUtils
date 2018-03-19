@@ -199,7 +199,7 @@ class DummyProgressBar(ProgressBar):
         return "<DummyProgressBar:{}>".format(self._string)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     from time import sleep
     demo = ProgressBar(
         5, "Progress Bar Demonstration", step_character="-", end_character="!")

@@ -47,14 +47,18 @@ class Convertor(object):
                 path = os.path.join(dirName, fileName)
                 if fileName in ["Makefile"]:
                     self.convert_make(path)
-                elif fileName in [".gitignore", "Makefile.common",
-                                  "Makefile.neural_build", "Makefile.paths"]:
-                    pass
                 elif extension in [".mk"]:
                     self.convert_make(path)
                 elif extension in [".c", ".cpp", ".h"]:
                     self.convert_c(path, fileName)
                 elif extension in [".elf", ".o", ".nm", ".txt"]:
+                    self.copy_if_newer(path)
+                elif fileName in [".gitignore"]:
+                    pass
+                elif fileName in ["Makefile.common",
+                                  "Makefile.neural_build",
+                                  "Makefile.paths",
+                                  "Makefile.SpiNNFrontEndCommon"]:
                     self.copy_if_newer(path)
                 else:
                     print ("Unexpected file {}".format(path))

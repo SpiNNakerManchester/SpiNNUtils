@@ -34,13 +34,17 @@ static String woops = "log_info(";
     }
 
     for (int i = 0; i < NUM_EXCITATORY_RECEPTORS; i++){
-        lag_warning("Inside a loop");  }
+        log_warning("Inside a loop");  }
 
     log_info("then a space")   ;
 
-    log_info("then a newline")
+    log_info("then a newline simple")
     ;
 
+    log_info("then a newline plus")
+    ; String more = "fluff";
+
+    log_info("first"); log_info("second %u", 1234);
     log_info("then a backslash comment on a middle line")
     // comment
     ;

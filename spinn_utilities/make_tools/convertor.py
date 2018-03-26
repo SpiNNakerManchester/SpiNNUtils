@@ -24,9 +24,9 @@ MINIS = {"log_info(": "log_mini_info(",
          "log_warning(": "log_mini_warning("}
 
 LEVELS = {"log_info(": "[INFO]",
-         "log_error(": "[ERROR]",
-         "log_debug(": "[DEBUG]",
-         "log_warning(": "[WARNING]"}
+          "log_error(": "[ERROR]",
+          "log_debug(": "[DEBUG]",
+          "log_warning(": "[WARNING]"}
 
 # COMMENT_EXPRESSION = re.compile('/\*.*\*/')
 
@@ -69,6 +69,7 @@ class Convertor(object):
             for file_name in fileList:
                 _, extension = os.path.splitext(file_name)
                 path = os.path.join(dirName, file_name)
+                print (path)
                 if file_name in ["Makefile"]:
                     self.convert_make(path)
                 elif extension in [".mk"]:
@@ -113,7 +114,7 @@ class Convertor(object):
                 in_log = False
                 self._status = NORMAL_CODE
                 for line_num, text in enumerate(src_f):
-                    if self._too_many_lines <= 0:
+                    if self._too_many_lines > 0:
                         # Try to recover the lines added by do not edit
                         check = text.strip()
                         if len(check) == 0 or check == "*":
@@ -134,6 +135,10 @@ class Convertor(object):
 
         if self._status == IN_LOG:
             return self._process_line_in_log(text, dest_f, file_name, line_num)
+
+        if self._status == IN_LOG_CLOSE_BRACKET:
+            return self._process_line_in_log_close_bracket(
+                text, dest_f, file_name, line_num)
 
         assert self._status == NORMAL_CODE
         return self._process_line_normal_code(text, dest_f, file_name, line_num)
@@ -181,18 +186,43 @@ class Convertor(object):
 
         match = LOG_END_REGEX.search(stripped)
         if not match:
-            # No end found save log method and go got next line
+            if stripped[-1:] == ")":
+                # possible start of end
+                self._status = IN_LOG_CLOSE_BRACKET
             self._log_full += stripped
             self._log_lines += 1
             return True
         if match.end(0) < len(stripped):
             # Stuff after the log_end so check by char
             return False
-        self._log_full += stripped
+
         self._log_lines += 1
+        self._log_full += stripped
         self._write_log_method(dest_f, file_name, line_num)
         self._status = NORMAL_CODE
         return True
+
+    def _process_line_in_log_close_bracket(self, text, dest_f, file_name, line_num):
+        stripped = text.strip()
+        if stripped[0] == ";":
+            if stripped == ";":
+                self._log_full += (";")
+                self._log_lines += 1
+                self._write_log_method(dest_f, file_name, line_num)
+                self._status = NORMAL_CODE
+                return True
+            else:
+                return False
+
+        elif stripped.startswith("//"):
+            # Just a comment line so write and move on
+            dest_f.write(text)
+            return True
+
+        else:
+            # so not a closing bracket so set status back
+            self._status = IN_LOG
+            return self._process_line_in_log(text, dest_f, file_name, line_num)
 
     def _process_line_normal_code(self, text, dest_f, file_name, line_num):
         # Fast check
@@ -247,11 +277,7 @@ class Convertor(object):
     def _write_log_method(self, dest_f, file_name, line_num):
         self._message_id += 1
         self._log_full = self._log_full.replace('""', '')
-        match = STRING_REGEXP.search(self._log_full)
-        if match:
-            original = match.group(0)
-        else:
-            pop
+        original = STRING_REGEXP.search(self._log_full).group(0)
         replacement = self.shorten(original)
         self._log_full = self._log_full.replace(self._log, MINIS[self._log])\
             .replace(original, replacement)
@@ -281,6 +307,7 @@ class Convertor(object):
         pos = 0
         write_flag = 0
         while text[pos] != "\n":
+            a = text[pos]
             if self._status == COMMENT:
                 if text[pos] == "*" and text[pos+1] == "/":
                     dest_f.write(text[write_flag:pos + 2])
@@ -291,7 +318,7 @@ class Convertor(object):
                     pos = pos + 1
 
             elif text[pos] == "/":
-                if text[pos] == "*":
+                if text[pos+1] == "*":
                     if self._status == IN_LOG:
                         self._log_full += text[write_flag:pos].strip()
                         # NO change to self._log_lines as newline not removed
@@ -299,9 +326,9 @@ class Convertor(object):
                         dest_f.write(text[write_flag:pos])
                     write_flag = pos
                     pos = pos + 2  # leave the /* as not written
-                    self._previous_status = IN_LOG
+                    self._previous_status = self._status
                     self._status = COMMENT
-                if text[pos] == "/":
+                elif text[pos+1] == "/":
                     if self._status == IN_LOG:
                         self._log_full += text[write_flag:pos].strip()
                         # NO change to self._log_lines as newline not removed
@@ -309,6 +336,8 @@ class Convertor(object):
                     else:
                         dest_f.write(text[write_flag:])
                     return  # Finished line
+                else:
+                    pos += 1
 
             elif text[pos] == '"':
                 str_pos = pos + 1
@@ -339,7 +368,7 @@ class Convertor(object):
                         self._log_full += text[write_flag:pos].strip()
                         self._status = NORMAL_CODE
                         if text[pos:].strip():  # Stuff left
-                            write_flag == pos
+                            write_flag = pos
                             # self._log_lines not changed as no newline
                             self._write_log_method(dest_f, file_name, line_num)
                         else:
@@ -351,6 +380,18 @@ class Convertor(object):
                         pos += 1
                 else:
                     pos += 1
+
+            elif self._status == IN_LOG_CLOSE_BRACKET:
+                stripped = text.strip()
+                if stripped[0] == ";":
+                    self._log_full += (";")
+                    self._write_log_method(dest_f, file_name, line_num)
+                    pos = text.index(";") + 1
+                    write_flag == pos
+                    self._status = NORMAL_CODE
+                else:
+                    # Save the ) as not part of the end
+                    self._status = IN_LOG
 
             elif text[pos] == "l":
                 match = LOG_START_REGEX.match(text[pos:])
@@ -365,7 +406,6 @@ class Convertor(object):
                     write_flag = pos
                     # skip to end of log start
                     pos = pos + len(match.group(0))
-                    self._status = self._previous_status
                 else:
                     # Not a log start after all so treat as normal test
                     pos += 1

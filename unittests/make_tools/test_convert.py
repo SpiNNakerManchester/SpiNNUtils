@@ -26,7 +26,6 @@ class TestConvertor(unittest.TestCase):
             convert_dir, "modified_src", "weird,file.c")
         src_lines = sum(1 for line in open(weird_src))
         modified_lines = sum(1 for line in open(weird_modified))
-        return
         self.assertEquals(src_lines, modified_lines)
         with open(messages, 'r') as myfile:
             data = myfile.read()
@@ -41,7 +40,10 @@ class TestConvertor(unittest.TestCase):
         assert("the neuron %d has been determined to not spike" in data)
         assert("Inside a loop" in data)
         assert("then a space" in data)
-        assert("then a newline" in data)
+        assert("then a newline simple" in data)
+        assert("then a newline plus" in data)
+        assert("first" in data)
+        assert("second" in data)
         assert("then a backslash comment on a middle line" in data)
         assert("then a standard comment on a middle line" in data)
         assert("comment before" in data)

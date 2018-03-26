@@ -7,6 +7,28 @@ import sys
 
 STRING_REGEXP = re.compile('"([^"]|\\"|(""))*"')
 FORMATEXP = re.compile("%\d*(?:\.\d+)?[diksuxR]")
+LOG_END_REGEX = re.compile('\)(\s)*;')
+END_COMMENT_REGEX = re.compile("/*/")
+LOG_START_REGEX = re.compile(
+    "log_((info)|(error)|(debug)|(warning))(\s)*\(")
+
+# Status values
+NORMAL_CODE = 0
+COMMENT = NORMAL_CODE + 1
+IN_LOG = COMMENT + 1
+IN_LOG_CLOSE_BRACKET = IN_LOG + 1
+
+MINIS = {"log_info(": "log_mini_info(",
+         "log_error(": "log_mini_error(",
+         "log_debug(": "log_mini_debug(",
+         "log_warning(": "log_mini_warning("}
+
+LEVELS = {"log_info(": "[INFO]",
+         "log_error(": "[ERROR]",
+         "log_debug(": "[DEBUG]",
+         "log_warning(": "[WARNING]"}
+
+# COMMENT_EXPRESSION = re.compile('/\*.*\*/')
 
 
 class Convertor(object):
@@ -15,7 +37,7 @@ class Convertor(object):
 
     REGEXP = re.compile("%(?:\d+\$)?[dfsu]")
 
-    def __init__(self, src, dest, start):
+    def __init__(self, src, dest, start, convertor_dir=None):
         self._src = src
         if not os.path.exists(self._src):
             raise Exception("Unable to locate source directory {}".format(src))
@@ -30,32 +52,34 @@ class Convertor(object):
         self._src_basename = "/" + src_basename + "/"
         self._dest_basename = "/" + dest_basename + "/"
         self._mkdir(self._dest)
-        convertor_path = os.path.dirname(os.path.abspath(__file__))
+        if convertor_dir is None:
+            convertor_dir = os.path.dirname(os.path.abspath(__file__))
+
         self._messages = os.path.join(
-            convertor_path, "messages{}.csv".format(start))
+            convertor_dir, "messages{}.csv".format(start))
         with open(self._messages, 'w') as mess_f:
-            mess_f.write("id, level, line, file, original\n"
-                         "This list was generated {}\n\n".format(
+            mess_f.write("Id,Preface,Original\n"
+                         ",,This list was generated {}\n\n".format(
                 datetime.today()))
         self._message_id = start
 
     def run(self):
         for dirName, subdirList, fileList in os.walk(self._src):
             self._mkdir(dirName)
-            for fileName in fileList:
-                _, extension = os.path.splitext(fileName)
-                path = os.path.join(dirName, fileName)
-                if fileName in ["Makefile"]:
+            for file_name in fileList:
+                _, extension = os.path.splitext(file_name)
+                path = os.path.join(dirName, file_name)
+                if file_name in ["Makefile"]:
                     self.convert_make(path)
                 elif extension in [".mk"]:
                     self.convert_make(path)
                 elif extension in [".c", ".cpp", ".h"]:
-                    self.convert_c(path, fileName)
+                    self.convert_c(path, file_name)
                 elif extension in [".elf", ".o", ".nm", ".txt"]:
                     self.copy_if_newer(path)
-                elif fileName in [".gitignore"]:
+                elif file_name in [".gitignore"]:
                     pass
-                elif fileName in ["Makefile.common",
+                elif file_name in ["Makefile.common",
                                   "Makefile.neural_build",
                                   "Makefile.paths",
                                   "Makefile.SpiNNFrontEndCommon"]:
@@ -65,7 +89,7 @@ class Convertor(object):
                     self.copy_if_newer(path)
 
     def convert_make(self, src_path):
-        destination = self._check_destination(src_path)
+        destination = self._newer_destination(src_path)
         if destination is None:
             return  # newer so no need to copy
         with open(src_path) as src_f:
@@ -78,30 +102,133 @@ class Convertor(object):
                         self._src_basename, self._dest_basename)
                     dest_f.write(line_dest)
 
-    def _start_log(self, text):
-        self._log_type = None
-        # checking stripped ignores comments and text elsewhere
+    def convert_c(self, src_path, file_name):
+        destination = self._any_destination(src_path)
+        with open(src_path) as src_f:
+            with open(destination, 'w') as dest_f:
+                dest_f.write(
+                    "// DO NOT EDIT! THIS FILE WAS GENERATED FROM {}\n\n"
+                    .format(src_path))
+                self._too_many_lines = 2
+                in_log = False
+                self._status = NORMAL_CODE
+                for line_num, text in enumerate(src_f):
+                    if self._too_many_lines <= 0:
+                        # Try to recover the lines added by do not edit
+                        check = text.strip()
+                        if len(check) == 0 or check == "*":
+                            self._too_many_lines -= 1
+                            continue
+                    if not self._process_line(
+                            text, dest_f, file_name, line_num):
+                        self._comment_start = 0
+                        self._process_chars(text, dest_f, file_name, line_num)
+
+    def _process_line(self, text, dest_f, file_name, line_num):
+        if self._status == COMMENT:
+            return self._process_line_in_comment(text, dest_f)
+
+        if "/*" in text:
+            return self._process_line_comment_start(
+                text, dest_f, file_name, line_num)
+
+        if self._status == IN_LOG:
+            return self._process_line_in_log(text, dest_f, file_name, line_num)
+
+        assert self._status == NORMAL_CODE
+        return self._process_line_normal_code(text, dest_f, file_name, line_num)
+
+    def _process_line_in_comment(self, text, dest_f):
+        if "*/" in text:
+            stripped = text.strip()
+            match = END_COMMENT_REGEX.search(stripped)
+            if match.end(0) == len(stripped):
+                # Ok Comment until end of line
+                dest_f.write(text)
+                self._status = NORMAL_CODE
+                return True
+            return False  # Stuff after comment so check by character
+        # Whole line in comment without end
+        dest_f.write(text)
+        return True
+
+    def _process_line_comment_start(self, text, dest_f, file_name, line_num):
+        """ Processes a known assumed to contain a /* but not know where
+
+        There is aslo the assumption that the start status is not COMMENT
+
+        :param text:
+        :param dest_f:
+        :param file_name:
+        :param line_num:
+        :return:
+        """
         stripped = text.strip()
-        if stripped.startswith("log_info"):
-            self._log_original = "log_info"
-            self._log_mini = "log_mini_info"
-        elif stripped.startswith("log_error"):
-            self._log_original = "log_error"
-            self._log_mini = "log_mini_error"
-        elif stripped.startswith("log_debug"):
-            self._log_original = "log_debug"
-            self._log_mini = "log_mini_debug"
-        elif stripped.startswith("log_warning"):
-            self._log_original = "log_warning"
-            self._log_mini = "log_mini_warning"
-        else:
+        if stripped.startswith("/*"):
+            self._previous_status = self._status
+            self._status = COMMENT
+            # Comment start so now check for comment end
+            return self._process_line(text, dest_f, file_name, line_num)
+        # Stuff before comment so check by char
+        return False  # More than one possible end so check by char
+
+    def _process_line_in_log(self, text, dest_f, file_name, line_num):
+        stripped = text.strip()
+        if stripped.startswith("//"):
+            # Just a comment line so write and move on
+            dest_f.write(text)
+            return True
+
+        match = LOG_END_REGEX.search(stripped)
+        if not match:
+            # No end found save log method and go got next line
+            self._log_full += stripped
+            self._log_lines += 1
+            return True
+        if match.end(0) < len(stripped):
+            # Stuff after the log_end so check by char
+            return False
+        self._log_full += stripped
+        self._log_lines += 1
+        self._write_log_method(dest_f, file_name, line_num)
+        self._status = NORMAL_CODE
+        return True
+
+    def _process_line_normal_code(self, text, dest_f, file_name, line_num):
+        # Fast check
+        if "log_" not in text:
+            # No log start found
+            dest_f.write(text)
+            return True
+
+        # Full slower check
+        stripped = text.strip()
+        match = LOG_START_REGEX.search(stripped)
+        if not match:
+            # No log start found after all
+            dest_f.write(text)
+            return True
+
+        if match.start() > 0:
+            if stripped.startswith("//"):
+                # Just a comment line so write and move on
+                dest_f.write(text)
+                return True
+            # Stuff before the log_start so check by character
             return False
 
-        self._log_start = text.index(self._log_original)
-        # Empty full and lines as end_log called on first line too
-        self._log_full = ""
+        if LOG_START_REGEX.search(stripped, 1):
+            # Second start found so check by character
+            return False
+
+        # remove whitespaces and save log command
+        self._log_start = text.index(match.group(0))
+        self._log = "".join(match.group(0).split())
+        self._status = IN_LOG
+        self._log_full = ""  # text saved in process_line_in_log
         self._log_lines = 0
-        return True
+        # Now check for the end of log command
+        return self._process_line_in_log(text, dest_f, file_name, line_num)
 
     def shorten(self, text):
         count = text.count("%")
@@ -117,72 +244,154 @@ class Convertor(object):
                 result += match
             return result + '", {}'.format(self._message_id)
 
-    def _end_log(self, text, line, fileName, dest_f):
-        self._log_full += text.strip()
-        self._log_lines += 1
-        # may need a more complex test but lets start easy
-        if ");" not in self._log_full:
-            return True  # Still inside a log
+    def _write_log_method(self, dest_f, file_name, line_num):
+        self._message_id += 1
+        self._log_full = self._log_full.replace('""', '')
+        match = STRING_REGEXP.search(self._log_full)
+        if match:
+            original = match.group(0)
         else:
-            self._log_full = self._log_full.replace('""','')
-            self._message_id += 1
-            original = STRING_REGEXP.search(self._log_full).group(0)
-            replacement = self.shorten(original)
+            pop
+        replacement = self.shorten(original)
+        self._log_full = self._log_full.replace(self._log, MINIS[self._log])\
+            .replace(original, replacement)
+        dest_f.write(" " * self._log_start)
+        dest_f.write(self._log_full)
+        if self._log_lines == 0:
+            # Writing an extra newline here so need to recover that ASAP
+            self._too_many_lines += 1
+        if (self._log_lines <= 1):
+            dest_f.write("  // ")
+            dest_f.write(original)
+            dest_f.write("\n")
+        else:
+            dest_f.write("\n")
             dest_f.write(" " * self._log_start)
-            dest_f.write(
-                self._log_full.replace(self._log_original, self._log_mini).
-                    replace(original, replacement))
-            if (self._log_lines == 1):
-                dest_f.write("  // ")
-                dest_f.write(original)
-                dest_f.write("\n")
-            else:
-                dest_f.write("\n")
-                dest_f.write(" " * self._log_start)
-                dest_f.write("// ")
-                dest_f.write(original)
-                dest_f.write("\n" * (self._log_lines - 1))
-            with open(self._messages, 'a') as mess_f:
-                mess_f.write("{}, {}, {}, {}, {}\n".format(
-                    self._message_id, self._log_original, line + 1, fileName,
-                    original))
-            return False  # No longer in log
+            dest_f.write("// ")
+            dest_f.write(original)
+            dest_f.write("\n" * (self._log_lines - 1))
+        with open(self._messages, 'a') as mess_f:
+            # Remove commas from filenames for csv format
+            # Remove start and end quotes from original
+            mess_f.write("{},{} ({}: {}): ,{}\n".format(
+                self._message_id, LEVELS[self._log],
+                file_name.replace(",", ";"), line_num + 1, original[1:-1]))
 
-    def convert_c(self, src_path, fileName):
-        destination = self._check_destination(src_path)
-        if destination is None:
-            return  # newer so no need to copy
-        with open(src_path) as src_f:
-            with open(destination, 'w') as dest_f:
-                dest_f.write(
-                    "// DO NOT EDIT! THIS FILE WAS GENERATED FROM {}\n\n"
-                    .format(src_path))
-                too_many_lines = 2
-                in_log = False
-                for line, text in enumerate(src_f):
-                    if too_many_lines:
-                        # Try to recover the lines added by do not edit
-                        check = text.strip()
-                        if len(check) == 0 or check == "*":
-                            too_many_lines -= 1
-                            continue
-                    if not in_log:
-                        in_log = self._start_log(text)
-                    if in_log:
-                        in_log = self._end_log(text, line, fileName, dest_f)
+    def _process_chars(self, text, dest_f, file_name, line_num):
+        pos = 0
+        write_flag = 0
+        while text[pos] != "\n":
+            if self._status == COMMENT:
+                if text[pos] == "*" and text[pos+1] == "/":
+                    dest_f.write(text[write_flag:pos + 2])
+                    pos = pos + 2
+                    write_flag = pos
+                    self._status = self._previous_status
+                else:
+                    pos = pos + 1
+
+            elif text[pos] == "/":
+                if text[pos] == "*":
+                    if self._status == IN_LOG:
+                        self._log_full += text[write_flag:pos].strip()
+                        # NO change to self._log_lines as newline not removed
                     else:
-                        dest_f.write(text)
+                        dest_f.write(text[write_flag:pos])
+                    write_flag = pos
+                    pos = pos + 2  # leave the /* as not written
+                    self._previous_status = IN_LOG
+                    self._status = COMMENT
+                if text[pos] == "/":
+                    if self._status == IN_LOG:
+                        self._log_full += text[write_flag:pos].strip()
+                        # NO change to self._log_lines as newline not removed
+                        dest_f.write(text[pos:])
+                    else:
+                        dest_f.write(text[write_flag:])
+                    return  # Finished line
 
-        self.copy_if_newer(src_path)
+            elif text[pos] == '"':
+                str_pos = pos + 1
+                while text[str_pos] != '"':
+                    if text[str_pos] == "\n":
+                        raise Exception(
+                            "Unclosed string literal in {} at line: {}".
+                                format(file_name, line_num))
+                    elif text[str_pos] == "\\":
+                        if text[str_pos+1] == "\n":
+                            raise Exception(
+                                "Unclosed string literal in {} at line: {}".
+                                    format(file_name, line_num))
+
+                        else:
+                            str_pos += 2  # ignore next char which may be a "
+                    else:
+                        str_pos += 1
+                pos = str_pos + 1
+                continue
+
+            elif self._status == IN_LOG:
+                if text[pos] == ")":
+                    match = LOG_END_REGEX.match(text[pos:])
+                    if match:
+                        # include the end
+                        pos = pos + len(match.group(0))
+                        self._log_full += text[write_flag:pos].strip()
+                        self._status = NORMAL_CODE
+                        if text[pos:].strip():  # Stuff left
+                            write_flag == pos
+                            # self._log_lines not changed as no newline
+                            self._write_log_method(dest_f, file_name, line_num)
+                        else:
+                            self._log_lines += 1
+                            self._write_log_method(dest_f, file_name, line_num)
+                            return  # Finished line
+                    else:
+                        # not the require ); so continue
+                        pos += 1
+                else:
+                    pos += 1
+
+            elif text[pos] == "l":
+                match = LOG_START_REGEX.match(text[pos:])
+                if match:
+                    self._log_start = text.index(match.group(0))
+                    self._log = "".join(match.group(0).split())
+                    self._status = IN_LOG
+                    self._log_full = ""  # text saved after while
+                    self._log_lines = 0
+                    dest_f.write(text[write_flag:pos])
+                    # written up to not including log_start
+                    write_flag = pos
+                    # skip to end of log start
+                    pos = pos + len(match.group(0))
+                    self._status = self._previous_status
+                else:
+                    # Not a log start after all so treat as normal test
+                    pos += 1
+
+            else:
+                pos += 1
+
+        # after while text[pos] != "\n"
+        if self._status == IN_LOG:
+            self._log_full += text[write_flag:].strip()
+            self._log_lines += 1
+        else:
+            dest_f.write(text[write_flag:])
 
     def copy_if_newer(self, src_path):
-        destination = self._check_destination(src_path)
+        destination = self._newer_destination(src_path)
         if destination is None:
             return  # newer so no need to copy
         shutil.copy2(src_path, destination)
 
-    def _check_destination(self, path):
+    def _any_destination(self, path):
         destination = path.replace(self._src_basename, self._dest_basename)
+        return destination
+
+    def _newer_destination(self, path):
+        destination = self._any_destination(path)
         if not os.path.exists(destination):
             return destination
         # need to floor the time as some copies ignore the partial second
@@ -200,7 +409,6 @@ class Convertor(object):
             os.mkdir(destination, 0755)
         if not os.path.exists(destination):
             raise Exception("mkdir failed {}".format(destination))
-
 
 def convert(src, modified, messages):
     convertor = Convertor(src, modified, messages)

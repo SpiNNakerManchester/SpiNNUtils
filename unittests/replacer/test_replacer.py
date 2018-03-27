@@ -12,6 +12,11 @@ class TestReplacer(unittest.TestCase):
         convert_dir = os.path.dirname(os.path.abspath(__file__))
         replacer = Replacer(convert_dir)
 
-    def test_replace(self):
-        assert "[DEBUG] (neuron.c: 140): -------------------------------------\n" == \
-               replacer.replace("9001")
+    def test_replace_simple(self):
+        replacement = replacer.replace("9001")
+        assert "[INFO] (weird;file.c: 9): this is ok\n" == replacement
+
+    def test_replace_two(self):
+        replacement = replacer.replace("9007 123 456")
+        assert "[INFO] (weird;file.c: 29): \\t back off = 123, time between " \
+            "spikes 456\n" == replacement

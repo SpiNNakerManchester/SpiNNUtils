@@ -30,14 +30,13 @@ class Replacer(object):
         if not parts[0] in self._messages:
             return short
         (id, preface, original) = self._messages[parts[0]]
+        replaced = original
         if len(parts) > 1:
             matches = FORMATEXP.findall(original)
             if len(matches) != len(parts) - 1:
                 return short  # wrong number of elemments so not short after all
-            for match in matches:
-                return match.group(0)
-        else:
-            replaced = original
+            for i in range(len(matches)):
+                replaced = replaced.replace(matches[i], parts[i+1], 1)
         return preface + replaced
 
 

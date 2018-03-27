@@ -69,7 +69,6 @@ class Convertor(object):
             for file_name in fileList:
                 _, extension = os.path.splitext(file_name)
                 path = os.path.join(dirName, file_name)
-                print (path)
                 if file_name in ["Makefile"]:
                     self.convert_make(path)
                 elif extension in [".mk"]:
@@ -461,11 +460,7 @@ def convert(src, modified, messages):
 
 
 if __name__ == '__main__':
-    print (sys.argv)
     src = os.path.abspath(sys.argv[1])
-    print ("src: {}".format(src))
     dest = os.path.abspath(sys.argv[2])
-    print ("dest: {}".format(dest))
     start = int(sys.argv[3])
-    print ("start: {}".format(start))
     convert(src, dest, start)

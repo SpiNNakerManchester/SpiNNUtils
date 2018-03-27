@@ -1,23 +1,20 @@
 Id,Preface,Original
-,,This list was generated 2018-03-22 10:50:19.332744
+,,This list was generated 2018-03-27 11:04:57.615000
 
-9001,[DEBUG] (neuron.c: 140): ,-------------------------------------\n
-9002,[DEBUG] (neuron.c: 144): ,-------------------------------------\n
-9003,[DEBUG] (neuron.c: 155): ,-------------------------------------\n
-9004,[DEBUG] (neuron.c: 159): ,-------------------------------------\n
-9005,[INFO] (neuron.c: 216): ,loading parameters
-9006,[INFO] (neuron.c: 265): ,neuron_reloading_neuron_parameters: starting
-9007,[INFO] (neuron.c: 284): ,neuron_initialise: starting
-9008,[INFO] (neuron.c: 290): ,\t back off = %u, time between spikes %u
-9009,[INFO] (neuron.c: 300): ,\tThis model is not expecting to transmit as it has no key
-9010,[INFO] (neuron.c: 302): ,\tThis model is expected to transmit with key = %08x
-9011,[INFO] (neuron.c: 317): ,\t neurons = %u, spike buffer size = %u, params size = %u,input type size = %u, threshold size = %u
-9012,[ERROR] (neuron.c: 325): ,Unable to allocate global record parameters- Out of DTCM
-9013,[ERROR] (neuron.c: 335): ,Unable to allocate neuron array - Out of DTCM
-9014,[ERROR] (neuron.c: 346): ,Unable to allocate global neuron parameters- Out of DTCM
-9015,[ERROR] (neuron.c: 355): ,Unable to allocate neuron array - Out of DTCM
-9016,[ERROR] (neuron.c: 365): ,Unable to allocate input type array - Out of DTCM
-9017,[ERROR] (neuron.c: 376): ,Unable to allocate additional input array - Out of DTCM
-9018,[ERROR] (neuron.c: 386): ,Unable to allocate threshold type array - Out of DTCM
-9019,[INFO] (neuron.c: 458): ,writing parameters
-9020,[DEBUG] (neuron.c: 628): ,the neuron %d has been determined to not spike
+9001,[INFO] (weird;file.c: 9): ,this is ok
+9002,[INFO] (weird;file.c: 14): ,this is fine on two lines
+9003,[INFO] (weird;file.c: 18): ,before comment after comment
+9004,[INFO] (weird;file.c: 20): ,One line commted
+9005,[INFO] (weird;file.c: 22): ,this is for alan); so there!
+9006,[INFO] (weird;file.c: 25): ,Test %u for alan); so there!
+9007,[INFO] (weird;file.c: 29): ,\t back off = %u, time between spikes %u
+9008,[DEBUG] (weird;file.c: 33): ,the neuron %d has been determined to not spike
+9009,[WARNING] (weird;file.c: 37): ,Inside a loop
+9010,[INFO] (weird;file.c: 39): ,then a space
+9011,[INFO] (weird;file.c: 42): ,then a newline simple
+9012,[INFO] (weird;file.c: 45): ,then a newline plus
+9013,[INFO] (weird;file.c: 47): ,first
+9014,[INFO] (weird;file.c: 47): ,second %u
+9015,[INFO] (weird;file.c: 50): ,then a backslash comment on a middle line
+9016,[INFO] (weird;file.c: 54): ,then a standard comment on a middle line
+9017,[INFO] (weird;file.c: 56): ,comment before

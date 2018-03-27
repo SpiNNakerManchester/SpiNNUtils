@@ -49,8 +49,8 @@ class Convertor(object):
         if src_root != dest_root:
             # They must be siblings due to text manipulation in makefiles
             raise Exception("src and destination must be siblings")
-        self._src_basename = "/" + src_basename + "/"
-        self._dest_basename = "/" + dest_basename + "/"
+        self._src_basename = src_basename
+        self._dest_basename = dest_basename
         self._mkdir(self._dest)
         if convertor_dir is None:
             convertor_dir = os.path.dirname(os.path.abspath(__file__))
@@ -99,8 +99,10 @@ class Convertor(object):
                     "# DO NOT EDIT! THIS FILE WAS GENERATED FROM {}\n\n"
                     .format(src_path))
                 for line in src_f:
+                    # Here we need the linux seperator even on windows
                     line_dest = line.replace(
-                        self._src_basename, self._dest_basename)
+                        "/" + self._src_basename + "/",
+                        "/" + self._dest_basename + "/")
                     dest_f.write(line_dest)
 
     def convert_c(self, src_path, file_name):
@@ -427,7 +429,10 @@ class Convertor(object):
         shutil.copy2(src_path, destination)
 
     def _any_destination(self, path):
-        destination = path.replace(self._src_basename, self._dest_basename)
+        # Here we need the local seperator
+        destination = path.replace(
+            os.path.sep + self._src_basename + os.path.sep,
+            os.path.sep + self._dest_basename + os.path.sep)
         return destination
 
     def _newer_destination(self, path):
@@ -444,7 +449,7 @@ class Convertor(object):
             return None
 
     def _mkdir(self, path):
-        destination = path.replace(self._src_basename, self._dest_basename)
+        destination = self._any_destination(path)
         if not os.path.exists(destination):
             os.mkdir(destination, 0755)
         if not os.path.exists(destination):

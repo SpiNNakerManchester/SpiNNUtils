@@ -3,21 +3,23 @@ import unittest
 
 from spinn_utilities.make_tools.file_convertor import FileConvertor
 
-src = os.path.join("mock_src", "weird,file.c")
-dest = os.path.join("modified_src", "weird,file.c")
-csv = "weird,file.csv"
+ranged_file = "local_ranges.txt"
 
 
 class TestConvertor(unittest.TestCase):
 
     @staticmethod
-    def do_convert():
-        FileConvertor.convert(src, dest, csv, 9000)
+    def do_convert(file_name):
+        src = os.path.join("mock_src", file_name)
+        dest = os.path.join("modified_src", file_name)
+        FileConvertor.convert(src, dest, ranged_file, 2000)
 
     def test_convert(self):
-        if os.path.exists(csv):
-            os.remove(csv)
-        self.do_convert()
+        file_name = "weird,file.c"
+        self.do_convert(file_name)
+        src = os.path.join("mock_src", file_name)
+        dest = os.path.join("modified_src", file_name)
+        csv = dest + ".csv"
         src_lines = sum(1 for line in open(src))
         modified_lines = sum(1 for line in open(dest))
         self.assertEquals(src_lines, modified_lines)
@@ -41,3 +43,11 @@ class TestConvertor(unittest.TestCase):
         assert("then a backslash comment on a middle line" in data)
         assert("then a standard comment on a middle line" in data)
         assert("comment before" in data)
+
+    def test_multiple(self):
+        if os.path.exists(ranged_file):
+            os.remove(ranged_file)
+        self.do_convert("weird,file.c")
+        self.do_convert("common-typedefs.h")
+        range_lines = sum(1 for line in open(ranged_file))
+        self.assertEquals (3, range_lines)

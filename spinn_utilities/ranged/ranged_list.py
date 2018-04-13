@@ -3,16 +3,19 @@ from spinn_utilities.ranged.abstract_list import AbstractList
 from spinn_utilities.overrides import overrides
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
+from spinn_utilities.helpful_functions import is_singleton
+from past.builtins import range, xrange
+from six import raise_from
 
 
 def function_iterator(function, size, ids=None):
-    """ Converts a function into an iterator based on size or ids
+    """ Converts a function into an iterator based on size or IDs
 
     This so that the function can be used to create a list as in::
 
         list(function_iterator(lambda x: x * 2 , 3, ids=[2, 4, 6)
 
-    :param function: A function with one integer paramter that returns a value
+    :param function: A function with one integer parameter that returns a value
     :param size: The number of elements to put in the list. If used the
         function will be called with xrange(size). Ignored if ids provided
     :param ids: A list of IDs to call the function for or None to use the size.
@@ -38,7 +41,7 @@ class RangedList(AbstractList):
             This is used only for better Exception messages
         """
         super(RangedList, self).__init__(size=size, key=key)
-        if not hasattr(value, '__iter__'):
+        if not self.is_list(value, size):
             self._default = value
         self.set_value(value)
 
@@ -143,9 +146,9 @@ class RangedList(AbstractList):
 
             # Find the first range within the slice
             ranges = self.iter_ranges()
-            (start, stop, value) = ranges.next()
+            (start, stop, value) = next(ranges)
             while stop < slice_start:
-                (start, stop, value) = ranges.next()
+                (start, stop, value) = next(ranges)
 
             # Continue until outside of the slice
             while start < slice_stop:
@@ -153,7 +156,7 @@ class RangedList(AbstractList):
                 end_point = min(stop, slice_stop)
                 for _ in xrange(end_point - first):
                     yield value
-                (start, stop, value) = ranges.next()
+                (start, stop, value) = next(ranges)
 
         # If non-range-based, just go through the values
         else:
@@ -227,7 +230,7 @@ class RangedList(AbstractList):
         # Assume any iterable is a list
         if callable(value):
             return True
-        return hasattr(value, '__iter__')
+        return not is_singleton(value)
 
     @staticmethod
     def as_list(value, size, ids=None):
@@ -486,5 +489,5 @@ class RangedList(AbstractList):
         """
         try:
             return self._default
-        except AttributeError:
-            raise Exception("Default value not set.")
+        except AttributeError as e:
+            raise_from(Exception("Default value not set."), e)

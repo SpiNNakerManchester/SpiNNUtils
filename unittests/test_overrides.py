@@ -1,3 +1,4 @@
+# pylint: disable=unused-variable, arguments-differ, signature-differs
 from spinn_utilities.overrides import overrides
 import pytest
 
@@ -67,7 +68,7 @@ def test_removes_param():
             @overrides(Base.foo)
             def foo(self, x, y):
                 return [y, x]
-    assert e.value.message == WRONG_ARGS.format(3)
+    assert str(e.value) == WRONG_ARGS.format(3)
 
 
 def test_adds_param():
@@ -76,7 +77,7 @@ def test_adds_param():
             @overrides(Base.foo)
             def foo(self, x, y, z, w):
                 return [w, z, y, x]
-    assert e.value.message == WRONG_ARGS.format(5)
+    assert str(e.value) == WRONG_ARGS.format(5)
 
 
 def test_adds_expected_param():
@@ -93,7 +94,7 @@ def test_renames_param():
             @overrides(Base.foo)
             def foo(self, x, y, w):
                 return [w, y, x]
-    assert e.value.message == "Missing argument z"
+    assert str(e.value) == "Missing argument z"
 
 
 def test_renames_param_expected():
@@ -102,7 +103,7 @@ def test_renames_param_expected():
             @overrides(Base.foo, additional_arguments=["w"])
             def foo(self, x, y, w):
                 return [w, y, x]
-    assert e.value.message == WRONG_ARGS.format(4)
+    assert str(e.value) == WRONG_ARGS.format(4)
     # TODO: Fix the AWFUL error message in this case!
 
 
@@ -120,7 +121,7 @@ def test_undefaults_super_param():
             @overrides(Base.foodef)
             def foodef(self, x, y, z):
                 return [z, y, x]
-    assert e.value.message == BAD_DEFS
+    assert str(e.value) == BAD_DEFS
 
 
 def test_defaults_super_param():
@@ -129,7 +130,7 @@ def test_defaults_super_param():
             @overrides(Base.foodef)
             def foodef(self, x, y=1, z=2):
                 return [z, y, x]
-    assert e.value.message == BAD_DEFS
+    assert str(e.value) == BAD_DEFS
     # TODO: Should this case fail at all?
 
 
@@ -147,7 +148,7 @@ def test_defaults_extra_param():
             @overrides(Base.foodef, additional_arguments=['pdq'])
             def foodef(self, x, y, z=1, pdq=2):
                 return [z, y, x, pdq]
-    assert e.value.message == BAD_DEFS
+    assert str(e.value) == BAD_DEFS
 
 
 def test_defaults_super_param_no_super_defaults():
@@ -156,7 +157,7 @@ def test_defaults_super_param_no_super_defaults():
             @overrides(Base.foo)
             def foo(self, x, y, z=7):
                 return [z, y, x]
-    assert e.value.message == BAD_DEFS
+    assert str(e.value) == BAD_DEFS
     # TODO: Should this case fail at all?
 
 
@@ -166,7 +167,7 @@ def test_crazy_extends():
             @overrides(Base.foo)
             def bar(self, x, y, z):
                 return [z, y, x]
-    assert e.value.message == \
+    assert str(e.value) == \
         "Super class method name foo does not match bar. Ensure override is "\
         "the last decorator before the method declaration"
 
@@ -178,7 +179,7 @@ def test_overrides_property():
             @property
             def boo(self):
                 return 1513
-    assert e.value.message == \
+    assert str(e.value) == \
         "Please ensure that the override decorator is the last decorator "\
         "before the method declaration"
 

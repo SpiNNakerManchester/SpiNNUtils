@@ -1,16 +1,23 @@
+from __future__ import print_function
+
+_WRITE_LOGS_TO_STDOUT = True
+
+
 def _assert_logs_contains(level, log_records, submessage):
     for record in log_records:
         if record.levelname == level and submessage in record.getMessage():
             return
-    for record in log_records:
-        print record
+    if _WRITE_LOGS_TO_STDOUT:  # pragma: no cover
+        for record in log_records:
+            print(record)
     raise AssertionError(
         "\"{}\" not found in any {} logs".format(submessage, level))
 
 
 def _assert_logs_not_contains(level, log_records, submessage):
     for record in log_records:
-        print record
+        if _WRITE_LOGS_TO_STDOUT:  # pragma: no cover
+            print(record)
         if record.levelname == level and submessage in record.getMessage():
             raise AssertionError(
                 "\"{}\" found in any {} logs".format(submessage, level))
@@ -34,14 +41,16 @@ def assert_logs_contains_once(level, log_records, message):
     for record in log_records:
         if record.levelname == level and message == record.getMessage():
             if found:
-                for a_record in log_records:
-                    print a_record
+                if _WRITE_LOGS_TO_STDOUT:  # pragma: no cover
+                    for a_record in log_records:
+                        print(a_record)
                 raise AssertionError(
                     "\"{}\" found twice in  {} logs".format(message, level))
             found = True
     if not found:
-        for record in log_records:
-            print record
+        if _WRITE_LOGS_TO_STDOUT:  # pragma: no cover
+            for record in log_records:
+                print(record)
         raise AssertionError(
             "\"{}\" not found in any {} logs".format(message, level))
 

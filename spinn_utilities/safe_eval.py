@@ -6,7 +6,7 @@ class SafeEval(object):
 
         >>> import math
         >>> def evil_func(x):
-               print "HAHA!"
+               print("HAHA!")
                return x/0.0
 
         >>> eval_safely = SafeEval(math)

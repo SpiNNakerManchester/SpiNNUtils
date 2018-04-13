@@ -1,3 +1,4 @@
+# pylint: disable=redefined-outer-name, unused-argument
 import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture
 import spinn_utilities.conf_loader as conf_loader
@@ -7,7 +8,7 @@ from spinn_utilities.configs.no_config_found_exception import \
     NoConfigFoundException
 import spinn_utilities.testing.log_checker as log_checker
 
-import ConfigParser
+from six.moves import configparser
 import os
 import pytest
 
@@ -27,7 +28,7 @@ NOTTHEREPATH = os.path.join(os.path.expanduser("~"), ".{}".format(NOTTHERE))
 def not_there():
     if os.path.exists(NOTTHEREPATH):
         # Check existing is a config from previsous test run
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(NOTTHEREPATH)
         # Remove it
         os.remove(NOTTHEREPATH)
@@ -137,9 +138,9 @@ def test_new_section(tmpdir, default_config):
 
 def test_use_one_default(not_there):
     with pytest.raises(NoConfigFoundException):
-        config = conf_loader.load_config(NOTTHERE, [CFGPATH])
+        conf_loader.load_config(NOTTHERE, [CFGPATH])
     # Load the now created file
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read(NOTTHEREPATH)
     assert config is not None
     assert config.sections() == ["sect"]
@@ -147,11 +148,11 @@ def test_use_one_default(not_there):
     assert config.get("sect", "foobob") == "bar"
 
 
-def test_use_two_default(tmpdir, default_config, not_there):
+def test_use_two_default(tmpdir, default_config, not_there):  # @UnusedVariable
     with pytest.raises(NoConfigFoundException):
-        config = conf_loader.load_config(NOTTHERE, [ONEPATH, TWOPATH])
+        conf_loader.load_config(NOTTHERE, [ONEPATH, TWOPATH])
     # Load the now created file
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read(NOTTHEREPATH)
     assert config is not None
     assert config.sections() == ["sect", "extra"]

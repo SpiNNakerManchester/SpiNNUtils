@@ -49,5 +49,5 @@ class SocketAddress(object):
 
     def __repr__(self):
         return "SocketAddress({}, {}, {})".format(
-            self._notify_host_name.__repr__(), self._notify_port_no,
+            repr(self._notify_host_name), self._notify_port_no,
             self._listen_port)

@@ -1,4 +1,4 @@
-from abstract_parent import AbstractParent
+from .abstract_parent import AbstractParent
 
 
 class AbstractGrandParent (AbstractParent):

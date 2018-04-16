@@ -1,11 +1,10 @@
 # pylint: disable=too-many-arguments
+from __future__ import print_function
 import appdirs
 import collections
-import ConfigParser
+from six.moves import configparser
 import logging
 import os
-import string
-import sys
 
 from spinn_utilities import log
 from spinn_utilities.configs import \
@@ -62,7 +61,7 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
           "version = None\n" \
           "***********************************************************\n" \
           "".format(config_locations, home_cfg)
-    print msg
+    print(msg)
     return NoConfigFoundException(msg)
 
 
@@ -82,25 +81,26 @@ def logging_parser(config):
         for handler in logging.root.handlers:
             handler.addFilter(log.ConfiguredFilter(config))
             handler.setFormatter(log.ConfiguredFormatter(config))
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         pass
 
 
 def _outdated_config_section(validation_config, defaults, config, skip,
                              user_sections, section):
-    """Helper for :py:func:_outdated_config"""
+    """Helper for :py:func:_outdated_config
+    """
     if section in user_sections:
-        print "Section [{}] should be kept as these need to be set " \
-              "by the user".format(section)
+        print("Section [{}] should be kept as these need to be set "
+              "by the user".format(section))
         return
     elif section not in defaults.sections():
         if validation_config.has_section("DeadSections") and \
                 section in validation_config.options("DeadSections"):
-            print "Remove the Section [{}]".format(section)
-            print "\tThat section is no longer used."
+            print("Remove the Section [{}]".format(section))
+            print("\tThat section is no longer used.")
         else:
-            print "Section [{}] does not appear in the defaults so is " \
-                  "unchecked".format(section)
+            print("Section [{}] does not appear in the defaults so is "
+                  "unchecked".format(section))
         return
 
     different = []
@@ -110,7 +110,7 @@ def _outdated_config_section(validation_config, defaults, config, skip,
         if option in skip[section]:
             continue
         if not defaults.has_option(section, option):
-            print "Unexpected Option [{}] {}".format(section, option)
+            print("Unexpected Option [{}] {}".format(section, option))
             all_default = False
         elif config.get(section, option) == defaults.get(section, option):
             sames.append(option)
@@ -119,20 +119,20 @@ def _outdated_config_section(validation_config, defaults, config, skip,
 
     if not different:
         if all_default:
-            print "Whole section [{}] same as default".format(section)
-            print "\tIt can be safely removed"
+            print("Whole section [{}] same as default".format(section))
+            print("\tIt can be safely removed")
     elif not sames:
-        print "In Section [{}] all options changed".format(section)
-        print "\tThis section should be kept"
+        print("In Section [{}] all options changed".format(section))
+        print("\tThis section should be kept")
     elif len(different) < len(sames):
-        print "In Section [{}] only options changed are:".format(section)
-        print "\t{}".format(different)
-        print "\tAll other values can be safely removed"
+        print("In Section [{}] only options changed are:".format(section))
+        print("\t{}".format(different))
+        print("\tAll other values can be safely removed")
     else:
-        print "In Section [{}] options with default values are:".format(
-            section)
-        print "\t{}".format(sames)
-        print "\tThese can be safely removed"
+        print("In Section [{}] options with default values are:".format(
+            section))
+        print("\t{}".format(sames))
+        print("\tThese can be safely removed")
 
 
 def _outdated_config(cfg_file, validation_cfg, default_cfg):
@@ -166,7 +166,7 @@ def _outdated_config(cfg_file, validation_cfg, default_cfg):
     """
 
     try:
-        print "Your config file {} is outdated.".format(cfg_file)
+        print("Your config file {} is outdated.".format(cfg_file))
         config = CamelCaseConfigParser()
         config.read(cfg_file)
 
@@ -177,12 +177,11 @@ def _outdated_config(cfg_file, validation_cfg, default_cfg):
                 sect, opt = key.split("|")
                 if config.has_option(sect, opt) and \
                         dead_value in config.get(sect, opt):
-                    print "Error in Section [{}] the opt {}" \
-                          "".format(sect, opt)
-                    print "\t The value below is no longer supported:"
-                    print "\t{}".format(dead_value)
-                    print "\tUnless you specifically need a none " \
-                          "default value remove it"
+                    print("Error in Section [{}] the opt {}".format(sect, opt))
+                    print("\t The value below is no longer supported:")
+                    print("\t{}".format(dead_value))
+                    print("\tUnless you specifically need a none "
+                          "default value remove it")
                     seen[sect].add(opt)
 
         if validation_cfg.has_section("UserSections"):
@@ -193,10 +192,10 @@ def _outdated_config(cfg_file, validation_cfg, default_cfg):
         for sect in config.sections():
             _outdated_config_section(validation_cfg, default_cfg, config,
                                      seen, user_sections, sect)
-        print "Option names are case and underscore insensitive. " \
-              "So may show in your config file with capitals or underscores."
-    except Exception:
-        print "Unexpected error:", sys.exc_info()[0]
+        print("Option names are case and underscore insensitive. "
+              "So may show in your config file with capitals or underscores.")
+    except Exception as e:  # pylint: disable=broad-except
+        print("Unexpected error:", e)
     return UnexpectedConfigException(
         "Config file {} is outdated.".format(cfg_file))
 
@@ -341,7 +340,7 @@ def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
             parser(cfg)
 
     # Log which cfg files we read
-    print cfg.read_files
-    logger.info("Read cfg files: %s", string.join(cfg.read_files, ", "))
+    print(cfg.read_files)
+    logger.info("Read cfg files: %s", ", ".join(cfg.read_files))
 
     return cfg

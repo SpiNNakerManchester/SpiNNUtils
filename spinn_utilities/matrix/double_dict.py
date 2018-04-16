@@ -1,5 +1,6 @@
 from spinn_utilities.matrix.x_view import XView
 from spinn_utilities.matrix.y_view import YView
+from six import raise_from
 
 
 class DoubleDict(object):
@@ -38,6 +39,6 @@ class DoubleDict(object):
                     self._matrix.set_data(x=x, y=key, value=value[x])
             else:
                 raise KeyError("Key {} has an unexpected type".format(key))
-        except AttributeError:
-            raise ValueError("Value must of type dict. Or at least "
-                             "implement keys() and __getitem__")
+        except AttributeError as e:
+            raise_from(ValueError("Value must of type dict. Or at least "
+                                  "implement keys() and __getitem__"), e)

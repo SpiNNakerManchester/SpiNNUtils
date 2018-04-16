@@ -18,6 +18,17 @@ class MockLog(object):
         self.last_args = args
         self.last_kwargs = kwargs
 
+    def getEffectiveLevel(self):
+        return logging.INFO
+
+    @property
+    def manager(self):
+        return self
+
+    @property
+    def disable(self):
+        return logging.DEBUG
+
 
 def test_logger_adapter():
     log = MockLog()
@@ -49,10 +60,11 @@ def test_logger_exception():
 
     try:
         raise Exn("hi")
-    except Exn as e:
+    except Exn as ex:
+        e = ex
         logger.exception("ho")
 
-    assert e.message == "hi"
+    assert str(e) == "hi"
     assert str(log.last_msg) == "ho"
     assert "exc_info" in log.last_kwargs
     assert log.last_level == logging.ERROR

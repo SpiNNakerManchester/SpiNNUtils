@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import sys
 import traceback
@@ -20,19 +21,19 @@ def all_modules(directory, prefix, remove_pyc_files=False):
             results.add(prefix)
         elif module == "__init__.pyc":
             results.add(prefix)
-            if remove_pyc_files:
+            if remove_pyc_files:  # pragma: no cover
                 full_path = os.path.join(directory, module)
-                print "Deleting: " + full_path
+                print("Deleting: " + full_path)
                 os.remove(full_path)
         elif module[-3:] == ".py":
             results.add(prefix + "." + module[:-3])
         elif module[-4:] == ".pyc":
             results.add(prefix + "." + module[:-4])
-            if remove_pyc_files:
+            if remove_pyc_files:  # pragma: no cover
                 full_path = os.path.join(directory, module)
-                print "Deleting: " + full_path
+                print("Deleting: " + full_path)
                 os.remove(full_path)
-        else:
+        elif module != "__pycache__":
             full_path = os.path.join(directory, module)
             if os.path.isdir(full_path):
                 results.update(all_modules(full_path, prefix + "." + module,
@@ -63,9 +64,9 @@ def load_modules(
     errors = list()
     for module in modules:
         if module in exclusions:
-            print "SKIPPING " + module
+            print("SKIPPING " + module)
             continue
-        print module
+        print(module)
         try:
             __import__(module)
         except Exception:
@@ -75,12 +76,12 @@ def load_modules(
                 raise
 
     for module, (exc_type, exc_value, exc_traceback) in errors:
-        print "Error importing {}:".format(module)
+        print("Error importing {}:".format(module))
         for line in traceback.format_exception(
                 exc_type, exc_value, exc_traceback):
             for line_line in line.split("\n"):
                 if line_line:
-                    print "  ", line_line.rstrip()
+                    print("  ", line_line.rstrip())
     if errors:
         raise Exception("Error when importing, starting at {}".format(prefix))
 
@@ -104,5 +105,5 @@ def load_module(
     load_modules(directory, name, remove_pyc_files, exclusions, gather_errors)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     load_module("spinn_utilities", True)

@@ -67,7 +67,8 @@ class OrderedSet(collections.MutableSet):
             self._end.prev_node = new_node
 
     def update(self, iterable):
-        map(self.add, iterable)
+        for item in iterable:
+            self.add(item)
 
     def discard(self, value):
         if value in self._map:

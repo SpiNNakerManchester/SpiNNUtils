@@ -1,4 +1,5 @@
 import os
+import sys
 import unittest
 
 from spinn_utilities.make_tools.convertor import Convertor
@@ -6,6 +7,11 @@ import spinn_utilities.make_tools.convertor as convertor
 
 
 class TestConvertor(unittest.TestCase):
+
+    def setUp(self):
+        class_file = sys.modules[self.__module__].__file__
+        path = os.path.dirname(os.path.abspath(class_file))
+        os.chdir(path)
 
     def test_convert(self):
         src = "mock_src"

@@ -1,4 +1,5 @@
 import os
+import sys
 import unittest
 
 from spinn_utilities.make_tools.file_convertor import FileConvertor
@@ -7,6 +8,11 @@ ranged_file = "local_ranges.txt"
 
 
 class TestConvertor(unittest.TestCase):
+
+    def setUp(self):
+        class_file = sys.modules[self.__module__].__file__
+        path = os.path.dirname(os.path.abspath(class_file))
+        os.chdir(path)
 
     def test_convert(self):
         file_name = "weird,file.c"

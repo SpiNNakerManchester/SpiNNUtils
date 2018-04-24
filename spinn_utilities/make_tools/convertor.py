@@ -39,13 +39,17 @@ class Convertor(object):
         message_id = self._get_id()
         for dirName, subdirList, fileList in os.walk(self._src):
             self._mkdir(dirName)
-            for self._file_name in fileList:
-                _, extension = os.path.splitext(self._file_name)
-                source = os.path.join(dirName, self._file_name)
+            for file_name in fileList:
+                _, extension = os.path.splitext(file_name)
+                source = os.path.join(dirName, file_name)
                 if extension in [".c", ".cpp", ".h"]:
                     destination = self._any_destination(source)
                     message_id = FileConvertor.convert(
                         source, destination, self._dict, message_id)
+                elif file_name in ["common.mk", "Makefile.common",
+                                   "paths.mk", "Makefile.paths",
+                                   "neural_build.mk", "Makefile.neural_build"]:
+                    pass
                 else:
                     print ("Unexpected file {}".format(source))
 

@@ -67,7 +67,7 @@ class FileConvertor(object):
                     if not self._process_line(dest_f):
                         self._comment_start = 0
                         self._process_chars(dest_f)
-        print (self._dest)
+        # print (self._dest)
         return self._message_id
 
     def _process_line(self, dest_f):

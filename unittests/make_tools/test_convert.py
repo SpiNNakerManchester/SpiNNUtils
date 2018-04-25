@@ -12,6 +12,7 @@ class TestConvertor(unittest.TestCase):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
+        convertor.RANGE_DIR = ""
 
     def test_convert(self):
         src = "mock_src"
@@ -23,7 +24,6 @@ class TestConvertor(unittest.TestCase):
         src = "mock_src"
         dest = "modified_src"
         dict = os.path.join("modified_src", "test.dict")
-        convertor.RANGE_FILE = "test_ranges.txt"
         Convertor.convert(src, dest, dict, "test_one")
         dict = os.path.join("modified_src", "test2.dict")
         Convertor.convert(src, dest, dict, "test_two")

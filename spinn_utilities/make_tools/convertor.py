@@ -5,13 +5,15 @@ import shutil
 import sys
 
 RANGE_DIR = os.path.join(os.environ['SPINN_DIRS'], "lib")
+COMMON_DIR = os.path.dirname(os.path.commonprefix(
+    [os.environ['SPINN_DIRS'], os.environ['NEURAL_MODELLING_DIRS']]))
 
 
 class Convertor(object):
     # __slots__ = [
     #    "_dest", "_dest_basename", "_src", "_src_basename"]
 
-    def __init__(self, src, dest, dict, lib=None):
+    def __init__(self, src, dest, dict):
         self._src = os.path.abspath(src)
         if not os.path.exists(self._src):
             raise Exception(
@@ -29,7 +31,6 @@ class Convertor(object):
         self._src_basename = src_basename
         self._dest_basename = dest_basename
         self._dict = os.path.abspath(dict)
-        self._lib = lib
 
     def run(self):
         self._mkdir(self._dest)
@@ -57,14 +58,11 @@ class Convertor(object):
         RANGE_PER_LIB = 1000
         MAX_COMMON_LIBS = 10
 
-        if self._lib:
-            rangefile = os.path.join(RANGE_DIR, "common_log.ranges")
-            range_start = 0
-            filename = self._lib
-        else:
-            rangefile = os.path.join(RANGE_DIR, "local_log.ranges")
-            range_start = RANGE_PER_LIB * MAX_COMMON_LIBS
-            filename = self._root
+        rangefile = os.path.join(RANGE_DIR, "log.ranges")
+        range_start = 0
+        filename = self._dest
+        if filename.startswith(COMMON_DIR):
+            filename = filename[len(COMMON_DIR)+1:]
 
         # If the range_file does not exist create it and use range_start
         if not os.path.exists(rangefile):
@@ -128,8 +126,8 @@ class Convertor(object):
             raise Exception("mkdir failed {}".format(destination))
 
     @staticmethod
-    def convert(src, dest, dict, lib=None):
-        convertor = Convertor(src, dest, dict, lib)
+    def convert(src, dest, dict):
+        convertor = Convertor(src, dest, dict)
         convertor.run()
 
 
@@ -137,8 +135,4 @@ if __name__ == '__main__':
     src = sys.argv[1]
     dest = sys.argv[2]
     dict = sys.argv[3]
-    if len(sys.argv) > 4:
-        lib = sys.argv[4]
-    else:
-        lib = None
-    Convertor.convert(src, dest, dict, lib)
+    Convertor.convert(src, dest, dict)

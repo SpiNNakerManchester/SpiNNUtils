@@ -219,7 +219,7 @@ class FileConvertor(object):
         self._log_full = self._log_full.replace('""', '')
         try:
             original = STRING_REGEXP.search(self._log_full).group(0)
-        except:
+        except Exception:
             raise Exception("Unexpected line {} at {} in {}".format(
                 self._log_full, self._line_num, self._src))
         replacement = self.shorten(original)
@@ -253,7 +253,6 @@ class FileConvertor(object):
         pos = 0
         write_flag = 0
         while self._text[pos] != "\n":
-            a = self._text[pos]
             if self._status == COMMENT:
                 if self._text[pos] == "*" and self._text[pos+1] == "/":
                     dest_f.write(self._text[write_flag:pos + 2])
@@ -291,12 +290,12 @@ class FileConvertor(object):
                     if self._text[str_pos] == "\n":
                         raise Exception(
                             "Unclosed string literal in {} at line: {}".
-                                format(self._file_name, self._line_num))
+                            format(self._file_name, self._line_num))
                     elif self._text[str_pos] == "\\":
                         if self._text[str_pos+1] == "\n":
                             raise Exception(
                                 "Unclosed string literal in {} at line: {}".
-                                    format(self._file_name, self._line_num))
+                                format(self._file_name, self._line_num))
 
                         else:
                             str_pos += 2  # ignore next char which may be a "
@@ -402,7 +401,7 @@ class FileConvertor(object):
         # Go one step above best found
         new_start = highest_found + MAX_LOG_PER_FILE
 
-        #Append to range file in case rebuilt without clean
+        # Append to range file in case rebuilt without clean
         with open(self._range_file, 'a') as log_ranges_file:
             log_ranges_file.write("{} {}\n".format(new_start, filename))
         return new_start

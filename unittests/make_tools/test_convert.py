@@ -27,4 +27,3 @@ class TestConvertor(unittest.TestCase):
         Convertor.convert(src, dest, dict, "test_one")
         dict = os.path.join("modified_src", "test2.dict")
         Convertor.convert(src, dest, dict, "test_two")
-

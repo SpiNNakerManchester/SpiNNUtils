@@ -1,0 +1,20 @@
+Id,Preface,Original
+,,This list was generated 2018-03-27 11:04:57.615000
+
+9001,[INFO] (weird;file.c: 9): ,this is ok
+9002,[INFO] (weird;file.c: 14): ,this is fine on two lines
+9003,[INFO] (weird;file.c: 18): ,before comment after comment
+9004,[INFO] (weird;file.c: 20): ,One line commted
+9005,[INFO] (weird;file.c: 22): ,this is for alan); so there!
+9006,[INFO] (weird;file.c: 25): ,Test %u for alan); so there!
+9007,[INFO] (weird;file.c: 29): ,\t back off = %u, time between spikes %u
+9008,[DEBUG] (weird;file.c: 33): ,the neuron %d has been determined to not spike
+9009,[WARNING] (weird;file.c: 37): ,Inside a loop
+9010,[INFO] (weird;file.c: 39): ,then a space
+9011,[INFO] (weird;file.c: 42): ,then a newline simple
+9012,[INFO] (weird;file.c: 45): ,then a newline plus
+9013,[INFO] (weird;file.c: 47): ,first
+9014,[INFO] (weird;file.c: 47): ,second %u
+9015,[INFO] (weird;file.c: 50): ,then a backslash comment on a middle line
+9016,[INFO] (weird;file.c: 54): ,then a standard comment on a middle line
+9017,[INFO] (weird;file.c: 56): ,comment before

@@ -55,8 +55,7 @@ class Convertor(object):
                     print ("Unexpected file {}".format(source))
 
     def _get_id(self):
-        RANGE_PER_LIB = 1000
-        MAX_COMMON_LIBS = 10
+        RANGE_PER_DIR = 1000
 
         rangefile = os.path.join(RANGE_DIR, "log.ranges")
         range_start = 0
@@ -85,7 +84,7 @@ class Convertor(object):
                     highest_found = max(highest_found, int(parts[0]))
 
         # Go one step above best found
-        new_start = highest_found + RANGE_PER_LIB
+        new_start = highest_found + RANGE_PER_DIR
 
         # Append to range file in case rebuilt without clean
         with open(rangefile, 'a') as log_ranges_file:

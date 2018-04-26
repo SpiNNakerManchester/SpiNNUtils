@@ -2,6 +2,7 @@ import logging
 import os
 from spinn_utilities.log import FormatAdapter
 from .file_convertor import FORMATEXP
+from .file_convertor import TOKEN
 
 logger = FormatAdapter(logging.getLogger(__name__))
 
@@ -22,19 +23,22 @@ class Replacer(object):
                         continue
                     self._messages[parts[0]] = parts
         else:
-            logger.error(
-                "Unable to find a dictionary file at {}".format(dict_path))
+            logger.error("Unable to find a dictionary file at {}"
+                         .format(dict_path))
 
     def replace(self, short):
-        parts = short.split(" ")
+        parts = short.split(TOKEN)
         if not parts[0].isdigit():
-            return short  # Not a short format
+            return short
         if not parts[0] in self._messages:
             return short
         (id, preface, original) = self._messages[parts[0]]
         replaced = original
         if len(parts) > 1:
             matches = FORMATEXP.findall(original)
+            if len(matches) != len(parts) - 1:
+                # try removing any blanks due to double spacing
+                matches = [x for x in matches if x != ""]
             if len(matches) != len(parts) - 1:
                 # wrong number of elemments so not short after all
                 return short

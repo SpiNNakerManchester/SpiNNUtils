@@ -2,6 +2,8 @@ import os
 import re
 import sys
 
+TOKEN = chr(30)  # Record Sperator
+
 STRING_REGEXP = re.compile('"([^"]|\\"|(""))*"')
 FORMATEXP = re.compile("%\d*(?:\.\d+)?[cdiksuxR]")
 LOG_END_REGEX = re.compile('\)(\s)*;')
@@ -73,7 +75,6 @@ class FileConvertor(object):
     def _process_line(self, dest_f):
         if self._status == COMMENT:
             return self._process_line_in_comment(dest_f)
-
         if "/*" in self._text:
             return self._process_line_comment_start(dest_f)
 
@@ -85,6 +86,30 @@ class FileConvertor(object):
 
         assert self._status == NORMAL_CODE
         return self._process_line_normal_code(dest_f)
+
+    def _check_token(self):
+        """ Crude check for the TOKEN in the whole c code.
+
+        Ignores TOKENS in // comments
+        but so far falls over on a TOKEN in a /* */ style comment.
+        If needed could be altered to handle those as well.
+
+        Also note that is is just a safety check and not stricktly required.
+
+        A TOKEN in the c code only matters if it is in a String
+        or other value that gets passed into a log call as a parameter.
+        The TOKEN in the raw String message that gets replaced is ok.
+        Even then all that happens is that this particular message is not
+        Translated back into a proper String
+        """
+        if TOKEN not in self._text:
+            return
+        location = self._text.find(TOKEN)
+        if "//" in self._text:
+            if self._text.find("//") < location:
+                return
+        raise Exception("Unexpected line {} at {} in {}".format(
+            self._text, self._line_num, self._src))
 
     def _process_line_in_comment(self, dest_f):
         if "*/" in self._text:
@@ -101,7 +126,7 @@ class FileConvertor(object):
         return True
 
     def _process_line_comment_start(self, dest_f):
-        """ Processes a known assumed to contain a /* but not know where
+        """ Processes a line known assumed to contain a /* but not know where
 
         There is aslo the assumption that the start status is not COMMENT
 
@@ -210,7 +235,7 @@ class FileConvertor(object):
             if len(matches) != count:
                 raise Exception("Unexpected formatString in {}".format(text))
             for match in matches:
-                result += " "
+                result += TOKEN
                 result += match
             return result + '", {}'.format(self._message_id)
 
@@ -261,7 +286,6 @@ class FileConvertor(object):
                     self._status = self._previous_status
                 else:
                     pos = pos + 1
-
             elif self._text[pos] == "/":
                 if self._text[pos+1] == "*":
                     if self._status == IN_LOG:

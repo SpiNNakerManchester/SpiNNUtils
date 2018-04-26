@@ -24,6 +24,6 @@ class TestConvertor(unittest.TestCase):
         src = "mock_src"
         dest = "modified_src"
         dict = os.path.join("modified_src", "test.dict")
-        Convertor.convert(src, dest, dict, "test_one")
+        Convertor.convert(src, dest, dict)
         dict = os.path.join("modified_src", "test2.dict")
-        Convertor.convert(src, dest, dict, "test_two")
+        Convertor.convert(src, dest, dict)

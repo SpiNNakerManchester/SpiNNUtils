@@ -5,8 +5,6 @@ import shutil
 import sys
 
 RANGE_DIR = os.path.join(os.environ['SPINN_DIRS'], "lib")
-COMMON_DIR = os.path.dirname(os.path.commonprefix(
-    [os.environ['SPINN_DIRS'], os.environ['NEURAL_MODELLING_DIRS']]))
 
 
 class Convertor(object):
@@ -60,8 +58,9 @@ class Convertor(object):
         rangefile = os.path.join(RANGE_DIR, "log.ranges")
         range_start = 0
         filename = self._dest
-        if filename.startswith(COMMON_DIR):
-            filename = filename[len(COMMON_DIR)+1:]
+        common_dir = self._find_common_based_on_environ()
+        if filename.startswith(common_dir):
+            filename = filename[len(common_dir)+1:]
 
         # If the range_file does not exist create it and use range_start
         if not os.path.exists(rangefile):
@@ -123,6 +122,14 @@ class Convertor(object):
             os.mkdir(destination, 0755)
         if not os.path.exists(destination):
             raise Exception("mkdir failed {}".format(destination))
+
+    def _find_common_based_on_environ(self):
+        if 'SPINN_DIRS' not in os.environ:
+            return ""
+        if 'NEURAL_MODELLING_DIRS' not in os.environ:
+            return ""
+        return os.path.dirname(os.path.commonprefix(
+            [os.environ['SPINN_DIRS'], os.environ['NEURAL_MODELLING_DIRS']]))
 
     @staticmethod
     def convert(src, dest, dict):

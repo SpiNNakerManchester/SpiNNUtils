@@ -239,7 +239,7 @@ class FileConvertor(object):
                 result += match
             return result + '", {}'.format(self._message_id)
 
-    def _write_log_method(self, dest_f):
+    def _write_log_method(self, dest_f, tail=""):
         self._message_id += 1
         self._log_full = self._log_full.replace('""', '')
         try:
@@ -255,16 +255,20 @@ class FileConvertor(object):
         if self._log_lines == 0:
             # Writing an extra newline here so need to recover that ASAP
             self._too_many_lines += 1
+        end = tail + "\n"
         if (self._log_lines <= 1):
-            dest_f.write("  // ")
+            dest_f.write("  /* ")
             dest_f.write(original)
-            dest_f.write("\n")
+            dest_f.write("*/")
+            dest_f.write(end)
         else:
-            dest_f.write("\n")
+            dest_f.write(tail)
+            dest_f.write(end)
             dest_f.write(" " * self._log_start)
-            dest_f.write("// ")
+            dest_f.write("/* ")
             dest_f.write(original)
-            dest_f.write("\n" * (self._log_lines - 1))
+            dest_f.write("*/")
+            dest_f.write(end * (self._log_lines - 1))
         with open(self._dict, 'a') as mess_f:
             # Remove commas from filenames for csv format
             # Remove start and end quotes from original
@@ -339,7 +343,12 @@ class FileConvertor(object):
                         if self._text[pos:].strip():  # Stuff left
                             write_flag = pos
                             # self._log_lines not changed as no newline
-                            self._write_log_method(dest_f)
+                            # check for a \ after the log
+                            if self._text[pos:].strip() == "\\":
+                                self._write_log_method(dest_f, "\\")
+                                return
+                            else:
+                                self._write_log_method(dest_f)
                         else:
                             self._log_lines += 1
                             self._write_log_method(dest_f)

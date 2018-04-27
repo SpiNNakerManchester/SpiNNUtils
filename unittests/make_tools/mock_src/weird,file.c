@@ -4,6 +4,8 @@
 
 static String woops = "log_info(";
 
+    String naughty = "what is this /* nonsense"
+
     /* log_info("inside a comment */
 
     log_info("this is ok");

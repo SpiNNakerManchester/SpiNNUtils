@@ -47,7 +47,7 @@ class FileConvertor(object):
             raise Exception("Unable to locate source {}".format(src))
         dest_dir = os.path.dirname(os.path.realpath(self._dest))
         if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir, 0755)
+            os.makedirs(dest_dir)
         self.convert_c()
         return self._message_id
 

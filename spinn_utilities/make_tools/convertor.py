@@ -122,7 +122,7 @@ class Convertor(object):
     def _mkdir(self, path):
         destination = self._any_destination(path)
         if not os.path.exists(destination):
-            os.mkdir(destination, 0755)
+            os.mkdir(destination)
         if not os.path.exists(destination):
             raise Exception("mkdir failed {}".format(destination))
 

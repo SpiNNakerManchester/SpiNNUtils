@@ -48,8 +48,6 @@ class RangedList(AbstractList):
                 raise ValueError("value parameter must have a length to "
                                  "dettermine the unsupplied size ")
         AbstractList.__init__(self, size=size, key=key)
-        if not hasattr(value, '__iter__'):
-        super(RangedList, self).__init__(size=size, key=key)
         if not self.is_list(value, size):
             self._default = value
         self.set_value(value)

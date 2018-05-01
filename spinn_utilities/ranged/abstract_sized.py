@@ -176,7 +176,7 @@ class AbstractSized(object):
                         xrange(self._size), selector))
                 raise TypeError(
                     "An iterable type must be all ints or all bools")
-            elif all(isinstance(item, (int, long)) for item in selector):
+            elif all(isinstance(item, integer_types) for item in selector):
                 ids = list(selector)
                 for id in ids:
                     if id < 0:
@@ -202,7 +202,7 @@ class AbstractSized(object):
             (slice_start, slice_stop, step) = selector.indices(self._size)
             return range(slice_start, slice_stop, step)
 
-        if isinstance(selector, (int, long)):
+        if isinstance(selector, integer_types):
             if selector < 0:
                 selector = self._size + selector
             if selector < 0 or selector >= self._size:

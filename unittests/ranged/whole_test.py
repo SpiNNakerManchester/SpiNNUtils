@@ -133,7 +133,6 @@ def test_iter_tests():
     result = set(rd1.itervalues())
     check = {'alpha', 'bravo', 'gamma'}
     assert check == result
-    view = rd1[2]
 
 
 def test_contains():

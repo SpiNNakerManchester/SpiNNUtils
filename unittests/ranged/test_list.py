@@ -312,15 +312,15 @@ def test_high_id():
 def test_bad_ids():
     rl = RangedList(value=["a", "b", "c"])
     with pytest.raises(IndexError):
-        print rl[4]
+        rl[4]
     with pytest.raises(IndexError):
-        print rl.get_value_by_id(-1)
+        rl.get_value_by_id(-1)
     with pytest.raises(TypeError):
-        print rl.get_value_by_id("a")
+        rl.get_value_by_id("a")
     with pytest.raises(TypeError):
-        print rl.get_value_by_id(None)
+        rl.get_value_by_id(None)
     with pytest.raises(TypeError):
-        print rl["a"]
+        rl["a"]
 
 
 def test_str():
@@ -336,9 +336,9 @@ def test_get_single_value():
 def test_too_many():
     rl = RangedList(value=["a", "b", "c"])
     with pytest.raises(MultipleValuesException):
-        print rl.get_single_value_all()
+        rl.get_single_value_all()
     with pytest.raises(MultipleValuesException):
-        print rl.get_single_value_by_slice(0, 2)
+        rl.get_single_value_by_slice(0, 2)
 
 
 def test_slice_by_selector():

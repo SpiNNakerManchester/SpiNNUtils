@@ -107,7 +107,7 @@ def test_minus_slice():
 
 def test_empty_slice():
     with pytest.raises(Exception):
-        print rd[2: 2]
+        rd[2: 2]
 
 
 def test_one_slice():

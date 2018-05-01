@@ -118,7 +118,7 @@ def test_add_number():
     add = left + right
     assert [0, 2, 4, 6, 8, 10, 12, 14, 16, 18] == add
     with pytest.raises(Exception):
-        print left + "foo"
+        left + "foo"
 
 
 def test_sub_number():
@@ -129,7 +129,7 @@ def test_sub_number():
     sub = left - right
     assert [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] == sub
     with pytest.raises(Exception):
-        print left - "foo"
+        left - "foo"
 
 
 def test_mult_number():
@@ -140,7 +140,7 @@ def test_mult_number():
     mult = left * right
     assert [0, 1, 4, 9, 16, 25, 36, 49, 64, 81] == mult
     with pytest.raises(Exception):
-        print left * "foo"
+        left * "foo"
 
 
 def test_div_number():
@@ -151,9 +151,9 @@ def test_div_number():
     ans = left / right
     assert [0, 3, 4, 6] == ans
     with pytest.raises(Exception):
-        print left / "foo"
+        left / "foo"
     with pytest.raises(ZeroDivisionError):
-        print left / 0
+        left / 0
 
 
 def test_floor_div_number():
@@ -164,9 +164,9 @@ def test_floor_div_number():
     ans = left // right
     assert [0, 3, 4, 6] == ans
     with pytest.raises(Exception):
-        print left // "foo"
+        left // "foo"
     with pytest.raises(ZeroDivisionError):
-        print left // 0
+        left // 0
 
 
 def test_get_default():

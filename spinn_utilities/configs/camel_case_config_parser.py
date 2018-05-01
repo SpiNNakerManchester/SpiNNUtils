@@ -1,28 +1,30 @@
-from ConfigParser import RawConfigParser
-import distutils.util
+from six.moves import configparser
+import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
 
 
-class CamelCaseConfigParser(RawConfigParser):
+# pylint: disable=slots-on-old-class
+class CamelCaseConfigParser(configparser.RawConfigParser):
     # RawConfigParser is a classobj in Python 2.7, not a type (i.e., it
     # doesn't inherit from object), and so cannot be used with super().
+    __slots__ = ["_none_marker", "_read_files"]
 
     def optionxform(self, optionstr):
         lower = optionstr.lower()
         return lower.replace("_", "")
 
     def __init__(self, defaults=None, none_marker="None"):
-        RawConfigParser.__init__(self, defaults)
+        configparser.RawConfigParser.__init__(self, defaults)
         self._none_marker = none_marker
-        self.read_files = list()
+        self._read_files = list()
 
     def read(self, filenames):
-        new_files = RawConfigParser.read(self, filenames)
-        self.read_files.extend(new_files)
+        new_files = configparser.RawConfigParser.read(self, filenames)
+        self._read_files.extend(new_files)
         return new_files
 
     @property
     def read_files(self):
-        return self.read_files
+        return self._read_files
 
     def get_str(self, section, option):
         """Get the string value of an option.
@@ -83,6 +85,6 @@ class CamelCaseConfigParser(RawConfigParser):
         if value == self._none_marker:
             return None
         try:
-            return bool(distutils.util.strtobool(str(value)))
+            return bool(_du.strtobool(str(value)))
         except ValueError:
             return bool(value)

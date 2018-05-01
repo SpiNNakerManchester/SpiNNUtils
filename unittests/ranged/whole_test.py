@@ -10,7 +10,7 @@ rd = RangeDictionary(10, defaults)
 
 
 def test_ids():
-    assert [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] == rd.ids()
+    assert [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] == list(rd.ids())
 
 
 def test_value():

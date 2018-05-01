@@ -12,7 +12,7 @@ slice_view = rd[4:6]
 
 
 def test_ids():
-    assert [4, 5] == slice_view.ids()
+    assert [4, 5] == list(slice_view.ids())
 
 
 def test_value():

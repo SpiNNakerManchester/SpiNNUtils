@@ -173,15 +173,15 @@ def test_iter_simple():
 def test_iter_complex():
     rl = RangedList(size=10, value="a", key="alpha")
     list_iter = rl.iter()
-    assert "a" == list_iter.next()  # 0
-    assert "a" == list_iter.next()  # 1
-    assert "a" == list_iter.next()  # 2
+    assert "a" == next(list_iter)  # 0
+    assert "a" == next(list_iter)  # 1
+    assert "a" == next(list_iter)  # 2
     rl[1] = "b"
-    assert "a" == list_iter.next()  # 3
+    assert "a" == next(list_iter)  # 3
     rl[4:6] = "c"
-    assert "c" == list_iter.next()  # 4
-    assert "c" == list_iter.next()  # 5
-    assert "a" == list_iter.next()  # 6
+    assert "c" == next(list_iter)  # 4
+    assert "c" == next(list_iter)  # 5
+    assert "a" == next(list_iter)  # 6
 
 
 def test_iter():

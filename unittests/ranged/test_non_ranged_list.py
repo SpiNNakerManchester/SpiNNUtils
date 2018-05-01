@@ -98,15 +98,15 @@ def test_iter_simple():
 def test_iter_complex():
     rl = RangedList(10, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     list_iter = rl.iter()
-    assert 0 == list_iter.next()  # 0
-    assert 1 == list_iter.next()  # 1
-    assert 2 == list_iter.next()  # 2
+    assert 0 == next(list_iter)  # 0
+    assert 1 == next(list_iter)  # 1
+    assert 2 == next(list_iter)  # 2
     rl[1] = "b"
-    assert 3 == list_iter.next()  # 3
+    assert 3 == next(list_iter)  # 3
     rl[4:6] = "c"
-    assert "c" == list_iter.next()  # 4
-    assert "c" == list_iter.next()  # 5
-    assert 6 == list_iter.next()  # 6
+    assert "c" == next(list_iter)  # 4
+    assert "c" == next(list_iter)  # 5
+    assert 6 == next(list_iter)  # 6
 
 
 def test_iter():

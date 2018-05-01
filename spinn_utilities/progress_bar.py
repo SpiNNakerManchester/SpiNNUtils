@@ -2,6 +2,7 @@ from __future__ import print_function, division
 import sys
 import math
 import os
+from spinn_utilities.overrides import overrides
 
 
 class ProgressBar(object):
@@ -173,7 +174,32 @@ class ProgressBar(object):
                 self.end()
 
 
-if __name__ == "__main__":
+class DummyProgressBar(ProgressBar):
+    """ This is a dummy version of the progress bar that just stubs out the\
+        internal printing operations with code that does nothing. It otherwise\
+        fails in exactly the same way.
+    """
+    @overrides(ProgressBar._print_overwritten_line)
+    def _print_overwritten_line(self, string):
+        pass
+
+    @overrides(ProgressBar._print_distance_indicator)
+    def _print_distance_indicator(self, description):
+        pass
+
+    @overrides(ProgressBar._print_progress)
+    def _print_progress(self, length):
+        pass
+
+    @overrides(ProgressBar._print_progress_done)
+    def _print_progress_done(self):
+        pass
+
+    def __repr__(self):
+        return "<DummyProgressBar:{}>".format(self._string)
+
+
+if __name__ == "__main__":  # pragma: no cover
     from time import sleep
     demo = ProgressBar(
         5, "Progress Bar Demonstration", step_character="-", end_character="!")

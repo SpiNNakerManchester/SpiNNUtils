@@ -7,6 +7,7 @@ from spinn_utilities.ranged.ids_view import _IdsView
 from spinn_utilities.ranged.abstract_dict import AbstractDict
 from spinn_utilities.ranged.abstract_sized import AbstractSized
 from spinn_utilities.overrides import overrides
+from past.builtins import xrange
 from six import iteritems
 
 
@@ -15,7 +16,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
     Keys in the dictionary must be str object and can not be removed.
 
-    New keys can be added using the dict[str] = value format
+    New keys can be added using the ``dict[str] = value`` format.
 
     The size (length of the list) is fixed and set at initialisation time.
     """
@@ -286,7 +287,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         stop = self._size
         keys = range_iters.keys()
         for key in keys:
-            ranges[key] = range_iters[key].next()
+            ranges[key] = next(range_iters[key])
             start = ranges[key][0]
             current[key] = ranges[key][2]
             stop = min(ranges[key][1], stop)
@@ -297,7 +298,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
             next_stop = self._size
             for key in keys:
                 if ranges[key][1] == stop:
-                    ranges[key] = range_iters[key].next()
+                    ranges[key] = next(range_iters[key])
                 start = min(max(ranges[key][0], stop), start)
                 next_stop = min(ranges[key][1], next_stop)
                 current[key] = ranges[key][2]

@@ -4,7 +4,10 @@ import math
 import shutil
 import sys
 
-RANGE_DIR = os.path.join(os.environ['SPINN_DIRS'], "lib")
+if 'SPINN_DIRS' in os.environ:
+    RANGE_DIR = os.path.join(os.environ['SPINN_DIRS'], "lib")
+else:
+    RANGE_DIR = "lib"
 
 
 class Convertor(object):

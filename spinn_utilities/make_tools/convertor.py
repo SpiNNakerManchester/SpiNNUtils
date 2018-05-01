@@ -53,7 +53,7 @@ class Convertor(object):
                                    "neural_build.mk", "Makefile.neural_build"]:
                     pass
                 else:
-                    print ("Unexpected file {}".format(source))
+                    print("Unexpected file {}".format(source))
 
     def _get_id(self):
         RANGE_PER_DIR = 1000

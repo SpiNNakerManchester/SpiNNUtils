@@ -95,10 +95,6 @@ def test_no_set():
         ranged_view[rd] = "Can not do this either!"
 
 
-def test_views():
-    assert ["a", "b"] == list(ranged_view.viewkeys())
-
-
 def test_defaults():
     assert "alpha" == ranged_view.get_default("a")
 

@@ -436,9 +436,9 @@ def test_get_values_bad_lists():
 
 def test_selector_to_ids():
     rl = RangedList(value=range(5))
-    assert [0, 1, 2, 3, 4] == rl.selector_to_ids(None)
-    assert [0, 1] == rl.selector_to_ids(slice(2))
-    assert [2] == rl.selector_to_ids(2)
+    assert [0, 1, 2, 3, 4] == list(rl.selector_to_ids(None))
+    assert [0, 1] == list(rl.selector_to_ids(slice(2)))
+    assert [2] == list(rl.selector_to_ids(2))
     with pytest.raises(TypeError):
         rl.selector_to_ids(-7)
     with pytest.raises(TypeError):
@@ -451,4 +451,4 @@ def test_warn():
                                            warn=True)
     assert [0, 1, 2] == rl.selector_to_ids(
         [True, True, True, False, False, False], warn=True)
-    assert [0, 1, 2, 3, 4] == rl.selector_to_ids(None, warn=True)
+    assert [0, 1, 2, 3, 4] == list(rl.selector_to_ids(None, warn=True))

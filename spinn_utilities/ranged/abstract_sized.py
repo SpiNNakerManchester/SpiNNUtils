@@ -173,7 +173,7 @@ class AbstractSized(object):
                     if warn:
                         self._check_mask_size(selector)
                     return list(itertools.compress(
-                        xrange(self._size), selector))
+                        range(self._size), selector))
                 raise TypeError(
                     "An iterable type must be all ints or all bools")
             elif all(isinstance(item, integer_types) for item in selector):

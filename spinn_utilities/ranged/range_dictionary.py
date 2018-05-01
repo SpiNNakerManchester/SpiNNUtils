@@ -273,13 +273,6 @@ class RangeDictionary(AbstractSized, AbstractDict):
     def keys(self):
         return self._value_lists.keys()
 
-    @overrides(AbstractDict.iterkeys)
-    def iterkeys(self):
-        return self._value_lists.iterkeys()
-
-    def viewkeys(self):
-        return self._value_lists.viewkeys()
-
     def _merge_ranges(self, range_iters):
         current = dict()
         ranges = dict()

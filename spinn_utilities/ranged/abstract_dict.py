@@ -250,13 +250,6 @@ class AbstractDict(object):
         """
         return key in self.keys()
 
-    def iterkeys(self):
-        """ Iterates over the dictionary keys
-
-        :return: yield of each key
-        """
-        return iter(self.keys())
-
     def reset(self, key):
         """ Sets the value(s) for a single key back to the default value
 

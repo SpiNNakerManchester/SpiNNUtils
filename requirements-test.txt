@@ -2,6 +2,5 @@
 flake8
 pytest>=2.8
 pytest-cov
-numpy
 testfixtures
 Sphinx==1.5.3

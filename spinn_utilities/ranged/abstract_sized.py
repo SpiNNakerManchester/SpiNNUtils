@@ -1,6 +1,7 @@
 # pylint: disable=redefined-builtin
 import itertools
 import logging
+import numpy
 import sys
 from six import integer_types
 
@@ -160,23 +161,26 @@ class AbstractSized(object):
 
         :return: a (possibly sorted) list of ids
         """
-        # Assume for now None, int and slice have been filtered out
-        # Try iterator first
+        # Check selector is an iterable using pythonic try
         try:
             iterator = iter(selector)
         except TypeError:
             iterator = None
+
         if iterator is not None:
             # bool is superclass of int so if any are bools all must be
-            if any(isinstance(item, bool) for item in selector):
-                if all(isinstance(item, bool) for item in selector):
+            if any(isinstance(item, (bool, numpy.bool_)) for item in selector):
+                if all(isinstance(item, (bool, numpy.bool_))
+                       for item in selector):
                     if warn:
                         self._check_mask_size(selector)
                     return list(itertools.compress(
                         range(self._size), selector))
                 raise TypeError(
                     "An iterable type must be all ints or all bools")
-            elif all(isinstance(item, integer_types) for item in selector):
+            elif all(isinstance(item, (integer_types, numpy.integer))
+                     for item in selector):
+                # list converts any specific numpy types
                 ids = list(selector)
                 for id in ids:
                     if id < 0:

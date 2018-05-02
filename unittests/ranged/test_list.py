@@ -1,4 +1,5 @@
 import pytest
+import numpy
 
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
@@ -452,3 +453,9 @@ def test_warn():
     assert [0, 1, 2] == rl.selector_to_ids(
         [True, True, True, False, False, False], warn=True)
     assert [0, 1, 2, 3, 4] == list(rl.selector_to_ids(None, warn=True))
+
+
+def test_numpy_selector():
+    rl = RangedList(value=range(5))
+    selector = numpy.array([1, 3, 4])
+    assert [1, 3, 4] == rl.selector_to_ids(selector)

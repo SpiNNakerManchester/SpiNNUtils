@@ -1,5 +1,5 @@
-from spinn_utilities.ranged.abstract_dict import AbstractDict
 from spinn_utilities.overrides import overrides
+from .abstract_dict import AbstractDict
 
 
 class AbstractView(AbstractDict):

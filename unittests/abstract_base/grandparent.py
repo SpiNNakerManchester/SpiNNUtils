@@ -1,7 +1,6 @@
+from spinn_utilities.overrides import overrides
 from .abstract_grandparent import AbstractGrandParent
 from .abstract_has_constraints import AbstractHasConstraints
-
-from spinn_utilities.overrides import overrides
 
 
 class GrandParent(AbstractGrandParent):

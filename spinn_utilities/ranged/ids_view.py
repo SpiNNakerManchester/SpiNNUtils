@@ -1,6 +1,6 @@
-from spinn_utilities.ranged.abstract_view import AbstractView
 from spinn_utilities.overrides import overrides
-from spinn_utilities.ranged.abstract_dict import AbstractDict
+from .abstract_dict import AbstractDict
+from .abstract_view import AbstractView
 
 
 class _IdsView(AbstractView):

@@ -1,5 +1,4 @@
-from spinn_utilities.matrix.double_dict import DoubleDict
-from spinn_utilities.matrix.demo_matrix import DemoMatrix
+from spinn_utilities.matrix import DoubleDict, DemoMatrix
 
 
 def test_insert():

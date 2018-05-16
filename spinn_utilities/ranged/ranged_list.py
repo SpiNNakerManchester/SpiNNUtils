@@ -33,8 +33,7 @@ class RangedList(AbstractList):
         "_default", "_key", "_ranged_based", "_ranges"]
 
     def __init__(self, size=None, value=None, key=None):
-        """
-        Constructor for a ranged list.
+        """ Constructor for a ranged list.
 
         :param size: Fixed length of the list
         :param value: value to given to all elements in the list
@@ -46,7 +45,7 @@ class RangedList(AbstractList):
                 size = len(value)
             except TypeError:
                 raise ValueError("value parameter must have a length to "
-                                 "dettermine the unsupplied size ")
+                                 "determine the unsupplied size ")
         AbstractList.__init__(self, size=size, key=key)
         if not self.is_list(value, size):
             self._default = value
@@ -74,18 +73,16 @@ class RangedList(AbstractList):
 
     @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):
+        """ If possible returns a single value shared by the whole slice list.
+
+        For multiple values, use `for x in list`, `iter(list)`, `list.iter`,\
+        or one of the `iter_ranges` methods
+
+        :return: Value shared by all elements in the slice
+        :raises MultipleValuesException: \
+            If even one elements has a different value. Not thrown if elements\
+            outside of the slice have a different value
         """
-         If possible returns a single value shared by the whole slice list.
-
-         For multiple values use for x in list, iter(list) or list.iter,
-         or one of the iter_ranges methods
-
-         :return: Value shared by all elements in the slice
-         :raises MultipleValuesException: If even one elements has a different\
-         value.\
-         Not thrown if elements outside of the slice have a different value
-
-         """
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
 
@@ -295,13 +292,13 @@ class RangedList(AbstractList):
             self._ranged_based = True
 
     def set_value_by_id(self, id, value):  # @ReservedAssignment
-        """ Sets the value for a single id to the new value.
+        """ Sets the value for a single ID to the new value.
 
         .. note::
             This method only works for a single positive int ID.\
             use set or __set__ for slices, tuples, lists and negative indexes
 
-        :param id: Single id
+        :param id: Single ID
         :type id: int
         :param value: The value to save
         :type value: anything
@@ -453,8 +450,7 @@ class RangedList(AbstractList):
                 self.set_value_by_id(id_value, value)
 
     def set_value_by_selector(self, selector, value):
-        """
-        Support for the list[x] == format
+        """ Support for the list[x] == format
 
         :param id: A single ID, a slice of IDs or a list of IDs
         :param value:

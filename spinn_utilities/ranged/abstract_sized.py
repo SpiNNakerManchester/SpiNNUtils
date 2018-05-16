@@ -1,8 +1,8 @@
 # pylint: disable=redefined-builtin
 import itertools
 import logging
-import numpy
 import sys
+import numpy
 from six import integer_types
 
 logger = logging.getLogger(__file__)
@@ -132,11 +132,11 @@ class AbstractSized(object):
                 "ignored!".format(self._size, len(selector)))
 
     def selector_to_ids(self, selector, warn=False):
-        """ Gets the list of ids covered by this selector
+        """ Gets the list of IDs covered by this selector
 
         The types of selector currently supported are:
 
-        None: returns all ids
+        None: returns all IDs
 
         slice: Standard python slice. \
             negative values and values larger than size are handled using
@@ -147,19 +147,18 @@ class AbstractSized(object):
             Check id is within expected range. \
 
         iterator of bools: Used a mask. \
-            If the length of the mask is longer or shorted than number of ids \
+            If the length of the mask is longer or shorted than number of IDs \
             the result is the shorter of the two, \
             with the remainer of the longer ignored.
 
         iterator of int (long) but not bool: \
             Every value checked that it is with the range 0 to size. \
             Negative values NOT allowed. \
-            Original order and duplication is respected so result may be
+            Original order and duplication is respected so result may be\
             unordered and contain duplicates.
 
-        :param selector: Some object that identifies a range of ids.
-
-        :return: a (possibly sorted) list of ids
+        :param selector: Some object that identifies a range of IDs.
+        :return: a (possibly sorted) list of IDs
         """
         # Check selector is an iterable using pythonic try
         try:
@@ -182,15 +181,15 @@ class AbstractSized(object):
                      for item in selector):
                 # list converts any specific numpy types
                 ids = list(selector)
-                for id in ids:
-                    if id < 0:
+                for _id in ids:
+                    if _id < 0:
                         raise TypeError(
                             "Selector includes the id {} which is less than "
-                            "zero".format(id))
-                    if id >= self._size:
+                            "zero".format(_id))
+                    if _id >= self._size:
                         raise TypeError(
                             "Selector includes the id {} which not less than "
-                            "the size {}".format(id, self._size))
+                            "the size {}".format(_id, self._size))
                 return ids
             else:
                 raise TypeError(

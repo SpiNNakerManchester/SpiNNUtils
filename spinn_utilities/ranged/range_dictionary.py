@@ -64,11 +64,11 @@ class RangeDictionary(AbstractSized, AbstractDict):
         Note the ``__getitem__`` methods called by Object[id] and similar\
         defer to this method so are fine to use.
 
-        The ID(s) used are the actual IDs in the Range and not indexes on\
+        The ID(s) used are the actual IDs in the range and not indexes on\
         the list of IDs
 
-        :param key: A single int id, a Slice object or an Iterable of int ids
-        :return: A view over the Range
+        :param key: A single int ID, a Slice object, or an iterable of int IDs
+        :return: A view over the range
         """
         # Key is an int - return single view
         if isinstance(key, int):
@@ -119,14 +119,14 @@ class RangeDictionary(AbstractSized, AbstractDict):
     def __getitem__(self, key):
         """ Support for the view[x] based the type of the key
 
-        If key is a str a list type object of ``AbstractList`` is returned
+        If key is a str, a list type object of ``AbstractList`` is returned
 
-        Otherwise a View (AbstractView) over part of the IDs in the Dict is\
+        Otherwise a view (AbstractView) over part of the IDs in the dict is\
         returned
 
-        Multiple str object or None are not supported as keys here
+        Multiple str objects or None are not supported as keys here.
 
-        :param key: a str, int, iterable of int values
+        :param key: a str, int, or iterable of int values
         :return: An AbstractList or AbstractView
         """
         if isinstance(key, str):

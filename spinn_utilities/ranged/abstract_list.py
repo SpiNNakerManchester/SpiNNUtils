@@ -79,8 +79,7 @@ class AbstractList(AbstractSized):
     __repr__ = __str__
 
     def get_single_value_all(self):
-        """
-        If possible returns a single value shared by the whole list.
+        """ If possible, returns a single value shared by the whole list.
 
         For multiple values use for x in list, iter(list) or list.iter,\
         or one of the iter_ranges methods
@@ -118,11 +117,10 @@ class AbstractList(AbstractSized):
 
     @abstractmethod
     def get_single_value_by_slice(self, slice_start, slice_stop):
-        """
-        If possible returns a single value shared by the whole slice list.
+        """ If possible, returns a single value shared by the whole slice list.
 
-        For multiple values use for x in list, iter(list) or list.iter,\
-        or one of the iter_ranges methods
+        For multiple values, use `for x in list`, `iter(list)`, `list.iter`,\
+        or one of the `iter_ranges` methods
 
         :return: Value shared by all elements in the slice
         :raises MultipleValuesException: If even one elements has a different\
@@ -135,11 +133,10 @@ class AbstractList(AbstractSized):
 
     @abstractmethod
     def get_single_value_by_ids(self, ids):
-        """
-        If possible returns a single value shared by all the ids.
+        """ If possible, returns a single value shared by all the IDs.
 
-        For multiple values use ``for x in list``, ``iter(list)``,\
-        ``list.iter``, or one of the ``iter_ranges`` methods
+        For multiple values, use `for x in list`, `iter(list)`,\
+        `list.iter`, or one of the `iter_ranges` methods
 
         :return: Value shared by all elements with these IDs
         :raises MultipleValuesException: If even one elements has a different\
@@ -149,10 +146,9 @@ class AbstractList(AbstractSized):
         """
 
     def __getitem__(self, selector):
-        """
-        Supports the list[x] to return an element or slice of the list
+        """ Supports the list[x] to return an element or slice of the list
 
-        :param selector: The int id, slice
+        :param selector: The int ID, slice
         :return: The element[key] or the slice
         """
 
@@ -178,14 +174,13 @@ class AbstractList(AbstractSized):
         else:
             raise TypeError("Invalid argument type.")
 
-    def iter_by_id(self, id):
-        """
-        Fast not update safe iterator by one id
+    def iter_by_id(self, id):  # @ReservedAssignment
+        """ Fast not update safe iterator by one ID
 
         While next can only be called one this is an iterator \
             so it can be mixed in with other iterators
 
-        :param id: Id
+        :param id: ID
         :return: yields the elements
         """
         yield self.get_value_by_id(id)
@@ -261,8 +256,7 @@ class AbstractList(AbstractSized):
                 yield self.get_value_by_id(id_value)
 
     def iter_by_selector(self, selector=None):
-        """
-        Fast NOT update safe iterator of all elements in the slice
+        """ Fast NOT update safe iterator of all elements in the slice
 
         :param selector: See AbstractSized._selector_to_ids
         """
@@ -290,8 +284,7 @@ class AbstractList(AbstractSized):
         return self.iter_by_ids(ids)
 
     def get_values(self, selector=None):
-        """
-        Get the value all elements pointed to the selector.
+        """ Get the value all elements pointed to the selector.
 
         Note: Unlike __get_item__ this method always returns a list even if \
         the selector is a single int
@@ -336,14 +329,13 @@ class AbstractList(AbstractSized):
         """
 
     def iter_ranges_by_id(self, id):  # @ReservedAssignment
-        """
-        iterator of the range for this ID
+        """ iterator of the range for this ID
 
         .. note::
             The start and stop of the range will be reduced to just the ID
 
-        This method purpose is so one a control method can select\
-        which iterator to use
+        This method purpose is so one a control method can select which\
+        iterator to use
 
         :return: yields the one range
         """
@@ -407,7 +399,6 @@ class AbstractList(AbstractSized):
 
         :return: Default value
         """
-        pass
 
     def __add__(self, other):
         """ Support for new_list = list1 + list2

@@ -143,8 +143,8 @@ class AbstractSized(object):
             slices's indices method. \
             This could result in am empty list
 
-        int: (or long) Handles negative values as normal.
-            Check id is within expected range. \
+        int: (or long) Handles negative values as normal. \
+            Check id is within expected range.
 
         iterator of bools: Used a mask. \
             If the length of the mask is longer or shorted than number of IDs \

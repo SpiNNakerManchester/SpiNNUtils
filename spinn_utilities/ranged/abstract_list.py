@@ -290,7 +290,7 @@ class AbstractList(AbstractSized):
         the selector is a single int
 
         :param selector: See AbstractSized._selector_to_ids
-        :return returns a list if the item which may be empty or have only \
+        :return: returns a list if the item which may be empty or have only \
             single value
         """
         return list(self.iter_by_selector(selector))

@@ -53,12 +53,9 @@ class AbstractView(AbstractDict):
             raise KeyError("Setting of a slice/ids not supported")
         raise KeyError("Unexpected key type: {}".format(type(key)))
 
-    def viewkeys(self):
-        return self._range_dict.viewkeys()
-
     @overrides(AbstractDict.get_default)
     def get_default(self, key):
-        self._range_dict.get_default(key)
+        return self._range_dict.get_default(key)
 
     @overrides(AbstractDict.keys)
     def keys(self):

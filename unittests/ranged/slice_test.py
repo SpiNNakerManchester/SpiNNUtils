@@ -1,4 +1,8 @@
+import pytest
+
 from spinn_utilities.ranged.range_dictionary import RangeDictionary
+from spinn_utilities.ranged.single_view import _SingleView
+
 
 defaults = {"a": "alpha", "b": "bravo"}
 
@@ -47,7 +51,7 @@ def test_iter_values():
     fast = slice_view1.iter_all_values("a", update_save=True)
     assert ["alpha", "alpha", "alpha"] == list(fast)
     rd1["a"] = "Foo"
-    assert rd1["a"].get_value_all() == "Foo"
+    assert rd1["a"].get_single_value_all() == "Foo"
     assert ["Foo", "Foo", "Foo"] == list(aware)
 
 
@@ -99,3 +103,80 @@ def test_minus_slice():
     slice_view1 = rd[-8:-4]
     assert [(2, 6, {"a": "alpha", "b": "bravo"})] == \
         list(slice_view1.iter_ranges())
+
+
+def test_empty_slice():
+    with pytest.raises(Exception):
+        rd[2: 2]
+
+
+def test_one_slice():
+    slice_view1 = rd[2: 3]
+    assert isinstance(slice_view1, _SingleView)
+
+
+def test_str():
+    s = str(slice_view)
+    assert 0 < len(s)
+
+
+def test_iter_by_slice():
+    rd1 = RangeDictionary(10)
+    rd1["g"] = "gamma"
+    rd1["a"] = "alpha"
+    rd1["b"] = ["bravo0", "bravo1", "bravo2", "bravo3", "bravo4", "bravo5",
+                "bravo6", "bravo7", "bravo8+", "bravo9"]
+
+    slice_view1 = rd1[2: 4]
+    iterator = slice_view1.iter_all_values()
+    assert {"a": "alpha", "b": "bravo2", "g": "gamma"} == next(iterator)
+    assert {"a": "alpha", "b": "bravo3", "g": "gamma"} == next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
+
+    iterator = slice_view1.iter_all_values(update_save=True)
+    assert {"a": "alpha", "b": "bravo2", "g": "gamma"} == next(iterator)
+    rd1["b"][3] = "new3"
+    assert {"a": "alpha", "b": "new3", "g": "gamma"} == next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
+    rd1["b"][3] = "bravo3"
+
+    iterator = slice_view1.iter_all_values(key="b")
+    assert "bravo2" == next(iterator)
+    assert "bravo3" == next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
+
+    iterator = slice_view1.iter_all_values(update_save=True, key="b")
+    assert "bravo2" == next(iterator)
+    rd1["b"][3] = "new3"
+    assert "new3" == next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
+    rd1["b"][3] = "bravo3"
+
+    iterator = rd1.iter_values_by_slice(2, 4, key=["b", "a"])
+    assert {"a": "alpha", "b": "bravo2"} == next(iterator)
+    assert {"a": "alpha", "b": "bravo3"} == next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
+
+    iterator = rd1.iter_values_by_slice(
+        2, 4, key=["b", "a"], update_save=True)
+    assert {"a": "alpha", "b": "bravo2"} == next(iterator)
+    rd1["b"][3] = "new3"
+    assert {"a": "alpha", "b": "new3"} == next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
+    rd1["b"][3] = "bravo3"
+
+
+def test_check_slice_in_range():
+    assert (2, 4) == rd._check_slice_in_range(2, 4)
+    assert (7, 9) == rd._check_slice_in_range(-3, -1)
+    assert (0, 4) == rd._check_slice_in_range(-18, 4)
+    assert (10, 10) == rd._check_slice_in_range(2, -13)
+    assert (2, 10) == rd._check_slice_in_range(2, 12)
+    assert (10, 10) == rd._check_slice_in_range(10, 12)
+    assert (10, 10) == rd._check_slice_in_range(4, 2)

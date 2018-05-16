@@ -34,7 +34,7 @@ def test_values():
 
 def test_set():
     rd1 = RangeDictionary(10, defaults)
-    single1 = rd1[4]
+    single1 = rd1.view_factory([4])
     assert single1.get_value("a") == "alpha"
     single1["a"] = "foo"
     assert single1.get_value("a") == "foo"
@@ -47,7 +47,7 @@ def test_iter_values():
     fast = single1.iter_all_values(key="a", update_save=True)
     assert ["alpha"] == list(fast)
     rd1["a"] = "Foo"
-    assert rd1["a"].get_value_all() == "Foo"
+    assert rd1["a"].get_single_value_all() == "Foo"
     assert ["Foo"] == list(aware)
 
 
@@ -58,7 +58,7 @@ def test_iter_values_keys():
     fast = single1.iter_all_values(key=("b", "a"), update_save=True)
     assert [{'a': 'alpha', 'b': 'bravo'}] == list(fast)
     rd1["a"] = "Foo"
-    assert rd1["a"].get_value_all() == "Foo"
+    assert rd1["a"].get_single_value_all() == "Foo"
     assert [{'a': 'Foo', 'b': 'bravo'}] == list(aware)
 
 
@@ -82,3 +82,8 @@ def test_ranges_all():
             (5, 10, {"a": "alpha", "b": "bravo"})] == rd1.get_ranges()
     assert [(4, 5, {"a": "foo", "b": "bravo"})] == \
         single1.get_ranges()
+
+
+def test_str():
+    s = str(single)
+    assert 0 < len(s)

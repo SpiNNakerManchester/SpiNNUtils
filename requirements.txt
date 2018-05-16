@@ -1,3 +1,4 @@
 appdirs
 future
+numpy
 six

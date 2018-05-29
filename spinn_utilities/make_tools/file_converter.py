@@ -5,7 +5,7 @@ import sys
 TOKEN = chr(30)  # Record Sperator
 
 STRING_REGEXP = re.compile('"([^"]|\\"|(""))*"')
-FORMATEXP = re.compile("%\d*(?:\.\d+)?[cdiksuxR]")
+FORMAT_EXP = re.compile("%\d*(?:\.\d+)?[cdiksuxR]")
 LOG_END_REGEX = re.compile('\)(\s)*;')
 END_COMMENT_REGEX = re.compile("/*/")
 LOG_START_REGEX = re.compile(
@@ -31,10 +31,46 @@ MAX_LOG_PER_FILE = 100
 
 
 class FileConverter(object):
-    # __slots__ = [
-    #    "_dest", "_dest_basename", "_src", "_src_basename"]
-
-    # REGEXP = re.compile("%(?:\d+\$)?[dfsu]")
+    __slots__ = [
+        # part but possible not all of a comment string
+        # this to handle multi lines comments
+        # Variable created when a comment found
+        "_comment_start",
+        # Full destination directory
+        "_dest",
+        # File to hold dictionary mappings
+        "_dict",
+        # Number of last line read in
+        # Variable created when lines read in
+        "_line_num",
+        # original c log method found
+        # variable created each time a log method found
+        "_log",
+        # Log methods found so far
+        # variable created each time a log method found
+        "_log_full",
+        # Number of c lines the log method takes
+        # variable created each time a log method found
+        "_log_lines",
+        # Any other stuff found before the log method but on same line
+        # variable created each time a log method found
+        "_log_start",
+        # Id for next message
+        "_message_id",
+        # The previous state
+        # variable created when a comment found
+        "_previous_status",
+        # Full source directory
+        "_src",
+        # Current status of state machine
+        "_status",
+        # Text of the last line read it
+        "_text",
+        # Number of extra lines written to modified not yet recovered
+        # Extra lines are caused by the header and possibly log comment
+        # Extra lines are recovered by omitting blank lines
+        "_too_many_lines"
+    ]
 
     def __init__(self, src, dest, dict, range_start):
         self._src = os.path.abspath(src)
@@ -42,16 +78,16 @@ class FileConverter(object):
         self._message_id = range_start
         self._dict = dict
 
-    def run(self):
+    def _run(self):
         if not os.path.exists(self._src):
             raise Exception("Unable to locate source {}".format(src))
         dest_dir = os.path.dirname(os.path.realpath(self._dest))
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
-        self.convert_c()
+        self._convert_c()
         return self._message_id
 
-    def convert_c(self):
+    def _convert_c(self):
         with open(self._src) as src_f:
             with open(self._dest, 'w') as dest_f:
                 dest_f.write(
@@ -86,30 +122,6 @@ class FileConverter(object):
 
         assert self._status == NORMAL_CODE
         return self._process_line_normal_code(dest_f)
-
-    def _check_token(self):
-        """ Crude check for the TOKEN in the whole c code.
-
-        Ignores TOKENS in // comments
-        but so far falls over on a TOKEN in a /* */ style comment.
-        If needed could be altered to handle those as well.
-
-        Also note that is is just a safety check and not stricktly required.
-
-        A TOKEN in the c code only matters if it is in a String
-        or other value that gets passed into a log call as a parameter.
-        The TOKEN in the raw String message that gets replaced is ok.
-        Even then all that happens is that this particular message is not
-        Translated back into a proper String
-        """
-        if TOKEN not in self._text:
-            return
-        location = self._text.find(TOKEN)
-        if "//" in self._text:
-            if self._text.find("//") < location:
-                return
-        raise Exception("Unexpected line {} at {} in {}".format(
-            self._text, self._line_num, self._src))
 
     def _process_line_in_comment(self, dest_f):
         if "*/" in self._text:
@@ -190,12 +202,6 @@ class FileConverter(object):
             return self._process_line_in_log(dest_f)
 
     def _process_line_normal_code(self, dest_f):
-        # Fast check
-        if "log_" not in self._text:
-            # No log start found
-            dest_f.write(self._text)
-            return True
-
         # Full slower check
         stripped = self._text.strip()
         match = LOG_START_REGEX.search(stripped)
@@ -231,7 +237,7 @@ class FileConverter(object):
             return '"%u", {}'.format(self._message_id)
         else:
             result = '"%u'
-            matches = FORMATEXP.findall(text)
+            matches = FORMAT_EXP.findall(text)
             if len(matches) != count:
                 raise Exception("Unexpected formatString in {}".format(text))
             for match in matches:
@@ -442,7 +448,7 @@ class FileConverter(object):
     @staticmethod
     def convert(src, dest, dict, range_start):
         converter = FileConverter(src, dest, dict, range_start)
-        return converter.run()
+        return converter._run()
 
 
 if __name__ == '__main__':

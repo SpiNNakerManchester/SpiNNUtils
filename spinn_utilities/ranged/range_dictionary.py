@@ -64,11 +64,11 @@ class RangeDictionary(AbstractSized, AbstractDict):
         Note the ``__getitem__`` methods called by Object[id] and similar\
         defer to this method so are fine to use.
 
-        The ID(s) used are the actual IDs in the Range and not indexes on\
+        The ID(s) used are the actual IDs in the range and not indexes on\
         the list of IDs
 
-        :param key: A single int ID, a Slice object or an Iterable of int IDs
-        :return: A view over the Range
+        :param key: A single int ID, a Slice object, or an iterable of int IDs
+        :return: A view over the range
         """
         # Key is an int - return single view
         if isinstance(key, int):
@@ -80,8 +80,12 @@ class RangeDictionary(AbstractSized, AbstractDict):
             slice_start, slice_stop = self._check_slice_in_range(
                key.start, key.stop)
 
+            if slice_start >= slice_stop:
+                msg = "{} would result in an empty view".format(key)
+                raise KeyError(msg)
+
             # Slice is really just one item - return a single view
-            if slice_start == slice_stop:
+            if slice_start == slice_stop - 1:
                 return _SingleView(range_dict=self, id=slice_start)
 
             # Slice is continuous - return a slice view
@@ -115,14 +119,14 @@ class RangeDictionary(AbstractSized, AbstractDict):
     def __getitem__(self, key):
         """ Support for the view[x] based the type of the key
 
-        If key is a str a list type object of ``AbstractList`` is returned
+        If key is a str, a list type object of ``AbstractList`` is returned
 
-        Otherwise a View (AbstractView) over part of the IDs in the Dict is\
+        Otherwise a view (AbstractView) over part of the IDs in the dict is\
         returned
 
-        Multiple str object or None are not supported as keys here
+        Multiple str objects or None are not supported as keys here.
 
-        :param key: a str, int, iterable of int values
+        :param key: a str, int, or iterable of int values
         :return: An AbstractList or AbstractView
         """
         if isinstance(key, str):
@@ -132,12 +136,12 @@ class RangeDictionary(AbstractSized, AbstractDict):
     @overrides(AbstractDict.get_value, extend_defaults=True)
     def get_value(self, key=None):
         if isinstance(key, str):
-            return self._value_lists[key].get_value_all()
+            return self._value_lists[key].get_single_value_all()
         if key is None:
             key = self.keys()
         results = dict()
         for a_key in key:
-            results[a_key] = self._value_lists[a_key].get_value_all()
+            results[a_key] = self._value_lists[a_key].get_single_value_all()
         return results
 
     def get_values_by_id(self, key, id):  # @ReservedAssignment
@@ -181,7 +185,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
             if update_save:
                 return self._value_lists[key].iter()
             return self._value_lists[key].__iter__()
-        else:
+        else:  # Sub methods will check key type
             if update_save:
                 return self.update_safe_iter_all_values(
                     key, xrange(self._size))
@@ -194,7 +198,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         if isinstance(key, str) and not update_save:
             return self._value_lists[key].iter_by_slice(
-                self, slice_start=slice_start, slice_stop=slice_stop)
+                slice_start=slice_start, slice_stop=slice_stop)
+        # Sub methods will check key type
         if update_save:
             return self.update_safe_iter_all_values(
                 key, xrange(slice_start, slice_stop))
@@ -267,13 +272,6 @@ class RangeDictionary(AbstractSized, AbstractDict):
     @overrides(AbstractDict.keys)
     def keys(self):
         return self._value_lists.keys()
-
-    @overrides(AbstractDict.iterkeys)
-    def iterkeys(self):
-        return self._value_lists.iterkeys()
-
-    def viewkeys(self):
-        return self._value_lists.viewkeys()
 
     def _merge_ranges(self, range_iters):
         current = dict()

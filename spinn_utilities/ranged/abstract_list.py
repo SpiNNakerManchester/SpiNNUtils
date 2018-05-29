@@ -67,8 +67,19 @@ class AbstractList(AbstractSized):
         """
         return self._size
 
-    def get_value_all(self):
-        """ If possible returns a single value shared by the whole list.
+    def __eq__(self, other):
+        if isinstance(other, AbstractList):
+            if self.range_based and other.range_based:
+                return list(self.iter_ranges()) == list(other.iter_ranges())
+        return list(self) == list(other)
+
+    def __str__(self):
+        return str(list(self))
+
+    __repr__ = __str__
+
+    def get_single_value_all(self):
+        """ If possible, returns a single value shared by the whole list.
 
         For multiple values use for x in list, iter(list) or list.iter,\
         or one of the iter_ranges methods
@@ -105,11 +116,11 @@ class AbstractList(AbstractSized):
         """
 
     @abstractmethod
-    def get_value_by_slice(self, slice_start, slice_stop):
-        """ If possible returns a single value shared by the whole slice list.
+    def get_single_value_by_slice(self, slice_start, slice_stop):
+        """ If possible, returns a single value shared by the whole slice list.
 
-        For multiple values use for x in list, iter(list) or list.iter,\
-        or one of the iter_ranges methods
+        For multiple values, use `for x in list`, `iter(list)`, `list.iter`,\
+        or one of the `iter_ranges` methods
 
         :return: Value shared by all elements in the slice
         :raises MultipleValuesException: If even one elements has a different\
@@ -121,11 +132,11 @@ class AbstractList(AbstractSized):
         return list(self.iter_by_slice(start, stop))
 
     @abstractmethod
-    def get_value_by_ids(self, ids):
-        """ If possible returns a single value shared by all the IDs.
+    def get_single_value_by_ids(self, ids):
+        """ If possible, returns a single value shared by all the IDs.
 
-        For multiple values use ``for x in list``, ``iter(list)``,\
-        ``list.iter``, or one of the ``iter_ranges`` methods
+        For multiple values, use `for x in list`, `iter(list)`,\
+        `list.iter`, or one of the `iter_ranges` methods
 
         :return: Value shared by all elements with these IDs
         :raises MultipleValuesException: If even one elements has a different\
@@ -134,34 +145,45 @@ class AbstractList(AbstractSized):
             even if these elements are between the ones pointed to by IDs
         """
 
-    def __getitem__(self, key):
+    def __getitem__(self, selector):
         """ Supports the list[x] to return an element or slice of the list
 
-        :param key: The int ID, or slice
+        :param selector: The int ID, slice
         :return: The element[key] or the slice
         """
 
         # If the key is a slice, get the values from the slice
-        if isinstance(key, slice):
+        if isinstance(selector, slice):
 
             # If the slice is continuous, use the continuous slice getter
-            if slice.step is None or slice.step == 1:
+            if selector.step is None or selector.step == 1:
                 return list(self.iter_by_slice(
-                    slice_start=slice.start, slice_stop=slice.stop))
+                    slice_start=selector.start, slice_stop=selector.stop))
 
             # Otherwise get the items one by one using the start, stop, and
             # step from the slice
-            return [self[i] for i in xrange(*key.indices(self._size))]
+            return [self[i] for i in xrange(*selector.indices(self._size))]
 
         # If the key is an int, get the single value
-        elif isinstance(key, int):
+        elif isinstance(selector, int):
 
             # Handle negative indices
-            if key < 0:
-                key += len(self)
-            return self.get_value_by_id(key)
+            if selector < 0:
+                selector += len(self)
+            return self.get_value_by_id(selector)
         else:
             raise TypeError("Invalid argument type.")
+
+    def iter_by_id(self, id):  # @ReservedAssignment
+        """ Fast not update safe iterator by one ID
+
+        While next can only be called one this is an iterator \
+            so it can be mixed in with other iterators
+
+        :param id: ID
+        :return: yields the elements
+        """
+        yield self.get_value_by_id(id)
 
     def iter_by_ids(self, ids):
         """ Fast not update safe iterator by collection of IDs
@@ -233,6 +255,46 @@ class AbstractList(AbstractSized):
             for id_value in xrange(slice_start, slice_stop):
                 yield self.get_value_by_id(id_value)
 
+    def iter_by_selector(self, selector=None):
+        """ Fast NOT update safe iterator of all elements in the slice
+
+        :param selector: See AbstractSized._selector_to_ids
+        """
+        # No Selector so iter all fast
+        if selector is None:
+            return self.__iter__()
+
+        if isinstance(selector, int):
+            # Handle negative indices
+            if selector < 0:
+                selector += len(self)
+            return self.iter_by_id(selector)
+
+        # If the key is a slice, get the values from the slice
+        if isinstance(selector, slice):
+
+            # If the slice is continuous, use the continuous slice getter
+            if selector.step is None or selector.step == 1:
+                return self.iter_by_slice(selector.start, selector.stop)
+            else:
+                (slice_start, slice_stop, step) = selector.indices(self._size)
+                return self.iter_by_ids(range(slice_start, slice_stop, step))
+
+        ids = self.selector_to_ids(selector)
+        return self.iter_by_ids(ids)
+
+    def get_values(self, selector=None):
+        """ Get the value all elements pointed to the selector.
+
+        Note: Unlike __get_item__ this method always returns a list even if \
+        the selector is a single int
+
+        :param selector: See AbstractSized._selector_to_ids
+        :return: returns a list if the item which may be empty or have only \
+            single value
+        """
+        return list(self.iter_by_selector(selector))
+
     def __contains__(self, item):
         return any(value == item for (_, _, value) in self.iter_ranges())
 
@@ -267,14 +329,13 @@ class AbstractList(AbstractSized):
         """
 
     def iter_ranges_by_id(self, id):  # @ReservedAssignment
-        """
-        iterator of the range for this ID
+        """ iterator of the range for this ID
 
         .. note::
             The start and stop of the range will be reduced to just the ID
 
-        This method purpose is so one a control method can select\
-        which iterator to use
+        This method purpose is so one a control method can select which\
+        iterator to use
 
         :return: yields the one range
         """
@@ -491,14 +552,14 @@ class SingleList(AbstractList):
     def get_value_by_id(self, id):  # @ReservedAssignment
         return self._operation(self._a_list.get_value_by_id(id))
 
-    @overrides(AbstractList.get_value_by_slice)
-    def get_value_by_slice(self, slice_start, slice_stop):
-        return self._operation(self._a_list.get_value_by_slice(
+    @overrides(AbstractList.get_single_value_by_slice)
+    def get_single_value_by_slice(self, slice_start, slice_stop):
+        return self._operation(self._a_list.get_single_value_by_slice(
             slice_start, slice_stop))
 
-    @overrides(AbstractList.get_value_by_ids)
-    def get_value_by_ids(self, ids):
-        return self._operation(self._a_list.get_value_by_ids(ids))
+    @overrides(AbstractList.get_single_value_by_ids)
+    def get_single_value_by_ids(self, ids):
+        return self._operation(self._a_list.get_single_value_by_ids(ids))
 
     @overrides(AbstractList.iter_ranges)
     def iter_ranges(self):
@@ -507,7 +568,7 @@ class SingleList(AbstractList):
 
     @overrides(AbstractList.get_default)
     def get_default(self):
-        self._operation(self._a_list.get_default())
+        return self._operation(self._a_list.get_default())
 
     @overrides(AbstractList.iter_ranges_by_slice)
     def iter_ranges_by_slice(self, slice_start, slice_stop):
@@ -525,6 +586,7 @@ class DualList(AbstractList):
 
     def __init__(self, left, right, operation, key=None):
         """
+
         :param left: The first list to combine
         :param right: The second list to combine
         :param operation:\
@@ -550,17 +612,17 @@ class DualList(AbstractList):
         return self._operation(
             self._left.get_value_by_id(id), self._right.get_value_by_id(id))
 
-    @overrides(AbstractList.get_value_by_slice)
-    def get_value_by_slice(self, slice_start, slice_stop):
+    @overrides(AbstractList.get_single_value_by_slice)
+    def get_single_value_by_slice(self, slice_start, slice_stop):
         return self._operation(
-            self._left.get_value_by_slice(slice_start, slice_stop),
-            self._right.get_value_by_slice(slice_start, slice_stop))
+            self._left.get_single_value_by_slice(slice_start, slice_stop),
+            self._right.get_single_value_by_slice(slice_start, slice_stop))
 
-    @overrides(AbstractList.get_value_by_ids)
-    def get_value_by_ids(self, ids):
+    @overrides(AbstractList.get_single_value_by_ids)
+    def get_single_value_by_ids(self, ids):
         return self._operation(
-            self._left.get_value_by_ids(ids),
-            self._right.get_value_by_ids(ids))
+            self._left.get_single_value_by_ids(ids),
+            self._right.get_single_value_by_ids(ids))
 
     @overrides(AbstractList.iter_by_slice)
     def iter_by_slice(self, slice_start, slice_stop):
@@ -631,4 +693,5 @@ class DualList(AbstractList):
 
     @overrides(AbstractList.get_default)
     def get_default(self):
-        self._operation(self._left.get_default(), self._right.get_default())
+        return self._operation(
+            self._left.get_default(), self._right.get_default())

@@ -1,3 +1,5 @@
+import pytest
+
 from spinn_utilities.ranged.range_dictionary import RangeDictionary
 from spinn_utilities.ranged.ranged_list import RangedList
 
@@ -12,8 +14,8 @@ def test_ids():
 
 
 def test_value():
-    assert "alpha" == rd["a"].get_value_all()
-    assert "bravo" == rd["b"].get_value_all()
+    assert "alpha" == rd["a"].get_single_value_all()
+    assert "bravo" == rd["b"].get_single_value_all()
     assert "a" in rd
     assert "c" not in rd
     assert rd.has_key("b")  # noqa: W601
@@ -34,9 +36,9 @@ def test_values():
 
 def test_set_range_direct():
     rd1 = RangeDictionary(10, defaults)
-    assert "alpha" == rd1["a"].get_value_all()
+    assert "alpha" == rd1["a"].get_single_value_all()
     rd1["a"] = "Foo"
-    assert "Foo" == rd1["a"].get_value_all()
+    assert "Foo" == rd1["a"].get_single_value_all()
 
 
 def test_ranges_by_key():
@@ -96,7 +98,7 @@ def test_ranges_all():
 def test_set_range():
     rd1 = RangeDictionary(10, defaults)
     rd1["a"] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    assert list(rd1["a"]) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    assert rd1["a"] == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
 def test_set_list():
@@ -116,3 +118,117 @@ def test_empty():
                 "bravo", "bravo", "bravo"]
     new_dict = {"a": "alpha", "b": "bravo", "g": "gamma"}
     assert new_dict == rd1.get_value()
+
+
+def test_iter_tests():
+    rd1 = RangeDictionary(10)
+    rl = RangedList(10, "gamma")
+    rd1["g"] = rl
+    rd1["a"] = "alpha"
+    rd1["b"] = ["bravo", "bravo", "bravo", "bravo", "bravo", "bravo", "bravo",
+                "bravo", "bravo", "bravo"]
+    result = set(rd1.iteritems())
+    check = {('a', 'alpha'), ('b', 'bravo'), ('g', 'gamma')}
+    assert check == result
+    result = set(rd1.itervalues())
+    check = {'alpha', 'bravo', 'gamma'}
+    assert check == result
+
+
+def test_contains():
+    rd1 = RangeDictionary(10)
+    rl = RangedList(10, "gamma")
+    rd1["g"] = rl
+    rd1["a"] = "alpha"
+    rd1["b"] = ["bravo", "bravo", "bravo", "bravo", "bravo", "bravo", "bravo",
+                "bravo", "bravo", "bravo"]
+    assert "a" in rd1
+    assert "alpha" not in rd1
+    assert 1 in rd1
+    assert 14 not in rd1
+    with pytest.raises(KeyError):
+        assert (rl in rd1)
+
+
+def test_reset():
+    rd1 = RangeDictionary(10)
+    rl = RangedList(10, "gamma")
+    rd1["g"] = rl
+    rd1["a"] = "alpha"
+    rd1["b"] = ["bravo", "bravo", "bravo", "bravo", "bravo", "bravo", "bravo",
+                "bravo", "bravo", "bravo"]
+    rd1["a"] = "beta"
+    rd1.reset("a")
+    assert rd1["a"] == ["alpha", "alpha", "alpha", "alpha", "alpha", "alpha",
+                        "alpha", "alpha", "alpha", "alpha"]
+
+
+def test_bad_set():
+    rd1 = RangeDictionary(10)
+    with pytest.raises(KeyError):
+        rd1[2] = "This should not work"
+    with pytest.raises(KeyError):
+        rd1[rd] = "This should not work"
+
+
+def test_iter_by_slice():
+    rd1 = RangeDictionary(10)
+    rl = RangedList(10, "gamma")
+    rd1["g"] = rl
+    rd1["a"] = "alpha"
+    rd1["b"] = ["bravo0", "bravo1", "bravo2", "bravo3", "bravo4", "bravo5",
+                "bravo6", "bravo7", "bravo8+", "bravo9"]
+
+    iterator = rd1.iter_values_by_slice(2, 4)
+    assert {"a": "alpha", "b": "bravo2", "g": "gamma"} == next(iterator)
+    assert {"a": "alpha", "b": "bravo3", "g": "gamma"} == next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
+
+    iterator = rd1.iter_values_by_slice(2, 4, update_save=True)
+    assert {"a": "alpha", "b": "bravo2", "g": "gamma"} == next(iterator)
+    rd1["b"][3] = "new3"
+    assert {"a": "alpha", "b": "new3", "g": "gamma"} == next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
+    rd1["b"][3] = "bravo3"
+
+    iterator = rd1.iter_values_by_slice(2, 4, key="b")
+    assert "bravo2" == next(iterator)
+    assert "bravo3" == next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
+
+    iterator = rd1.iter_values_by_slice(2, 4, key="b", update_save=True)
+    assert "bravo2" == next(iterator)
+    rd1["b"][3] = "new3"
+    assert "new3" == next(iterator)
+    with pytest.raises(StopIteration):
+        assert "OVERFLOW" == next(iterator)
+    rd1["b"][3] = "bravo3"
+
+    iterator = rd1.iter_values_by_slice(2, 4, key=["b", "a"])
+    assert {"a": "alpha", "b": "bravo2"} == next(iterator)
+    assert {"a": "alpha", "b": "bravo3"} == next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
+
+    iterator = rd1.iter_values_by_slice(
+        2, 4, key=["b", "a"], update_save=True)
+    assert {"a": "alpha", "b": "bravo2"} == next(iterator)
+    rd1["b"][3] = "new3"
+    assert {"a": "alpha", "b": "new3"} == next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
+    rd1["b"][3] = "bravo3"
+
+
+def test_defaults():
+    assert "alpha" == rd.get_default("a")
+    rd.set_default("a", "newa")
+    assert "newa" == rd.get_default("a")
+
+
+def test_bad_factory():
+    with pytest.raises(KeyError):
+        rd.view_factory([1, "a"])

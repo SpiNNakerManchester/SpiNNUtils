@@ -32,7 +32,7 @@ class RangedList(AbstractList):
     __slots__ = [
         "_default", "_key", "_ranged_based", "_ranges"]
 
-    def __init__(self, size, value, key=None):
+    def __init__(self, size=None, value=None, key=None):
         """ Constructor for a ranged list.
 
         :param size: Fixed length of the list
@@ -40,7 +40,13 @@ class RangedList(AbstractList):
         :param key: The dict key this list covers.\
             This is used only for better Exception messages
         """
-        super(RangedList, self).__init__(size=size, key=key)
+        if size is None:
+            try:
+                size = len(value)
+            except TypeError:
+                raise ValueError("value parameter must have a length to "
+                                 "determine the unsupplied size ")
+        AbstractList.__init__(self, size=size, key=key)
         if not self.is_list(value, size):
             self._default = value
         self.set_value(value)
@@ -57,16 +63,26 @@ class RangedList(AbstractList):
         if self._ranged_based:
             for (_, stop, value) in self._ranges:
                 if id < stop:
-                    return value
+                    return value  # pragma: no cover
 
             # Must never get here because the id is in range
-            raise ValueError
+            raise ValueError  # pragma: no cover
 
         # Non-range-based so just return the value
         return self._ranges[id]
 
-    @overrides(AbstractList.get_value_by_slice)
-    def get_value_by_slice(self, slice_start, slice_stop):
+    @overrides(AbstractList.get_single_value_by_slice)
+    def get_single_value_by_slice(self, slice_start, slice_stop):
+        """ If possible returns a single value shared by the whole slice list.
+
+        For multiple values, use `for x in list`, `iter(list)`, `list.iter`,\
+        or one of the `iter_ranges` methods
+
+        :return: Value shared by all elements in the slice
+        :raises MultipleValuesException: \
+            If even one elements has a different value. Not thrown if elements\
+            outside of the slice have a different value
+        """
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
 
@@ -83,9 +99,10 @@ class RangedList(AbstractList):
 
                     # If we have already found a range in the slice, check the
                     # value is the same
-                    if found_value and result != value:
-                        raise MultipleValuesException(
-                            self._key, result, value)
+                    if found_value:
+                        if result != value:
+                            raise MultipleValuesException(
+                                self._key, result, value)
 
                     # If this is the first range in the slice, store it
                     else:
@@ -99,7 +116,7 @@ class RangedList(AbstractList):
 
             # This must be never possible, as the slices must be in range of
             # the list
-            raise ValueError
+            raise ValueError  # pragma: no cover
 
         # A non-range based list just has lots of single values, so check
         # they are all the same within the slice
@@ -109,8 +126,8 @@ class RangedList(AbstractList):
                 raise MultipleValuesException(self._key, result, _value)
         return result
 
-    @overrides(AbstractList.get_value_by_ids)
-    def get_value_by_ids(self, ids):
+    @overrides(AbstractList.get_single_value_by_ids)
+    def get_single_value_by_ids(self, ids):
         # Take the first id, and then simply check all the others are the same
         # This works for both range-based and non-range-based
         result = self.get_value_by_id(ids[0])
@@ -227,6 +244,7 @@ class RangedList(AbstractList):
         This method can be extended to add other checks for list in which\
         case as_list must also be extended
         """
+
         # Assume any iterable is a list
         if callable(value):
             return True
@@ -274,13 +292,13 @@ class RangedList(AbstractList):
             self._ranged_based = True
 
     def set_value_by_id(self, id, value):  # @ReservedAssignment
-        """ Sets the value for a single id to the new value.
+        """ Sets the value for a single ID to the new value.
 
         .. note::
             This method only works for a single positive int ID.\
             use set or __set__ for slices, tuples, lists and negative indexes
 
-        :param id: Single id
+        :param id: Single ID
         :type id: int
         :param value: The value to save
         :type value: anything
@@ -350,6 +368,8 @@ class RangedList(AbstractList):
         """
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
+        if (slice_start == slice_stop):
+            return  # Empty list so do nothing
 
         # If the value to set is a list, set the values directly
         if self.is_list(value, size=slice_stop - slice_start):
@@ -405,6 +425,7 @@ class RangedList(AbstractList):
             self._ranges[index-1] = (self._ranges[index-1][0], slice_stop,
                                      value)
             self._ranges.pop(index)
+            index -= 1
 
         # merge with next if same value
         if index < len(self._ranges) - 1 and self._ranges[index+1][2] == value:
@@ -428,7 +449,7 @@ class RangedList(AbstractList):
             for id_value in ids:
                 self.set_value_by_id(id_value, value)
 
-    def __setitem__(self, id, value):  # @ReservedAssignment
+    def set_value_by_selector(self, selector, value):
         """ Support for the list[x] == format
 
         :param id: A single ID, a slice of IDs or a list of IDs
@@ -437,27 +458,16 @@ class RangedList(AbstractList):
         """
 
         # Handle a slice
-        if isinstance(id, slice):
-            if id.step is None or id.step == 1:
-                self.set_value_by_slice(id.start, id.stop, value)
-            else:
-                ids = range(*id.indices(len(self)))
-                self.set_value_by_ids(ids=ids, value=value)
+        if isinstance(selector, slice):
+            if selector.step is None or selector.step == 1:
+                (start, stop, _) = selector.indices(self._size)
+                self.set_value_by_slice(start, stop, value)
+                return
 
-        # Handle a single int
-        elif isinstance(id, int):
+        ids = self.selector_to_ids(selector)
+        self.set_value_by_ids(ids=ids, value=value)
 
-            # Handle negative indices
-            if id < 0:
-                id += len(self)
-            self.set_value_by_id(id=id, value=value)
-
-        # Handle a list of ids
-        else:
-            self.set_value_by_ids(ids=id, value=value)
-
-    def __setslice__(self, start, stop, value):
-        self.set_value_by_slice(start, stop, value)
+    __setitem__ = set_value_by_selector
 
     def get_ranges(self):
         """ Returns a copy of the list of ranges.

@@ -1,3 +1,5 @@
+import pytest
+
 from spinn_utilities.ranged.range_dictionary import RangeDictionary
 
 defaults = {"a": "alpha", "b": "bravo"}
@@ -79,3 +81,24 @@ def test_ranges_by_all():
             (5, 6, {"a": "bar", "b": "bravo"}),
             (6, 8, {"a": "foo", "b": "bravo"})] \
         == view.get_ranges()
+
+
+def test_get_str():
+    with pytest.raises(KeyError):
+        assert ranged_view["OOPS"]
+
+
+def test_no_set():
+    with pytest.raises(KeyError):
+        ranged_view[3] = "Better not be allowed"
+    with pytest.raises(KeyError):
+        ranged_view[rd] = "Can not do this either!"
+
+
+def test_defaults():
+    assert "alpha" == ranged_view.get_default("a")
+
+
+def test_str():
+    s = str(ranged_view)
+    assert len(s) > 0

@@ -22,7 +22,8 @@ class _IdsView(AbstractView):
 
     @overrides(AbstractDict.get_value)
     def get_value(self, key):
-        return self._range_dict.get_list(key).get_value_by_ids(self._ids)
+        return self._range_dict.get_list(key).get_single_value_by_ids(
+            self._ids)
 
     @overrides(AbstractDict.set_value)
     def set_value(self, key, value):

@@ -1,4 +1,8 @@
 import pytest
+import numpy
+
+from spinn_utilities.ranged.multiple_values_exception \
+    import MultipleValuesException
 from spinn_utilities.ranged.ranged_list import RangedList
 
 
@@ -100,6 +104,38 @@ def test_insert_slice_to_previous():
     assert rl.get_ranges() == [(0, 5, "a"), (5, 7, "b"), (7, 10, "a")]
 
 
+def test_insert_slice_to_big():
+    rl = RangedList(2, "a")
+    rl[1:3] = "b"
+    assert rl.get_ranges() == [(0, 1, "a"), (1, 2, "b")]
+    assert list(rl) == ["a", "b"]
+
+
+def test_insert_slice_to_far():
+    rl = RangedList(2, "a")
+    rl[3:6] = "b"
+    assert rl.get_ranges() == [(0, 2, "a")]
+    assert list(rl) == ["a", "a"]
+
+
+def test_insert_slice_inverted():
+    rl = RangedList(4, "a")
+    rl[2:1] = "b"
+    assert rl.get_ranges() == [(0, 4, "a")]
+
+
+def test_insert_slice_stop_too_negative():
+    rl = RangedList(4, "a")
+    rl[2:-5] = "b"
+    assert rl.get_ranges() == [(0, 4, "a")]
+
+
+def test_insert_slice_start_too_negative():
+    rl = RangedList(4, "a")
+    rl[-6:3] = "b"
+    assert rl.get_ranges() == [(0, 3, "b"), (3, 4, "a")]
+
+
 def test_insert_end():
     rl = RangedList(10, "a")
     rl[1] = "b"
@@ -112,16 +148,16 @@ def test_insert_end():
 def test_insert_list():
     rl = RangedList(10, "a")
     rl[4, 8, 2] = "b"
-    assert list(rl) == ["a", "a", "b", "a", "b", "a", "a", "a", "b", "a"]
+    assert rl == ["a", "a", "b", "a", "b", "a", "a", "a", "b", "a"]
     assert rl.get_ranges() == [(0, 2, "a"), (2, 3, "b"), (3, 4, "a"),
                                (4, 5, "b"), (5, 8, "a"), (8, 9, "b"),
                                (9, 10, "a")]
     rl[3] = "b"
-    assert list(rl) == ["a", "a", "b", "b", "b", "a", "a", "a", "b", "a"]
+    assert rl == ["a", "a", "b", "b", "b", "a", "a", "a", "b", "a"]
     assert rl.get_ranges() == [(0, 2, "a"), (2, 5, "b"), (5, 8, "a"),
                                (8, 9, "b"), (9, 10, "a")]
     rl[3] = "x"
-    assert list(rl) == ["a", "a", "b", "x", "b", "a", "a", "a", "b", "a"]
+    assert rl == ["a", "a", "b", "x", "b", "a", "a", "a", "b", "a"]
     assert rl.get_ranges() == [(0, 2, "a"), (2, 3, "b"), (3, 4, "x"),
                                (4, 5, "b"), (5, 8, "a"), (8, 9, "b"),
                                (9, 10, "a")]
@@ -132,7 +168,7 @@ def test_iter_simple():
     rl = RangedList(10, "a")
     for i in range(10):
         rl[i] = i
-    assert list(rl) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    assert rl == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
 def test_iter_complex():
@@ -164,6 +200,7 @@ def test_ranges_by_slice():
     rl = RangedList(size=10, value="a", key="alpha")
     assert [(3, 8, "a")] == list(rl.iter_ranges_by_slice(3, 8))
     rl[5] = "foo"
+    rl[5] = "foo"
     assert [(3, 5, "a"), (5, 6, "foo"), (6, 8, "a")] == \
         list(rl.iter_ranges_by_slice(3, 8))
 
@@ -190,7 +227,7 @@ def test_iter_by_slice():
 def test_update_slice_with_list():
     rl = RangedList(size=10, value="a", key="alpha")
     rl[2:5] = [2, 3, 4]
-    assert ["a", "a", 2, 3, 4, "a", "a", "a",  "a", "a"] == list(rl)
+    assert ["a", "a", 2, 3, 4, "a", "a", "a",  "a", "a"] == rl
 
 
 def test_iter_by_ids():
@@ -204,13 +241,13 @@ def test_iter_by_ids():
 def test_set_value_by_slice():
     rl = RangedList(size=10, value="a", key="alpha")
     rl.set_value_by_slice(2, 7, "b")
-    assert list(rl) == ["a", "a", "b", "b", "b", "b", "b", "a", "a", "a"]
+    assert rl == ["a", "a", "b", "b", "b", "b", "b", "a", "a", "a"]
     rl.set_value_by_slice(3, 7, "c")
-    assert list(rl) == ["a", "a", "b", "c", "c", "c", "c", "a", "a", "a"]
+    assert rl == ["a", "a", "b", "c", "c", "c", "c", "a", "a", "a"]
     rl.set_value_by_slice(5, 8, "d")
-    assert list(rl) == ["a", "a", "b", "c", "c", "d", "d", "d", "a", "a"]
+    assert rl == ["a", "a", "b", "c", "c", "d", "d", "d", "a", "a"]
     rl.set_value_by_slice(4, 6, "c")
-    assert list(rl) == ["a", "a", "b", "c", "c", "c", "d", "d", "a", "a"]
+    assert rl == ["a", "a", "b", "c", "c", "c", "d", "d", "a", "a"]
 
 
 def test_set_value_by_callable():
@@ -237,3 +274,188 @@ def test_index():
     rl = RangedList(size=10, value="a", key="alpha")
     rl[6] = "b"
     assert rl.index("b") == 6
+    with pytest.raises(ValueError):
+        assert rl.index("not there") == "Oops there anyway"
+
+
+def test_slice_by_list():
+    rl = RangedList(size=5, value="a", key="alpha")
+    assert rl == ["a", "a", "a", "a", "a"]
+    rl[2:4] = ["b", "c"]
+    assert rl == ["a", "a", "b", "c", "a"]
+    assert rl[2:4] == ["b", "c"]
+
+
+def test_set_ids__with_list():
+    rl = RangedList(size=5, value="a", key="alpha")
+    rl.set_value_by_ids([2, 1, 4], ["b", "c", "d"])
+    assert rl == ["a", "c", "b", "a", "d"]
+
+
+def test_no_size():
+    rl = RangedList(value=["a", "b", "c"])
+    assert rl == ["a", "b", "c"]
+
+
+def test_bad_no_size():
+    with pytest.raises(ValueError):
+        RangedList(value=35)
+
+
+def test_high_id():
+    rl = RangedList(value=["a", "b", "c"])
+    with pytest.raises(IndexError):
+        rl[7]
+    with pytest.raises(IndexError):
+        rl.get_value_by_id(7)
+
+
+def test_bad_ids():
+    rl = RangedList(value=["a", "b", "c"])
+    with pytest.raises(IndexError):
+        rl[4]
+    with pytest.raises(IndexError):
+        rl.get_value_by_id(-1)
+    with pytest.raises(TypeError):
+        rl.get_value_by_id("a")
+    with pytest.raises(TypeError):
+        rl.get_value_by_id(None)
+    with pytest.raises(TypeError):
+        rl["a"]
+
+
+def test_str():
+    rl = RangedList(value=["a", "b", "c"])
+    assert str(["a", "b", "c"]) == str(rl)
+
+
+def test_get_single_value():
+    rl = RangedList(value=["a", "a", "a"])
+    assert "a" == rl.get_single_value_by_slice(0, 2)
+
+
+def test_too_many():
+    rl = RangedList(value=["a", "b", "c"])
+    with pytest.raises(MultipleValuesException):
+        rl.get_single_value_all()
+    with pytest.raises(MultipleValuesException):
+        rl.get_single_value_by_slice(0, 2)
+
+
+def test_slice_by_selector():
+    rl = RangedList(size=5, value=[0, 1, 2, 3, 4], key="alpha")
+    assert rl.get_values(slice(2, 3)) == [2]
+    assert rl.get_values(slice(2, 4)) == [2, 3]
+
+
+def test_negative_id():
+    rl = RangedList(size=5, value=[0, 1, 2, 3, 4], key="alpha")
+    assert rl.get_values(-2) == [3]
+    rl[-2] = 13
+    assert rl[3] == 13
+    assert rl[-2] == 13
+
+
+def test_bad_selector():
+    rl = RangedList(size=5, value=[0, 1, 2, 3, 4], key="alpha")
+    with pytest.raises(TypeError):
+        rl.get_values(34.23)
+
+
+def test_two_many_values_slice():
+    rl = RangedList(size=5, value=1, key="alpha")
+    rl[2] = 2
+    with pytest.raises(MultipleValuesException):
+        rl.get_single_value_by_slice(1, 3)
+    with pytest.raises(MultipleValuesException):
+        rl.get_single_value_by_ids([1, 2])
+
+
+def test_iter_by_slice_ranged():
+    rl = RangedList(size=15, value=1, key="alpha")
+    rl[2] = 2
+    rl[12] = 2
+    assert [1, 2] == list(rl.iter_by_slice(11, 13))
+
+
+def test_as_list_bad():
+    with pytest.raises(Exception):
+        RangedList.as_list([1, 2, 3], 4)
+
+
+def test_range_merge():
+    rl = RangedList(size=5, value=1, key="alpha")
+    assert [(0, 5, 1)] == rl.get_ranges()
+    rl[2: 4] = 2
+    assert [(0, 2, 1), (2, 4, 2), (4, 5, 1)] == rl.get_ranges()
+    rl[2: 4] = 1
+    assert [(0, 5, 1)] == rl.get_ranges()
+
+
+def test_no_default():
+    rl = RangedList(value=[1, 2, 3])
+    with pytest.raises(Exception):
+        rl.get_default()
+
+
+def test_get_values_all():
+    rl = RangedList(value=[1, 2, 3])
+    assert [1, 2, 3] == rl.get_values()
+
+
+def test_get_values_complex_slice():
+    rl = RangedList(value=range(10))
+    assert [2, 4, 6] == rl.get_values(slice(-8, -3, 2))
+
+
+def test_get_values_list():
+    rl = RangedList(value=range(10))
+    assert [2, 6, 4] == rl.get_values([2, 6, 4])
+
+
+def test_get_values_mask():
+    rl = RangedList(value=["a", "b", "c", "d", "e"])
+    assert ["a", "c", "e"] == rl.get_values(
+        [True, False, True, False, True])
+    assert ["a", "c", "e"] == rl.get_values(
+        [True, False, True, False, True, True])
+    assert ["a", "c"] == rl.get_values(
+        [True, False, True, False])
+
+
+def test_get_values_bad_lists():
+    rl = RangedList(value=range(10))
+    with pytest.raises(TypeError):
+        rl.get_values([2, -1, 4])
+    with pytest.raises(TypeError):
+        rl.get_values([2, 12, 4])
+    with pytest.raises(TypeError):
+        rl.get_values([2, True])
+    with pytest.raises(TypeError):
+        rl.get_values([2, "True"])
+
+
+def test_selector_to_ids():
+    rl = RangedList(value=range(5))
+    assert [0, 1, 2, 3, 4] == list(rl.selector_to_ids(None))
+    assert [0, 1] == list(rl.selector_to_ids(slice(2)))
+    assert [2] == list(rl.selector_to_ids(2))
+    with pytest.raises(TypeError):
+        rl.selector_to_ids(-7)
+    with pytest.raises(TypeError):
+        rl.selector_to_ids(7)
+
+
+def test_warn():
+    rl = RangedList(value=range(5))
+    assert [0, 1, 2] == rl.selector_to_ids([True, True, True, False],
+                                           warn=True)
+    assert [0, 1, 2] == rl.selector_to_ids(
+        [True, True, True, False, False, False], warn=True)
+    assert [0, 1, 2, 3, 4] == list(rl.selector_to_ids(None, warn=True))
+
+
+def test_numpy_selector():
+    rl = RangedList(value=range(5))
+    selector = numpy.array([1, 3, 4])
+    assert [1, 3, 4] == rl.selector_to_ids(selector)

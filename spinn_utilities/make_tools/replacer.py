@@ -45,8 +45,3 @@ class Replacer(object):
             for i in range(len(matches)):
                 replaced = replaced.replace(matches[i], parts[i+1], 1)
         return preface + replaced
-
-
-if __name__ == '__main__':
-    replacer = Replacer()
-    replacer.replace()

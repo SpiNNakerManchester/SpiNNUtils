@@ -1,4 +1,4 @@
-from .file_convertor import FileConvertor
+from .file_converter import FileConverter
 import os
 import math
 import shutil
@@ -10,7 +10,7 @@ else:
     RANGE_DIR = "lib"
 
 
-class Convertor(object):
+class Converter(object):
     # __slots__ = [
     #    "_dest", "_dest_basename", "_src", "_src_basename"]
 
@@ -46,7 +46,7 @@ class Convertor(object):
                 source = os.path.join(dirName, file_name)
                 if extension in [".c", ".cpp", ".h"]:
                     destination = self._any_destination(source)
-                    message_id = FileConvertor.convert(
+                    message_id = FileConverter.convert(
                         source, destination, self._dict, message_id)
                 elif file_name in ["common.mk", "Makefile.common",
                                    "paths.mk", "Makefile.paths",
@@ -136,12 +136,12 @@ class Convertor(object):
 
     @staticmethod
     def convert(src, dest, dict):
-        convertor = Convertor(src, dest, dict)
-        convertor.run()
+        converter = Converter(src, dest, dict)
+        converter.run()
 
 
 if __name__ == '__main__':
     src = sys.argv[1]
     dest = sys.argv[2]
     dict = sys.argv[3]
-    Convertor.convert(src, dest, dict)
+    Converter.convert(src, dest, dict)

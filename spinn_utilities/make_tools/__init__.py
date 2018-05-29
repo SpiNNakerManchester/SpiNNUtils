@@ -1,4 +1,4 @@
-from .file_convertor import FileConvertor
+from .file_converter import FileConverter
 
 __all__ = [
-    "FileConvertor"]
+    "FileConverter"]

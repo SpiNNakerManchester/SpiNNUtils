@@ -30,7 +30,7 @@ LEVELS = {"log_info(": "[INFO]",
 MAX_LOG_PER_FILE = 100
 
 
-class FileConvertor(object):
+class FileConverter(object):
     # __slots__ = [
     #    "_dest", "_dest_basename", "_src", "_src_basename"]
 
@@ -441,8 +441,8 @@ class FileConvertor(object):
 
     @staticmethod
     def convert(src, dest, dict, range_start):
-        convertor = FileConvertor(src, dest, dict, range_start)
-        return convertor.run()
+        converter = FileConverter(src, dest, dict, range_start)
+        return converter.run()
 
 
 if __name__ == '__main__':
@@ -450,4 +450,4 @@ if __name__ == '__main__':
     dest = sys.argv[2]
     dict = sys.argv[3]
     range_start = int(sys.argv[4])
-    FileConvertor.convert(src, dest, dict, range_start)
+    FileConverter.convert(src, dest, dict, range_start)

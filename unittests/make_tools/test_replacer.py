@@ -1,6 +1,6 @@
 import unittest
 from spinn_utilities.make_tools.replacer import Replacer
-from spinn_utilities.make_tools.file_convertor import TOKEN
+from spinn_utilities.make_tools.file_converter import TOKEN
 
 
 class TestReplacer(unittest.TestCase):

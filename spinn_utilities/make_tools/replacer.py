@@ -1,8 +1,8 @@
 import logging
 import os
 from spinn_utilities.log import FormatAdapter
-from .file_convertor import FORMATEXP
-from .file_convertor import TOKEN
+from .file_converter import FORMATEXP
+from .file_converter import TOKEN
 
 logger = FormatAdapter(logging.getLogger(__name__))
 

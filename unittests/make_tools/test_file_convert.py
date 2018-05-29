@@ -2,12 +2,12 @@ import os
 import sys
 import unittest
 
-from spinn_utilities.make_tools.file_convertor import FileConvertor
+from spinn_utilities.make_tools.file_converter import FileConverter
 
 ranged_file = "local_ranges.txt"
 
 
-class TestConvertor(unittest.TestCase):
+class TestConverter(unittest.TestCase):
 
     def setUp(self):
         class_file = sys.modules[self.__module__].__file__
@@ -19,7 +19,7 @@ class TestConvertor(unittest.TestCase):
         src = os.path.join("mock_src", file_name)
         dest = os.path.join("modified_src", file_name)
         dict = dest + "dict"
-        FileConvertor.convert(src, dest, dict, 2000)
+        FileConverter.convert(src, dest, dict, 2000)
         src_lines = sum(1 for line in open(src))
         modified_lines = sum(1 for line in open(dest))
         self.assertEquals(src_lines, modified_lines)

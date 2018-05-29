@@ -1,7 +1,7 @@
 import logging
 import os
 from spinn_utilities.log import FormatAdapter
-from .file_converter import FORMATEXP
+from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
 
 logger = FormatAdapter(logging.getLogger(__name__))
@@ -35,7 +35,7 @@ class Replacer(object):
         (id, preface, original) = self._messages[parts[0]]
         replaced = original
         if len(parts) > 1:
-            matches = FORMATEXP.findall(original)
+            matches = FORMAT_EXP.findall(original)
             if len(matches) != len(parts) - 1:
                 # try removing any blanks due to double spacing
                 matches = [x for x in matches if x != ""]

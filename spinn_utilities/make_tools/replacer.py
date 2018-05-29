@@ -11,7 +11,7 @@ class Replacer(object):
 
     def __init__(self, dict_pointer):
         self._messages = {}
-        rest, extension = os.path.splitext(dict_pointer)
+        rest, _ = os.path.splitext(dict_pointer)
         dict_path = rest + ".dict"
         if os.path.isfile(dict_path):
             with open(dict_path) as dict_info:

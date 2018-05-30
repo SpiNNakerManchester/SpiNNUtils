@@ -64,6 +64,16 @@ class FileConverter(object):
     ]
 
     def __init__(self, src, dest, dict, range_start):
+        """ Creates the file_convertor to convert one file
+
+        :param src: Full source directory
+        :type src: str
+        :param dest: Full destination directory
+        :type dest: str
+        :param dict: File to hold dictionary mappings
+        :type dict: str
+        :param range_start:
+        """
         self._src = os.path.abspath(src)
         self._dest = os.path.abspath(dest)
         self._message_id = range_start
@@ -108,7 +118,8 @@ class FileConverter(object):
             return self._process_line_in_log(dest_f, line_num, text)
 
         if self._status == IN_LOG_CLOSE_BRACKET:
-            return self._process_line_in_log_close_bracket(dest_f, line_num, text)
+            return self._process_line_in_log_close_bracket(
+                dest_f, line_num, text)
 
         assert self._status == NORMAL_CODE
         return self._process_line_normal_code(dest_f, line_num, text)

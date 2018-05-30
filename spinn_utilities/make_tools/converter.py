@@ -57,6 +57,15 @@ class Converter(object):
         self._dict = os.path.abspath(dict)
 
     def run(self):
+        """ Runs the file convertor on a whole directory incl sub directories
+
+        WARNING. This code is absolutely not thread safe.
+        Interwoven calls even on different FileConverter objects is dangerous!
+        It is hilghy likely that dict files become currupted and the same
+        message_id is used multiple times.
+
+        :return:
+        """
         self._mkdir(self._dest)
         with open(self._dict, 'w') as dict_f:
             dict_f.write(DICTIONARY_HEADER)

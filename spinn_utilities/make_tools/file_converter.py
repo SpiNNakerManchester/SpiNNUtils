@@ -63,7 +63,7 @@ class FileConverter(object):
         "_too_many_lines"
     ]
 
-    def __init__(self, src, dest, dict, range_start):
+    def __init__(self, src, dest, dict):
         """ Creates the file_convertor to convert one file
 
         :param src: Full source directory
@@ -72,23 +72,31 @@ class FileConverter(object):
         :type dest: str
         :param dict: File to hold dictionary mappings
         :type dict: str
-        :param range_start:
         """
         self._src = os.path.abspath(src)
         self._dest = os.path.abspath(dest)
-        self._message_id = range_start
         self._dict = dict
 
-    def _run(self):
+    def _run(self, range_start):
+        """ Runs the file convertor
+
+        WARNING. This code is absolutely not thread safe.
+        Interwoven calls even on different FileConverter objects is dangerous!
+        It is hilghy likely that dict files become currupted and the same
+        message_id is used multiple times.
+
+
+        :param range_start: id of last dictionary key used
+        :type range_start: int
+        :return: The last message id use which can in turn be passed into
+        the next FileConverter
+        """
+        self._message_id = range_start
         if not os.path.exists(self._src):
             raise Exception("Unable to locate source {}".format(src))
         dest_dir = os.path.dirname(os.path.realpath(self._dest))
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
-        self._convert_c()
-        return self._message_id
-
-    def _convert_c(self):
         with open(self._src) as src_f:
             with open(self._dest, 'w') as dest_f:
                 dest_f.write(
@@ -109,6 +117,13 @@ class FileConverter(object):
         return self._message_id
 
     def _process_line(self, dest_f, line_num, text):
+        """ Process a single line
+
+        :param dest_f: Open file like Object to write modified source to
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
+        :return: True if and only if the whole line was processed
+        """
         if self._status == COMMENT:
             return self._process_line_in_comment(dest_f, text)
         if "/*" in text:
@@ -125,6 +140,12 @@ class FileConverter(object):
         return self._process_line_normal_code(dest_f, line_num, text)
 
     def _process_line_in_comment(self, dest_f, text):
+        """ Process a single line when in a multi line comment /*  .. */
+
+        :param dest_f: Open file like Object to write modified source to
+        :param text: Text of that line including whitespace
+        :return: True if and only if the whole line was processed
+        """
         if "*/" in text:
             stripped = text.strip()
             match = END_COMMENT_REGEX.search(stripped)
@@ -141,10 +162,12 @@ class FileConverter(object):
     def _process_line_comment_start(self, dest_f, line_num, text):
         """ Processes a line known assumed to contain a /* but not know where
 
-        There is aslo the assumption that the start status is not COMMENT
+        There is also the assumption that the start status is not COMMENT
 
-        :param dest_f:
-        :return:
+        :param dest_f: Open file like Object to write modified source to
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
+        :return: True if and only if the whole line was processed
         """
         stripped = text.strip()
         if stripped.startswith("/*"):
@@ -156,6 +179,13 @@ class FileConverter(object):
         return False  # More than one possible end so check by char
 
     def _process_line_in_log(self, dest_f, line_num, text):
+        """ Process a line when the status is a log call has been started
+
+        :param dest_f: Open file like Object to write modified source to
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
+        :return: True if and only if the whole line was processed
+        """
         stripped = text.strip()
         if stripped.startswith("//"):
             # Just a comment line so write and move on
@@ -181,6 +211,13 @@ class FileConverter(object):
         return True
 
     def _process_line_in_log_close_bracket(self, dest_f, line_num, text):
+        """ Process where the last log line has the ) but not the ;
+
+        :param dest_f: Open file like Object to write modified source to
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
+        :return: True if and only if the whole line was processed
+        """
         stripped = text.strip()
         if stripped[0] == ";":
             if stripped == ";":
@@ -203,7 +240,13 @@ class FileConverter(object):
             return self._process_line_in_log(dest_f, line_num, text)
 
     def _process_line_normal_code(self, dest_f, line_num, text):
-        # Full slower check
+        """ Process a line where the status is normal code
+
+        :param dest_f: Open file like Object to write modified source to
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
+        :return: True if and only if the whole line was processed
+        """
         stripped = text.strip()
         match = LOG_START_REGEX.search(stripped)
         if not match:
@@ -232,21 +275,48 @@ class FileConverter(object):
         # Now check for the end of log command
         return self._process_line_in_log(dest_f, line_num, text)
 
-    def shorten(self, text):
-        count = text.count("%")
+    def _shorten(self, original):
+        """ shortens the log string message and adds the id
+
+        Assumes that self._message_id has already been updated
+
+        :param original: Source log messages
+        :return: new log message and the id
+        """
+        count = original.count("%")
         if count == 0:
             return '"%u", {}'.format(self._message_id)
         else:
             result = '"%u'
-            matches = FORMAT_EXP.findall(text)
+            matches = FORMAT_EXP.findall(original)
             if len(matches) != count:
-                raise Exception("Unexpected formatString in {}".format(text))
+                raise Exception(
+                    "Unexpected formatString in {}".format(original))
             for match in matches:
                 result += TOKEN
                 result += match
             return result + '", {}'.format(self._message_id)
 
     def _write_log_method(self, dest_f, line_num, tail=""):
+        """ Writes the log message and the dict value
+
+        Writes the log call to the destination
+        - New log method used
+        - Shortened log message (woth just a id) used
+        - Parameters kept as is
+        - Old log message with full text added as comment
+
+        Addes the data to the dict file including
+        - key/id
+        - log level
+        - file name
+        - line number
+        - original message
+
+        :param dest_f: Open file like Object to write modified source to
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
+        """
         self._message_id += 1
         self._log_full = self._log_full.replace('""', '')
         try:
@@ -254,7 +324,7 @@ class FileConverter(object):
         except Exception:
             raise Exception("Unexpected line {} at {} in {}".format(
                 self._log_full, line_num, self._src))
-        replacement = self.shorten(original)
+        replacement = self._shorten(original)
         self._log_full = self._log_full.replace(self._log, MINIS[self._log])\
             .replace(original, replacement)
         dest_f.write(" " * self._log_start)
@@ -286,6 +356,12 @@ class FileConverter(object):
                 original[1:-1]))
 
     def _process_chars(self, dest_f, line_num, text):
+        """ Deals with complex lines that can not be handled in one go
+
+        :param dest_f: Open file like Object to write modified source to
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
+        """
         pos = 0
         write_flag = 0
         while text[pos] != "\n":
@@ -406,6 +482,15 @@ class FileConverter(object):
             dest_f.write(text[write_flag:])
 
     def unique_src(self):
+        """ Returns the part of the source path which is different
+
+        For example assunming a source of
+        /spinnaker/sPyNNaker/neural_modelling/src/common/in_spikes.h
+        /spinnaker/sPyNNaker/neural_modelling/modified_src/common/in_spikes.h
+        returns src/common/in_spikes.h
+
+        :return: A pointer to the source relative to the destination
+        """
         pos = 0
         last_sep = 0
         while pos < len(self._src) and pos < len(self._dest) \
@@ -417,8 +502,21 @@ class FileConverter(object):
 
     @staticmethod
     def convert(src, dest, dict, range_start):
-        converter = FileConverter(src, dest, dict, range_start)
-        return converter._run()
+        """ Startic method to create Object and do the conversion
+
+        :param src: Full source directory
+        :type src: str
+        :param dest: Full destination directory
+        :type dest: str
+        :param dict: File to hold dictionary mappings
+        :type dict: str
+        :param range_start:
+        :param range_start: id of last dictionary key used
+        :type range_start: int
+        :return: The last message id use which can in turn be passed into
+        """
+        converter = FileConverter(src, dest, dict)
+        return converter._run(range_start)
 
 
 if __name__ == '__main__':

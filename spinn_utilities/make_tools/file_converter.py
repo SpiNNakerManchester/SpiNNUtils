@@ -32,10 +32,6 @@ MAX_LOG_PER_FILE = 100
 
 class FileConverter(object):
     __slots__ = [
-        # part but possible not all of a comment string
-        # this to handle multi lines comments
-        # Variable created when a comment found
-        "_comment_start",
         # Full destination directory
         "_dest",
         # File to hold dictionary mappings
@@ -98,7 +94,6 @@ class FileConverter(object):
                             self._too_many_lines -= 1
                             continue
                     if not self._process_line(dest_f, line_num, text):
-                        self._comment_start = 0
                         self._process_chars(dest_f, line_num, text)
         # print (self._dest)
         return self._message_id

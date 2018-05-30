@@ -114,31 +114,12 @@ class Converter(object):
             log_ranges_file.write("{} {}\n".format(new_start, filename))
         return new_start
 
-    def copy_if_newer(self, src_path):
-        destination = self._newer_destination(src_path)
-        if destination is None:
-            return  # newer so no need to copy
-        shutil.copy2(src_path, destination)
-
     def _any_destination(self, path):
         # Here we need the local seperator
         destination = path.replace(
             os.path.sep + self._src_basename + os.path.sep,
             os.path.sep + self._dest_basename + os.path.sep)
         return destination
-
-    def _newer_destination(self, path):
-        destination = self._any_destination(path)
-        if not os.path.exists(destination):
-            return destination
-        # need to floor the time as some copies ignore the partial second
-        src_time = math.floor(os.path.getmtime(path))
-        dest_time = math.floor(os.path.getmtime(destination))
-        if src_time > dest_time:
-            return destination
-        else:
-            # print ("ignoring {}".format(destination))
-            return None
 
     def _mkdir(self, path):
         destination = self._any_destination(path)

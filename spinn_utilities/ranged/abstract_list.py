@@ -329,7 +329,7 @@ class AbstractList(AbstractSized):
         """
 
     def iter_ranges_by_id(self, id):  # @ReservedAssignment
-        """ iterator of the range for this ID
+        """ Iterator of the range for this ID
 
         .. note::
             The start and stop of the range will be reduced to just the ID

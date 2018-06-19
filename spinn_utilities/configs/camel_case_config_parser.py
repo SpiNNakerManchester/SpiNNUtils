@@ -27,7 +27,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return self._read_files
 
     def get_str(self, section, option):
-        """Get the string value of an option.
+        """ Get the string value of an option.
 
         :param section: What section to get the option from.
         :type section: str
@@ -42,7 +42,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return value
 
     def get_int(self, section, option):
-        """Get the integer value of an option.
+        """ Get the integer value of an option.
 
         :param section: What section to get the option from.
         :type section: str
@@ -57,7 +57,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return int(value)
 
     def get_float(self, section, option):
-        """Get the float value of an option.
+        """ Get the float value of an option.
 
         :param section: What section to get the option from.
         :type section: str
@@ -72,7 +72,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return float(value)
 
     def get_bool(self, section, option):
-        """Get the boolean value of an option.
+        """ Get the boolean value of an option.
 
         :param section: What section to get the option from.
         :type section: str

@@ -87,7 +87,7 @@ def logging_parser(config):
 
 def _outdated_config_section(validation_config, defaults, config, skip,
                              user_sections, section):
-    """Helper for :py:func:_outdated_config
+    """ Helper for :py:func:`_outdated_config`.
     """
     if section in user_sections:
         print("Section [{}] should be kept as these need to be set "
@@ -268,7 +268,7 @@ def _read_a_config(config, cfg_file, validation_cfg, default_cfg):
 
 
 def _config_locations(filename):
-    """Defines the list of places we can get configuration files from.
+    """ Defines the list of places we can get configuration files from.
 
     :param filename: The local name of the config file, e.g., 'spynnaker.cfg'
     :type filename: str

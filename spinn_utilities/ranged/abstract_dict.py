@@ -73,7 +73,7 @@ class AbstractDict(object):
     def iter_all_values(self, key, update_save=False):
         """ Iterates over the value(s) for all IDs covered by this view
 
-        There will be one yield for each id even if values are repeated.
+        There will be one yield for each ID even if values are repeated.
 
         :param key: The key or keys to get the value of. Use None for all keys
         :type key: str or iterable(str) or None
@@ -99,8 +99,8 @@ class AbstractDict(object):
         :param key: The key or keys to get the value of. Use None for all
         :type key: str or iterable(str) or None
         :return: List of tuples of (start, stop, value).\
-            start is INCLUSIVE so is the first id in the range.\
-            stop is EXCLUSIVE so is the last id in the range + 1.\
+            start is INCLUSIVE so is the first ID in the range.\
+            stop is EXCLUSIVE so is the last ID in the range + 1.\
             If key is a str this value is a single object.\
             If key is iterable (list, tuple, set, etc) of str (or None) \
             value is a dictionary object

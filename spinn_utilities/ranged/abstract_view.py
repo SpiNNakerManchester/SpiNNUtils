@@ -50,7 +50,7 @@ class AbstractView(AbstractDict):
         if isinstance(key, str):
             return self.set_value(key=key, value=value)
         if isinstance(key, (slice, int, tuple, list)):
-            raise KeyError("Setting of a slice/ids not supported")
+            raise KeyError("Setting of a slice/IDs not supported")
         raise KeyError("Unexpected key type: {}".format(type(key)))
 
     @overrides(AbstractDict.get_default)

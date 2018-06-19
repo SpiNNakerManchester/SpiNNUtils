@@ -17,7 +17,7 @@ def function_iterator(function, size, ids=None):
 
     :param function: A function with one integer parameter that returns a value
     :param size: The number of elements to put in the list. If used the
-        function will be called with xrange(size). Ignored if ids provided
+        function will be called with range(size). Ignored if `ids` provided
     :param ids: A list of IDs to call the function for or None to use the size.
     :type ids: list of int
     :return: a list of values
@@ -65,7 +65,7 @@ class RangedList(AbstractList):
                 if id < stop:
                     return value  # pragma: no cover
 
-            # Must never get here because the id is in range
+            # Must never get here because the ID is in range
             raise ValueError  # pragma: no cover
 
         # Non-range-based so just return the value
@@ -128,7 +128,7 @@ class RangedList(AbstractList):
 
     @overrides(AbstractList.get_single_value_by_ids)
     def get_single_value_by_ids(self, ids):
-        # Take the first id, and then simply check all the others are the same
+        # Take the first ID, and then simply check all the others are the same
         # This works for both range-based and non-range-based
         result = self.get_value_by_id(ids[0])
         for id_value in ids[1:]:
@@ -318,14 +318,14 @@ class RangedList(AbstractList):
                 if value == old_value:
                     return
 
-                # Split the id out of the range
+                # Split the ID out of the range
                 self._ranges[index] = (id, id + 1, value)
 
-                # Need a new range after the id
+                # Need a new range after the ID
                 if id + 1 < stop:
                     self._ranges.insert(index + 1, (id + 1, stop, old_value))
 
-                # Need a new range before the id
+                # Need a new range before the ID
                 if id > start:
                     self._ranges.insert(index, (start, id, old_value))
 

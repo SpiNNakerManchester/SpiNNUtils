@@ -203,7 +203,7 @@ class AbstractList(AbstractSized):
                 ranges = self.iter_ranges()
                 (_, stop, value) = next(ranges)
 
-            # Move on until the id is in range
+            # Move on until the ID is in range
             while id_value >= stop:
                 (_, stop, value) = next(ranges)
 

@@ -144,7 +144,7 @@ class AbstractSized(object):
             This could result in am empty list
 
         int: (or long) Handles negative values as normal. \
-            Check id is within expected range.
+            Check ID is within expected range.
 
         iterator of bools: Used a mask. \
             If the length of the mask is longer or shorted than number of IDs \
@@ -184,11 +184,11 @@ class AbstractSized(object):
                 for _id in ids:
                     if _id < 0:
                         raise TypeError(
-                            "Selector includes the id {} which is less than "
+                            "Selector includes the ID {} which is less than "
                             "zero".format(_id))
                     if _id >= self._size:
                         raise TypeError(
-                            "Selector includes the id {} which not less than "
+                            "Selector includes the ID {} which not less than "
                             "the size {}".format(_id, self._size))
                 return ids
             else:
@@ -198,7 +198,7 @@ class AbstractSized(object):
         # OK lets try for None, int and slice after all
         if selector is None:
             if warn:
-                logger.warning("None selector taken as all ids")
+                logger.warning("None selector taken as all IDs")
             return range(self._size)
 
         if isinstance(selector, slice):

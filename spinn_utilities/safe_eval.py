@@ -2,7 +2,9 @@ class SafeEval(object):
     """ This provides expression evaluation capabilities while allowing the\
         set of symbols exposed to the expression to be strictly controlled.
 
-    Sample of use::
+    Sample of use:
+
+    .. code-block:: python
 
         >>> import math
         >>> def evil_func(x):

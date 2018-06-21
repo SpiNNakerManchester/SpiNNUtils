@@ -8,15 +8,18 @@ class SafeEval(object):
 
         >>> import math
         >>> def evil_func(x):
-               print("HAHA!")
-               return x/0.0
-
+        ...    print("HAHA!")
+        ...    return x/0.0
+        ...
         >>> eval_safely = SafeEval(math)
         >>> eval_safely.eval("math.sqrt(x)", x=1.23)
         1.1090536506409416
         >>> eval_safely.eval("evil_func(1.23)")
         Traceback (most recent call last):
-          ...
+          File "<stdin>", line 1, in <module>
+          File ".../safe_eval.py", line 62, in eval
+            return eval(expression, self._environment, kwargs)
+          File "<string>", line 1, in <module>
         NameError: name 'evil_func' is not defined
 
     Note that this is not guaranteed to be safe under all circumstances. It\

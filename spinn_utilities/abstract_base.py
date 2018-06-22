@@ -6,9 +6,9 @@
 def abstractmethod(funcobj):
     """ A decorator indicating abstract methods.
 
-    Requires that the metaclass is :py:class:AbstractBase or derived from it.\
-    A class that has a metaclass derived from :py:class:AbstractBase cannot be\
-    instantiated unless all of its abstract methods are overridden.\
+    Requires that the metaclass is :py:class:`AbstractBase` or derived from\
+    it. A class that has a metaclass derived from :py:class:`AbstractBase` \
+    cannot be instantiated unless all of its abstract methods are overridden.\
     The abstract methods can be called using any of the normal\
     'super' call mechanisms.
 
@@ -27,10 +27,10 @@ def abstractmethod(funcobj):
 class abstractproperty(property):
     """ A decorator indicating abstract properties.
 
-    Requires that the metaclass is :py:class:AbstractBase or derived from it.\
-    A class that has a metaclass derived from :py:class:AbstractBase cannot be\
-    instantiated unless all of its abstract properties are overridden.\
-    The abstract properties can be called using any of the normal\
+    Requires that the metaclass is :py:class:`AbstractBase` or derived from\
+    it. A class that has a metaclass derived from :py:class:`AbstractBase` \
+    cannot be instantiated unless all of its abstract properties are\
+    overridden. The abstract properties can be called using any of the normal\
     'super' call mechanisms.
 
     Usage::
@@ -56,8 +56,8 @@ class abstractproperty(property):
 class AbstractBase(type):
     """ Metaclass for defining Abstract Base Classes (AbstractBases).
 
-    Use this metaclass to create an AbstractBase. An AbstractBase can\
-    be subclassed directly, and then acts as a mix-in class.
+    Use this metaclass to create an AbstractBase. An AbstractBase can be\
+    subclassed directly, and then acts as a mix-in class.
 
     This is a trimmed down version of ABC.\
     Unlike ABC you can not register unrelated concrete classes.

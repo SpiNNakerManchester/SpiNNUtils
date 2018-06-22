@@ -35,13 +35,13 @@ class Timer(object):
         self._measured_section_interval = None
 
     def start_timing(self):
-        """ Start the timing. Use :py:meth:take_sample to get the end.
+        """ Start the timing. Use :py:meth:`take_sample` to get the end.
         """
         self._start_time = datetime.datetime.now()
 
     def take_sample(self):
         """ Describes how long has elapsed since the instance that the\
-            :py:meth:start_timing method was last called.
+            :py:meth:`start_timing` method was last called.
 
         :rtype: datetime.timedelta
         """

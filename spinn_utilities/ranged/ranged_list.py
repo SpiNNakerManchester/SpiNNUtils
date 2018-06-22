@@ -12,7 +12,7 @@ def function_iterator(function, size, ids=None):
     """ Converts a function into an iterator based on size or IDs.\
     This so that the function can be used to create a list as in::
 
-        list(function_iterator(lambda x: x * 2 , 3, ids=[2, 4, 6)
+        list(function_iterator(lambda x: x * 2 , 3, ids=[2, 4, 6]))
 
     :param function: A function with one integer parameter that returns a value
     :param size: The number of elements to put in the list. If used, the\
@@ -28,6 +28,9 @@ def function_iterator(function, size, ids=None):
 
 
 class RangedList(AbstractList):
+    """ A list that is able to efficiently hold large numbers of elements\
+        that all have the same value.
+    """
     __slots__ = [
         "_default", "_key", "_ranged_based", "_ranges"]
 
@@ -71,16 +74,6 @@ class RangedList(AbstractList):
 
     @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):
-        """ If possible returns a single value shared by the whole slice list.
-
-        For multiple values, use `for x in list`, `iter(list)`, `list.iter`,\
-        or one of the `iter_ranges` methods
-
-        :return: Value shared by all elements in the slice
-        :raises MultipleValuesException: \
-            If even one elements has a different value. Not thrown if elements\
-            outside of the slice have a different value
-        """
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
 
@@ -235,9 +228,9 @@ class RangedList(AbstractList):
     def is_list(value, size):  # @UnusedVariable
         """ Determines if the value should be treated as a list.
 
-        .. note:
+        .. note::
             This method can be extended to add other checks for list in which\
-            case `as_list` must also be extended.
+            case :py:meth:`as_list` must also be extended.
         """
 
         # Assume any iterable is a list
@@ -252,7 +245,7 @@ class RangedList(AbstractList):
 
         .. note::
             This method can be extended to add other conversions to list in\
-            which case `is_list` must also be extended.
+            which case :py:meth:`is_list` must also be extended.
 
         :param value:
         :return: value as a list

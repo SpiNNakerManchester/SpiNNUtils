@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def install_cfg_and_IOError(filename, defaults, config_locations):
     """ Installs a local configuration file based on the templates and raises\
-    an exception.
+        an exception.
 
     This method is called when no user configuration file is found.
 
@@ -27,8 +27,8 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
     :param filename: Name under which to save the new configuration file
     :type filename: str
     :param defaults: List of full paths to the default configuration files.\
-        Each of which MUST have an associated template file with exactly the\
-        same path plus .template
+        Each of which *must* have an associated template file with exactly the\
+        same path plus `.template`.
     :type defaults: list(str)
     :param config_locations: List of paths where the user configuration files\
         were looked for. Only used for the message
@@ -302,7 +302,7 @@ def load_config(filename, defaults, config_parsers=None, validation_cfg=None):
         be parsed if the section_name is found in the configuration files\
         already loaded. The standard logging parser is appended to (a copy\
         of) this list.
-    :type config_parsers: list of (str, ConfigParser)
+    :type config_parsers: list(tuple(str, ConfigParser))
     :param validation_cfg: The list of files to read a validation\
         configuration from. If omitted, no such validation is performed.
     :type validation_cfg: list(str)

@@ -9,6 +9,9 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
     __slots__ = ["_none_marker", "_read_files"]
 
     def optionxform(self, optionstr):
+        """ Transforms the name of an option to lower case and strips\
+            underscores, so matching is more user-friendly.
+        """
         lower = optionstr.lower()
         return lower.replace("_", "")
 
@@ -18,12 +21,16 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         self._read_files = list()
 
     def read(self, filenames):
+        """ Read and parse a filename or a list of filenames.
+        """
         new_files = configparser.RawConfigParser.read(self, filenames)
         self._read_files.extend(new_files)
         return new_files
 
     @property
     def read_files(self):
+        """ The configuration files that have been actually read.
+        """
         return self._read_files
 
     def get_str(self, section, option):

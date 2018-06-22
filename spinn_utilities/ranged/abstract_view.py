@@ -3,6 +3,13 @@ from spinn_utilities.overrides import overrides
 
 
 class AbstractView(AbstractDict):
+    """ A view over a ranged dictionary.
+
+    .. note::
+        The view may currently be read from only with int and int-collection\
+        indices, and only be written to with str indices. This may change to\
+        become more permissive in future versions.
+    """
     __slots__ = [
         "_range_dict"]
 

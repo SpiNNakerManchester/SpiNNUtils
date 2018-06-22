@@ -13,7 +13,7 @@ from six import add_metaclass
 class AbstractList(AbstractSized):
     """ A ranged implementation of list.
 
-    Functions that change the size of the list are NOT Supported.\
+    Functions that change the size of the list are *not* supported.\
     These include::
 
         __setitem__ where key >= len
@@ -33,13 +33,25 @@ class AbstractList(AbstractSized):
     In the current version the IDs are zero base consecutive numbers so there\
     is no difference between value-based IDs and index-based IDs\
     but this could change in the future.
+
+    Supports the following arithmetic operations over the list:
+
+    `+`
+        element-wise addition or addition of a single scalar
+    `-`
+        element-wise subtraction or subtraction of a single scalar
+    `*`
+        element-wise multiplication or multiplication by a single scalar
+    `/`
+        element-wise true division or true division by a single scalar
+    `//`
+        element-wise floor division or floor division by a single scalar
     """
     __slots__ = [
         "_key"]
 
     def __init__(self, size, key=None):
-        """ Constructor for a ranged list.
-
+        """
         :param size: Fixed length of the list
         :param key: The dict key this list covers.\
             This is used only for better Exception messages
@@ -81,8 +93,8 @@ class AbstractList(AbstractSized):
     def get_single_value_all(self):
         """ If possible, returns a single value shared by the whole list.
 
-        For multiple values use for x in list, iter(list) or list.iter,\
-        or one of the iter_ranges methods
+        For multiple values use `for x in list`, `iter(list)` or `list.iter`,\
+        or one of the `iter_ranges` methods
 
         :return: Value shared by all elements in the list
         :raises MultipleValuesException: \
@@ -136,7 +148,7 @@ class AbstractList(AbstractSized):
         """ If possible, returns a single value shared by all the IDs.
 
         For multiple values, use `for x in list`, `iter(list)`,\
-        `list.iter`, or one of the `iter_ranges` methods
+        `list.iter`, or one of the `iter_ranges` methods.
 
         :return: Value shared by all elements with these IDs
         :raises MultipleValuesException: If even one elements has a different\
@@ -146,7 +158,7 @@ class AbstractList(AbstractSized):
         """
 
     def __getitem__(self, selector):
-        """ Supports the list[x] to return an element or slice of the list
+        """ Supports the `list[x]` to return an element or slice of the list.
 
         :param selector: The int ID, slice
         :return: The element[key] or the slice
@@ -175,10 +187,10 @@ class AbstractList(AbstractSized):
             raise TypeError("Invalid argument type.")
 
     def iter_by_id(self, id):  # @ReservedAssignment
-        """ Fast not update safe iterator by one ID
+        """ Fast but *not* update-safe iterator by one ID.
 
-        While next can only be called one this is an iterator \
-            so it can be mixed in with other iterators
+        While `next` can only be called once, this is an iterator so it can\
+        be mixed in with other iterators.
 
         :param id: ID
         :return: yields the elements
@@ -186,10 +198,10 @@ class AbstractList(AbstractSized):
         yield self.get_value_by_id(id)
 
     def iter_by_ids(self, ids):
-        """ Fast not update safe iterator by collection of IDs
+        """ Fast but *not* update-safe iterator by collection of IDs.
 
         .. note::
-            Duplicate/Repeated elements are yielded for each ID
+            Duplicate/Repeated elements are yielded for each ID.
 
         :param ids: IDs
         :return: yields the elements pointed to by IDs
@@ -210,7 +222,7 @@ class AbstractList(AbstractSized):
             yield value
 
     def iter(self):
-        """ Update safe iterator of all elements
+        """ Update-safe iterator of all elements.
 
         .. note::
             Duplicate/Repeated elements are yielded for each ID
@@ -221,7 +233,7 @@ class AbstractList(AbstractSized):
             yield self.get_value_by_id(id_value)
 
     def __iter__(self):
-        """ Fast NOT update safe iterator of all elements
+        """ Fast but *not* update-safe iterator of all elements.
 
         .. note::
             Duplicate/Repeated elements are yielded for each ID
@@ -237,7 +249,7 @@ class AbstractList(AbstractSized):
                 yield self.get_value_by_id(id_value)
 
     def iter_by_slice(self, slice_start, slice_stop):
-        """ Fast NOT update safe iterator of all elements in the slice
+        """ Fast but *not* update-safe iterator of all elements in the slice.
 
         .. note::
             Duplicate/Repeated elements are yielded for each ID
@@ -256,9 +268,9 @@ class AbstractList(AbstractSized):
                 yield self.get_value_by_id(id_value)
 
     def iter_by_selector(self, selector=None):
-        """ Fast NOT update safe iterator of all elements in the slice
+        """ Fast but *not* update-safe iterator of all elements in the slice.
 
-        :param selector: See AbstractSized._selector_to_ids
+        :param selector: See :py:meth:`AbstractSized.selector_to_ids`
         """
         # No Selector so iter all fast
         if selector is None:
@@ -286,10 +298,10 @@ class AbstractList(AbstractSized):
     def get_values(self, selector=None):
         """ Get the value all elements pointed to the selector.
 
-        Note: Unlike __get_item__ this method always returns a list even if \
+        Note: Unlike `__get_item__` this method always returns a list even if\
         the selector is a single int
 
-        :param selector: See AbstractSized._selector_to_ids
+        :param selector: See :py:meth:`AbstractSized.selector_to_ids`
         :return: returns a list if the item which may be empty or have only \
             single value
         """
@@ -323,7 +335,7 @@ class AbstractList(AbstractSized):
 
     @abstractmethod
     def iter_ranges(self):
-        """ Fast *non-update-safe* iterator of the ranges
+        """ Fast but *not* update-safe iterator of the ranges.
 
         :return: yields each range one by one
         """
@@ -335,7 +347,7 @@ class AbstractList(AbstractSized):
             The start and stop of the range will be reduced to just the ID
 
         This method purpose is so one a control method can select which\
-        iterator to use
+        iterator to use.
 
         :return: yields the one range
         """
@@ -348,20 +360,22 @@ class AbstractList(AbstractSized):
 
     @abstractmethod
     def iter_ranges_by_slice(self, slice_start, slice_stop):
-        """ Fast NOT update safe iterator of the ranges covered by this slice
+        """ Fast but *not* update-safe iterator of the ranges covered by this\
+            slice.
 
         .. note::
             The start and stop of the range will be reduced to just the\
-            IDs inside the slice
+            IDs inside the slice.
 
         :return: yields each range one by one
         """
 
     def iter_ranges_by_ids(self, ids):
-        """ Fast NOT update safe iterator of the ranges covered by these IDs
+        """ Fast but *not* update-safe iterator of the ranges covered by these\
+            IDs.
 
         For consecutive IDs where the elements have the same value a single\
-        range may be yielded
+        range may be yielded.
 
         .. note::
             The start and stop of the range will be reduced to just the IDs
@@ -393,17 +407,15 @@ class AbstractList(AbstractSized):
 
     @abstractmethod
     def get_default(self):
-        """ Gets the default value of the list.
-
-        Just in case we later allow to increase the number of elements
+        """ Gets the default value of the list. \
+        Just in case we later allow to increase the number of elements.
 
         :return: Default value
         """
 
     def __add__(self, other):
-        """ Support for new_list = list1 + list2
-
-        Applied the add operator over this and other to create a new list
+        """ Support for `new_list = list1 + list2`. \
+        Applies the add operator over this and other to create a new list
 
         The values of the new list are created on the fly so any changes to\
         the original lists are reflected.
@@ -422,9 +434,8 @@ class AbstractList(AbstractSized):
                         "RangedLists and numerical Values")
 
     def __sub__(self, other):
-        """ Support for new_list = list1 - list2
-
-        Applied the add operator over this and other to create a new list
+        """ Support for `new_list = list1 - list2`. \
+        Applies the add operator over this and other to create a new list.
 
         The values of the new list are created on the fly so any changes to\
         the original lists are reflected.
@@ -443,9 +454,8 @@ class AbstractList(AbstractSized):
                         "RangedLists and numerical Values")
 
     def __mul__(self, other):
-        """ Support for new_list = list1 * list2
-
-        Applied the multiplication operator over this and other
+        """ Support for `new_list = list1 * list2`. \
+        Applies the multiplication operator over this and other.
 
         The values of the new list are created on the fly so any changes to\
         the original lists are reflected.
@@ -464,9 +474,8 @@ class AbstractList(AbstractSized):
                         "RangedLists and numerical Values")
 
     def __div__(self, other):
-        """ Support for new_list = list1 / list2
-
-        Applied the division operator over this and other to create a new list
+        """ Support for `new_list = list1 / list2`. \
+        Applies the division operator over this and other to create a new list.
 
         The values of the new list are created on the fly so any changes to\
         the original lists are reflected.
@@ -490,9 +499,8 @@ class AbstractList(AbstractSized):
     __truediv__ = __div__
 
     def __floordiv__(self, other):
-        """ Support for new_list = list1 // list2
-
-        Applied the floor division operator over this and other
+        """ Support for `new_list = list1 // list2`. \
+        Applies the floor division operator over this and other.
 
         :param other: another list
         :type other: AbstractList
@@ -510,8 +518,7 @@ class AbstractList(AbstractSized):
                         "RangedLists and numerical Values")
 
     def apply_operation(self, operation):
-        """ Applies a function on the list to create a new one
-
+        """ Applies a function on the list to create a new one. \
         The values of the new list are created on the fly so any changes to\
         the original lists are reflected.
 
@@ -526,7 +533,7 @@ class AbstractList(AbstractSized):
 
 @add_metaclass(AbstractBase)
 class SingleList(AbstractList):
-    """ A List that performs an operation on the elements of another list
+    """ A List that performs an operation on the elements of another list.
     """
     __slots__ = [
         "_a_list", "_operation"]
@@ -586,7 +593,6 @@ class DualList(AbstractList):
 
     def __init__(self, left, right, operation, key=None):
         """
-
         :param left: The first list to combine
         :param right: The second list to combine
         :param operation:\

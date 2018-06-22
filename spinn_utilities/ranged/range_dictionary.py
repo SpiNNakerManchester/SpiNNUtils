@@ -12,20 +12,16 @@ from six import iteritems
 
 
 class RangeDictionary(AbstractSized, AbstractDict):
-    """ Main holding class for a range of similar Dictionary object.
-
-    Keys in the dictionary must be str object and can not be removed.
-
-    New keys can be added using the ``dict[str] = value`` format.
-
+    """ Main holding class for a range of similar Dictionary object. \
+    Keys in the dictionary must be str object and can not be removed. \
+    New keys can be added using the ``dict[str] = value`` format. \
     The size (length of the list) is fixed and set at initialisation time.
     """
     __slots__ = [
         "_value_lists"]
 
     def __init__(self, size, defaults=None):
-        """ Main constructor for a Ranged Dictionary
-
+        """
         The Object is set up initially where every ID in the range will share\
         the same value for each key. All keys must be of type str. The\
         default Values can be anything including None.
@@ -43,7 +39,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
                     size=size, value=value, key=key)
 
     def list_factory(self, size, value, key):
-        """ Defines which class or subclass of RangedList to use
+        """ Defines which class or subclass of :py:class:`RangedList` to use.
 
         Main purpose is for subclasses to use a subclass or RangedList.\
         All parameters are pass through ones to the List constructor
@@ -56,8 +52,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         return RangedList(size, value, key)
 
     def view_factory(self, key):
-        """ Main function for creating views.
-
+        """ Main function for creating views.\
         This is the preferred way of creating new views as it checks\
         parameters and returns the most efficient view.
 
@@ -174,7 +169,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
     def update_safe_iter_all_values(self, key, ids):
         """ Same as :py:meth:`AbstractDict.iter_all_values` \
-        but limited to a collection of IDs and update safe
+            but limited to a collection of IDs and update safe
         """
         for id_value in ids:  # @ReservedAssignment
             yield self.get_values_by_id(key=key, id=id_value)
@@ -312,7 +307,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
     def iter_ranges_by_id(self, key=None, id=None):  # @ReservedAssignment
         """ Same as :py:meth:`AbstractDict.iter_ranges` but limited to one ID
 
-        :param key: see :py:meth`AbstractDict.iter_ranges` parameter key
+        :param key: see :py:meth:`AbstractDict.iter_ranges` parameter key
         :param id: single ID which is the actual ID and not an index into IDs
         :type id: int
         """

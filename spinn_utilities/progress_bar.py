@@ -140,7 +140,7 @@ class ProgressBar(object):
 
         This method does not have any parameters because any parameters in the\
         with :samp:`ProgressBar(...)` call have been passed to\
-        :py:meth:__init__
+        :py:meth:`__init__`
 
         Like :samp:`__new__` this method has to return self as in theory it\
         could pass back a different object. Welcome to Python.

@@ -1,4 +1,6 @@
 class XView(object):
+    """ A view along a particular x-slice of a 2D matrix.
+    """
     __slots__ = [
         "_matrix", "_x"]
 

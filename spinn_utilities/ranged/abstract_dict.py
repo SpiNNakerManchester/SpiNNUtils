@@ -32,7 +32,7 @@ class AbstractDict(object):
         """
 
     @abstractmethod
-    def set_value(self, key, value):
+    def set_value(self, key, value, use_list_as_value=False):
         """ Resets a already existing key to the new value. \
         All IDs in the whole range or view will have this key set.
 
@@ -49,6 +49,7 @@ class AbstractDict(object):
         :param key: key to value being set
         :type key: str
         :param value: any object
+        :param use_list_as_value: True if the value *is* a list
         :raise KeyError: If a new key is being used.
         """
 

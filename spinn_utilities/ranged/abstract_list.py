@@ -1,6 +1,7 @@
 # pylint: disable=redefined-builtin
 import numbers
 from spinn_utilities.overrides import overrides
+import numpy
 from spinn_utilities.ranged.multiple_values_exception \
     import MultipleValuesException
 from spinn_utilities.ranged.abstract_sized import AbstractSized
@@ -82,8 +83,9 @@ class AbstractList(AbstractSized):
     def __eq__(self, other):
         if isinstance(other, AbstractList):
             if self.range_based and other.range_based:
-                return list(self.iter_ranges()) == list(other.iter_ranges())
-        return list(self) == list(other)
+                return numpy.array_equal(list(self.iter_ranges()),
+                                         list(other.iter_ranges()))
+        return numpy.array_equal(list(self), list(other))
 
     def __str__(self):
         return str(list(self))
@@ -308,7 +310,8 @@ class AbstractList(AbstractSized):
         return list(self.iter_by_selector(selector))
 
     def __contains__(self, item):
-        return any(value == item for (_, _, value) in self.iter_ranges())
+        return any(numpy.array_equal(value, item)
+                   for (_, _, value) in self.iter_ranges())
 
     def count(self, x):
         """ Counts the number of elements in the list with value ``x``
@@ -319,7 +322,7 @@ class AbstractList(AbstractSized):
         return sum(
             stop - start
             for (start, stop, value) in self.iter_ranges()
-            if value == x)
+            if numpy.array_equal(value, x))
 
     def index(self, x):
         """ Finds the first ID of the first element in the list with value\
@@ -329,7 +332,7 @@ class AbstractList(AbstractSized):
         :return:
         """
         for (start, _, value) in self.iter_ranges():
-            if value == x:
+            if numpy.array_equal(value, x):
                 return start
         raise ValueError("{} is not in list".format(x))
 
@@ -397,8 +400,8 @@ class AbstractList(AbstractSized):
             while id_value >= ranges[range_pointer][1]:
                 range_pointer += 1
             if result is not None:
-                if (result[1] == id_value and
-                        result[2] == ranges[range_pointer][2]):
+                if (result[1] == id_value and numpy.array_equal(
+                        result[2], ranges[range_pointer][2])):
                     result = (result[0], id_value + 1, result[2])
                     continue
                 yield result
@@ -489,7 +492,7 @@ class AbstractList(AbstractSized):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x / y)
         if isinstance(other, numbers.Number):
-            if other == 0:
+            if numpy.isin(0, other):
                 raise ZeroDivisionError()
             return SingleList(a_list=self, operation=lambda x: x / other)
         raise Exception("__div__ operation only supported for other "
@@ -511,7 +514,7 @@ class AbstractList(AbstractSized):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x // y)
         if isinstance(other, numbers.Number):
-            if other == 0:
+            if numpy.isin(0, other):
                 raise ZeroDivisionError()
             return SingleList(a_list=self, operation=lambda x: x // other)
         raise Exception("__floordiv__ operation only supported for other "

@@ -2,6 +2,7 @@ import pytest
 
 from spinn_utilities.ranged.ranged_list import RangedList
 from spinn_utilities.ranged.abstract_list import DualList
+import numpy
 
 
 def test_simple():
@@ -194,3 +195,11 @@ def test_dif_size():
     right = RangedList(2, 2, "two")
     with pytest.raises(Exception):
         left + right
+
+
+def test_numpy_array():
+    left = RangedList(2, numpy.array([2, 4, 6]), "many",
+                      use_list_as_value=True)
+    right = RangedList(2, 2, "many")
+    ans = left / right
+    assert all(ans.get_single_value_all() == numpy.array([1, 2, 3]))

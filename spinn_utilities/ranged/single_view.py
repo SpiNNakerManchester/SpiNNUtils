@@ -36,7 +36,7 @@ class _SingleView(AbstractView):
     @overrides(AbstractDict.set_value)
     def set_value(self, key, value, use_list_as_value=False):
         return self._range_dict.get_list(key).set_value_by_id(
-            value=value, id=self._id, use_list_as_value=use_list_as_value)
+            value=value, id=self._id)
 
     @overrides(AbstractDict.iter_ranges)
     def iter_ranges(self, key=None):

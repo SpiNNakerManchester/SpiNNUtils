@@ -30,15 +30,15 @@ class Converter(object):
         # Part of source directory to take out when converting paths
         "_src_basename"]
 
-    def __init__(self, src, dest, dict):
-        """ Converts a whole directory including sub directries
+    def __init__(self, src, dest, dict_file):
+        """ Converts a whole directory including sub directories
 
         :param src: Full source directory
         :type src: str
         :param dest: Full destination directory
         :type dest: str
-        :param dict: Full path to dictionary file
-        :type dict: str
+        :param dict_file: Full path to dictionary file
+        :type dict_file: str
         """
         self._src = os.path.abspath(src)
         if not os.path.exists(self._src):
@@ -54,14 +54,15 @@ class Converter(object):
             raise Exception("src and destination must be siblings")
         self._src_basename = src_basename
         self._dest_basename = dest_basename
-        self._dict = os.path.abspath(dict)
+        self._dict = os.path.abspath(dict_file)
 
     def run(self):
-        """ Runs the file convertor on a whole directory incl sub directories
+        """ Runs the file converter on a whole directory including sub \
+            directories
 
         WARNING. This code is absolutely not thread safe.
         Interwoven calls even on different FileConverter objects is dangerous!
-        It is hilghy likely that dict files become currupted and the same
+        It is highly likely that dict files become corrupted and the same
         message_id is used multiple times.
 
         :return:
@@ -70,11 +71,11 @@ class Converter(object):
         with open(self._dict, 'w') as dict_f:
             dict_f.write(DICTIONARY_HEADER)
         message_id = self._get_id()
-        for dirName, subdirList, fileList in os.walk(self._src):
-            self._mkdir(dirName)
-            for file_name in fileList:
+        for dir_name, _subdir_list, file_list in os.walk(self._src):
+            self._mkdir(dir_name)
+            for file_name in file_list:
                 _, extension = os.path.splitext(file_name)
-                source = os.path.join(dirName, file_name)
+                source = os.path.join(dir_name, file_name)
                 if extension in [".c", ".cpp", ".h"]:
                     destination = self._any_destination(source)
                     message_id = FileConverter.convert(
@@ -122,7 +123,7 @@ class Converter(object):
         return new_start
 
     def _any_destination(self, path):
-        # Here we need the local seperator
+        # Here we need the local separator
         destination = path.replace(
             os.path.sep + self._src_basename + os.path.sep,
             os.path.sep + self._dest_basename + os.path.sep)
@@ -144,13 +145,13 @@ class Converter(object):
             [os.environ['SPINN_DIRS'], os.environ['NEURAL_MODELLING_DIRS']]))
 
     @staticmethod
-    def convert(src, dest, dict):
-        converter = Converter(src, dest, dict)
+    def convert(src, dest, dict_file):
+        converter = Converter(src, dest, dict_file)
         converter.run()
 
 
 if __name__ == '__main__':
     src = sys.argv[1]
     dest = sys.argv[2]
-    dict = sys.argv[3]
-    Converter.convert(src, dest, dict)
+    dict_file = sys.argv[3]
+    Converter.convert(src, dest, dict_file)

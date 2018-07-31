@@ -32,7 +32,7 @@ class Replacer(object):
             return short
         if not parts[0] in self._messages:
             return short
-        (id, preface, original) = self._messages[parts[0]]
+        (_id, preface, original) = self._messages[parts[0]]
         replaced = original
         if len(parts) > 1:
             matches = FORMAT_EXP.findall(original)
@@ -40,7 +40,7 @@ class Replacer(object):
                 # try removing any blanks due to double spacing
                 matches = [x for x in matches if x != ""]
             if len(matches) != len(parts) - 1:
-                # wrong number of elemments so not short after all
+                # wrong number of elements so not short after all
                 return short
             for i in range(len(matches)):
                 replaced = replaced.replace(matches[i], parts[i+1], 1)

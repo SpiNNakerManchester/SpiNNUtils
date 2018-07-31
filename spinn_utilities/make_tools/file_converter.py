@@ -2,7 +2,7 @@ import os
 import re
 import sys
 
-TOKEN = chr(30)  # Record Sperator
+TOKEN = chr(30)  # Record Separator
 
 STRING_REGEXP = re.compile('"([^"]|\\"|(""))*"')
 FORMAT_EXP = re.compile("%\d*(?:\.\d+)?[cdiksuxR]")
@@ -63,26 +63,26 @@ class FileConverter(object):
         "_too_many_lines"
     ]
 
-    def __init__(self, src, dest, dict):
+    def __init__(self, src, dest, dict_file):
         """ Creates the file_convertor to convert one file
 
         :param src: Full source directory
         :type src: str
         :param dest: Full destination directory
         :type dest: str
-        :param dict: File to hold dictionary mappings
-        :type dict: str
+        :param dict_file: File to hold dictionary mappings
+        :type dict_file: str
         """
         self._src = os.path.abspath(src)
         self._dest = os.path.abspath(dest)
-        self._dict = dict
+        self._dict = dict_file
 
     def _run(self, range_start):
-        """ Runs the file convertor
+        """ Runs the file converter
 
         WARNING. This code is absolutely not thread safe.
         Interwoven calls even on different FileConverter objects is dangerous!
-        It is hilghy likely that dict files become currupted and the same
+        It is highly likely that dict files become corrupted and the same
         message_id is used multiple times.
 
 
@@ -150,7 +150,7 @@ class FileConverter(object):
             stripped = text.strip()
             match = END_COMMENT_REGEX.search(stripped)
             if match.end(0) == len(stripped):
-                # Ok Comment until end of line
+                # OK Comment until end of line
                 dest_f.write(text)
                 self._status = NORMAL_CODE
                 return True
@@ -266,7 +266,7 @@ class FileConverter(object):
             # Second start found so check by character
             return False
 
-        # remove whitespaces and save log command
+        # remove white spaces and save log command
         self._log_start = text.index(match.group(0))
         self._log = "".join(match.group(0).split())
         self._status = IN_LOG
@@ -302,11 +302,11 @@ class FileConverter(object):
 
         Writes the log call to the destination
         - New log method used
-        - Shortened log message (woth just a id) used
+        - Shortened log message (with just an id) used
         - Parameters kept as is
         - Old log message with full text added as comment
 
-        Addes the data to the dict file including
+        Adds the data to the dict file including
         - key/id
         - log level
         - file name
@@ -333,7 +333,7 @@ class FileConverter(object):
             # Writing an extra newline here so need to recover that ASAP
             self._too_many_lines += 1
         end = tail + "\n"
-        if (self._log_lines <= 1):
+        if self._log_lines <= 1:
             dest_f.write("  /* ")
             dest_f.write(original)
             dest_f.write("*/")
@@ -484,7 +484,7 @@ class FileConverter(object):
     def unique_src(self):
         """ Returns the part of the source path which is different
 
-        For example assunming a source of
+        For example assuming a source of
         /spinnaker/sPyNNaker/neural_modelling/src/common/in_spikes.h
         /spinnaker/sPyNNaker/neural_modelling/modified_src/common/in_spikes.h
         returns src/common/in_spikes.h
@@ -501,27 +501,27 @@ class FileConverter(object):
         return self._src[last_sep:]
 
     @staticmethod
-    def convert(src, dest, dict, range_start):
-        """ Startic method to create Object and do the conversion
+    def convert(src, dest, dict_file, range_start):
+        """ Static method to create Object and do the conversion
 
         :param src: Full source directory
         :type src: str
         :param dest: Full destination directory
         :type dest: str
-        :param dict: File to hold dictionary mappings
-        :type dict: str
+        :param dict_file: File to hold dictionary mappings
+        :type dict_file: str
         :param range_start:
         :param range_start: id of last dictionary key used
         :type range_start: int
         :return: The last message id use which can in turn be passed into
         """
-        converter = FileConverter(src, dest, dict)
+        converter = FileConverter(src, dest, dict_file)
         return converter._run(range_start)
 
 
 if __name__ == '__main__':
     src = sys.argv[1]
     dest = sys.argv[2]
-    dict = sys.argv[3]
+    dict_file = sys.argv[3]
     range_start = int(sys.argv[4])
-    FileConverter.convert(src, dest, dict, range_start)
+    FileConverter.convert(src, dest, dict_file, range_start)

@@ -448,7 +448,7 @@ class FileConverter(object):
                     self._log_full += (";")
                     self._write_log_method(dest_f, line_num)
                     pos = text.index(";") + 1
-                    write_flag == pos
+                    write_flag = pos
                     self._status = NORMAL_CODE
                 else:
                     # Save the ) as not part of the end

@@ -3,6 +3,13 @@ from spinn_utilities.overrides import overrides
 
 
 class AbstractView(AbstractDict):
+    """ A view over a ranged dictionary.
+
+    .. note::
+        The view may currently be read from only with int and int-collection\
+        indices, and only be written to with str indices. This may change to\
+        become more permissive in future versions.
+    """
     __slots__ = [
         "_range_dict"]
 
@@ -50,7 +57,7 @@ class AbstractView(AbstractDict):
         if isinstance(key, str):
             return self.set_value(key=key, value=value)
         if isinstance(key, (slice, int, tuple, list)):
-            raise KeyError("Setting of a slice/ids not supported")
+            raise KeyError("Setting of a slice/IDs not supported")
         raise KeyError("Unexpected key type: {}".format(type(key)))
 
     @overrides(AbstractDict.get_default)

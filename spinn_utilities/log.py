@@ -14,6 +14,8 @@ levels = {
 
 
 class ConfiguredFilter(object):
+    """ Allow a parent logger to filter a child logger.
+    """
     __slots__ = [
         "_default_level", "_levels"]
 
@@ -34,6 +36,8 @@ class ConfiguredFilter(object):
 
 
 class ConfiguredFormatter(logging.Formatter):
+    """ Defines the logging format for the SpiNNaker host software.
+    """
     # Precompile this RE; it gets used quite a few times
     __last_component = re.compile(r'\.[^.]+$')
 
@@ -101,7 +105,7 @@ class ConfiguredFormatter(logging.Formatter):
 
 
 class _BraceMessage(object):
-    """ A message that converts a python format string to a string
+    """ A message that converts a Python format string to a string
     """
     __slots__ = [
         "args", "fmt", "kwargs"]
@@ -117,6 +121,12 @@ class _BraceMessage(object):
 
 class FormatAdapter(logging.LoggerAdapter):
     """ An adaptor for logging with messages that uses Python format strings.
+
+    Example::
+
+        log = FormatAdapter(logging.getLogger(__name__))
+        log.info("this message has {} inside {}", 123, 'itself')
+        # --> INFO: this message has 123 inside itself
     """
 
     def __init__(self, logger, extra=None):
@@ -151,8 +161,12 @@ class FormatAdapter(logging.LoggerAdapter):
         def warning(self, msg, *args, **kwargs):
             self.log(logging.WARNING, msg, *args, **kwargs)
 
-    @overrides(logging.LoggerAdapter.log)
+    @overrides(logging.LoggerAdapter.log, extend_doc=False)
     def log(self, level, msg, *args, **kwargs):
+        """ Delegate a log call to the underlying logger, applying appropriate\
+            transformations to allow the log message to be written using\
+            Python format string, rather than via `%`-substitutions.
+        """
         if self.isEnabledFor(level):
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
@@ -160,8 +174,14 @@ class FormatAdapter(logging.LoggerAdapter):
             self.do_log(
                 level, _BraceMessage(msg, args, kwargs), (), **log_kwargs)
 
-    @overrides(logging.LoggerAdapter.process)
+    @overrides(logging.LoggerAdapter.process, extend_doc=False)
     def process(self, msg, kwargs):
+        """ Process the logging message and keyword arguments passed in to a\
+            logging call to insert contextual information. You can either\
+            manipulate the message itself, the keyword arguments or both.\
+            Return the message and *kwargs* modified (or not) to suit your\
+            needs.
+        """
         return msg, {
             key: kwargs[key]
             for key in getargspec(self.do_log).args[1:]

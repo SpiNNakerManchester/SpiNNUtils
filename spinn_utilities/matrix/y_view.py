@@ -1,4 +1,6 @@
 class YView(object):
+    """ A view along a particular y-slice of a 2D matrix.
+    """
     __slots__ = [
         "_matrix", "_y"]
 

@@ -15,7 +15,7 @@ cache: pip
 install:
   - python ./setup.py install
   - pip install -r requirements-test.txt
-  - pip install python-coveralls
+  - pip install python-coveralls 'coverage>=4.4'
 
 script:
   - py.test . --cov spinn_utilities

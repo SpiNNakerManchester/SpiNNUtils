@@ -2,3 +2,5 @@ appdirs
 future
 numpy
 six
+yaml
+requests

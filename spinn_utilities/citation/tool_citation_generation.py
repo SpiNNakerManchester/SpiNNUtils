@@ -166,11 +166,27 @@ class CitationAggregator(object):
         :type module_to_get_requirements_for: str
         :return: None
         """
+
+        true_software_name = module_to_get_requirements_for.split("#")[1]
+        cleaned_path = self.locate_path_for_c_dependency(true_software_name)
+        if cleaned_path is not None:
+            # process reference
+            reference_entry = self._process_reference(
+                cleaned_path, None, modules_seen_so_far)
+
+            # append to the top citation file
+            top_citation_file[REFERENCES_YAML_POINTER].append(
+                reference_entry)
+            self._search_for_other_c_references(
+                reference_entry, cleaned_path, modules_seen_so_far)
+        else:
+            raise Exception("no idea what to do here")
+
+    @staticmethod
+    def locate_path_for_c_dependency(true_software_name):
         environment_path_variable = os.environ.get('PATH')
         if environment_path_variable is not None:
             software_paths = environment_path_variable.split(":")
-            true_software_name = module_to_get_requirements_for.split("#")[1]
-
             for software_path in software_paths:
                 # clear path to have repo name at end
                 last_version = None
@@ -182,20 +198,11 @@ class CitationAggregator(object):
                     cleaned_path = os.path.dirname(cleaned_path)
 
                 if cleaned_path != last_version:
-
                     # add the ; bit back in.
                     cleaned_path = \
                         software_path.split(os.pathsep)[1] + ":" + cleaned_path
-
-                    # process reference
-                    reference_entry = self._process_reference(
-                        cleaned_path, None, modules_seen_so_far)
-
-                    # append to the top citation file
-                    top_citation_file[REFERENCES_YAML_POINTER].append(
-                        reference_entry)
-                    self._search_for_other_c_references(
-                        reference_entry, cleaned_path, modules_seen_so_far)
+                    return cleaned_path
+        return None
 
     def _search_for_other_c_references(
             self, reference_entry, software_path, modules_seen_so_far):

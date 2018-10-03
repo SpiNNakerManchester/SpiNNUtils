@@ -83,7 +83,8 @@ class CitationUpdaterAndDoiGenerator(object):
         :type doi_title: str
         :param module_path: path to the module to zip up
         :type module_path: str
-        :param update_version: bool for if we should update the citation version
+        :param update_version: bool for if we should update the citation \
+        version
         :type update_version: bool
         :rtype: None
         """

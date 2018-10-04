@@ -3,6 +3,7 @@ import io
 import requests
 import shutil
 import unicodedata
+import os
 
 CITATION_FILE_VERSION_FIELD = "version"
 CITATION_FILE_DATE_FIELD = "date-released"
@@ -237,7 +238,10 @@ class CitationUpdaterAndDoiGenerator(object):
         :param module_path: the path to the module to zip up
         :return: a opened reader for the zip file generated
         """
-        shutil.make_archive('module.zip', 'zip', module_path)
+        if os.path.isfile('module.zip'):
+            os.remove('module.zip')
+
+        shutil.make_archive('module', 'zip', module_path)
         return open('module.zip', "rb")
 
     @staticmethod

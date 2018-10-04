@@ -1,41 +1,40 @@
-cff-version: 1.0.3
-message: If you use this software, please cite it as below.
 authors:
-- family-names: Stokes
+- affiliation: University Of Manchester
+  email: alan.stokes-2@manchester.ac.uk
+  family-names: Stokes
   given-names: Alan
   orcid: https://orcid.org/0000-0002-6110-1484
-  affiliation: "University Of Manchester"
-  email: alan.stokes-2@manchester.ac.uk
   website: http://www.cs.man.ac.uk/~stokesa6/
-- family-names: Rowley
+- affiliation: University Of Manchester
+  email: Andrew.Rowley@manchester.ac.uk
+  family-names: Rowley
   given-names: Andrew
   orcid: https://orcid.org/0000-0002-2646-8520
-  affiliation: "University Of Manchester"
-  email: Andrew.Rowley@manchester.ac.uk
   website: https://www.researchgate.net/profile/Andrew_Rowley2
-- family-names: Brenninkmeijer
+- affiliation: University Of Manchester
+  email: christian.brenninkmeijer@manchester.ac.uk
+  family-names: Brenninkmeijer
   given-names: Christian Y.
   orcid: https://orcid.org/0000-0002-2937-7819
-  affiliation: "University Of Manchester"
-  email: christian.brenninkmeijer@manchester.ac.uk
   website: https://www.researchgate.net/profile/Christian_Brenninkmeijer
-- family-names: Fellows
+- affiliation: University Of Manchester
+  email: donal.k.fellows@manchester.ac.uk
+  family-names: Fellows
   given-names: Donal
   orcid: https://orcid.org/0000-0002-9091-5938
-  affiliation: "University Of Manchester"
-  email: donal.k.fellows@manchester.ac.uk
   website: http://www.cs.manchester.ac.uk/about-us/staff/profile/?ea=donal.k.fellows
-
-title: The container for common code used by the SpiNNaker tool chain in general
-version:
-date-released:
-url: http://spinnakermanchester.github.io/
-repository: https://github.com/SpiNNakerManchester/SpiNNUtils
+cff-version: 1.0.3
 contact:
-- name: SpiNNaker Software Team
-  address: University of Manchester, Oxford Road
+- address: University of Manchester, Oxford Road
   city: Manchester
-  post-code: M13 9PL
   country: GB
   email: spinnakerusers@googlegroups.com
+  name: SpiNNaker Software Team
+  post-code: M13 9PL
+date-released:
 identifier:
+message: If you use this software, please cite it as below.
+repository: https://github.com/SpiNNakerManchester/SpiNNUtils
+title: The container for common code used by the SpiNNaker tool chain in general
+url: http://spinnakermanchester.github.io/
+version:

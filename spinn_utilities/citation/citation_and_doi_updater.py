@@ -12,10 +12,19 @@ CITATION_AUTHOR_FIRST_NAME = "given-names"
 CITATION_AUTHOR_SURNAME = "family-names"
 CITATION_FILE_DESCRIPTION = "title"
 
-ZENODO_DEPOSIT_GET_URL = "https://zenodo.org/api/deposit/depositions"
-ZENODO_DEPOSIT_PUT_URL = 'https://zenodo.org/api/deposit/depositions/{}/files'
-ZENODO_PUBLISH_URL = \
-    'https://zenodo.org/api/deposit/depositions/{}/actions/publish'
+if True:
+    ZENODO_DEPOSIT_GET_URL = "https://zenodo.org/api/deposit/depositions"
+    ZENODO_DEPOSIT_PUT_URL = \
+        'https://zenodo.org/api/deposit/depositions/{}/files'
+    ZENODO_PUBLISH_URL = \
+        'https://zenodo.org/api/deposit/depositions/{}/actions/publish'
+else:  # doesnt work
+    ZENODO_DEPOSIT_GET_URL = \
+        "https://sandbox.zenodo.org/api/deposit/depositions"
+    ZENODO_DEPOSIT_PUT_URL = \
+        'https://sandbox.zenodo.org/api/deposit/depositions/{}/files'
+    ZENODO_PUBLISH_URL = \
+        'https://sandbox.zenodo.org/api/deposit/depositions/{}/actions/publish'
 
 ZENODO_RELATION_FIELD = "relation"
 ZENODO_NEWER_VERSION_OF = 'isNewVersionOf'
@@ -94,6 +103,7 @@ class CitationUpdaterAndDoiGenerator(object):
         # data holders
         yaml_file = None
         deposit_id = None
+        files = None
 
         # read in yaml file
         with open(citation_file_path, 'r') as stream:
@@ -117,8 +127,9 @@ class CitationUpdaterAndDoiGenerator(object):
 
         # if creating a doi, go and request one
         if create_doi:
-            doi_id, deposit_id = self._request_doi(
-                zenodo_access_token, previous_doi, is_previous_doi_sibling)
+            doi_id, deposit_id, files = self._request_doi(
+                zenodo_access_token, previous_doi, is_previous_doi_sibling,
+                module_path)
             yaml_file[IDENTIFIER] = doi_id
 
         # rewrite citation file with updated fields
@@ -130,11 +141,11 @@ class CitationUpdaterAndDoiGenerator(object):
         if create_doi:
             self._finish_doi(
                 deposit_id, zenodo_access_token, publish_doi, doi_title,
-                yaml_file[CITATION_FILE_DESCRIPTION], yaml_file, module_path)
+                yaml_file[CITATION_FILE_DESCRIPTION], yaml_file, files)
 
-    @staticmethod
     def _request_doi(
-            zenodo_access_token, previous_doi, is_previous_doi_sibling):
+            self, zenodo_access_token, previous_doi, is_previous_doi_sibling,
+            module_path):
         """ goes to zenodo and requests a doi
 
         :param zenodo_access_token: zenodo access token
@@ -144,9 +155,12 @@ class CitationUpdaterAndDoiGenerator(object):
         :param is_previous_doi_sibling: bool saying if this module is a \
         sibling or newer version of the previous doi
         :type is_previous_doi_sibling: bool
+        :param module_path: the path to the module to doi
         :return: the DOI id, and deposit id
         :rtype: str, str
         """
+
+        files = {ZENODO_FILE: self._zip_up_module(module_path)}
 
         # create link to previous version (if applicable)
         related = list()
@@ -193,11 +207,11 @@ class CitationUpdaterAndDoiGenerator(object):
              [ZENODO_DOI_VALUE])).encode('ascii', 'ignore')
         deposition_id = request.json()[ZENODO_DEPOSIT_ID]
 
-        return doi_id, deposition_id
+        return doi_id, deposition_id, files
 
     def _finish_doi(
             self, deposit_id, access_token, publish_doi, title,
-            doi_description, yaml_file, module_path):
+            doi_description, yaml_file, files):
         """ publishes the doi to zenodo
 
         :param deposit_id: the deposit id to publish
@@ -206,12 +220,11 @@ class CitationUpdaterAndDoiGenerator(object):
         :param doi_description: the description for the DOI
         :param yaml_file: the citation file after its been read it
         :param publish_doi: bool flagging if we should publish the doi
-        :param module_path: the path to the module to doi
+        :param files: the zipped up file for the zenodo doi request
         :rtype: None
         """
 
         data = self._fill_in_data(title, doi_description, yaml_file)
-        files = {ZENODO_FILE: self._zip_up_module(module_path)}
 
         r = requests.post(
             ZENODO_DEPOSIT_PUT_URL.format(deposit_id),
@@ -220,7 +233,9 @@ class CitationUpdaterAndDoiGenerator(object):
         if r.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_POST:
             raise Exception(
                 "don't know what went wrong. got wrong status code when "
-                "trying to put files and data into the pre allocated doi")
+                "trying to put files and data into the pre allocated doi. "
+                "Got error code {} with response content {}".format(
+                    r.status_code, r.content))
 
         # publish doi
         if publish_doi:

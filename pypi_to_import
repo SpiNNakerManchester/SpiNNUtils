@@ -1,4 +1,1 @@
-appdirs:appdirs
-future:future
-numpy:numpy
-six:six
+pyyaml:yaml

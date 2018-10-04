@@ -2,6 +2,7 @@ import yaml
 import io
 import requests
 import shutil
+import unicodedata
 
 CITATION_FILE_VERSION_FIELD = "version"
 CITATION_FILE_DATE_FIELD = "date-released"
@@ -171,9 +172,24 @@ class CitationUpdaterAndDoiGenerator(object):
                 "don't know what went wrong. got wrong status code when "
                 "trying to request a doi")
 
+        # get empty upload
+        request = requests.post(
+            ZENODO_DEPOSIT_GET_URL,
+            params={ZENODO_ACCESS_TOKEN: zenodo_access_token,
+                    ZENODO_RELATED_IDENTIFIERS: related},
+            json={}, headers={ZENODO_CONTENT_TYPE: "application/json"})
+
+        # verify the doi is valid
+        if request.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_POST:
+            raise Exception(
+                "don't know what went wrong. got wrong status code when "
+                "trying to get a empty upload")
+
         # get doi and deposit id
-        doi_id = (request.json()[ZENODO_METADATA][ZENODO_PRE_RESERVED_DOI][
-                      ZENODO_DOI_VALUE])
+        doi_id = unicodedata.normalize(
+            'NFKD',
+            (request.json()[ZENODO_METADATA][ZENODO_PRE_RESERVED_DOI]
+             [ZENODO_DOI_VALUE])).encode('ascii', 'ignore')
         deposition_id = request.json()[ZENODO_DEPOSIT_ID]
 
         return doi_id, deposition_id
@@ -251,8 +267,10 @@ class CitationUpdaterAndDoiGenerator(object):
             author_data[ZENODO_AUTHOR_NAME] = (
                 author[CITATION_AUTHOR_SURNAME] + ", " +
                 author[CITATION_AUTHOR_FIRST_NAME] + ", ")
-            author_data[AUTHOR_AFFILIATION] = author[AUTHOR_AFFILIATION]
-            author_data[AUTHOR_ORCID] = author[AUTHOR_ORCID]
+            if AUTHOR_AFFILIATION in author:
+                author_data[AUTHOR_AFFILIATION] = author[AUTHOR_AFFILIATION]
+            if AUTHOR_ORCID in author:
+                author_data[AUTHOR_ORCID] = author[AUTHOR_ORCID]
             data[ZENODO_METADATA][ZENODO_METADATA_CREATORS].append(author_data)
         return data
 

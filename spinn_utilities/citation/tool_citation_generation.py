@@ -134,8 +134,6 @@ class CitationAggregator(object):
         :type modules_seen_so_far:
         :return: None
         """
-        # assume its a python import to begin with
-        print module_to_get_requirements_for
 
         # determine name for import
         if module_to_get_requirements_for in pypi_to_import_map:

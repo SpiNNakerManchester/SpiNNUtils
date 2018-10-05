@@ -1,7 +1,7 @@
 import yaml
 import io
 import requests
-import shutil
+import zipfile
 import unicodedata
 import os
 
@@ -127,9 +127,8 @@ class CitationUpdaterAndDoiGenerator(object):
 
         # if creating a doi, go and request one
         if create_doi:
-            doi_id, deposit_id, files = self._request_doi(
-                zenodo_access_token, previous_doi, is_previous_doi_sibling,
-                module_path)
+            doi_id, deposit_id = self._request_doi(
+                zenodo_access_token, previous_doi, is_previous_doi_sibling)
             yaml_file[IDENTIFIER] = doi_id
 
         # rewrite citation file with updated fields
@@ -141,11 +140,10 @@ class CitationUpdaterAndDoiGenerator(object):
         if create_doi:
             self._finish_doi(
                 deposit_id, zenodo_access_token, publish_doi, doi_title,
-                yaml_file[CITATION_FILE_DESCRIPTION], yaml_file, files)
+                yaml_file[CITATION_FILE_DESCRIPTION], yaml_file, module_path)
 
     def _request_doi(
-            self, zenodo_access_token, previous_doi, is_previous_doi_sibling,
-            module_path):
+            self, zenodo_access_token, previous_doi, is_previous_doi_sibling):
         """ goes to zenodo and requests a doi
 
         :param zenodo_access_token: zenodo access token
@@ -159,8 +157,6 @@ class CitationUpdaterAndDoiGenerator(object):
         :return: the DOI id, and deposit id
         :rtype: str, str
         """
-
-        files = {ZENODO_FILE: self._zip_up_module(module_path)}
 
         # create link to previous version (if applicable)
         related = list()
@@ -185,7 +181,8 @@ class CitationUpdaterAndDoiGenerator(object):
         if request.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_GET:
             raise Exception(
                 "don't know what went wrong. got wrong status code when "
-                "trying to request a doi")
+                "trying to request a doi. Got error code {} with response "
+                "content {}".format(request.status_code, request.content))
 
         # get empty upload
         request = requests.post(
@@ -198,7 +195,8 @@ class CitationUpdaterAndDoiGenerator(object):
         if request.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_POST:
             raise Exception(
                 "don't know what went wrong. got wrong status code when "
-                "trying to get a empty upload")
+                "trying to get a empty upload. Got error code {} with response"
+                " content {}".format(request.status_code, request.content))
 
         # get doi and deposit id
         doi_id = unicodedata.normalize(
@@ -207,11 +205,11 @@ class CitationUpdaterAndDoiGenerator(object):
              [ZENODO_DOI_VALUE])).encode('ascii', 'ignore')
         deposition_id = request.json()[ZENODO_DEPOSIT_ID]
 
-        return doi_id, deposition_id, files
+        return doi_id, deposition_id
 
     def _finish_doi(
             self, deposit_id, access_token, publish_doi, title,
-            doi_description, yaml_file, files):
+            doi_description, yaml_file, module_path):
         """ publishes the doi to zenodo
 
         :param deposit_id: the deposit id to publish
@@ -221,14 +219,21 @@ class CitationUpdaterAndDoiGenerator(object):
         :param yaml_file: the citation file after its been read it
         :param publish_doi: bool flagging if we should publish the doi
         :param files: the zipped up file for the zenodo doi request
+        :param module_path: the path to the module to doi
         :rtype: None
         """
+
+        zipped_file = self._zip_up_module(module_path)
+        zipped_open_file = open(zipped_file, "rb")
+        files = {ZENODO_FILE: zipped_open_file}
 
         data = self._fill_in_data(title, doi_description, yaml_file)
 
         r = requests.post(
             ZENODO_DEPOSIT_PUT_URL.format(deposit_id),
             params={ZENODO_ACCESS_TOKEN: access_token}, data=data, files=files)
+        zipped_open_file.close()
+        os.remove('module.zip')
 
         if r.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_POST:
             raise Exception(
@@ -247,8 +252,7 @@ class CitationUpdaterAndDoiGenerator(object):
                     "don't know what went wrong. got wrong status code when "
                     "trying to publish the doi")
 
-    @staticmethod
-    def _zip_up_module(module_path):
+    def _zip_up_module(self, module_path):
         """ zips up a module
         :param module_path: the path to the module to zip up
         :return: a opened reader for the zip file generated
@@ -256,8 +260,45 @@ class CitationUpdaterAndDoiGenerator(object):
         if os.path.isfile('module.zip'):
             os.remove('module.zip')
 
-        shutil.make_archive('module', 'zip', module_path)
-        return open('module.zip', "rb")
+        avoids = [".git", ".gitignore", ".gitattributes", ".travis.yml",
+                  ".github", "model_binaries", "common_model_binaries",
+                  ".coveragerc", ".idea"]
+
+        module_zip_file = zipfile.ZipFile(
+            'module.zip', 'w', zipfile.ZIP_DEFLATED)
+        self._zip_walker(module_path, avoids, module_zip_file)
+        module_zip_file.close()
+        return 'module.zip'
+
+    @staticmethod
+    def _zip_walker(module_path, avoids, module_zip_file):
+        """ traverses the module and its subdirectories and only adds to the \
+        files to the zip which are not within a avoid directory that.
+         
+        :param module_path: the path to start the search at
+        :param avoids: the set of avoids to avoid
+        :param module_zip_file: the zip file to put into
+        :rtype: None
+        """
+        for directory_path, directory_path_names, files in os.walk(module_path):
+            for potential_zip_file in files:
+                
+                # check that the file or its directories to get to said file \
+                # are not in the avoids set
+                avoid = False
+                if potential_zip_file in avoids:
+                    avoid = True
+                for directory_name in directory_path_names:
+                    if directory_name in avoids:
+                        avoid = True
+                for directory_name in directory_path.split(os.sep):
+                    if directory_name in avoids:
+                        avoid = True
+                        
+                # if safe to zip, zip
+                if not avoid:
+                    module_zip_file.write(
+                        os.path.join(directory_path, potential_zip_file))
 
     @staticmethod
     def _fill_in_data(doi_title, doi_description, yaml_file):

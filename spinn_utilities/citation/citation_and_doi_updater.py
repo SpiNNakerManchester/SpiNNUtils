@@ -103,7 +103,6 @@ class CitationUpdaterAndDoiGenerator(object):
         # data holders
         yaml_file = None
         deposit_id = None
-        files = None
 
         # read in yaml file
         with open(citation_file_path, 'r') as stream:
@@ -274,27 +273,28 @@ class CitationUpdaterAndDoiGenerator(object):
     def _zip_walker(module_path, avoids, module_zip_file):
         """ traverses the module and its subdirectories and only adds to the \
         files to the zip which are not within a avoid directory that.
-         
+
         :param module_path: the path to start the search at
         :param avoids: the set of avoids to avoid
         :param module_zip_file: the zip file to put into
         :rtype: None
         """
-        for directory_path, directory_path_names, files in os.walk(module_path):
+
+        for directory_path, directories, files in os.walk(module_path):
             for potential_zip_file in files:
-                
+
                 # check that the file or its directories to get to said file \
                 # are not in the avoids set
                 avoid = False
                 if potential_zip_file in avoids:
                     avoid = True
-                for directory_name in directory_path_names:
+                for directory_name in directories:
                     if directory_name in avoids:
                         avoid = True
                 for directory_name in directory_path.split(os.sep):
                     if directory_name in avoids:
                         avoid = True
-                        
+
                 # if safe to zip, zip
                 if not avoid:
                     module_zip_file.write(

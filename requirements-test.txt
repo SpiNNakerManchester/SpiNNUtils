@@ -4,3 +4,4 @@ pytest>=2.8
 pytest-cov
 testfixtures
 Sphinx==1.5.3
+pyyaml

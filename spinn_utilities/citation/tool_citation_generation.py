@@ -151,7 +151,7 @@ class CitationAggregator(object):
                 top_citation_file, module_to_get_requirements_for,
                 modules_seen_so_far)
         except Exception:
-            print "not handling this dependency"
+            print("not handling this dependency")
 
     def _handle_c_dependency(
             self, top_citation_file, module_to_get_requirements_for,

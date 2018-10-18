@@ -19,7 +19,6 @@ class Ping(object):
         process.wait()
         return process.returncode
 
-
     @staticmethod
     def host_is_reachable(ipaddr):
         if ipaddr in Ping.unreachable:

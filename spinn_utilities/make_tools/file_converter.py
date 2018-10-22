@@ -5,7 +5,7 @@ import sys
 TOKEN = chr(30)  # Record Separator
 
 STRING_REGEXP = re.compile('"([^"]|\\"|(""))*"')
-FORMAT_EXP = re.compile("%\d*(?:\.\d+)?[cdiksuxR]")
+FORMAT_EXP = re.compile("%\d*(?:\.\d+)?[cdfiksuxR]")
 LOG_END_REGEX = re.compile('\)(\s)*;')
 END_COMMENT_REGEX = re.compile("/*/")
 LOG_START_REGEX = re.compile(

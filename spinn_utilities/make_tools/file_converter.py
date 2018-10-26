@@ -4,12 +4,12 @@ import sys
 
 TOKEN = chr(30)  # Record Separator
 
-STRING_REGEXP = re.compile('"([^"]|\\"|(""))*"')
-FORMAT_EXP = re.compile("%\d*(?:\.\d+)?[cdiksuxR]")
-LOG_END_REGEX = re.compile('\)(\s)*;')
-END_COMMENT_REGEX = re.compile("/*/")
+STRING_REGEXP = re.compile(r'"([^"]|\\"|(""))*"')
+FORMAT_EXP = re.compile(r"%\d*(?:\.\d+)?[cdfiksuxR]")
+LOG_END_REGEX = re.compile(r'\)(\s)*;')
+END_COMMENT_REGEX = re.compile(r"/*/")
 LOG_START_REGEX = re.compile(
-    "log_((info)|(error)|(debug)|(warning))(\s)*\(")
+    r"log_((info)|(error)|(debug)|(warning))(\s)*\(")
 
 # Status values
 NORMAL_CODE = 0

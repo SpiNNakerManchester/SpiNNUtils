@@ -57,3 +57,27 @@ class ExecutableFinder(object):
 
         # No executable found
         return None
+
+    def get_executable_paths(self, executable_names):
+        """ Finds each executables within the set of folders.\
+
+            The names are assumed to be comma seperated
+            The set of folders is searched sequentially\
+            and the first match for each name is returned.
+
+            Names not found are ignored and not added to the list.
+
+        :param executable_name: The name of the executable to find.\
+            Assumed to be comma seperated.
+        :type executable_name: str
+        :return:\
+            The full path of the discovered executable, or ``None`` if no \
+            executable was found in the set of folders
+        :rtype: list(str)
+        """
+        results = list()
+        for name in executable_names.split(","):
+            path = self.get_executable_path(name)
+            if path:
+                results.append(path)
+        return results

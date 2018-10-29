@@ -18,3 +18,10 @@ class TestReplacer(unittest.TestCase):
         replacer = Replacer("test")
         new = replacer.replace("1014" + TOKEN + "123")
         assert ("[INFO] (weird;file.c: 47): second 123" == new)
+
+    def test_tab(self):
+        replacer = Replacer("test")
+        new = replacer.replace("1007" + TOKEN + "10" + TOKEN + "20")
+        message = "[INFO] (weird;file.c: 29): \t back off = 10, time between"\
+                  " spikes 20"
+        assert (message == new)

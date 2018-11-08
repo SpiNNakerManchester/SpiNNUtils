@@ -1,9 +1,7 @@
 import pytest
 import numpy
-
-from spinn_utilities.ranged.multiple_values_exception \
-    import MultipleValuesException
-from spinn_utilities.ranged.ranged_list import RangedList
+from spinn_utilities.ranged import MultipleValuesException
+from spinn_utilities.ranged import RangedList
 
 
 def test_simple():

@@ -1,6 +1,6 @@
 import unittests
-from spinn_utilities.helpful_functions \
-    import get_valid_components, is_singleton
+from spinn_utilities.helpful_functions import (
+    get_valid_components, is_singleton)
 
 
 def test_is_singleton():

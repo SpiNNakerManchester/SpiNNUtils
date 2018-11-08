@@ -1,6 +1,6 @@
 # pylint: disable=unused-variable, arguments-differ, signature-differs
-from spinn_utilities.overrides import overrides
 import pytest
+from spinn_utilities.overrides import overrides
 
 WRONG_ARGS = "Method has {} arguments but super class method has 4 arguments"
 BAD_DEFS = "Default arguments don't match super class method"

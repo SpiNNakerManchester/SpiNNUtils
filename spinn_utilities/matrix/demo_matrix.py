@@ -1,7 +1,6 @@
-from spinn_utilities.matrix.abstract_matrix import AbstractMatrix
-
 from collections import defaultdict
 from spinn_utilities.overrides import overrides
+from .abstract_matrix import AbstractMatrix
 
 
 class DemoMatrix(AbstractMatrix):

@@ -1,12 +1,12 @@
 # pylint: disable=redefined-builtin
-from spinn_utilities.ranged.abstract_list import AbstractList
-from spinn_utilities.overrides import overrides
-import numpy
-from spinn_utilities.ranged.multiple_values_exception \
-    import MultipleValuesException
-from spinn_utilities.helpful_functions import is_singleton
 from past.builtins import range, xrange
 from six import raise_from
+from spinn_utilities.overrides import overrides
+from spinn_utilities.helpful_functions import is_singleton
+from .abstract_list import AbstractList
+from .multiple_values_exception import MultipleValuesException
+
+import numpy
 
 
 def function_iterator(function, size, ids=None):

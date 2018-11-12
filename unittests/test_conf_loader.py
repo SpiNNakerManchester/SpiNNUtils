@@ -1,16 +1,13 @@
 # pylint: disable=redefined-outer-name, unused-argument
+import os
+import pytest
+from six.moves import configparser
 import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture
 import spinn_utilities.conf_loader as conf_loader
-from spinn_utilities.configs.unexpected_config_exception \
-    import UnexpectedConfigException
-from spinn_utilities.configs.no_config_found_exception import \
-    NoConfigFoundException
-import spinn_utilities.testing.log_checker as log_checker
-
-from six.moves import configparser
-import os
-import pytest
+from spinn_utilities.configs import (
+    UnexpectedConfigException, NoConfigFoundException)
+from spinn_utilities.testing import log_checker
 
 CFGFILE = "configloader.cfg"
 CFGPATH = os.path.join(os.path.dirname(unittests.__file__), CFGFILE)

@@ -1,8 +1,8 @@
-from spinn_utilities import logger_utils
-import spinn_utilities.testing.log_checker as log_checker
 import logging
 from testfixtures import LogCapture
 import unittest
+from spinn_utilities import logger_utils
+from spinn_utilities.testing import log_checker
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

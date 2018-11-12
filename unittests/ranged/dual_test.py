@@ -1,7 +1,5 @@
 import pytest
-
-from spinn_utilities.ranged.ranged_list import RangedList
-from spinn_utilities.ranged.abstract_list import DualList
+from spinn_utilities.ranged import RangedList, DualList
 import numpy
 
 

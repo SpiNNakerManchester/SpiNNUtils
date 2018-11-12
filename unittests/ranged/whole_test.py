@@ -1,11 +1,7 @@
 import pytest
-
-from spinn_utilities.ranged.range_dictionary import RangeDictionary
-from spinn_utilities.ranged.ranged_list import RangedList
-
+from spinn_utilities.ranged import RangeDictionary, RangedList
 
 defaults = {"a": "alpha", "b": "bravo"}
-
 rd = RangeDictionary(10, defaults)
 
 

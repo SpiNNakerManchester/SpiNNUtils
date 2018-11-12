@@ -1,5 +1,5 @@
-from spinn_utilities.log import FormatAdapter
 import logging
+from spinn_utilities.log import FormatAdapter
 
 
 class MockLog(object):

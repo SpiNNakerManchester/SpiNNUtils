@@ -1,14 +1,14 @@
 # pylint: disable=redefined-builtin
-from spinn_utilities.ranged.ranged_list import RangedList
-from spinn_utilities.ranged.abstract_list import AbstractList
-from spinn_utilities.ranged.single_view import _SingleView
-from spinn_utilities.ranged.slice_view import _SliceView
-from spinn_utilities.ranged.ids_view import _IdsView
-from spinn_utilities.ranged.abstract_dict import AbstractDict
-from spinn_utilities.ranged.abstract_sized import AbstractSized
-from spinn_utilities.overrides import overrides
-from past.builtins import xrange
 from six import iteritems
+from six.moves import xrange
+from spinn_utilities.overrides import overrides
+from .abstract_dict import AbstractDict
+from .abstract_list import AbstractList
+from .abstract_sized import AbstractSized
+from .ids_view import _IdsView
+from .ranged_list import RangedList
+from .single_view import _SingleView
+from .slice_view import _SliceView
 
 
 class RangeDictionary(AbstractSized, AbstractDict):

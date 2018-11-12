@@ -2,15 +2,13 @@
 from __future__ import print_function
 import appdirs
 import collections
-from six.moves import configparser
 import logging
 import os
-
+from six.moves import configparser
 from spinn_utilities import log
-from spinn_utilities.configs import \
-    CamelCaseConfigParser, CaseSensitiveParser
-from spinn_utilities.configs import \
-    NoConfigFoundException, UnexpectedConfigException
+from spinn_utilities.configs import (
+    CamelCaseConfigParser, CaseSensitiveParser, NoConfigFoundException,
+    UnexpectedConfigException)
 
 logger = logging.getLogger(__name__)
 

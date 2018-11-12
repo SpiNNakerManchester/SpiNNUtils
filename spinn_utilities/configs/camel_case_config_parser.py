@@ -1,5 +1,5 @@
-from six.moves import configparser
 import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
+from six.moves import configparser
 
 
 # pylint: disable=slots-on-old-class

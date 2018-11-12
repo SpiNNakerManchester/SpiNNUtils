@@ -1,6 +1,6 @@
-from spinn_utilities.matrix.x_view import XView
-from spinn_utilities.matrix.y_view import YView
 from six import raise_from
+from .x_view import XView
+from .y_view import YView
 
 
 class DoubleDict(object):

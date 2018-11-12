@@ -1,13 +1,12 @@
 # pylint: disable=redefined-builtin
 import numbers
-from spinn_utilities.overrides import overrides
-import numpy
-from spinn_utilities.ranged.multiple_values_exception \
-    import MultipleValuesException
-from spinn_utilities.ranged.abstract_sized import AbstractSized
-from spinn_utilities.abstract_base import AbstractBase, abstractmethod
-from past.builtins import xrange
 from six import add_metaclass
+from six.moves import xrange
+from spinn_utilities.abstract_base import AbstractBase, abstractmethod
+from spinn_utilities.overrides import overrides
+from .abstract_sized import AbstractSized
+from .multiple_values_exception import MultipleValuesException
+import numpy
 
 
 @add_metaclass(AbstractBase)

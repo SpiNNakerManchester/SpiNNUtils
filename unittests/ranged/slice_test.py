@@ -1,13 +1,9 @@
 import pytest
-
-from spinn_utilities.ranged.range_dictionary import RangeDictionary
+from spinn_utilities.ranged import RangeDictionary
 from spinn_utilities.ranged.single_view import _SingleView
 
-
 defaults = {"a": "alpha", "b": "bravo"}
-
 rd = RangeDictionary(10, defaults)
-
 slice_view = rd[4:6]
 
 

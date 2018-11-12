@@ -1,5 +1,5 @@
-from spinn_utilities.timer import Timer
 from time import sleep
+from spinn_utilities.timer import Timer
 
 
 def test_create():

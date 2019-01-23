@@ -26,7 +26,7 @@ def search_for_max_success(best_success, min_fail, check):
     :type best_success: int
     :param min_fail: A maximum value that needs not be tested because it
         is either known to fail or one more than the maximum interesting value
-        but must be greater than best_success but may also be negative 
+        but must be greater than best_success but may also be negative
     :type min_fail: int
     :param check: A boolean function that given an int value returns
         true for every value up and including the cutoff and
@@ -36,7 +36,7 @@ def search_for_max_success(best_success, min_fail, check):
         whole range fails or is empty.
     """
     # Check if there are still values in the middle to check
-    if (best_success >= min_fail -1):
+    if (best_success >= min_fail - 1):
         return best_success
     # Find the middle
     mid_point = (best_success + min_fail) // 2

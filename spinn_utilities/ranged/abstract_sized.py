@@ -53,7 +53,7 @@ class AbstractSized(object):
             slice_start = self._size + slice_start
             if slice_start < 0:
                 if self._is_id_type(slice_start):
-                    logger.warn(
+                    logger.warning(
                         "Specified slice start was {} while size is only {}. "
                         "Therefore slice will start at index 0".format(
                             slice_start - self._size, self._size))
@@ -62,7 +62,7 @@ class AbstractSized(object):
                     raise TypeError("Invalid argument type {}.".format(
                         type(slice_start)))
         elif slice_start >= len(self):
-            logger.warn(
+            logger.warning(
                 "Specified slice start was {} while size is only {}. "
                 "Therefore slice will be empty".format(
                     slice_start - self._size, self._size))
@@ -80,7 +80,7 @@ class AbstractSized(object):
             if not self._is_id_type(slice_stop):
                 raise TypeError("Invalid argument type {}.".format(
                     type(slice_start)))
-            logger.warn(
+            logger.warning(
                 "Specified slice has a start {} greater than its stop {} "
                 "(based on size {}). Therefore slice will be empty".format(
                     slice_start, slice_stop, self._size))
@@ -89,29 +89,29 @@ class AbstractSized(object):
             if not self._is_id_type(slice_stop):
                 raise TypeError("Invalid argument type {}.".format(
                     type(slice_start)))
-            logger.warn(
+            logger.warning(
                 "Specified slice has a start {} equal to its stop {} "
                 "(based on size {}). Therefore slice will be empty".format(
                     slice_start, slice_stop, self._size))
         if slice_stop < 0:
-            logger.warn(
+            logger.warning(
                 "Specified slice stop was {} while size is only {}. "
                 "Therefore slice will be empty".format(
                     slice_stop-self._size, self._size))
             return (self._size, self._size)
         elif slice_start > slice_stop:
-            logger.warn(
+            logger.warning(
                 "Specified slice has a start {} greater than its stop {} "
                 "(based on size {}). Therefore slice will be empty".format(
                     slice_start, slice_stop, self._size))
             return (self._size, self._size)
         elif slice_start == slice_stop:
-            logger.warn(
+            logger.warning(
                 "Specified slice has a start {} equal to its stop {} "
                 "(based on size {}). Therefore slice will be empty".format(
                     slice_start, slice_stop, self._size))
         elif slice_stop > len(self):
-            logger.warn(
+            logger.warning(
                 "Specified slice stop was {} while size is only {}. "
                 "Therefore slice will be truncated".format(
                     slice_stop, self._size))

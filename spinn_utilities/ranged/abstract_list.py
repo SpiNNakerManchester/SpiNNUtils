@@ -239,13 +239,16 @@ class AbstractList(AbstractSized):
 
         :return: yields each element one by one
         """
-        if self.range_based():
-            for (start, stop, value) in self.iter_ranges():
-                for _ in xrange(stop - start):
-                    yield value
-        else:
-            for id_value in xrange(self._size):
-                yield self.get_value_by_id(id_value)
+        try:
+            if self.range_based():
+                for (start, stop, value) in self.iter_ranges():
+                    for _ in xrange(stop - start):
+                        yield value
+            else:
+                for id_value in xrange(self._size):
+                    yield self.get_value_by_id(id_value)
+        except StopIteration:
+            return
 
     def iter_by_slice(self, slice_start, slice_stop):
         """ Fast but *not* update-safe iterator of all elements in the slice.
@@ -667,7 +670,11 @@ class DualList(AbstractList):
                 left_iter = self._left.iter_by_slice(slice_start, slice_stop)
                 right_iter = self._right.iter_by_slice(slice_start, slice_stop)
                 while True:
-                    yield self._operation(next(left_iter), next(right_iter))
+                    try:
+                        yield self._operation(
+                            next(left_iter), next(right_iter))
+                    except StopIteration:
+                        return
 
     @overrides(AbstractList.iter_ranges)
     def iter_ranges(self):
@@ -684,17 +691,20 @@ class DualList(AbstractList):
     def _merge_ranges(self, left_iter, right_iter):
         (left_start, left_stop, left_value) = next(left_iter)
         (right_start, right_stop, right_value) = next(right_iter)
-        while True:
-            yield (max(left_start, right_start),
-                   min(left_stop, right_stop),
-                   self._operation(left_value, right_value))
-            if left_stop < right_stop:
-                (left_start, left_stop, left_value) = next(left_iter)
-            elif left_stop > right_stop:
-                (right_start, right_stop, right_value) = next(right_iter)
-            else:
-                (left_start, left_stop, left_value) = next(left_iter)
-                (right_start, right_stop, right_value) = next(right_iter)
+        try:
+            while True:
+                yield (max(left_start, right_start),
+                       min(left_stop, right_stop),
+                       self._operation(left_value, right_value))
+                if left_stop < right_stop:
+                    (left_start, left_stop, left_value) = next(left_iter)
+                elif left_stop > right_stop:
+                    (right_start, right_stop, right_value) = next(right_iter)
+                else:
+                    (left_start, left_stop, left_value) = next(left_iter)
+                    (right_start, right_stop, right_value) = next(right_iter)
+        except StopIteration:
+            return
 
     @overrides(AbstractList.get_default)
     def get_default(self):

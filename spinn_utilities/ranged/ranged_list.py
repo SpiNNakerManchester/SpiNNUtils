@@ -163,8 +163,10 @@ class RangedList(AbstractList):
                 end_point = min(stop, slice_stop)
                 for _ in xrange(end_point - first):
                     yield value
-                (start, stop, value) = next(ranges)
-
+                try:
+                    (start, stop, value) = next(ranges)
+                except StopIteration:
+                    return
         # If non-range-based, just go through the values
         else:
             for value in self._ranges[slice_start: slice_stop]:

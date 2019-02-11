@@ -18,7 +18,7 @@ class AbstractDict(object):
         :return: If key is a str, this returns the single object.\
             If key is iterable (list, tuple, set, etc) of str (or None),\
             returns a dictionary object
-        :raises MultipleValuesException: \
+        :raises :py:class:`spinn_utilities.ranged.MultipleValuesException`: \
             If even one of the keys has multiple values set.\
             But not if other keys not asked for have multiple values
         """

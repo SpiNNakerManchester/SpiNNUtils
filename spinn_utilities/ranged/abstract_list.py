@@ -96,7 +96,7 @@ class AbstractList(AbstractSized):
         or one of the `iter_ranges` methods
 
         :return: Value shared by all elements in the list
-        :raises MultipleValuesException: \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
             If even one elements has a different value
         """
         # This is not elegant code but as the ranges could be created on the
@@ -134,8 +134,8 @@ class AbstractList(AbstractSized):
         or one of the `iter_ranges` methods
 
         :return: Value shared by all elements in the slice
-        :raises MultipleValuesException: If even one elements has a different\
-            value. \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
+            If even one elements has a different value. \
             Not thrown if elements outside of the slice have a different value
         """
 
@@ -150,8 +150,8 @@ class AbstractList(AbstractSized):
         `list.iter`, or one of the `iter_ranges` methods.
 
         :return: Value shared by all elements with these IDs
-        :raises MultipleValuesException: If even one elements has a different\
-            value. \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
+            If even one elements has a different value. \
             Not thrown if elements outside of the IDs have a different value,\
             even if these elements are between the ones pointed to by IDs
         """
@@ -528,7 +528,7 @@ class AbstractList(AbstractSized):
             A function that can be applied over the individual values to\
             create new ones.
         :return: new list
-        :rtype: AbstractList
+        :rtype: :py:class:`.AbstractList`
         """
         return SingleList(a_list=self, operation=operation)
 

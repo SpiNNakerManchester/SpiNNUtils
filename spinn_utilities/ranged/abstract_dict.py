@@ -18,7 +18,7 @@ class AbstractDict(object):
         :return: If key is a str, this returns the single object.\
             If key is iterable (list, tuple, set, etc) of str (or None),\
             returns a dictionary object
-        :raises :py:class:`spinn_utilities.ranged.MultipleValuesException`: \
+        :raises spinn_utilities.ranged.MultipleValuesException:\
             If even one of the keys has multiple values set.\
             But not if other keys not asked for have multiple values
         """
@@ -146,7 +146,7 @@ class AbstractDict(object):
         the values are dictionary objects
 
         :return: List of (``key``, ``value``) tuples
-        :raises MultipleValuesException: \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
             If even one of the keys has multiple values set.
         """
         results = []
@@ -167,7 +167,7 @@ class AbstractDict(object):
         added during iteration.
 
         :return: yield (``key``, ``value``) tuples
-        :raises MultipleValuesException: \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
             If even one of the keys has multiple values set.
         """
         for key in self.keys():
@@ -182,7 +182,7 @@ class AbstractDict(object):
         values are dictionary objects
 
         :return: List of values
-        :raises MultipleValuesException: \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
             If even one of the keys has multiple values set.
         """
         results = []
@@ -203,7 +203,7 @@ class AbstractDict(object):
         added during iteration.
 
         :return: yield values
-        :raises MultipleValuesException: \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
             If even one of the keys has multiple values set.
         """
         for key in self.keys():

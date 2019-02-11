@@ -163,7 +163,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
         :param key: a key which must be present in the dict
         :type key: str
-        :rtype: RangedList
+        :rtype: :py:class:`.ranged_list.RangedList`
         """
         return self._value_lists[key]
 

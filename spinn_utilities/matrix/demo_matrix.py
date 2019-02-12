@@ -1,4 +1,7 @@
-from collections import defaultdict
+try:
+    from collections.abc import defaultdict
+except ImportError:
+    from collections import defaultdict
 from spinn_utilities.overrides import overrides
 from .abstract_matrix import AbstractMatrix
 

@@ -214,8 +214,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
                 yield value
 
     @overrides(AbstractDict.set_value)
-    def set_value(self, key, value):
-        self._value_lists[key].set_value(value)
+    def set_value(self, key, value, use_list_as_value=False):
+        self._value_lists[key].set_value(value, use_list_as_value)
 
     def __setitem__(self, key, value):
         """ Wrapper around set_value to support ``range["key"] =``

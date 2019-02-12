@@ -34,7 +34,7 @@ class _SingleView(AbstractView):
             yield self._range_dict.get_values_by_id(key=key, id=self._id)
 
     @overrides(AbstractDict.set_value)
-    def set_value(self, key, value):
+    def set_value(self, key, value, use_list_as_value=False):
         return self._range_dict.get_list(key).set_value_by_id(
             value=value, id=self._id)
 

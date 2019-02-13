@@ -3,9 +3,9 @@ try:
 except ImportError:
     from distutils.core import setup
 try:
-    from collections.abc import MutableSet
+    from collections.abc import defaultdict
 except ImportError:
-    from collections import MutableSet
+    from collections import defaultdict
 import os
 
 __version__ = None

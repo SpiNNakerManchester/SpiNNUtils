@@ -56,7 +56,9 @@ class ExecutableFinder(object):
                 return potential_filename
 
         # No executable found
-        return None
+        raise Exception(
+            "failed to locate binary for {}. Fix and try again".format(
+                executable_name))
 
     def get_executable_paths(self, executable_names):
         """ Finds each executables within the set of folders.\

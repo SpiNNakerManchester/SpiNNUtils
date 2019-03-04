@@ -27,3 +27,12 @@ class TestConverter(unittest.TestCase):
         Converter.convert(src, dest, dict)
         dict = os.path.join("modified_src", "test2.dict")
         Converter.convert(src, dest, dict)
+
+    def test_replace(self):
+        src = "mock_src"
+        dest = "modified_src"
+        dict = os.path.join("modified_src", "test.dict")
+        c = Converter(src, dest, dict)
+        path = "/home/me/mock_src/FEC/c_common/fec/mock_src/"
+        new_path = "/home/me/mock_src/FEC/c_common/fec/modified_src/"
+        self.assertEqual(new_path, c._any_destination(path))

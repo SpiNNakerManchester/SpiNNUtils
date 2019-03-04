@@ -124,10 +124,10 @@ class Converter(object):
 
     def _any_destination(self, path):
         # Here we need the local separator
-        destination = path.replace(
-            os.path.sep + self._src_basename + os.path.sep,
-            os.path.sep + self._dest_basename + os.path.sep)
-        return destination
+        src_bit = os.path.sep + self._src_basename + os.path.sep
+        dest_bit = os.path.sep + self._dest_basename + os.path.sep
+        li = path.rsplit(src_bit, 1)
+        return dest_bit.join(li)
 
     def _mkdir(self, path):
         destination = self._any_destination(path)

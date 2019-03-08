@@ -42,3 +42,13 @@ class TestLoggerUtils(unittest.TestCase):
             logger_utils.warn_once(logger, "a log warning")
             log_checker.assert_logs_contains_once("WARNING", lc.records,
                                                   "a log warning")
+
+    def test_error(self):
+        with LogCapture() as lc:
+            logger_utils.error_once(logger, "a log Error")
+            logger_utils.warn_once(logger, "another log error")
+            logger_utils.warn_once(logger, "a log warning")
+            log_checker.assert_logs_contains_once(
+                "ERROR", lc.records, "a log Error")
+            log_checker.assert_logs_error_not_contains(
+                lc.records, "another log error")

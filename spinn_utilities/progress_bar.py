@@ -14,6 +14,9 @@ class ProgressBar(object):
     """
     MAX_LENGTH_IN_CHARS = 60
 
+    TOO_MANY_ERROR = "Too many update steps in progress bar! " \
+                     "This may be a sign that something else has gone wrong!"
+
     __slots__ = (
         "_number_of_things", "_currently_completed", "_destination",
         "_chars_per_thing", "_chars_done", "_string",
@@ -53,9 +56,7 @@ class ProgressBar(object):
         """
 
         if self._currently_completed + amount_to_add > self._number_of_things:
-            message = "Too many update steps in progress bar! " \
-                      "This may be a sign that something else has gone wrong!"
-            logger_utils.error_once(logger, message)
+            logger_utils.error_once(logger, self.TOO_MANY_ERROR)
             return
         self._currently_completed += amount_to_add
         self._check_differences()

@@ -1,5 +1,8 @@
 import pytest
+from testfixtures import LogCapture
 from spinn_utilities.progress_bar import ProgressBar, DummyProgressBar
+from spinn_utilities.testing import log_checker
+from spinn_utilities import logger_utils
 
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
@@ -28,19 +31,25 @@ def test_with_operation(pbclass):
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_check_length_full(pbclass):
+    logger_utils.reset()
     p = pbclass(2, None)
-    with pytest.raises(Exception):
+    with LogCapture() as lc:
         p.update(3)
+        log_checker.assert_logs_contains_once(
+            "ERROR", lc.records, ProgressBar.TOO_MANY_ERROR)
     p.end()
 
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_check_length_addition(pbclass):
+    logger_utils.reset()
     p = pbclass(2, None)
     p.update()
     p.update()
-    with pytest.raises(Exception):
+    with LogCapture() as lc:
         p.update()
+        log_checker.assert_logs_contains_once(
+            "ERROR", lc.records, ProgressBar.TOO_MANY_ERROR)
     p.end()
 
 

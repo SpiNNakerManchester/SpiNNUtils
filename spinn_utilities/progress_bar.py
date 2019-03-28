@@ -1,14 +1,21 @@
 from __future__ import print_function, division
+import logging
 import sys
 import math
 import os
 from spinn_utilities.overrides import overrides
+from spinn_utilities import logger_utils
+
+logger = logging.getLogger(__name__)
 
 
 class ProgressBar(object):
     """ Progress bar for telling the user where a task is up to
     """
     MAX_LENGTH_IN_CHARS = 60
+
+    TOO_MANY_ERROR = "Too many update steps in progress bar! " \
+                     "This may be a sign that something else has gone wrong!"
 
     __slots__ = (
         "_number_of_things", "_currently_completed", "_destination",
@@ -47,8 +54,10 @@ class ProgressBar(object):
         :param amount_to_add:
         :rtype: None
         """
+
         if self._currently_completed + amount_to_add > self._number_of_things:
-            raise Exception("too many update steps")
+            logger_utils.error_once(logger, self.TOO_MANY_ERROR)
+            return
         self._currently_completed += amount_to_add
         self._check_differences()
 

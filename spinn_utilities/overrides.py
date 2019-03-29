@@ -22,7 +22,11 @@ class overrides(object):
         # Any additional arguments required by the subclass method
         "_additional_arguments",
         # True if the subclass method may have additional defaults
-        "_extend_defaults"
+        "_extend_defaults",
+        # True if the name check is relaxed
+        "_relax_name_check",
+        # The name of the thing being overridden for error messages
+        "_override_name"
     ]
 
     def __init__(
@@ -44,6 +48,8 @@ class overrides(object):
         self._extend_doc = extend_doc
         self._additional_arguments = additional_arguments
         self._extend_defaults = extend_defaults
+        self._relax_name_check = False
+        self._override_name = "super class method"
         if additional_arguments is None:
             self._additional_arguments = {}
         if isinstance(super_class_method, property):
@@ -73,9 +79,10 @@ class overrides(object):
                 if arg not in self._additional_arguments]
         if len(all_args) != len(super_args.args):
             raise AttributeError(
-                "Method has {} arguments but super class method has {}"
+                "Method has {} arguments but {} has {}"
                 " arguments".format(
-                    len(method_args.args), len(super_args.args)))
+                    len(method_args.args), self._override_name,
+                    len(super_args.args)))
         for arg, super_arg in zip(all_args, super_args.args):
             if arg != super_arg:
                 raise AttributeError(
@@ -83,23 +90,27 @@ class overrides(object):
         if not self.__match_defaults(
                 default_args, super_args.defaults, self._extend_defaults):
             raise AttributeError(
-                "Default arguments don't match super class method")
+                "Default arguments don't match {}".format(
+                    self._override_name))
 
     def __call__(self, method):
 
         # Check and fail if this is a property
         if isinstance(method, property):
             raise AttributeError(
-                "Please ensure that the override decorator is the last"
-                " decorator before the method declaration")
+                "Please ensure that the {} decorator is the last"
+                " decorator before the method declaration".format(
+                    self.__class__.__name__))
 
         # Check that the name matches
-        if method.__name__ != self._superclass_method.__name__:
+        if (not self._relax_name_check and
+                method.__name__ != self._superclass_method.__name__):
             raise AttributeError(
-                "Super class method name {} does not match {}. "
-                "Ensure override is the last decorator before the method "
+                "{} name {} does not match {}. "
+                "Ensure {} is the last decorator before the method "
                 "declaration".format(
-                    self._superclass_method.__name__, method.__name__))
+                    self._override_name, self._superclass_method.__name__,
+                    method.__name__, self.__class__.__name__))
 
         # Check that the arguments match (except for __init__ as this might
         # take extra arguments or pass arguments not specified)

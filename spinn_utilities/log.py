@@ -1,6 +1,12 @@
 import logging
 import re
-from inspect import getargspec
+try:
+    from inspect import getfullargspec
+except ImportError:
+    # Python 2.7 hack
+    from inspect import getargspec as getfullargspec
+
+
 from .overrides import overrides
 from six import PY2
 
@@ -184,5 +190,5 @@ class FormatAdapter(logging.LoggerAdapter):
         """
         return msg, {
             key: kwargs[key]
-            for key in getargspec(self.do_log).args[1:]
+            for key in getfullargspec(self.do_log).args[1:]
             if key in kwargs}

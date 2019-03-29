@@ -163,7 +163,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
         :param key: a key which must be present in the dict
         :type key: str
-        :rtype: RangedList
+        :rtype: :py:class:`.ranged_list.RangedList`
         """
         return self._value_lists[key]
 
@@ -214,8 +214,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
                 yield value
 
     @overrides(AbstractDict.set_value)
-    def set_value(self, key, value):
-        self._value_lists[key].set_value(value)
+    def set_value(self, key, value, use_list_as_value=False):
+        self._value_lists[key].set_value(value, use_list_as_value)
 
     def __setitem__(self, key, value):
         """ Wrapper around set_value to support ``range["key"] =``
@@ -283,8 +283,11 @@ class RangeDictionary(AbstractSized, AbstractDict):
             start = self._size
             next_stop = self._size
             for key in keys:
-                if ranges[key][1] == stop:
-                    ranges[key] = next(range_iters[key])
+                try:
+                    if ranges[key][1] == stop:
+                        ranges[key] = next(range_iters[key])
+                except StopIteration:
+                    return
                 start = min(max(ranges[key][0], stop), start)
                 next_stop = min(ranges[key][1], next_stop)
                 current[key] = ranges[key][2]

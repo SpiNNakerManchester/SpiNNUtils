@@ -20,7 +20,6 @@ def test_find_in_no_places():
         return True
 
 
-
 def test_find_in_one_place(tmpdir):
     ef = ExecutableFinder([str(tmpdir)])
     w = tmpdir.join("abc.aplx")
@@ -44,7 +43,11 @@ def test_find_in_two_places(tmpdir):
     w2.remove()
     assert ef.get_executable_path("abc.aplx") == str(w1)
     w1.remove()
-    assert ef.get_executable_path("abc.aplx") is None
+    try:
+        ef.get_executable_path("abc.aplx")
+        return False
+    except Exception:
+        return True
 
 
 def test_find_no_duplicates(tmpdir):

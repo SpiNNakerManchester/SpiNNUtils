@@ -28,4 +28,3 @@ def test_orderedset_default():
     o["foo"].add(1)
     assert 2 in o["foo"]
     assert 1 not in o["bar"]
-

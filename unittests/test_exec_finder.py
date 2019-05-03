@@ -1,6 +1,9 @@
+import pytest
 from spinn_utilities.executable_finder import ExecutableFinder
+from spinn_utilities.progress_bar import ProgressBar, DummyProgressBar
 
 
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_create_and_config(tmpdir):
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
@@ -10,23 +13,20 @@ def test_create_and_config(tmpdir):
     ef.add_path(str(c))
     assert ef.binary_paths == "{} : {} : {}".format(a, b, c)
 
-
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_find_in_no_places():
     ef = ExecutableFinder([])
-    try:
+    with pytest.raises(Exception):
         ef.get_executable_path("abc.aplx")
-        return False
-    except Exception:
-        return True
 
-
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_find_in_one_place(tmpdir):
     ef = ExecutableFinder([str(tmpdir)])
     w = tmpdir.join("abc.aplx")
     w.write("any old content")
     assert ef.get_executable_path("abc.aplx") == str(w)
 
-
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_find_in_two_places(tmpdir):
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
@@ -43,13 +43,10 @@ def test_find_in_two_places(tmpdir):
     w2.remove()
     assert ef.get_executable_path("abc.aplx") == str(w1)
     w1.remove()
-    try:
+    with pytest.raises(Exception):
         ef.get_executable_path("abc.aplx")
-        return False
-    except Exception:
-        return True
 
-
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_find_no_duplicates(tmpdir):
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")

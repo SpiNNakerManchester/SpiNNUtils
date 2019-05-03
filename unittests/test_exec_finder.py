@@ -1,6 +1,5 @@
 import pytest
 from spinn_utilities.executable_finder import ExecutableFinder
-from spinn_utilities.progress_bar import ProgressBar, DummyProgressBar
 
 
 def test_create_and_config(tmpdir):

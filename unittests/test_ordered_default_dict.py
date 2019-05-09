@@ -21,7 +21,7 @@ def test_list_default():
     assert o["bar"] == 2
 
 
-def test_orderedset_default():
+def test_ordered_set_default():
     o = DefaultOrderedDict(OrderedSet)
     assert o is not None
     o["foo"].add(2)

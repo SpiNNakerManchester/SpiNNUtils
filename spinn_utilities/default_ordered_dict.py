@@ -1,8 +1,11 @@
-from collections import OrderedDict, Callable
+try:
+    from collections.abc import OrderedDict, Callable
+except ImportError:
+    from collections import OrderedDict, Callable
 
 
 class DefaultOrderedDict(OrderedDict):
-    # Source: http://stackoverflow.com/a/6190500/562769
+    # Source: https://stackoverflow.com/questions/6190331
     def __init__(self, default_factory=None, *a, **kw):
         if (default_factory is not None and
            not isinstance(default_factory, Callable)):
@@ -40,7 +43,6 @@ class DefaultOrderedDict(OrderedDict):
         return type(self)(self.default_factory,
                           copy.deepcopy(self.items()))
 
-    # noinspection PyDefaultArgument
-    def __repr__(self, _repr_running={}):
+    def __repr__(self):
         return 'OrderedDefaultDict(%s, %s)' % (
-            self.default_factory, OrderedDict.__repr__(self, _repr_running))
+            self.default_factory, OrderedDict.__repr__(self))

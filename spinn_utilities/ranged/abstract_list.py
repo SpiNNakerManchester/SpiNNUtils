@@ -86,6 +86,11 @@ class AbstractList(AbstractSized):
                                          list(other.iter_ranges()))
         return numpy.array_equal(list(self), list(other))
 
+    def __ne__(self, other):
+        if not isinstance(other, AbstractList):
+            return True
+        return not other.__eq__()
+
     def __str__(self):
         return str(list(self))
 

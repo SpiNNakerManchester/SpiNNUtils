@@ -89,7 +89,7 @@ class AbstractList(AbstractSized):
     def __ne__(self, other):
         if not isinstance(other, AbstractList):
             return True
-        return not other.__eq__()
+        return not self.__eq__(other)
 
     def __str__(self):
         return str(list(self))

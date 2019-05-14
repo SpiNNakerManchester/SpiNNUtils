@@ -31,7 +31,7 @@ script:
   - py.test . --cov spinn_utilities
   # Code quality check
   - flake8 spinn_utilities unittests
-  - support/rat.sh run -E .ratexclude . 
+  - support/rat.sh run -E .ratexclude -d .
   - cd doc/source
   - sphinx-build -W -T -E -b html -d _build/doctrees-readthedocsdirhtml -D language=en . _build/html
   - sphinx-build -W -T -b json -d _build/doctrees-json -D language=en . _build/json

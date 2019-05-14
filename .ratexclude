@@ -11,3 +11,4 @@ dist
 .*\.gitignore
 .*\.ratexclude
 \..*project
+\.travis\.yml

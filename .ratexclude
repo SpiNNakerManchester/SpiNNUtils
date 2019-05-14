@@ -1,4 +1,6 @@
 build
+support
+dist
 .*\.egg-info
 .*\.pyc
 .*\.coverage.*

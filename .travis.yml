@@ -2,20 +2,25 @@ language: python
 python:
         - 2.7
         - 3.6
-dist: trusty
+dist: xenial
+addons:
+  apt:
+    packages:
+      - openjdk-8-jre-headless
 matrix:
   include:
     - python: 3.7
-      dist: xenial
       sudo: true
 cache: pip
 
+before_install:
+  # Note: Change next line once support scripts are fixed
+  - git clone https://github.com/SpiNNakerManchester/SupportScripts.git -b rat support
+  - support/rat.sh download
 ### Don't need this at the moment
-# before_install:
 #   # Bring pip up to date
 #   - pip install --upgrade pip setuptools wheel
 #   - pip install --only-binary=numpy,scipy numpy scipy
-#   - git clone https://github.com/SpiNNakerManchester/SupportScripts.git support
 
 install:
   - python ./setup.py install
@@ -26,6 +31,7 @@ script:
   - py.test . --cov spinn_utilities
   # Code quality check
   - flake8 spinn_utilities unittests
+  - support/rat.sh run -E .ratexclude . 
   - cd doc/source
   - sphinx-build -W -T -E -b html -d _build/doctrees-readthedocsdirhtml -D language=en . _build/html
   - sphinx-build -W -T -b json -d _build/doctrees-json -D language=en . _build/json

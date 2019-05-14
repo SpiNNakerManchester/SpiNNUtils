@@ -1,0 +1,11 @@
+build
+.*\.egg-info
+.*\.pyc
+.*\.coverage.*
+.*\.md
+.*\.rst
+.*\.template
+.*\.cfg
+.*\.gitignore
+.*\.ratexclude
+\..*project

@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 class SafeEval(object):
     """ This provides expression evaluation capabilities while allowing the\
         set of symbols exposed to the expression to be strictly controlled.

@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 def find_max_success(max_possible, check):
     """
     Finds the maximum value that will pass the check

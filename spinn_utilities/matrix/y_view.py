@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 class YView(object):
     """ A view along a particular y-slice of a 2D matrix.
     """

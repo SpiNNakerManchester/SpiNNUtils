@@ -14,5 +14,5 @@
 **/.travis.yml
 **/modified_src/**
 **/.settings/**
-**/_.*cache/**
+**/.*cache/**
 **/make_tools/*.ranges

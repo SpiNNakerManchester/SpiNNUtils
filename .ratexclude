@@ -4,6 +4,7 @@ dist
 .*\.egg-info
 .*\.pyc
 .*\.coverage.*
+.*\.dict
 .*\.md
 .*\.rst
 .*\.template
@@ -12,3 +13,4 @@ dist
 .*\.ratexclude
 \..*project
 \.travis\.yml
+modified_src

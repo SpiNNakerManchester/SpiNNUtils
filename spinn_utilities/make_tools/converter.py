@@ -129,8 +129,7 @@ class Converter(object):
         li = path.rsplit(src_bit, 1)
         return dest_bit.join(li)
 
-    def _mkdir(self, path):
-        destination = self._any_destination(path)
+    def _mkdir(self, destination):
         if not os.path.exists(destination):
             os.mkdir(destination)
         if not os.path.exists(destination):

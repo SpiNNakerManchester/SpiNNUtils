@@ -30,8 +30,7 @@ matrix:
 cache: pip
 
 before_install:
-  # Note: Change next line once support scripts are fixed
-  - git clone https://github.com/SpiNNakerManchester/SupportScripts.git -b rat support
+  - git clone https://github.com/SpiNNakerManchester/SupportScripts.git support
   - support/rat.sh download
 ### Don't need this at the moment
 #   # Bring pip up to date

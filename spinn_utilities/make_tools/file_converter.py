@@ -93,7 +93,7 @@ class FileConverter(object):
         """
         self._message_id = range_start
         if not os.path.exists(self._src):
-            raise Exception("Unable to locate source {}".format(src))
+            raise Exception("Unable to locate source {}".format(self._src))
         dest_dir = os.path.dirname(os.path.realpath(self._dest))
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
@@ -401,12 +401,12 @@ class FileConverter(object):
                     if text[str_pos] == "\n":
                         raise Exception(
                             "Unclosed string literal in {} at line: {}".
-                            format(self._file_name, line_num))
+                            format(self._src, line_num))
                     elif text[str_pos] == "\\":
                         if text[str_pos+1] == "\n":
                             raise Exception(
                                 "Unclosed string literal in {} at line: {}".
-                                format(self._file_name, line_num))
+                                format(self._src, line_num))
 
                         else:
                             str_pos += 2  # ignore next char which may be a "

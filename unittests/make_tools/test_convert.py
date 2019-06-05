@@ -35,7 +35,7 @@ class TestConverter(unittest.TestCase):
         c = Converter(src, dest, dict)
         path = "/home/me/mock_src/FEC/c_common/fec/mock_src/"
         new_path = "/home/me/mock_src/FEC/c_common/fec/modified_src/"
-        self.assertEqual(new_path, c._any_destination(path))
+        self.assertEquals(new_path, c._any_destination(path))
 
     def test_double_level(self):
         cwd = os.getcwd()

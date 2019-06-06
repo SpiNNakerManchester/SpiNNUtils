@@ -424,12 +424,12 @@ class FileConverter(object):
                     if text[str_pos] == "\n":
                         raise Exception(
                             "Unclosed string literal in {} at line: {}".
-                            format(self._file_name, line_num))
+                            format(self._src, line_num))
                     elif text[str_pos] == "\\":
                         if text[str_pos+1] == "\n":
                             raise Exception(
                                 "Unclosed string literal in {} at line: {}".
-                                format(self._file_name, line_num))
+                                format(self._src, line_num))
 
                         else:
                             str_pos += 2  # ignore next char which may be a "

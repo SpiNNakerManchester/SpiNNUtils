@@ -37,7 +37,7 @@ class TestConverter(unittest.TestCase):
         FileConverter.convert(src, dest, dict, 2000)
         src_lines = sum(1 for line in open(src))
         modified_lines = sum(1 for line in open(dest))
-        self.assertEquals(src_lines, modified_lines)
+        self.assertEqual(src_lines, modified_lines)
         with open(dict, 'r') as dictfile:
             data = dictfile.read()
         assert("this is ok" in data)

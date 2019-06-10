@@ -1,6 +1,6 @@
-from spinn_utilities.safe_eval import SafeEval
-import pytest
 import math
+import pytest
+from spinn_utilities.safe_eval import SafeEval
 
 
 def Abc(x):

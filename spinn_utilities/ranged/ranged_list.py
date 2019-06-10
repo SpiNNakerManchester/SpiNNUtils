@@ -1,11 +1,12 @@
 # pylint: disable=redefined-builtin
-from spinn_utilities.ranged.abstract_list import AbstractList
-from spinn_utilities.overrides import overrides
-from spinn_utilities.ranged.multiple_values_exception \
-    import MultipleValuesException
-from spinn_utilities.helpful_functions import is_singleton
 from past.builtins import range, xrange
 from six import raise_from
+from spinn_utilities.overrides import overrides
+from spinn_utilities.helpful_functions import is_singleton
+from .abstract_list import AbstractList
+from .multiple_values_exception import MultipleValuesException
+
+import numpy
 
 
 def function_iterator(function, size, ids=None):
@@ -34,12 +35,14 @@ class RangedList(AbstractList):
     __slots__ = [
         "_default", "_key", "_ranged_based", "_ranges"]
 
-    def __init__(self, size=None, value=None, key=None):
+    def __init__(
+            self, size=None, value=None, key=None, use_list_as_value=False):
         """
         :param size: Fixed length of the list
         :param value: value to given to all elements in the list
         :param key: The dict key this list covers.\
             This is used only for better Exception messages
+        :param use_list_as_value: True if the value *is* a list
         """
         if size is None:
             try:
@@ -48,9 +51,9 @@ class RangedList(AbstractList):
                 raise ValueError("value parameter must have a length to "
                                  "determine the unsupplied size")
         AbstractList.__init__(self, size=size, key=key)
-        if not self.is_list(value, size):
+        if not use_list_as_value and not self.is_list(value, size):
             self._default = value
-        self.set_value(value)
+        self.set_value(value, use_list_as_value)
 
     @overrides(AbstractList.range_based)
     def range_based(self):
@@ -91,7 +94,7 @@ class RangedList(AbstractList):
                     # If we have already found a range in the slice, check the
                     # value is the same
                     if found_value:
-                        if result != value:
+                        if not numpy.array_equal(result, value):
                             raise MultipleValuesException(
                                 self._key, result, value)
 
@@ -113,7 +116,7 @@ class RangedList(AbstractList):
         # they are all the same within the slice
         result = self._ranges[slice_start]
         for _value in self._ranges[slice_start+1: slice_stop]:
-            if result != _value:
+            if not numpy.array_equal(result, _value):
                 raise MultipleValuesException(self._key, result, _value)
         return result
 
@@ -124,7 +127,7 @@ class RangedList(AbstractList):
         result = self.get_value_by_id(ids[0])
         for id_value in ids[1:]:
             value = self.get_value_by_id(id_value)
-            if result != value:
+            if not numpy.array_equal(result, value):
                 raise MultipleValuesException(self._key, result, value)
         return result
 
@@ -164,8 +167,10 @@ class RangedList(AbstractList):
                 end_point = min(stop, slice_stop)
                 for _ in xrange(end_point - first):
                     yield value
-                (start, stop, value) = next(ranges)
-
+                try:
+                    (start, stop, value) = next(ranges)
+                except StopIteration:
+                    return
         # If non-range-based, just go through the values
         else:
             for value in self._ranges[slice_start: slice_stop]:
@@ -187,7 +192,7 @@ class RangedList(AbstractList):
             for start, value in enumerate(self._ranges):
                 current_start = start
                 current_value = value
-                if value != previous_value:
+                if not numpy.array_equal(value, previous_value):
                     yield (previous_start, start, previous_value)
                     previous_start = start
                     previous_value = value
@@ -216,7 +221,7 @@ class RangedList(AbstractList):
             previous_start = slice_start
             for index, value in \
                     enumerate(self._ranges[slice_start: slice_stop]):
-                if value != previous_value:
+                if not numpy.array_equal(value, previous_value):
                     # Index is one ahead so no need for a + 1 here
                     yield (previous_start, slice_start + index, previous_value)
                     previous_start = slice_start + index
@@ -259,17 +264,18 @@ class RangedList(AbstractList):
             raise Exception("The number of values does not equal the size")
         return values
 
-    def set_value(self, value):
+    def set_value(self, value, use_list_as_value=False):
         """ Sets *all* elements in the list to this value.
 
         .. note::
             Does not change the default.
 
         :param value: new value
+        :param use_list_as_value: True if the value to be set *is* a list
         """
 
         # If the value to set is a list, just copy the values
-        if self.is_list(value, self._size):
+        if not use_list_as_value and self.is_list(value, self._size):
             self._ranges = self.as_list(value, self._size)
             self._ranged_based = False
 
@@ -305,7 +311,7 @@ class RangedList(AbstractList):
             if id < stop:
 
                 # If already set as needed, do nothing
-                if value == old_value:
+                if numpy.array_equal(value, old_value):
                     return
 
                 # Split the ID out of the range
@@ -322,7 +328,8 @@ class RangedList(AbstractList):
                 # If not at the last range, update the start and stop value of
                 # the next range
                 if index < len(self._ranges) - 1:
-                    if self._ranges[index][2] == self._ranges[index + 1][2]:
+                    if numpy.array_equal(self._ranges[index][2],
+                                         self._ranges[index + 1][2]):
                         self._ranges[index] = (
                             self._ranges[index][0],
                             self._ranges[index + 1][1],
@@ -332,7 +339,8 @@ class RangedList(AbstractList):
                 # If not at the first range, update the start and stop value
                 # of the first range
                 if index > 0:
-                    if self._ranges[index][2] == self._ranges[index - 1][2]:
+                    if numpy.array_equal(self._ranges[index][2],
+                                         self._ranges[index - 1][2]):
                         self._ranges[index - 1] = (
                             self._ranges[index - 1][0],
                             self._ranges[index][1],
@@ -342,7 +350,8 @@ class RangedList(AbstractList):
                 # We found it so stop
                 return
 
-    def set_value_by_slice(self, slice_start, slice_stop, value):
+    def set_value_by_slice(
+            self, slice_start, slice_stop, value, use_list_as_value=False):
         """ Sets the value for a single range to the new value.
 
         .. note::
@@ -363,7 +372,8 @@ class RangedList(AbstractList):
             return  # Empty list so do nothing
 
         # If the value to set is a list, set the values directly
-        if self.is_list(value, size=slice_stop - slice_start):
+        if not use_list_as_value and self.is_list(
+                value, size=slice_stop - slice_start):
             return self._set_values_list(range(slice_start, slice_stop), value)
 
         # If non-ranged-based, set the values directly
@@ -386,7 +396,7 @@ class RangedList(AbstractList):
         if slice_start > _start:
 
             # If the values are different, add a new range with the old value
-            if value != old_value:
+            if not numpy.array_equal(value, old_value):
                 self._ranges.insert(index, (_start, slice_start, old_value))
 
                 # We have added a value so move on one
@@ -412,14 +422,15 @@ class RangedList(AbstractList):
             self._ranges.insert(index+1, (slice_stop, _stop, old_value))
 
         # merge with previous if same value
-        if index > 0 and self._ranges[index-1][2] == value:
+        if index > 0 and numpy.array_equal(self._ranges[index-1][2], value):
             self._ranges[index-1] = (self._ranges[index-1][0], slice_stop,
                                      value)
             self._ranges.pop(index)
             index -= 1
 
         # merge with next if same value
-        if index < len(self._ranges) - 1 and self._ranges[index+1][2] == value:
+        if index < len(self._ranges) - 1 and numpy.array_equal(
+                self._ranges[index+1][2],  value):
             self._ranges[index] = (self._ranges[index][0],
                                    self._ranges[index + 1][1], value)
             self._ranges.pop(index + 1)
@@ -433,15 +444,15 @@ class RangedList(AbstractList):
         for id_value, val in zip(ids, values):
             self.set_value_by_id(id_value, val)
 
-    def set_value_by_ids(self, ids, value):
-        if self.is_list(value, len(ids)):
+    def set_value_by_ids(self, ids, value, use_list_as_value=False):
+        if not use_list_as_value and self.is_list(value, len(ids)):
             self._set_values_list(ids, value)
         else:
             for id_value in ids:
                 self.set_value_by_id(id_value, value)
 
-    def set_value_by_selector(self, selector, value):
-        """ Support for the `list[x] ==` format.
+    def set_value_by_selector(self, selector, value, use_list_as_value=False):
+        """ Support for the `list[x] =` format.
 
         :param id: A single ID, a slice of IDs or a list of IDs
         :param value:
@@ -451,11 +462,12 @@ class RangedList(AbstractList):
         if isinstance(selector, slice):
             if selector.step is None or selector.step == 1:
                 (start, stop, _) = selector.indices(self._size)
-                self.set_value_by_slice(start, stop, value)
+                self.set_value_by_slice(start, stop, value, use_list_as_value)
                 return
 
         ids = self.selector_to_ids(selector)
-        self.set_value_by_ids(ids=ids, value=value)
+        self.set_value_by_ids(
+            ids=ids, value=value, use_list_as_value=use_list_as_value)
 
     __setitem__ = set_value_by_selector
 

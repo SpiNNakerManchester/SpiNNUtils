@@ -1,7 +1,7 @@
 # pylint: disable=redefined-builtin
-from spinn_utilities.ranged.abstract_dict import AbstractDict
-from spinn_utilities.ranged.abstract_view import AbstractView
 from spinn_utilities.overrides import overrides
+from .abstract_dict import AbstractDict
+from .abstract_view import AbstractView
 
 
 class _SliceView(AbstractView):
@@ -44,9 +44,10 @@ class _SliceView(AbstractView):
             update_save=update_save)
 
     @overrides(AbstractDict.set_value)
-    def set_value(self, key, value):
+    def set_value(self, key, value, use_list_as_value=False):
         self._range_dict.get_list(key).set_value_by_slice(
-            slice_start=self._start, slice_stop=self._stop, value=value)
+            slice_start=self._start, slice_stop=self._stop, value=value,
+            use_list_as_value=use_list_as_value)
 
     @overrides(AbstractDict.iter_ranges)
     def iter_ranges(self, key=None):

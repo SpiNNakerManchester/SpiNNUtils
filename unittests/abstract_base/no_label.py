@@ -1,7 +1,6 @@
+from spinn_utilities.overrides import overrides
 from .abstract_grandparent import AbstractGrandParent
 from .abstract_has_constraints import AbstractHasConstraints
-
-from spinn_utilities.overrides import overrides
 
 
 class NoLabel(AbstractGrandParent):
@@ -11,7 +10,7 @@ class NoLabel(AbstractGrandParent):
 
     @overrides(AbstractHasConstraints.add_constraint)
     def add_constraint(self, constraint):
-        raise Exception("We set our own constrainst")
+        raise Exception("We set our own constraints")
 
     @overrides(AbstractHasConstraints.constraints)
     def constraints(self):

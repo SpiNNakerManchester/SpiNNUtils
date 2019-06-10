@@ -1,6 +1,6 @@
-from spinn_utilities.ranged.abstract_view import AbstractView
 from spinn_utilities.overrides import overrides
-from spinn_utilities.ranged.abstract_dict import AbstractDict
+from .abstract_dict import AbstractDict
+from .abstract_view import AbstractView
 
 
 class _IdsView(AbstractView):
@@ -26,7 +26,7 @@ class _IdsView(AbstractView):
             self._ids)
 
     @overrides(AbstractDict.set_value)
-    def set_value(self, key, value):
+    def set_value(self, key, value, use_list_as_value=False):
         ranged_list = self._range_dict.get_list(key)
         for _id in self._ids:
             ranged_list.set_value_by_id(id=_id, value=value)

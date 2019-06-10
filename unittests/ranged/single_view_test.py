@@ -1,9 +1,7 @@
-from spinn_utilities.ranged.range_dictionary import RangeDictionary
+from spinn_utilities.ranged import RangeDictionary
 
 defaults = {"a": "alpha", "b": "bravo"}
-
 rd = RangeDictionary(10, defaults)
-
 single = rd[4]
 
 

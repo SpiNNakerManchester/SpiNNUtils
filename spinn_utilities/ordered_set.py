@@ -1,4 +1,7 @@
-import collections
+try:
+    from collections.abc import MutableSet
+except ImportError:
+    from collections import MutableSet
 
 
 class _Node(object):
@@ -32,7 +35,7 @@ class _Node(object):
         self._next_node = next_node
 
 
-class OrderedSet(collections.MutableSet):
+class OrderedSet(MutableSet):
     __slots__ = (
         "_end", "_map"
     )

@@ -1,5 +1,4 @@
 from six import add_metaclass
-
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 
@@ -19,7 +18,7 @@ class AbstractDict(object):
         :return: If key is a str, this returns the single object.\
             If key is iterable (list, tuple, set, etc) of str (or None),\
             returns a dictionary object
-        :raises MultipleValuesException: \
+        :raises spinn_utilities.ranged.MultipleValuesException:\
             If even one of the keys has multiple values set.\
             But not if other keys not asked for have multiple values
         """
@@ -32,7 +31,7 @@ class AbstractDict(object):
         """
 
     @abstractmethod
-    def set_value(self, key, value):
+    def set_value(self, key, value, use_list_as_value=False):
         """ Resets a already existing key to the new value. \
         All IDs in the whole range or view will have this key set.
 
@@ -49,6 +48,7 @@ class AbstractDict(object):
         :param key: key to value being set
         :type key: str
         :param value: any object
+        :param use_list_as_value: True if the value *is* a list
         :raise KeyError: If a new key is being used.
         """
 
@@ -147,7 +147,7 @@ class AbstractDict(object):
         the values are dictionary objects
 
         :return: List of (``key``, ``value``) tuples
-        :raises MultipleValuesException: \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
             If even one of the keys has multiple values set.
         """
         results = []
@@ -168,7 +168,7 @@ class AbstractDict(object):
         added during iteration.
 
         :return: yield (``key``, ``value``) tuples
-        :raises MultipleValuesException: \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
             If even one of the keys has multiple values set.
         """
         for key in self.keys():
@@ -183,7 +183,7 @@ class AbstractDict(object):
         values are dictionary objects
 
         :return: List of values
-        :raises MultipleValuesException: \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
             If even one of the keys has multiple values set.
         """
         results = []
@@ -204,7 +204,7 @@ class AbstractDict(object):
         added during iteration.
 
         :return: yield values
-        :raises MultipleValuesException: \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
             If even one of the keys has multiple values set.
         """
         for key in self.keys():

@@ -1,14 +1,14 @@
 # pylint: disable=redefined-builtin
-from spinn_utilities.ranged.ranged_list import RangedList
-from spinn_utilities.ranged.abstract_list import AbstractList
-from spinn_utilities.ranged.single_view import _SingleView
-from spinn_utilities.ranged.slice_view import _SliceView
-from spinn_utilities.ranged.ids_view import _IdsView
-from spinn_utilities.ranged.abstract_dict import AbstractDict
-from spinn_utilities.ranged.abstract_sized import AbstractSized
-from spinn_utilities.overrides import overrides
-from past.builtins import xrange
 from six import iteritems
+from six.moves import xrange
+from spinn_utilities.overrides import overrides
+from .abstract_dict import AbstractDict
+from .abstract_list import AbstractList
+from .abstract_sized import AbstractSized
+from .ids_view import _IdsView
+from .ranged_list import RangedList
+from .single_view import _SingleView
+from .slice_view import _SliceView
 
 
 class RangeDictionary(AbstractSized, AbstractDict):
@@ -163,7 +163,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
         :param key: a key which must be present in the dict
         :type key: str
-        :rtype: RangedList
+        :rtype: :py:class:`.ranged_list.RangedList`
         """
         return self._value_lists[key]
 
@@ -214,8 +214,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
                 yield value
 
     @overrides(AbstractDict.set_value)
-    def set_value(self, key, value):
-        self._value_lists[key].set_value(value)
+    def set_value(self, key, value, use_list_as_value=False):
+        self._value_lists[key].set_value(value, use_list_as_value)
 
     def __setitem__(self, key, value):
         """ Wrapper around set_value to support ``range["key"] =``
@@ -283,8 +283,11 @@ class RangeDictionary(AbstractSized, AbstractDict):
             start = self._size
             next_stop = self._size
             for key in keys:
-                if ranges[key][1] == stop:
-                    ranges[key] = next(range_iters[key])
+                try:
+                    if ranges[key][1] == stop:
+                        ranges[key] = next(range_iters[key])
+                except StopIteration:
+                    return
                 start = min(max(ranges[key][0], stop), start)
                 next_stop = min(ranges[key][1], next_stop)
                 current[key] = ranges[key][2]

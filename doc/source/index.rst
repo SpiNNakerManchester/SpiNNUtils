@@ -16,7 +16,7 @@ Contents
 .. toctree::
    :maxdepth: 10
 
-   spinn_utilities
+   modules
 
 
 Indices and tables

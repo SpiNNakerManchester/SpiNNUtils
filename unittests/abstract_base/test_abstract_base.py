@@ -1,9 +1,7 @@
 import pytest
-
 from .abstract_has_constraints import AbstractHasConstraints
 from .abstract_has_label import AbstractHasLabel
 from .abstract_has_id import AbstractHasId
-# CheckedBadParam import throws and exception
 from .grandparent import GrandParent
 from .no_label import NoLabel
 from .unchecked_bad_param import UncheckedBadParam

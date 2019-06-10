@@ -1,12 +1,12 @@
 # pylint: disable=redefined-builtin
 import numbers
-from spinn_utilities.overrides import overrides
-from spinn_utilities.ranged.multiple_values_exception \
-    import MultipleValuesException
-from spinn_utilities.ranged.abstract_sized import AbstractSized
-from spinn_utilities.abstract_base import AbstractBase, abstractmethod
-from past.builtins import xrange
 from six import add_metaclass
+from six.moves import xrange
+from spinn_utilities.abstract_base import AbstractBase, abstractmethod
+from spinn_utilities.overrides import overrides
+from .abstract_sized import AbstractSized
+from .multiple_values_exception import MultipleValuesException
+import numpy
 
 
 @add_metaclass(AbstractBase)
@@ -82,8 +82,14 @@ class AbstractList(AbstractSized):
     def __eq__(self, other):
         if isinstance(other, AbstractList):
             if self.range_based and other.range_based:
-                return list(self.iter_ranges()) == list(other.iter_ranges())
-        return list(self) == list(other)
+                return numpy.array_equal(list(self.iter_ranges()),
+                                         list(other.iter_ranges()))
+        return numpy.array_equal(list(self), list(other))
+
+    def __ne__(self, other):
+        if not isinstance(other, AbstractList):
+            return True
+        return not self.__eq__(other)
 
     def __str__(self):
         return str(list(self))
@@ -97,7 +103,7 @@ class AbstractList(AbstractSized):
         or one of the `iter_ranges` methods
 
         :return: Value shared by all elements in the list
-        :raises MultipleValuesException: \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
             If even one elements has a different value
         """
         # This is not elegant code but as the ranges could be created on the
@@ -135,8 +141,8 @@ class AbstractList(AbstractSized):
         or one of the `iter_ranges` methods
 
         :return: Value shared by all elements in the slice
-        :raises MultipleValuesException: If even one elements has a different\
-            value. \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
+            If even one elements has a different value. \
             Not thrown if elements outside of the slice have a different value
         """
 
@@ -151,8 +157,8 @@ class AbstractList(AbstractSized):
         `list.iter`, or one of the `iter_ranges` methods.
 
         :return: Value shared by all elements with these IDs
-        :raises MultipleValuesException: If even one elements has a different\
-            value. \
+        :raises spinn_utilities.ranged.MultipleValuesException: \
+            If even one elements has a different value. \
             Not thrown if elements outside of the IDs have a different value,\
             even if these elements are between the ones pointed to by IDs
         """
@@ -240,13 +246,16 @@ class AbstractList(AbstractSized):
 
         :return: yields each element one by one
         """
-        if self.range_based():
-            for (start, stop, value) in self.iter_ranges():
-                for _ in xrange(stop - start):
-                    yield value
-        else:
-            for id_value in xrange(self._size):
-                yield self.get_value_by_id(id_value)
+        try:
+            if self.range_based():
+                for (start, stop, value) in self.iter_ranges():
+                    for _ in xrange(stop - start):
+                        yield value
+            else:
+                for id_value in xrange(self._size):
+                    yield self.get_value_by_id(id_value)
+        except StopIteration:
+            return
 
     def iter_by_slice(self, slice_start, slice_stop):
         """ Fast but *not* update-safe iterator of all elements in the slice.
@@ -308,7 +317,8 @@ class AbstractList(AbstractSized):
         return list(self.iter_by_selector(selector))
 
     def __contains__(self, item):
-        return any(value == item for (_, _, value) in self.iter_ranges())
+        return any(numpy.array_equal(value, item)
+                   for (_, _, value) in self.iter_ranges())
 
     def count(self, x):
         """ Counts the number of elements in the list with value ``x``
@@ -319,7 +329,7 @@ class AbstractList(AbstractSized):
         return sum(
             stop - start
             for (start, stop, value) in self.iter_ranges()
-            if value == x)
+            if numpy.array_equal(value, x))
 
     def index(self, x):
         """ Finds the first ID of the first element in the list with value\
@@ -329,7 +339,7 @@ class AbstractList(AbstractSized):
         :return:
         """
         for (start, _, value) in self.iter_ranges():
-            if value == x:
+            if numpy.array_equal(value, x):
                 return start
         raise ValueError("{} is not in list".format(x))
 
@@ -397,8 +407,8 @@ class AbstractList(AbstractSized):
             while id_value >= ranges[range_pointer][1]:
                 range_pointer += 1
             if result is not None:
-                if (result[1] == id_value and
-                        result[2] == ranges[range_pointer][2]):
+                if (result[1] == id_value and numpy.array_equal(
+                        result[2], ranges[range_pointer][2])):
                     result = (result[0], id_value + 1, result[2])
                     continue
                 yield result
@@ -489,7 +499,7 @@ class AbstractList(AbstractSized):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x / y)
         if isinstance(other, numbers.Number):
-            if other == 0:
+            if numpy.isin(0, other):
                 raise ZeroDivisionError()
             return SingleList(a_list=self, operation=lambda x: x / other)
         raise Exception("__div__ operation only supported for other "
@@ -511,7 +521,7 @@ class AbstractList(AbstractSized):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x // y)
         if isinstance(other, numbers.Number):
-            if other == 0:
+            if numpy.isin(0, other):
                 raise ZeroDivisionError()
             return SingleList(a_list=self, operation=lambda x: x // other)
         raise Exception("__floordiv__ operation only supported for other "
@@ -526,7 +536,7 @@ class AbstractList(AbstractSized):
             A function that can be applied over the individual values to\
             create new ones.
         :return: new list
-        :rtype: AbstractList
+        :rtype: :py:class:`.AbstractList`
         """
         return SingleList(a_list=self, operation=operation)
 
@@ -668,7 +678,11 @@ class DualList(AbstractList):
                 left_iter = self._left.iter_by_slice(slice_start, slice_stop)
                 right_iter = self._right.iter_by_slice(slice_start, slice_stop)
                 while True:
-                    yield self._operation(next(left_iter), next(right_iter))
+                    try:
+                        yield self._operation(
+                            next(left_iter), next(right_iter))
+                    except StopIteration:
+                        return
 
     @overrides(AbstractList.iter_ranges)
     def iter_ranges(self):
@@ -685,17 +699,20 @@ class DualList(AbstractList):
     def _merge_ranges(self, left_iter, right_iter):
         (left_start, left_stop, left_value) = next(left_iter)
         (right_start, right_stop, right_value) = next(right_iter)
-        while True:
-            yield (max(left_start, right_start),
-                   min(left_stop, right_stop),
-                   self._operation(left_value, right_value))
-            if left_stop < right_stop:
-                (left_start, left_stop, left_value) = next(left_iter)
-            elif left_stop > right_stop:
-                (right_start, right_stop, right_value) = next(right_iter)
-            else:
-                (left_start, left_stop, left_value) = next(left_iter)
-                (right_start, right_stop, right_value) = next(right_iter)
+        try:
+            while True:
+                yield (max(left_start, right_start),
+                       min(left_stop, right_stop),
+                       self._operation(left_value, right_value))
+                if left_stop < right_stop:
+                    (left_start, left_stop, left_value) = next(left_iter)
+                elif left_stop > right_stop:
+                    (right_start, right_stop, right_value) = next(right_iter)
+                else:
+                    (left_start, left_stop, left_value) = next(left_iter)
+                    (right_start, right_stop, right_value) = next(right_iter)
+        except StopIteration:
+            return
 
     @overrides(AbstractList.get_default)
     def get_default(self):

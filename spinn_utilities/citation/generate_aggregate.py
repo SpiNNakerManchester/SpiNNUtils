@@ -2,7 +2,7 @@ from __future__ import print_function
 import argparse
 import sys
 import importlib
-from .citation_and_doi_updater import CitationUpdaterAndDoiGenerator
+from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
 from .tool_citation_generation import CitationAggregator
 
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
     top_module = importlib.import_module(args.top_module)
 
-    generate_aggregate_citation_file(
+    generate_aggregate(
         parser.output_path, top_module, args.doi_title,
         args.zenodo_access_token, args.previous_doi, args.create_doi,
         args.publish_doi)

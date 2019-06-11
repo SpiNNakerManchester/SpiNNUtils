@@ -3,8 +3,7 @@ import yaml
 import io
 import importlib
 
-from spinn_utilities.citation.citation_and_doi_updater import \
-    CitationUpdaterAndDoiGenerator
+from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
 
 REQUIREMENTS_FILE = "requirements.txt"
 CITATION_FILE = "CITATION.cff"

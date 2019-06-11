@@ -1,2 +1,5 @@
 package_2
+pyyaml
+nonexistent
 #c_module
+#nonexiststent_c

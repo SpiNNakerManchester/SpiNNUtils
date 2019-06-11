@@ -94,15 +94,11 @@ class CitationUpdaterAndDoiGenerator(object):
         """
 
         # data holders
-        yaml_file = None
         deposit_id = None
 
         # read in YAML file
         with open(citation_file_path, 'r') as stream:
-            try:
-                yaml_file = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print(exc)
+            yaml_file = yaml.safe_load(stream)
 
         if update_version:
             # update the version number and date-released fields

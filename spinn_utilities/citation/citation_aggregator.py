@@ -36,14 +36,6 @@ class CitationAggregator(object):
     def __init__(self):
         pass
 
-    @staticmethod
-    def locate_citation_doi(module_to_start_at):
-        top_citation_file_path = os.path.join(os.path.dirname(os.path.dirname(
-            os.path.abspath(module_to_start_at.__file__))), CITATION_FILE)
-        with open(top_citation_file_path, 'r') as stream:
-            top_citation_file = yaml.safe_load(stream)
-        return top_citation_file[CITATION_DOI_TYPE]
-
     def create_aggregated_citation_file(
             self, module_to_start_at, aggregated_citation_file):
         """ Entrance method for building the aggregated citation file
@@ -157,13 +149,16 @@ class CitationAggregator(object):
         :type module_to_get_requirements_for: str
         :return: None
         """
-
+        if not module_to_get_requirements_for.startswith("#"):
+            print("Unknown dependency {}".format(
+                module_to_get_requirements_for))
+            return
         true_software_name = module_to_get_requirements_for.split("#")[1]
         cleaned_path = self.locate_path_for_c_dependency(true_software_name)
         if cleaned_path is not None:
             # process reference
             reference_entry = self._process_reference(
-                cleaned_path, None, modules_seen_so_far)
+                cleaned_path, None, modules_seen_so_far, true_software_name)
 
             # append to the top citation file
             top_citation_file[REFERENCES_YAML_POINTER].append(
@@ -245,14 +240,16 @@ class CitationAggregator(object):
 
         # get the reference data for the reference
         reference_entry = self._process_reference(
-            citation_level_dir, imported_module, modules_seen_so_far)
+            citation_level_dir, imported_module, modules_seen_so_far,
+            module_name)
 
         if reference_entry is not None:
             # append to the top citation file
             top_citation_file[REFERENCES_YAML_POINTER].append(reference_entry)
 
     def _process_reference(
-            self, citation_level_dir, imported_module, modules_seen_so_far):
+            self, citation_level_dir, imported_module, modules_seen_so_far,
+            module_name):
         """ Take a module level and tries to locate and process a citation file
 
         :param citation_level_dir: \
@@ -283,13 +280,14 @@ class CitationAggregator(object):
         # from
         else:
             # one from version
-            reference_entry = self._try_to_find_version(imported_module)
+            reference_entry = self._try_to_find_version(
+                imported_module, module_name)
 
         modules_seen_so_far.append(imported_module)
         return reference_entry
 
     @staticmethod
-    def _try_to_find_version(imported_module):
+    def _try_to_find_version(imported_module, module_name):
         """ Try to locate a version file or version data to auto-generate \
             minimal citation data.
 
@@ -318,7 +316,7 @@ class CitationAggregator(object):
                 if hasattr(version, "__version__"):
                     reference_entry[REFERENCES_VERSION_TYPE] = (
                         version.__version__)
-                reference_entry[REFERENCES_TITLE_TYPE] = imported_module
+                reference_entry[REFERENCES_TITLE_TYPE] = module_name
                 return reference_entry
             except AttributeError:
                 pass
@@ -326,7 +324,7 @@ class CitationAggregator(object):
                 "no idea what to do here, going to ignore it and go for"
                 " basic entry"
         reference_entry[REFERENCES_TYPE_TYPE] = REFERENCES_SOFTWARE_TYPE
-        reference_entry[REFERENCES_TITLE_TYPE] = imported_module
+        reference_entry[REFERENCES_TITLE_TYPE] = module_name
         return reference_entry
 
     @staticmethod
@@ -339,14 +337,10 @@ class CitationAggregator(object):
         :return: reference entry for the higher level citation.cff
         :rtype: dict
         """
-        dependency_citation_file = None
         reference_entry = dict()
 
         with open(dependency_citation_file_path, 'r') as stream:
-            try:
-                dependency_citation_file = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print(exc)
+            dependency_citation_file = yaml.safe_load(stream)
 
             reference_entry[REFERENCES_TYPE_TYPE] = REFERENCES_SOFTWARE_TYPE
             reference_entry[REFERENCES_AUTHORS_TYPE] = \
@@ -366,9 +360,7 @@ class CitationAggregator(object):
         return reference_entry
 
 
-def generate_aggregate(
-        output_path, top_module, doi_title, zenodo_access_token, tools_doi,
-        create_doi, publish_doi):
+def generate_aggregate(arguments=None):
     """ Generates a single citation.cff from others
 
     :param output_path: Where to write the aggregate file
@@ -378,22 +370,6 @@ def generate_aggregate(
     :param tools_doi: the DOI of the tools
     :rtype: None
     """
-
-    citation_aggregator = CitationAggregator()
-    citation_aggregator.create_aggregated_citation_file(
-        top_module, output_path)
-    citation_updater_and_dio_generator = CitationUpdaterAndDoiGenerator()
-    citation_updater_and_dio_generator.update_citation_file_and_create_doi(
-        citation_file_path=output_path,
-        update_version=False, version_number=None, version_month=None,
-        version_year=None, version_day=None, doi_title=doi_title,
-        create_doi=create_doi, publish_doi=publish_doi, previous_doi=tools_doi,
-        is_previous_doi_sibling=True,
-        zenodo_access_token=zenodo_access_token,
-        module_path=output_path)
-
-
-if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Aggregate Citations")
     parser.add_argument("output_path", help="The file to store the result in")
     parser.add_argument("top_module", help="The module to start with")
@@ -409,7 +385,7 @@ if __name__ == "__main__":
     parser.add_argument("--zenodo_access_token",
                         help="Access token for Zenodo")
 
-    args = parser.parse_args()
+    args = parser.parse_args(arguments)
     error = False
     if args.create_doi:
         if not args.doi_title:
@@ -430,7 +406,20 @@ if __name__ == "__main__":
 
     top_module = importlib.import_module(args.top_module)
 
-    generate_aggregate(
-        parser.output_path, top_module, args.doi_title,
-        args.zenodo_access_token, args.previous_doi, args.create_doi,
-        args.publish_doi)
+    citation_aggregator = CitationAggregator()
+    citation_aggregator.create_aggregated_citation_file(
+        top_module, args.output_path)
+    citation_updater_and_dio_generator = CitationUpdaterAndDoiGenerator()
+    citation_updater_and_dio_generator.update_citation_file_and_create_doi(
+        citation_file_path=args.output_path,
+        update_version=False, version_number=None, version_month=None,
+        version_year=None, version_day=None, doi_title=args.doi_title,
+        create_doi=args.create_doi, publish_doi=args.publish_doi,
+        previous_doi=args.previous_doi,
+        is_previous_doi_sibling=True,
+        zenodo_access_token=args.zenodo_access_token,
+        module_path=top_module.__path__)
+
+
+if __name__ == "__main__":
+    generate_aggregate()

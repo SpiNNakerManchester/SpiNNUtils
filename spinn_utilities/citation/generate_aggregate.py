@@ -3,7 +3,7 @@ import argparse
 import sys
 import importlib
 from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
-from .tool_citation_generation import CitationAggregator
+from .citation_aggregator import CitationAggregator
 
 
 def generate_aggregate(

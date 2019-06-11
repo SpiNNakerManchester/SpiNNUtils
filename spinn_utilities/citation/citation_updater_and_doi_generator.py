@@ -39,9 +39,9 @@ AUTHOR_AFFILIATION = "affiliation"
 AUTHOR_ORCID = "orcid"
 IDENTIFIER = 'identifier'
 
-ZENODO_VALID_STATUS_CODE_REQUEST_GET = 200
-ZENODO_VALID_STATUS_CODE_REQUEST_POST = 201
-ZENODO_VALID_STATUS_CODE_REQUEST_PUBLISH = 202
+ZENODO_VALID_STATUS_REQUEST_GET = 200
+ZENODO_VALID_STATUS_REQUEST_POST = 201
+ZENODO_VALID_STATUS_REQUEST_PUBLISH = 202
 
 
 class CitationUpdaterAndDoiGenerator(object):
@@ -50,27 +50,12 @@ class CitationUpdaterAndDoiGenerator(object):
         pass
 
     def update_citation_file_and_create_doi(
-            self, citation_file_path, update_version,
-            version_number, version_month, version_year,
-            version_day, doi_title, create_doi, publish_doi,
-            previous_doi, is_previous_doi_sibling, zenodo_access_token,
-            module_path):
+            self, citation_file_path, doi_title, create_doi, publish_doi,
+            previous_doi, zenodo_access_token, module_path):
         """ Take a CITATION.cff file and updates the version and \
             date-released fields, and rewrites the CITATION.cff file.
 
         :param citation_file_path: The file path to the CITATION.cff file
-        :param version_number: \
-            the number to update the citation file version field with
-        :type version_number: str or None
-        :param version_month: \
-            the month to update the citation file date-released field with.
-        :type version_month: str or int or None
-        :param version_year:\
-            the year to update the citation file date-released field with.
-        :type version_year: int or None
-        :param version_day: \
-            the day to update the citation file date-released field with.
-        :type version_day: int or None
         :param create_doi: \
             bool flag for using Zenodo DOI interface to grab a DOI
         :type create_doi: bool
@@ -80,9 +65,6 @@ class CitationUpdaterAndDoiGenerator(object):
         :type publish_doi: bool
         :param previous_doi: the DOI to append the created DOI to
         :type previous_doi: str
-        :param is_previous_doi_sibling:\
-            bool saying if its a sibling or newer version
-        :type is_previous_doi_sibling: bool
         :param doi_title: the title for the created DOI
         :type doi_title: str
         :param module_path: path to the module to zip up
@@ -100,23 +82,10 @@ class CitationUpdaterAndDoiGenerator(object):
         with open(citation_file_path, 'r') as stream:
             yaml_file = yaml.safe_load(stream)
 
-        if update_version:
-            # update the version number and date-released fields
-            if (version_day is None or version_year is None or version_month
-                    is None or version_number is None):
-                raise Exception(
-                    "If you want to update the version, the version_day, "
-                    "version_month, version_year, and version_number params "
-                    "need to be filled in")
-            yaml_file[CITATION_FILE_VERSION_FIELD] = version_number
-            yaml_file[CITATION_FILE_DATE_FIELD] = \
-                self.convert_text_date_to_date(
-                    version_month, version_year, version_day)
-
         # if creating a DOI, go and request one
         if create_doi:
             doi_id, deposit_id = self._request_doi(
-                zenodo_access_token, previous_doi, is_previous_doi_sibling)
+                zenodo_access_token, previous_doi)
             yaml_file[IDENTIFIER] = doi_id
 
         # rewrite citation file with updated fields
@@ -130,18 +99,13 @@ class CitationUpdaterAndDoiGenerator(object):
                 deposit_id, zenodo_access_token, publish_doi, doi_title,
                 yaml_file[CITATION_FILE_DESCRIPTION], yaml_file, module_path)
 
-    def _request_doi(
-            self, zenodo_access_token, previous_doi, is_previous_doi_sibling):
+    def _request_doi(self, zenodo_access_token, previous_doi):
         """ Go to zenodo and requests a DOI
 
         :param zenodo_access_token: zenodo access token
         :type zenodo_access_token: str
         :param previous_doi: the previous DOI for this module, if exists
         :type previous_doi: str
-        :param is_previous_doi_sibling: \
-            bool saying if this module is a sibling or newer version of the\
-            previous DOI
-        :type is_previous_doi_sibling: bool
         :param module_path: the path to the module to create a DOI for
         :return: the DOI id, and deposit id
         :rtype: str, str
@@ -149,15 +113,9 @@ class CitationUpdaterAndDoiGenerator(object):
 
         # create link to previous version (if applicable)
         related = list()
-        if previous_doi is not None:
-            if is_previous_doi_sibling:
-                related.append({
-                    ZENODO_RELATION_FIELD: ZENODO_SIBLING_OF,
-                    IDENTIFIER: previous_doi})
-            else:
-                related.append({
-                    ZENODO_RELATION_FIELD: ZENODO_NEWER_VERSION_OF,
-                    IDENTIFIER: previous_doi})
+        related.append({
+            ZENODO_RELATION_FIELD: ZENODO_NEWER_VERSION_OF,
+            IDENTIFIER: previous_doi})
 
         # get a request for a DOI
         request = requests.get(
@@ -167,7 +125,8 @@ class CitationUpdaterAndDoiGenerator(object):
             json={}, headers={ZENODO_CONTENT_TYPE: "application/json"})
 
         # verify the DOI is valid
-        if request.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_GET:
+        if (request.status_code !=
+                ZENODO_VALID_STATUS_REQUEST_GET):  # pragma: no cover
             raise Exception(
                 "don't know what went wrong. got wrong status code when "
                 "trying to request a DOI. Got error code {} with response "
@@ -181,7 +140,8 @@ class CitationUpdaterAndDoiGenerator(object):
             json={}, headers={ZENODO_CONTENT_TYPE: "application/json"})
 
         # verify the DOI is valid
-        if request.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_POST:
+        if (request.status_code !=
+                ZENODO_VALID_STATUS_REQUEST_POST):  # pragma: no cover
             raise Exception(
                 "don't know what went wrong. got wrong status code when "
                 "trying to get a empty upload. Got error code {} with response"
@@ -224,7 +184,8 @@ class CitationUpdaterAndDoiGenerator(object):
         zipped_open_file.close()
         os.remove('module.zip')
 
-        if r.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_POST:
+        if (r.status_code !=
+                ZENODO_VALID_STATUS_REQUEST_POST):  # pragma: no cover
             raise Exception(
                 "don't know what went wrong. got wrong status code when "
                 "trying to put files and data into the pre allocated DOI. "
@@ -236,7 +197,8 @@ class CitationUpdaterAndDoiGenerator(object):
             request = requests.post(
                 ZENODO_PUBLISH_URL.format(deposit_id),
                 params={ZENODO_ACCESS_TOKEN: access_token})
-            if request.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_PUBLISH:
+            if (request.status_code !=
+                    ZENODO_VALID_STATUS_REQUEST_PUBLISH):  # pragma: no cover
                 raise Exception(
                     "don't know what went wrong. got wrong status code when "
                     "trying to publish the DOI")

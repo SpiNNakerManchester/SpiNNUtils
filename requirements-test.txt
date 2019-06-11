@@ -6,3 +6,4 @@ testfixtures
 Sphinx==1.5.3
 pyyaml
 requests
+httpretty

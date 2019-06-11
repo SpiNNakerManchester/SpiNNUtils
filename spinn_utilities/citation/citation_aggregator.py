@@ -133,7 +133,7 @@ class CitationAggregator(object):
             self._handle_c_dependency(
                 top_citation_file, module_to_get_requirements_for,
                 modules_seen_so_far)
-        except Exception:
+        except Exception:  # pragma: no cover
             print("Error handling dependency {}".format(
                 module_to_get_requirements_for))
             traceback.print_exc()
@@ -234,7 +234,7 @@ class CitationAggregator(object):
                last_citation_level_dir != citation_level_dir):
             last_citation_level_dir = citation_level_dir
             citation_level_dir = os.path.dirname(citation_level_dir)
-        if citation_level_dir == last_citation_level_dir:
+        if citation_level_dir == last_citation_level_dir:  # pragma: no cover
             raise Exception("Folder for module {} not found".format(
                 module_name))
 
@@ -381,13 +381,13 @@ def generate_aggregate(arguments=None):
     parser.add_argument("--doi_title",
                         help="The title to give the created DOI")
     parser.add_argument("--previous_doi",
-                        help="The DOI to attach the created DOI to")
+                        help="The DOI this is a newer version of")
     parser.add_argument("--zenodo_access_token",
                         help="Access token for Zenodo")
 
     args = parser.parse_args(arguments)
     error = False
-    if args.create_doi:
+    if args.create_doi:  # pragma: no cover
         if not args.doi_title:
             print("--doi_title required when creating a DOI")
             error = True
@@ -397,10 +397,10 @@ def generate_aggregate(arguments=None):
         if not args.zenodo_access_token:
             print("--zenodo_access_token required when creating a DOI")
             error = True
-    if args.publish_doi and not args.create_doi:
+    if args.publish_doi and not args.create_doi:  # pragma: no cover
         print("Cannot publish DOI without creating one")
         error = True
-    if error:
+    if error:  # pragma: no cover
         parser.print_usage()
         sys.exit()
 
@@ -412,14 +412,12 @@ def generate_aggregate(arguments=None):
     citation_updater_and_dio_generator = CitationUpdaterAndDoiGenerator()
     citation_updater_and_dio_generator.update_citation_file_and_create_doi(
         citation_file_path=args.output_path,
-        update_version=False, version_number=None, version_month=None,
-        version_year=None, version_day=None, doi_title=args.doi_title,
+        doi_title=args.doi_title,
         create_doi=args.create_doi, publish_doi=args.publish_doi,
         previous_doi=args.previous_doi,
-        is_previous_doi_sibling=True,
         zenodo_access_token=args.zenodo_access_token,
-        module_path=top_module.__path__)
+        module_path=top_module.__path__[0])
 
 
 if __name__ == "__main__":
-    generate_aggregate()
+    generate_aggregate()  # pragma: no cover

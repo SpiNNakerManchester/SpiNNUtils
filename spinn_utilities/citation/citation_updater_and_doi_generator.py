@@ -4,7 +4,6 @@ import requests
 import zipfile
 import unicodedata
 import os
-from time import strptime
 
 CITATION_FILE_VERSION_FIELD = "version"
 CITATION_FILE_DATE_FIELD = "date-released"
@@ -286,50 +285,3 @@ class CitationUpdaterAndDoiGenerator(object):
                 author_data[AUTHOR_ORCID] = author[AUTHOR_ORCID]
             data[ZENODO_METADATA][ZENODO_METADATA_CREATORS].append(author_data)
         return data
-
-    @staticmethod
-    def convert_text_date_to_date(
-            version_month, version_year, version_day):
-        """ Convert the 3 components of a date into a CFF date
-
-        :param version_month: version month, in text form
-        :type version_month: text or int
-        :param version_year: version year
-        :type version_year: int
-        :param version_day: version day of month
-        :type version_day: int
-        :return: the string representation for the cff file
-        """
-        return "{}-{}-{}".format(
-            version_year,
-            CitationUpdaterAndDoiGenerator.convert_month_name_to_number(
-                version_month),
-            version_day)
-
-    @staticmethod
-    def convert_month_name_to_number(version_month):
-        """ Convert a python month in text form to a number form
-
-        :param version_month: the text form of the month
-        :type version_month: string or int
-        :return: the month int value
-        :rtype: int
-        :raises: Exception when the month name is not recognised
-        """
-        if isinstance(version_month, int):
-            return version_month
-        elif isinstance(version_month, str):
-            try:
-                return int(version_month)
-            except ValueError:
-                try:
-                    return strptime(version_month, "%B").tm_mon
-                except ValueError:
-                    try:
-                        return strptime(version_month, "%b").tm_mon
-                    except ValueError:
-                        raise Exception("Value {} not recognised as a month"
-                                        .format(version_month))
-        else:
-            raise Exception("Value {} not recognised as a month".format(
-                version_month))

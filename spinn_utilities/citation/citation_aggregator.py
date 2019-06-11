@@ -6,7 +6,7 @@ import importlib
 import argparse
 import sys
 
-from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
+from spinn_utilities.citation import CitationUpdaterAndDoiGenerator
 import traceback
 
 REQUIREMENTS_FILE = "requirements.txt"

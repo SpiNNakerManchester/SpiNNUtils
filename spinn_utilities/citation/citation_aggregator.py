@@ -7,6 +7,7 @@ import argparse
 import sys
 
 from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
+import traceback
 
 REQUIREMENTS_FILE = "requirements.txt"
 CITATION_FILE = "CITATION.cff"
@@ -37,14 +38,10 @@ class CitationAggregator(object):
 
     @staticmethod
     def locate_citation_doi(module_to_start_at):
-        top_citation_file = None
         top_citation_file_path = os.path.join(os.path.dirname(os.path.dirname(
             os.path.abspath(module_to_start_at.__file__))), CITATION_FILE)
         with open(top_citation_file_path, 'r') as stream:
-            try:
-                top_citation_file = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print(exc)
+            top_citation_file = yaml.safe_load(stream)
         return top_citation_file[CITATION_DOI_TYPE]
 
     def create_aggregated_citation_file(
@@ -62,13 +59,9 @@ class CitationAggregator(object):
         # get the top citation file to add references to
         top_citation_file_path = os.path.join(os.path.dirname(os.path.dirname(
             os.path.abspath(module_to_start_at.__file__))), CITATION_FILE)
-        top_citation_file = None
         modules_seen_so_far = list()
         with open(top_citation_file_path, 'r') as stream:
-            try:
-                top_citation_file = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print(exc)
+            top_citation_file = yaml.safe_load(stream)
         top_citation_file[REFERENCES_YAML_POINTER] = list()
 
         # get the dependency list
@@ -149,7 +142,9 @@ class CitationAggregator(object):
                 top_citation_file, module_to_get_requirements_for,
                 modules_seen_so_far)
         except Exception:
-            print("not handling this dependency")
+            print("Error handling dependency {}".format(
+                module_to_get_requirements_for))
+            traceback.print_exc()
 
     def _handle_c_dependency(
             self, top_citation_file, module_to_get_requirements_for,
@@ -176,7 +171,8 @@ class CitationAggregator(object):
             self._search_for_other_c_references(
                 reference_entry, cleaned_path, modules_seen_so_far)
         else:
-            raise Exception("no idea what to do here")
+            print("Could not find C dependency {}".format(
+                module_to_get_requirements_for))
 
     @staticmethod
     def locate_path_for_c_dependency(true_software_name):
@@ -194,9 +190,6 @@ class CitationAggregator(object):
                     cleaned_path = os.path.dirname(cleaned_path)
 
                 if cleaned_path != last_version:
-                    # add the ; bit back in.
-                    cleaned_path = \
-                        software_path.split(os.pathsep)[1] + ":" + cleaned_path
                     return cleaned_path
         return None
 
@@ -240,9 +233,15 @@ class CitationAggregator(object):
         """
         # get modules citation file
         citation_level_dir = os.path.abspath(imported_module.__file__)
-        while (not citation_level_dir.split(os.sep)[-1].split(".")[0] ==
-               module_name):
+        m_path = module_name.replace(".", os.sep)
+        last_citation_level_dir = None
+        while (not citation_level_dir.endswith(m_path) and
+               last_citation_level_dir != citation_level_dir):
+            last_citation_level_dir = citation_level_dir
             citation_level_dir = os.path.dirname(citation_level_dir)
+        if citation_level_dir == last_citation_level_dir:
+            raise Exception("Folder for module {} not found".format(
+                module_name))
 
         # get the reference data for the reference
         reference_entry = self._process_reference(

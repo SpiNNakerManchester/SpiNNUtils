@@ -1,0 +1,22 @@
+authors:
+- affiliation: My Institution
+  email: me@me.com
+  family-names: Last
+  given-names: First
+  orcid: https://orcid.org/12345678
+  website: http://www.home.com/
+cff-version: 1.0.3
+contact:
+- address: University of Manchester, Oxford Road
+  city: Manchester
+  country: GB
+  name: SpiNNaker Software Team
+  post-code: M13 9PL
+date-released:
+email: spinnakerusers@googlegroups.com
+identifier:
+message: If you use this software, please cite it as below.
+repository: https://github.com/SpiNNakerManchester/SpiNNUtils
+title: My Title
+url: http://spinnakermanchester.github.io/
+version:

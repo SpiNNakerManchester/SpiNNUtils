@@ -30,7 +30,7 @@ def test_generate_aggregate():
         os.path.dirname(__file__) + os.sep + "c_module")
     arguments = [output_path, "unittests.citation.package_1_folder.package_1",
                  "--create_doi", "--doi_title", "Test",
-                 "--previous_doi", "25746", "--zenodo_access_token", "Test"
+                 "--previous_doi", "25746", "--zenodo_access_token", "Test",
                  "--publish_doi"]
     httpretty.enable()
     generate_aggregate(arguments)

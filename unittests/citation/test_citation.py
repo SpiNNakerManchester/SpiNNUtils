@@ -44,9 +44,18 @@ def test_generate_aggregate():
     references = aggregate["references"]
     assert len(authors) == 1
     assert authors[0]["email"] == "me@me.com"
-    assert len(references) == 3
+    assert len(references) == 6
     assert len(references[0]["authors"]) == 1
     assert not references[1].get("authors")
-    assert len(references[2]["authors"]) == 1
+    assert not references[2].get("authors")
+    assert not references[3].get("authors")
+    assert not references[4].get("authors")
+    assert len(references[5]["authors"]) == 1
     assert references[0]["authors"][0]["email"] == "me_2@me.com"
-    assert references[2]["authors"][0]["email"] == "me_c@me.com"
+    assert references[5]["authors"][0]["email"] == "me_c@me.com"
+    assert references[1]["date-released"] == "2019-6-1"
+    assert references[2]["date-released"] == "2019-6-1"
+    assert references[3]["date-released"] == "2019-6-1"
+    assert references[1]["version"] == "Test"
+    assert references[2]["version"] == "Test"
+    assert references[3]["version"] == "Test"

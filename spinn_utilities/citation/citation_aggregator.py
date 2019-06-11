@@ -297,34 +297,27 @@ class CitationAggregator(object):
         :return: reference entry for this python module
         :rtype: dict
         """
-        calls = ["_version", "version", "__version__"]
         reference_entry = dict()
-        for call in calls:
-            try:
-                version = getattr(imported_module, call)
-                reference_entry[REFERENCES_TYPE_TYPE] = (
-                    REFERENCES_SOFTWARE_TYPE)
-                if (hasattr(version, "__version_day__") and
-                        hasattr(version, "__version_month__") and
-                        hasattr(version, "__version_year__")):
-                    reference_entry[REFERENCES_DATE_TYPE] = \
-                        CitationUpdaterAndDoiGenerator.\
-                        convert_text_date_to_date(
-                            version_day=version.__version_day__,
-                            version_month=version.__version_month__,
-                            version_year=version.__version_year__)
-                if hasattr(version, "__version__"):
-                    reference_entry[REFERENCES_VERSION_TYPE] = (
-                        version.__version__)
-                reference_entry[REFERENCES_TITLE_TYPE] = module_name
-                return reference_entry
-            except AttributeError:
-                pass
-            except Exception:
-                "no idea what to do here, going to ignore it and go for"
-                " basic entry"
         reference_entry[REFERENCES_TYPE_TYPE] = REFERENCES_SOFTWARE_TYPE
         reference_entry[REFERENCES_TITLE_TYPE] = module_name
+        if (hasattr(imported_module, "__version_day__") and
+                hasattr(imported_module, "__version_month__") and
+                hasattr(imported_module, "__version_year__")):
+            reference_entry[REFERENCES_DATE_TYPE] = \
+                CitationUpdaterAndDoiGenerator.\
+                convert_text_date_to_date(
+                    version_day=imported_module.__version_day__,
+                    version_month=imported_module.__version_month__,
+                    version_year=imported_module.__version_year__)
+        if hasattr(imported_module, "__version__"):
+            reference_entry[REFERENCES_VERSION_TYPE] = \
+                imported_module.__version__
+        elif hasattr(imported_module, "version"):
+            reference_entry[REFERENCES_VERSION_TYPE] = \
+                imported_module.version
+        elif hasattr(imported_module, "_version"):
+            reference_entry[REFERENCES_VERSION_TYPE] = \
+                imported_module._version
         return reference_entry
 
     @staticmethod

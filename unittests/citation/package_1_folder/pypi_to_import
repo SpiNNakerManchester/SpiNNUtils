@@ -1,2 +1,5 @@
 package_2:unittests.citation.package_2_folder.package_2
+package_3:unittests.citation.package_3_folder.package_3
+package_4:unittests.citation.package_4_folder.package_4
+package_5:unittests.citation.package_5_folder.package_5
 pyyaml:yaml

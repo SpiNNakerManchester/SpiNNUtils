@@ -10,6 +10,8 @@ from spinn_utilities.citation.citation_updater_and_doi_generator import (
 
 
 def test_generate_aggregate():
+    with open("module.zip", "w") as f:
+        f.write("test")
     deposit_id = 56789
     httpretty.register_uri(
         httpretty.GET, ZENODO_DEPOSIT_GET_URL,

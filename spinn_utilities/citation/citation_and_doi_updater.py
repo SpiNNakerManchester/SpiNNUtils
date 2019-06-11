@@ -4,6 +4,7 @@ import requests
 import zipfile
 import unicodedata
 import os
+from time import strptime
 
 CITATION_FILE_VERSION_FIELD = "version"
 CITATION_FILE_DATE_FIELD = "date-released"
@@ -12,19 +13,11 @@ CITATION_AUTHOR_FIRST_NAME = "given-names"
 CITATION_AUTHOR_SURNAME = "family-names"
 CITATION_FILE_DESCRIPTION = "title"
 
-if True:
-    ZENODO_DEPOSIT_GET_URL = "https://zenodo.org/api/deposit/depositions"
-    ZENODO_DEPOSIT_PUT_URL = \
-        'https://zenodo.org/api/deposit/depositions/{}/files'
-    ZENODO_PUBLISH_URL = \
-        'https://zenodo.org/api/deposit/depositions/{}/actions/publish'
-else:  # doesnt work
-    ZENODO_DEPOSIT_GET_URL = \
-        "https://sandbox.zenodo.org/api/deposit/depositions"
-    ZENODO_DEPOSIT_PUT_URL = \
-        'https://sandbox.zenodo.org/api/deposit/depositions/{}/files'
-    ZENODO_PUBLISH_URL = \
-        'https://sandbox.zenodo.org/api/deposit/depositions/{}/actions/publish'
+ZENODO_DEPOSIT_GET_URL = "https://zenodo.org/api/deposit/depositions"
+ZENODO_DEPOSIT_PUT_URL = \
+    'https://zenodo.org/api/deposit/depositions/{}/files'
+ZENODO_PUBLISH_URL = \
+    'https://zenodo.org/api/deposit/depositions/{}/actions/publish'
 
 ZENODO_RELATION_FIELD = "relation"
 ZENODO_NEWER_VERSION_OF = 'isNewVersionOf'
@@ -62,40 +55,40 @@ class CitationUpdaterAndDoiGenerator(object):
             version_day, doi_title, create_doi, publish_doi,
             previous_doi, is_previous_doi_sibling, zenodo_access_token,
             module_path):
-        """ takes a CITATION.cff file and updates the version and \
-        date-released fields, and rewrites the CITATION.cff file.
+        """ Take a CITATION.cff file and updates the version and \
+            date-released fields, and rewrites the CITATION.cff file.
 
         :param citation_file_path: The file path to the CITATION.cff file
-        :param version_number: the version number to update the citation file \
-        version field with
+        :param version_number: \
+            the number to update the citation file version field with
         :type version_number: str or None
-        :param version_month: the version month to update the citation file \
-        date-released field with.
+        :param version_month: \
+            the month to update the citation file date-released field with.
         :type version_month: str or int or None
-        :param version_year: the version year to update the citation file \
-        date-released field with.
+        :param version_year:\
+            the year to update the citation file date-released field with.
         :type version_year: int or None
-        :param version_day: the version day to update the citation file \
-        date-released field with.
+        :param version_day: \
+            the day to update the citation file date-released field with.
         :type version_day: int or None
-        :param create_doi: bool flag for using zenodo doi interface to grab a \
-        doi
+        :param create_doi: \
+            bool flag for using Zenodo DOI interface to grab a DOI
         :type create_doi: bool
-        :param zenodo_access_token: the access token for zenodo
+        :param zenodo_access_token: the access token for Zenodo
         :type zenodo_access_token: str
-        :param publish_doi: bool flag to publish the doi on zenodo
+        :param publish_doi: bool flag to publish the DOI on Zenodo
         :type publish_doi: bool
-        :param previous_doi: the doi previous to this
+        :param previous_doi: the DOI to append the created DOI to
         :type previous_doi: str
-        :param is_previous_doi_sibling: bool saying if its a sibling or newer \
-        version
+        :param is_previous_doi_sibling:\
+            bool saying if its a sibling or newer version
         :type is_previous_doi_sibling: bool
-        :param doi_title: the title for this doi
+        :param doi_title: the title for the created DOI
         :type doi_title: str
         :param module_path: path to the module to zip up
         :type module_path: str
-        :param update_version: bool for if we should update the citation \
-        version
+        :param update_version:\
+            bool for if we should update the citation version
         :type update_version: bool
         :rtype: None
         """
@@ -104,7 +97,7 @@ class CitationUpdaterAndDoiGenerator(object):
         yaml_file = None
         deposit_id = None
 
-        # read in yaml file
+        # read in YAML file
         with open(citation_file_path, 'r') as stream:
             try:
                 yaml_file = yaml.safe_load(stream)
@@ -124,7 +117,7 @@ class CitationUpdaterAndDoiGenerator(object):
                 self.convert_text_date_to_date(
                     version_month, version_year, version_day)
 
-        # if creating a doi, go and request one
+        # if creating a DOI, go and request one
         if create_doi:
             doi_id, deposit_id = self._request_doi(
                 zenodo_access_token, previous_doi, is_previous_doi_sibling)
@@ -135,7 +128,7 @@ class CitationUpdaterAndDoiGenerator(object):
             yaml.dump(yaml_file, outfile, default_flow_style=False,
                       allow_unicode=True)
 
-        # if creating a doi, finish the request and possibly publish it
+        # if creating a DOI, finish the request and possibly publish it
         if create_doi:
             self._finish_doi(
                 deposit_id, zenodo_access_token, publish_doi, doi_title,
@@ -143,16 +136,17 @@ class CitationUpdaterAndDoiGenerator(object):
 
     def _request_doi(
             self, zenodo_access_token, previous_doi, is_previous_doi_sibling):
-        """ goes to zenodo and requests a doi
+        """ Go to zenodo and requests a DOI
 
         :param zenodo_access_token: zenodo access token
         :type zenodo_access_token: str
-        :param previous_doi: the previous doi for this module, if exists
+        :param previous_doi: the previous DOI for this module, if exists
         :type previous_doi: str
-        :param is_previous_doi_sibling: bool saying if this module is a \
-        sibling or newer version of the previous doi
+        :param is_previous_doi_sibling: \
+            bool saying if this module is a sibling or newer version of the\
+            previous DOI
         :type is_previous_doi_sibling: bool
-        :param module_path: the path to the module to doi
+        :param module_path: the path to the module to create a DOI for
         :return: the DOI id, and deposit id
         :rtype: str, str
         """
@@ -169,18 +163,18 @@ class CitationUpdaterAndDoiGenerator(object):
                     ZENODO_RELATION_FIELD: ZENODO_NEWER_VERSION_OF,
                     IDENTIFIER: previous_doi})
 
-        # get a request for a doi
+        # get a request for a DOI
         request = requests.get(
             ZENODO_DEPOSIT_GET_URL,
             params={ZENODO_ACCESS_TOKEN: zenodo_access_token,
                     ZENODO_RELATED_IDENTIFIERS: related},
             json={}, headers={ZENODO_CONTENT_TYPE: "application/json"})
 
-        # verify the doi is valid
+        # verify the DOI is valid
         if request.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_GET:
             raise Exception(
                 "don't know what went wrong. got wrong status code when "
-                "trying to request a doi. Got error code {} with response "
+                "trying to request a DOI. Got error code {} with response "
                 "content {}".format(request.status_code, request.content))
 
         # get empty upload
@@ -190,14 +184,14 @@ class CitationUpdaterAndDoiGenerator(object):
                     ZENODO_RELATED_IDENTIFIERS: related},
             json={}, headers={ZENODO_CONTENT_TYPE: "application/json"})
 
-        # verify the doi is valid
+        # verify the DOI is valid
         if request.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_POST:
             raise Exception(
                 "don't know what went wrong. got wrong status code when "
                 "trying to get a empty upload. Got error code {} with response"
                 " content {}".format(request.status_code, request.content))
 
-        # get doi and deposit id
+        # get DOI and deposit id
         doi_id = unicodedata.normalize(
             'NFKD',
             (request.json()[ZENODO_METADATA][ZENODO_PRE_RESERVED_DOI]
@@ -209,16 +203,16 @@ class CitationUpdaterAndDoiGenerator(object):
     def _finish_doi(
             self, deposit_id, access_token, publish_doi, title,
             doi_description, yaml_file, module_path):
-        """ publishes the doi to zenodo
+        """ Finishes the DOI on zenodo
 
         :param deposit_id: the deposit id to publish
         :param access_token: the access token needed to publish
-        :param title: the title of this doi
+        :param title: the title of this DOI
         :param doi_description: the description for the DOI
         :param yaml_file: the citation file after its been read it
-        :param publish_doi: bool flagging if we should publish the doi
-        :param files: the zipped up file for the zenodo doi request
-        :param module_path: the path to the module to doi
+        :param publish_doi: bool flagging if we should publish the DOI
+        :param files: the zipped up file for the zenodo DOI request
+        :param module_path: the path to the module to DOI
         :rtype: None
         """
 
@@ -237,11 +231,11 @@ class CitationUpdaterAndDoiGenerator(object):
         if r.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_POST:
             raise Exception(
                 "don't know what went wrong. got wrong status code when "
-                "trying to put files and data into the pre allocated doi. "
+                "trying to put files and data into the pre allocated DOI. "
                 "Got error code {} with response content {}".format(
                     r.status_code, r.content))
 
-        # publish doi
+        # publish DOI
         if publish_doi:
             request = requests.post(
                 ZENODO_PUBLISH_URL.format(deposit_id),
@@ -249,10 +243,11 @@ class CitationUpdaterAndDoiGenerator(object):
             if request.status_code != ZENODO_VALID_STATUS_CODE_REQUEST_PUBLISH:
                 raise Exception(
                     "don't know what went wrong. got wrong status code when "
-                    "trying to publish the doi")
+                    "trying to publish the DOI")
 
     def _zip_up_module(self, module_path):
-        """ zips up a module
+        """ Zip up a module
+
         :param module_path: the path to the module to zip up
         :return: a opened reader for the zip file generated
         """
@@ -271,8 +266,8 @@ class CitationUpdaterAndDoiGenerator(object):
 
     @staticmethod
     def _zip_walker(module_path, avoids, module_zip_file):
-        """ traverses the module and its subdirectories and only adds to the \
-        files to the zip which are not within a avoid directory that.
+        """ Traverse the module and its subdirectories and only adds to the \
+            files to the zip which are not within a avoid directory that.
 
         :param module_path: the path to start the search at
         :param avoids: the set of avoids to avoid
@@ -302,11 +297,11 @@ class CitationUpdaterAndDoiGenerator(object):
 
     @staticmethod
     def _fill_in_data(doi_title, doi_description, yaml_file):
-        """ adds in data to the zenodo metadata
+        """ Add in data to the Zenodo metadata
 
-        :param doi_title: the title of the doi
+        :param doi_title: the title of the DOI
         :type doi_title: str
-        :param doi_description: the description of the doi
+        :param doi_description: the description of the DOI
         :type doi_description: str
         :param yaml_file: the citation file once read into the system
         :type yaml_file: dict
@@ -337,7 +332,7 @@ class CitationUpdaterAndDoiGenerator(object):
     @staticmethod
     def convert_text_date_to_date(
             version_month, version_year, version_day):
-        """ converts the 3 components of a date into a CFF date
+        """ Convert the 3 components of a date into a CFF date
 
         :param version_month: version month, in text form
         :type version_month: text or int
@@ -345,7 +340,7 @@ class CitationUpdaterAndDoiGenerator(object):
         :type version_year: int
         :param version_day: version day of month
         :type version_day: int
-        :return: the string repr for the cff file
+        :return: the string representation for the cff file
         """
         return "{}-{}-{}".format(
             version_year,
@@ -355,8 +350,7 @@ class CitationUpdaterAndDoiGenerator(object):
 
     @staticmethod
     def convert_month_name_to_number(version_month):
-        """ converts a python month in text form to a number form
-        YUCK> there must be a better way than this
+        """ Convert a python month in text form to a number form
 
         :param version_month: the text form of the month
         :type version_month: string or int
@@ -367,32 +361,17 @@ class CitationUpdaterAndDoiGenerator(object):
         if isinstance(version_month, int):
             return version_month
         elif isinstance(version_month, str):
-            lower_version_month = version_month.lower()
-
-            if lower_version_month == "january":
-                return 1
-            if lower_version_month == "february":
-                return 2
-            if lower_version_month == "march":
-                return 3
-            if lower_version_month == "april":
-                return 4
-            if lower_version_month == "may":
-                return 5
-            if lower_version_month == "june":
-                return 6
-            if lower_version_month == "july":
-                return 7
-            if lower_version_month == "august":
-                return 8
-            if lower_version_month == "september":
-                return 9
-            if lower_version_month == "october":
-                return 10
-            if lower_version_month == "november":
-                return 11
-            if lower_version_month == "december":
-                return 12
-            raise Exception("don't recognise the month name")
+            try:
+                return int(version_month)
+            except ValueError:
+                try:
+                    return strptime(version_month, "%B").tm_mon
+                except ValueError:
+                    try:
+                        return strptime(version_month, "%b").tm_mon
+                    except ValueError:
+                        raise Exception("Value {} not recognised as a month"
+                                        .format(version_month))
         else:
-            raise Exception("don't know the months data type")
+            raise Exception("Value {} not recognised as a month".format(
+                version_month))

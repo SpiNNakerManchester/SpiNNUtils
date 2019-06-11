@@ -233,25 +233,18 @@ class CitationUpdaterAndDoiGenerator(object):
         :rtype: None
         """
 
-        for directory_path, directories, files in os.walk(module_path):
-            for potential_zip_file in files:
-
-                # check that the file or its directories to get to said file \
-                # are not in the avoids set
-                avoid = False
-                if potential_zip_file in avoids:
+        for directory_path, _, files in os.walk(module_path):
+            avoid = False
+            for directory_name in directory_path.split(os.sep):
+                if directory_name in avoids:
                     avoid = True
-                for directory_name in directories:
-                    if directory_name in avoids:
-                        avoid = True
-                for directory_name in directory_path.split(os.sep):
-                    if directory_name in avoids:
-                        avoid = True
-
-                # if safe to zip, zip
-                if not avoid:
-                    module_zip_file.write(
-                        os.path.join(directory_path, potential_zip_file))
+                    break
+            if not avoid:
+                for potential_zip_file in files:
+                    # if safe to zip, zip
+                    if potential_zip_file not in avoids:
+                        module_zip_file.write(
+                            os.path.join(directory_path, potential_zip_file))
 
     @staticmethod
     def _fill_in_data(doi_title, doi_description, yaml_file):

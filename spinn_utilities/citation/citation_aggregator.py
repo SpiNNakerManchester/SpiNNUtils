@@ -409,7 +409,7 @@ def generate_aggregate(arguments=None):
         create_doi=args.create_doi, publish_doi=args.publish_doi,
         previous_doi=args.previous_doi,
         zenodo_access_token=args.zenodo_access_token,
-        module_path=top_module.__path__[0])
+        module_path=os.path.dirname(top_module.__path__[0]))
 
 
 if __name__ == "__main__":

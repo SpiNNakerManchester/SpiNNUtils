@@ -17,3 +17,4 @@
 **/.*cache/**
 **/make_tools/*.ranges
 **/make_tools/foo/**
+**/MANIFEST.in

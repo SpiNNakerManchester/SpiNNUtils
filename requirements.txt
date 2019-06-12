@@ -17,3 +17,5 @@ appdirs
 future
 numpy
 six
+pyyaml
+requests

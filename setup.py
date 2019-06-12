@@ -57,5 +57,7 @@ setup(
     package_data=package_data,
     install_requires=['appdirs',
                       'future',
-                      'six']
+                      'six'],
+    maintainer="SpiNNakerTeam",
+    maintainer_email="spinnakerusers@googlegroups.com"
 )

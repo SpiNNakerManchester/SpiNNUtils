@@ -36,6 +36,7 @@ def test_generate_aggregate():
                  "--publish_doi"]
     httpretty.enable()
     generate_aggregate(arguments)
+    httpretty.disable()
     assert os.path.isfile(output_path)
     with open(output_path, 'r') as stream:
         aggregate = yaml.safe_load(stream)

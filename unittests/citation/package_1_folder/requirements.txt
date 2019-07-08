@@ -1,8 +1,7 @@
+# A list of dependencies
 package_2
 package_3
 package_4
 package_5
 pyyaml
 nonexistent
-#c_module
-#nonexiststent_c

@@ -66,7 +66,8 @@ class CitationAggregator(object):
         # get the top citation file to add references to
         top_citation_file_path = os.path.join(os.path.dirname(os.path.dirname(
             os.path.abspath(module_to_start_at.__file__))), CITATION_FILE)
-        modules_seen_so_far = list()
+        modules_seen_so_far = set()
+        modules_seen_so_far.add("")  # Make sure the empty entry is absent
         with open(top_citation_file_path, 'r') as stream:
             top_citation_file = yaml.safe_load(stream)
         top_citation_file[REFERENCES_YAML_POINTER] = list()
@@ -199,7 +200,7 @@ class CitationAggregator(object):
                 reference_entry[REFERENCES_YAML_POINTER] = list()
                 reference_entry[REFERENCES_YAML_POINTER].append(
                     dependency_reference_entry)
-                modules_seen_so_far.append(
+                modules_seen_so_far.add(
                     possible_extra_citation_file.split(".")[0])
 
     def _handle_python_dependency(
@@ -275,7 +276,7 @@ class CitationAggregator(object):
             reference_entry = self._try_to_find_version(
                 imported_module, module_name)
 
-        modules_seen_so_far.append(imported_module)
+        modules_seen_so_far.add(imported_module)
         return reference_entry
 
     @staticmethod

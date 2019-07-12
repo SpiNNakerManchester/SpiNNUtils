@@ -1,3 +1,23 @@
+# Copyright (c) 2018-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+cff-version: 1.0.3
+message: If you use this software, please cite it as below.
+identifier:
+title: My Title
+version:
 authors:
 - affiliation: My Institution 2
   email: me_2@me.com
@@ -14,9 +34,5 @@ contact:
   post-code: M13 9PL
 date-released:
 email: spinnakerusers@googlegroups.com
-identifier:
-message: If you use this software, please cite it as below.
 repository: https://github.com/SpiNNakerManchester/SpiNNUtils
-title: My Title
 url: http://spinnakermanchester.github.io/
-version:

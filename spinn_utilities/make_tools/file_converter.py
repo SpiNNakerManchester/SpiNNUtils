@@ -1,3 +1,18 @@
+# Copyright (c) 2018 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import os
 import re
 import sys
@@ -76,6 +91,14 @@ class FileConverter(object):
         self._src = os.path.abspath(src)
         self._dest = os.path.abspath(dest)
         self._dict = dict_file
+        self._log = None
+        self._log_full = None
+        self._log_lines = None
+        self._log_start = None
+        self._message_id = None
+        self._previous_status = None
+        self._status = None
+        self._too_many_lines = None
 
     def _run(self, range_start):
         """ Runs the file converter
@@ -516,12 +539,12 @@ class FileConverter(object):
         :return: The last message id use which can in turn be passed into
         """
         converter = FileConverter(src, dest, dict_file)
-        return converter._run(range_start)
+        return converter._run(range_start)  # pylint: disable=protected-access
 
 
 if __name__ == '__main__':
-    src = sys.argv[1]
-    dest = sys.argv[2]
-    dict_file = sys.argv[3]
-    range_start = int(sys.argv[4])
-    FileConverter.convert(src, dest, dict_file, range_start)
+    _src = sys.argv[1]
+    _dest = sys.argv[2]
+    _dict_file = sys.argv[3]
+    _range_start = int(sys.argv[4])
+    FileConverter.convert(_src, _dest, _dict_file, _range_start)

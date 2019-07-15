@@ -1,3 +1,18 @@
+# Copyright (c) 2018-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from __future__ import print_function
 import os
 import yaml
@@ -7,9 +22,9 @@ import argparse
 import sys
 
 from spinn_utilities.citation import CitationUpdaterAndDoiGenerator
-import traceback
 
 REQUIREMENTS_FILE = "requirements.txt"
+C_REQUIREMENTS_FILE = "c_requirements.txt"
 CITATION_FILE = "CITATION.cff"
 PYPI_TO_IMPORT_FILE = "pypi_to_import"
 
@@ -51,7 +66,8 @@ class CitationAggregator(object):
         # get the top citation file to add references to
         top_citation_file_path = os.path.join(os.path.dirname(os.path.dirname(
             os.path.abspath(module_to_start_at.__file__))), CITATION_FILE)
-        modules_seen_so_far = list()
+        modules_seen_so_far = set()
+        modules_seen_so_far.add("")  # Make sure the empty entry is absent
         with open(top_citation_file_path, 'r') as stream:
             top_citation_file = yaml.safe_load(stream)
         top_citation_file[REFERENCES_YAML_POINTER] = list()
@@ -59,8 +75,10 @@ class CitationAggregator(object):
         # get the dependency list
         requirements_file_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(
-                module_to_start_at.__file__))),
-            REQUIREMENTS_FILE)
+                module_to_start_at.__file__))), REQUIREMENTS_FILE)
+        c_requirements_file_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(
+                module_to_start_at.__file__))), C_REQUIREMENTS_FILE)
 
         # attempt to get python PYPI to import command map
         pypi_to_import_map_file = os.path.join(
@@ -73,14 +91,33 @@ class CitationAggregator(object):
                 pypi_to_import_map_file)
 
         if os.path.isfile(requirements_file_path):
-            for line in open(requirements_file_path, "r"):
-                module_to_get_requirements_for = line.split(" ")[0]
-                module_to_get_requirements_for = \
-                    module_to_get_requirements_for.split("\n")[0]
-                if module_to_get_requirements_for not in modules_seen_so_far:
-                    self._handle_dependency(
-                        top_citation_file, module_to_get_requirements_for,
-                        pypi_to_import_map, modules_seen_so_far)
+            with open(requirements_file_path, "r") as r_file:
+                for line in r_file:
+                    module = line.strip()
+                    if module.startswith("#"):
+                        continue
+                    if module not in modules_seen_so_far:
+                        import_name = pypi_to_import_map.get(module, module)
+                        try:
+                            imported_module = importlib.import_module(
+                                import_name)
+                            self._handle_python_dependency(
+                                top_citation_file, imported_module,
+                                modules_seen_so_far,
+                                pypi_to_import_map[module])
+                        except Exception as e:  # pragma: no cover
+                            print("Error handling python dependency {}: {}"
+                                  .format(module, str(e)))
+
+        if os.path.isfile(c_requirements_file_path):
+            with open(c_requirements_file_path, "r") as r_file:
+                for line in r_file:
+                    module = line.strip()
+                    if module.startswith("#"):
+                        continue
+                    if module not in modules_seen_so_far:
+                        self._handle_c_dependency(
+                            top_citation_file, module, modules_seen_so_far)
 
         # write citation file with updated fields
         with io.open(
@@ -101,64 +138,21 @@ class CitationAggregator(object):
             pypi_to_import_map[pypi] = import_command.split("\n")[0]
         return pypi_to_import_map
 
-    # noinspection PyBroadException
-    def _handle_dependency(
-            self, top_citation_file, module_to_get_requirements_for,
-            pypi_to_import_map, modules_seen_so_far):
-        """ Handle a dependency, assumes its either python or c code
-
-        :param top_citation_file: YAML file for the top citation file
-        :param module_to_get_requirements_for: module to import
-        :type top_citation_file: YAML file
-        :type module_to_get_requirements_for: str
-        :param pypi_to_import_map: map between PYPI name and the python import
-        :type pypi_to_import_map: dict
-        :param modules_seen_so_far:
-        :type modules_seen_so_far:
-        :return: None
-        """
-
-        # determine name for import
-        if module_to_get_requirements_for in pypi_to_import_map:
-            import_name = pypi_to_import_map[module_to_get_requirements_for]
-        else:
-            import_name = module_to_get_requirements_for
-        try:
-            imported_module = importlib.import_module(import_name)
-            self._handle_python_dependency(
-                top_citation_file, imported_module, modules_seen_so_far,
-                pypi_to_import_map[module_to_get_requirements_for])
-        except ImportError:
-            # assume now that its a c code module.
-            self._handle_c_dependency(
-                top_citation_file, module_to_get_requirements_for,
-                modules_seen_so_far)
-        except Exception:  # pragma: no cover
-            print("Error handling dependency {}".format(
-                module_to_get_requirements_for))
-            traceback.print_exc()
-
     def _handle_c_dependency(
-            self, top_citation_file, module_to_get_requirements_for,
-            modules_seen_so_far):
+            self, top_citation_file, module, modules_seen_so_far):
         """ Handle a c code dependency
 
         :param top_citation_file: YAML file for the top citation file
-        :param module_to_get_requirements_for: module to import
+        :param module: module to find
         :type top_citation_file: YAML file
-        :type module_to_get_requirements_for: str
+        :type module: str
         :return: None
         """
-        if not module_to_get_requirements_for.startswith("#"):
-            print("Unknown dependency {}".format(
-                module_to_get_requirements_for))
-            return
-        true_software_name = module_to_get_requirements_for.split("#")[1]
-        cleaned_path = self.locate_path_for_c_dependency(true_software_name)
+        cleaned_path = self.locate_path_for_c_dependency(module)
         if cleaned_path is not None:
             # process reference
             reference_entry = self._process_reference(
-                cleaned_path, None, modules_seen_so_far, true_software_name)
+                cleaned_path, None, modules_seen_so_far, module)
 
             # append to the top citation file
             top_citation_file[REFERENCES_YAML_POINTER].append(
@@ -166,8 +160,7 @@ class CitationAggregator(object):
             self._search_for_other_c_references(
                 reference_entry, cleaned_path, modules_seen_so_far)
         else:
-            print("Could not find C dependency {}".format(
-                module_to_get_requirements_for))
+            print("Could not find C dependency {}".format(module))
 
     @staticmethod
     def locate_path_for_c_dependency(true_software_name):
@@ -207,7 +200,7 @@ class CitationAggregator(object):
                 reference_entry[REFERENCES_YAML_POINTER] = list()
                 reference_entry[REFERENCES_YAML_POINTER].append(
                     dependency_reference_entry)
-                modules_seen_so_far.append(
+                modules_seen_so_far.add(
                     possible_extra_citation_file.split(".")[0])
 
     def _handle_python_dependency(
@@ -283,7 +276,7 @@ class CitationAggregator(object):
             reference_entry = self._try_to_find_version(
                 imported_module, module_name)
 
-        modules_seen_so_far.append(imported_module)
+        modules_seen_so_far.add(imported_module)
         return reference_entry
 
     @staticmethod

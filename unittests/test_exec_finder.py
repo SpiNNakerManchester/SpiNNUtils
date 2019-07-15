@@ -1,6 +1,18 @@
-import pytest
+# Copyright (c) 2017 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from spinn_utilities.exceptions import FailedToFindBinaryException
 from spinn_utilities.executable_finder import ExecutableFinder
 
 
@@ -16,8 +28,7 @@ def test_create_and_config(tmpdir):
 
 def test_find_in_no_places():
     ef = ExecutableFinder([])
-    with pytest.raises(FailedToFindBinaryException):
-        ef.get_executable_path("abc.aplx")
+    assert ef.get_executable_path("abc.aplx") is None
 
 
 def test_find_in_one_place(tmpdir):
@@ -43,8 +54,7 @@ def test_find_in_two_places(tmpdir):
     w2.remove()
     assert ef.get_executable_path("abc.aplx") == str(w1)
     w1.remove()
-    with pytest.raises(FailedToFindBinaryException):
-        ef.get_executable_path("abc.aplx")
+    assert ef.get_executable_path("abc.aplx") is None
 
 
 def test_find_no_duplicates(tmpdir):

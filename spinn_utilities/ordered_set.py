@@ -135,3 +135,17 @@ class OrderedSet(MutableSet):
         :rtype: None
         """
         return not self.__eq__(other)
+
+    @property
+    def as_list(self):
+        """
+        Shows the sets as a list.
+
+        Main use is to allow debuggers easier access at the set.
+
+        Note: This list is disconnected so will not reflect any changes to the
+            original set.
+
+        :return: Set as a list
+        """
+        return list(self)

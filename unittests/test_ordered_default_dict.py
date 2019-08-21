@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
-from spinn_utilities.ordered_default_dict import DefaultOrderedDict
+from spinn_utilities.default_ordered_dict import DefaultOrderedDict
 from spinn_utilities.ordered_set import OrderedSet
 
 
@@ -36,7 +36,7 @@ def test_list_default():
     assert o["bar"] == 2
 
 
-def test_orderedset_default():
+def test_ordered_set_default():
     o = DefaultOrderedDict(OrderedSet)
     assert o is not None
     o["foo"].add(2)

@@ -52,7 +52,7 @@ def search_for_max_success(best_success, min_fail, check):
         whole range fails or is empty.
     """
     # Check if there are still values in the middle to check
-    if (best_success >= min_fail - 1):
+    if best_success >= min_fail - 1:
         return best_success
     # Find the middle
     mid_point = (best_success + min_fail) // 2

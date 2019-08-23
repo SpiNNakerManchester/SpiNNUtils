@@ -15,6 +15,10 @@
 
 from spinn_utilities.executable_finder import ExecutableFinder
 
+import pytest
+
+from spinn_utilities.exceptions import FailedToFindBinaryException
+
 
 def test_create_and_config(tmpdir):
     a = tmpdir.mkdir("a")

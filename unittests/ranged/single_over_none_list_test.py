@@ -35,8 +35,9 @@ def test_muliple():
 
 def create_lambda():
     import numpy
-    machine_time_step = 1000
-    return lambda x: numpy.exp(float(-machine_time_step) / (1000.0 * x))
+    default_machine_time_step = 1000
+    return lambda x: numpy.exp(
+        float(-default_machine_time_step) / (1000.0 * x))
 
 
 def test_complex():

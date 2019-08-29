@@ -298,7 +298,7 @@ class FileConverter(object):
         # Now check for the end of log command
         return self._process_line_in_log(dest_f, line_num, text)
 
-    def _shorten(self, original):
+    def _short_log(self, line_num):
         """ shortens the log string message and adds the id
 
         Assumes that self._message_id has already been updated
@@ -306,9 +306,16 @@ class FileConverter(object):
         :param original: Source log messages
         :return: new log message and the id
         """
+        try:
+            parts = STRING_REGEXP.search(self._log_full)
+            original = parts.group(0)
+        except Exception:
+            raise Exception("Unexpected line {} at {} in {}".format(
+                self._log_full, line_num, self._src))
+
         count = original.count("%")
         if count == 0:
-            return '"%u", {}'.format(self._message_id)
+            replacement = '"%u", {}'.format(self._message_id)
         else:
             result = '"%u'
             matches = FORMAT_EXP.findall(original)
@@ -318,7 +325,9 @@ class FileConverter(object):
             for match in matches:
                 result += TOKEN
                 result += match
-            return result + '", {}'.format(self._message_id)
+                replacement = result + '", {}'.format(self._message_id)
+
+        return self._log_full.replace(original, replacement)
 
     def _write_log_method(self, dest_f, line_num, tail=""):
         """ Writes the log message and the dict value
@@ -342,23 +351,18 @@ class FileConverter(object):
         """
         self._message_id += 1
         self._log_full = self._log_full.replace('""', '')
-        try:
-            original = STRING_REGEXP.search(self._log_full).group(0)
-        except Exception:
-            raise Exception("Unexpected line {} at {} in {}".format(
-                self._log_full, line_num, self._src))
-        replacement = self._shorten(original)
-        self._log_full = self._log_full.replace(self._log, MINIS[self._log])\
-            .replace(original, replacement)
+        short_log = self._short_log(line_num)
+        short_log = short_log.replace(self._log, MINIS[self._log])
+
         dest_f.write(" " * self._log_start)
-        dest_f.write(self._log_full)
+        dest_f.write(short_log)
         if self._log_lines == 0:
             # Writing an extra newline here so need to recover that ASAP
             self._too_many_lines += 1
         end = tail + "\n"
         if self._log_lines <= 1:
             dest_f.write("  /* ")
-            dest_f.write(original)
+            dest_f.write(self._log_full)
             dest_f.write("*/")
             dest_f.write(end)
         else:
@@ -366,7 +370,7 @@ class FileConverter(object):
             dest_f.write(end)
             dest_f.write(" " * self._log_start)
             dest_f.write("/* ")
-            dest_f.write(original)
+            dest_f.write(self._log_full)
             dest_f.write("*/")
             dest_f.write(end * (self._log_lines - 1))
         with open(self._dict, 'a') as mess_f:
@@ -376,7 +380,7 @@ class FileConverter(object):
                 self._message_id, LEVELS[self._log],
                 os.path.basename(self._src).replace(",", ";"),
                 line_num + 1,
-                original[1:-1]))
+                self._log_full[1:-1]))
 
     def _process_chars(self, dest_f, line_num, text):
         """ Deals with complex lines that can not be handled in one go

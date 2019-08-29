@@ -75,3 +75,5 @@ static String woops = "log_info(";
     /* comment */ log_info("comment before");
 
     fluff fluff
+
+    two = 2; log_info("two %u", two);

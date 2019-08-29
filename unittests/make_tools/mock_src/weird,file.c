@@ -36,7 +36,7 @@ static String woops = "log_info(";
     // a comment
              "after comment");
 
-    log_info("One line commted"); //blah blah
+    log_info("One line commented"); //blah blah
 
     log_info("this is for alan); so there!");
 

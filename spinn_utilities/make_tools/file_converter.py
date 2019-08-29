@@ -134,7 +134,9 @@ class FileConverter(object):
                         if len(check) == 0 or check == "*":
                             self._too_many_lines -= 1
                             continue
+                    previous_status = self._status
                     if not self._process_line(dest_f, line_num, text):
+                        self._status = previous_status
                         self._process_chars(dest_f, line_num, text)
         # print (self._dest)
         return self._message_id
@@ -292,11 +294,13 @@ class FileConverter(object):
         # remove white spaces and save log command
         self._log_start = text.index(match.group(0))
         self._log = "".join(match.group(0).split())
+        start_len = self._log_start + len(self._log)
+
         self._status = IN_LOG
         self._log_full = ""  # text saved in process_line_in_log
         self._log_lines = 0
         # Now check for the end of log command
-        return self._process_line_in_log(dest_f, line_num, text)
+        return self._process_line_in_log(dest_f, line_num, text[start_len:])
 
     def _short_log(self, line_num):
         """ shortens the log string message and adds the id
@@ -352,9 +356,9 @@ class FileConverter(object):
         self._message_id += 1
         self._log_full = self._log_full.replace('""', '')
         short_log = self._short_log(line_num)
-        short_log = short_log.replace(self._log, MINIS[self._log])
 
         dest_f.write(" " * self._log_start)
+        dest_f.write(MINIS[self._log])
         dest_f.write(short_log)
         if self._log_lines == 0:
             # Writing an extra newline here so need to recover that ASAP
@@ -362,6 +366,7 @@ class FileConverter(object):
         end = tail + "\n"
         if self._log_lines <= 1:
             dest_f.write("  /* ")
+            dest_f.write(self._log)
             dest_f.write(self._log_full)
             dest_f.write("*/")
             dest_f.write(end)
@@ -370,6 +375,7 @@ class FileConverter(object):
             dest_f.write(end)
             dest_f.write(" " * self._log_start)
             dest_f.write("/* ")
+            dest_f.write(self._log)
             dest_f.write(self._log_full)
             dest_f.write("*/")
             dest_f.write(end * (self._log_lines - 1))
@@ -491,9 +497,9 @@ class FileConverter(object):
                     self._log_lines = 0
                     dest_f.write(text[write_flag:pos])
                     # written up to not including log_start
-                    write_flag = pos
-                    # skip to end of log start
+                    # skip to end of log instruction
                     pos = pos + len(match.group(0))
+                    write_flag = pos
                 else:
                     # Not a log start after all so treat as normal test
                     pos += 1

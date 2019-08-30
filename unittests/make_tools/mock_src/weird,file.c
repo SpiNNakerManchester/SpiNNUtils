@@ -69,8 +69,14 @@ static String woops = "log_info(";
     ;
 
     log_info("then a standard comment on a middle line")
-    /* comment */
+    /* evil comment */
     ;
+
+    log_info("test string with comma %s", "Rowley, wins");
+
+    log_info("test string with quote" %s", "Rowley \" wins");
+    log_info("test string with both" %s", "Rowley, \" wins");
+    log_info("test string %%s in string, %u fluff", 45);
 
     /* comment */ log_info("comment before");
 

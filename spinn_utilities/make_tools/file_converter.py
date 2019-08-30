@@ -310,6 +310,8 @@ class FileConverter(object):
         :param original: Source log messages
         :return: new log message and the id
         """
+        if "standard" in self._log_full:
+           print("fiddler")
         try:
             parts = STRING_REGEXP.search(self._log_full)
             original = parts.group(0)
@@ -317,7 +319,7 @@ class FileConverter(object):
             raise Exception("Unexpected line {} at {} in {}".format(
                 self._log_full, line_num, self._src))
 
-        count = original.count("%")
+        count = original.count("%") - original.count("%%")
         if count == 0:
             replacement = '"%u", {}'.format(self._message_id)
         else:
@@ -410,6 +412,10 @@ class FileConverter(object):
                 if text[pos+1] == "*":
                     if self._status == IN_LOG:
                         self._log_full += text[write_flag:pos].strip()
+                        if "standard" in self._log_full:
+                            print("fiddler")
+                        if self._log_full[-1] == ")":
+                            self._status = IN_LOG_CLOSE_BRACKET
                         # NO change to self._log_lines as newline not removed
                     else:
                         dest_f.write(text[write_flag:pos])
@@ -420,6 +426,8 @@ class FileConverter(object):
                 elif text[pos+1] == "/":
                     if self._status == IN_LOG:
                         self._log_full += text[write_flag:pos].strip()
+                        if "standard" in self._log_full:
+                            print("fiddler")
                         # NO change to self._log_lines as newline not removed
                         dest_f.write(text[pos:])
                     else:
@@ -455,6 +463,8 @@ class FileConverter(object):
                         # include the end
                         pos = pos + len(match.group(0))
                         self._log_full += text[write_flag:pos].strip()
+                        if "standard" in self._log_full:
+                            print("fiddler")
                         self._status = NORMAL_CODE
                         if text[pos:].strip():  # Stuff left
                             write_flag = pos
@@ -479,6 +489,8 @@ class FileConverter(object):
                 stripped = text.strip()
                 if stripped[0] == ";":
                     self._log_full += (";")
+                    if "standard" in self._log_full:
+                        print("fiddler")
                     self._write_log_method(dest_f, line_num)
                     pos = text.index(";") + 1
                     write_flag = pos
@@ -510,6 +522,8 @@ class FileConverter(object):
         # after while text[pos] != "\n"
         if self._status == IN_LOG:
             self._log_full += text[write_flag:].strip()
+            if "standard" in self._log_full:
+                print("fiddler")
             self._log_lines += 1
         else:
             dest_f.write(text[write_flag:])

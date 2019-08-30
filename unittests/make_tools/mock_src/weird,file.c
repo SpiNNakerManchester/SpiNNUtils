@@ -72,14 +72,30 @@ static String woops = "log_info(";
     /* evil comment */
     ;
 
-    log_info("test string with comma %s", "Rowley, wins");
+    log_info("then a empty line in the middle line")
 
-    log_info("test string with quote" %s", "Rowley \" wins");
-    log_info("test string with both" %s", "Rowley, \" wins");
+    ;
+    log_info("neuron_initialise: starting");
+    log_info("test -two %f", -2.0f);
+    log_info("test -one %f", -1.0f);
+    log_info("test zero %x", 0.0f);
+    log_info("test one %x", 1.0f);
+    log_info("test two %x", 2.0f);
+    log_info("test string comma %s fluff ", "Rowley, wins");
+    log_info("test string baclslash %s fluff", "Rowley \" wins");
     log_info("test string %%s in string, %u fluff", 45);
+    log_info("test string quote \" in string, %u fluff", 45);
+
+    log_info("magic = %08x, version = %d.%d", ds_regions->magic_number,
+            ds_regions->version >> VERSION_SHIFT,
+            ds_regions->version & VERSION_MASK);
 
     /* comment */ log_info("comment before");
 
     fluff fluff
 
     two = 2; log_info("two %u", two);
+
+    log_info("this is a float %f fluff", 1.0);
+
+    the end

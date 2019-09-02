@@ -333,12 +333,12 @@ class FileConverter(object):
                     "Unexpected formatString in {}".format(original))
             if len(parts) < count + 1:
                 raise Exception("Too few parameters in line {} at {} in "
-                                "{}".format(
-                    self._log_full, line_num, self._src))
+                                "{}".format(self._log_full, line_num,
+                                            self._src))
             if len(parts) > count + 1:
                 raise Exception("Too many parameters in line {} at {} in "
-                                "{}".format(
-                    self._log_full, line_num, self._src))
+                                "{}".format(self._log_full, line_num,
+                                            self._src))
             for i, match in enumerate(matches):
                 front += TOKEN
                 if match.endswith("f"):

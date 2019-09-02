@@ -43,3 +43,29 @@ class TestReplacer(unittest.TestCase):
         message = "[INFO] (weird;file.c: 29): \t back off = 10, time between"\
                   " spikes 20"
         assert (message == new)
+
+    def near_equals(self, a, b):
+        diff = a - b
+        if diff == 0:
+            return True
+        ratio = diff / a
+        return abs(ratio) < 0.0000001
+
+    def test_float_to_hex(self):
+        replacer = Replacer(os.path.join(PATH, "test"))
+        assert self.near_equals(
+            -345443332234.13432143, replacer.hex_to_float("d2a0dc0e"))
+        assert self.near_equals(
+            -2000, replacer.hex_to_float("c4fa0000"))
+        assert self.near_equals(
+            -1, replacer.hex_to_float("bf800000"))
+        assert self.near_equals(
+            0, replacer.hex_to_float("0"))
+        assert self.near_equals(
+            0.00014, replacer.hex_to_float("3912ccf7"))
+        assert self.near_equals(
+            1, replacer.hex_to_float("3f800000"))
+        assert self.near_equals(
+            200, replacer.hex_to_float("43480000"))
+        assert self.near_equals(
+            455424364531.3463460, replacer.hex_to_float("52d412d1"))

@@ -323,7 +323,7 @@ class FileConverter(object):
         original = parts[0]
         count = original.count("%") - original.count("%%")*2
         if count == 0:
-            return '"%u", {});'.format(self._message_id)
+            return original, '"%u", {});'.format(self._message_id)
         else:
             front = '"%u'
             back = ""
@@ -351,7 +351,7 @@ class FileConverter(object):
                     back += ", {}".format(parts[i+1])
             front += '", {}'.format(self._message_id)
             back += ");"
-        return front + back
+        return original, front + back
 
     def _write_log_method(self, dest_f, line_num, tail=""):
         """ Writes the log message and the dict value
@@ -375,7 +375,7 @@ class FileConverter(object):
         """
         self._message_id += 1
         self._log_full = self._log_full.replace('""', '')
-        short_log = self._short_log(line_num)
+        original, short_log = self._short_log(line_num)
 
         dest_f.write(" " * self._log_start)
         dest_f.write(MINIS[self._log])
@@ -406,7 +406,7 @@ class FileConverter(object):
                 self._message_id, LEVELS[self._log],
                 os.path.basename(self._src).replace(",", ";"),
                 line_num + 1,
-                self._log_full[1:-1]))
+                original))
 
     def _process_chars(self, dest_f, line_num, text):
         """ Deals with complex lines that can not be handled in one go

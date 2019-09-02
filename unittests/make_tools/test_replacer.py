@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import math
 import unittest
 import os
 from spinn_utilities.make_tools.replacer import Replacer
@@ -52,6 +53,10 @@ class TestReplacer(unittest.TestCase):
         return abs(ratio) < 0.0000001
 
     def test_float_to_hex(self):
+        """
+        Test the convertor against hex values returned from Spinnaker
+
+        """
         replacer = Replacer(os.path.join(PATH, "test"))
         assert self.near_equals(
             -345443332234.13432143, replacer.hex_to_float("d2a0dc0e"))
@@ -69,3 +74,6 @@ class TestReplacer(unittest.TestCase):
             200, replacer.hex_to_float("43480000"))
         assert self.near_equals(
             455424364531.3463460, replacer.hex_to_float("52d412d1"))
+        assert float("Inf") == replacer.hex_to_float("7f800000")
+        assert 0-float("Inf") == replacer.hex_to_float("ff800000")
+        assert math.isnan(replacer.hex_to_float("7fc00000"))

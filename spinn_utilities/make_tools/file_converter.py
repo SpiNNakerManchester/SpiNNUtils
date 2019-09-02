@@ -306,6 +306,40 @@ class FileConverter(object):
         # Now check for the end of log command
         return self._process_line_in_log(dest_f, line_num, text[start_len:])
 
+    def quote_part(self, text):
+        return (text.count('"') - text.count('\\"')) % 2 > 0
+
+    def bracket_count(self, text):
+        return (text.count('(') - text.count(')'))
+
+    def split_by_comma_plus(self, main, line_num):
+        try:
+            parts = main.split(",")
+            # Check quotes in main message
+            if (self.quote_part(parts[0])):
+                new_part = parts.pop(0)
+                next_part = parts.pop(0)
+                while not (self.quote_part(next_part)):
+                    new_part += "," + next_part
+                    next_part = parts.pop(0)
+                new_part += "," + next_part
+                parts.insert(0, new_part)
+            for i, part in enumerate(parts):
+                if i == 0:
+                    continue
+                count = self.bracket_count(part)
+                if (count > 0):
+                    new_part = parts.pop(i)
+                    while count > 0:
+                        next_part = parts.pop(i)
+                        count += self.bracket_count(next_part)
+                        new_part += "," + next_part
+                    parts.insert(i, new_part)
+            return parts
+        except Exception:
+            raise Exception("Unexpected line {} at {} in {}".format(
+                self._log_full, line_num, self._src))
+
     def _short_log(self, line_num):
         """ shortens the log string message and adds the id
 
@@ -316,10 +350,11 @@ class FileConverter(object):
         """
         try:
             match = LOG_END_REGEX.search(self._log_full)
-            parts = COMMA_SPLIITER.split(self._log_full[:-len(match.group(0))])
+            main = self._log_full[:-len(match.group(0))]
         except Exception:
             raise Exception("Unexpected line {} at {} in {}".format(
                 self._log_full, line_num, self._src))
+        parts = self.split_by_comma_plus(main, line_num)
         original = parts[0]
         count = original.count("%") - original.count("%%")*2
         if count == 0:

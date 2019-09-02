@@ -15,6 +15,7 @@
 
 import logging
 import os
+import struct
 from spinn_utilities.log import FormatAdapter
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
@@ -58,6 +59,15 @@ class Replacer(object):
             if len(matches) != len(parts) - 1:
                 # wrong number of elements so not short after all
                 return short
-            for i in range(len(matches)):
-                replaced = replaced.replace(matches[i], parts[i+1], 1)
+            for i, match in enumerate(matches):
+                if match == "%f":
+                    print(match, original)
+                    replacement = str(self.hex_to_float(parts[i + 1]))
+                else:
+                    replacement = parts[i + 1]
+                replaced = replaced.replace(match, replacement, 1)
         return preface + replaced
+
+    def hex_to_float(self, hex):
+        print(hex)
+        return struct.unpack('!f', struct.pack("!I", int(hex, 16)))[0]

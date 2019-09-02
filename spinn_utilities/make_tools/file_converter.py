@@ -321,8 +321,6 @@ class FileConverter(object):
             raise Exception("Unexpected line {} at {} in {}".format(
                 self._log_full, line_num, self._src))
         original = parts[0]
-        if "magic =" in original:
-            print("here")
         count = original.count("%") - original.count("%%")*2
         if count == 0:
             return '"%u", {});'.format(self._message_id)

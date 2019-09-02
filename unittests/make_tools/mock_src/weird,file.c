@@ -25,6 +25,8 @@ static String woops = "log_info(";
 
     /* log_info("inside a comment */
 
+    log_info("test -three %f", -3.0f);
+
     log_info("this is ok");
 
     //log_info("this is just a comment");

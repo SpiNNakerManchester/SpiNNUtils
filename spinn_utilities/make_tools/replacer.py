@@ -69,5 +69,4 @@ class Replacer(object):
         return preface + replaced
 
     def hex_to_float(self, hex):
-        print(hex)
         return struct.unpack('!f', struct.pack("!I", int(hex, 16)))[0]

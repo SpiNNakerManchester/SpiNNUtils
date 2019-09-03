@@ -89,6 +89,11 @@ static String woops = "log_info(";
     log_info("test string comma, %u is fluff ", 12);
     log_info("test string %%s in string, %u fluff", 45);
     log_info("test string quote \" in string, %u fluff", 45);
+    log_info("test string bacKslash %s fluff", "Rowley \" wins");
+    log_info("test string comma %s fluff ", "Rowley, wins");
+    log_info("test string comma, %u is fluff ", 12);
+    log_info("test string many comma %s fluff ",
+        "Rowley, wins, even more ( fluff");
 
     log_info("magic = %08x, version = %d.%d", ds_regions->magic_number,
             ds_regions->version >> VERSION_SHIFT,

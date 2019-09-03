@@ -315,27 +315,41 @@ class FileConverter(object):
     def split_by_comma_plus(self, main, line_num):
         try:
             parts = main.split(",")
-            # Check quotes in main message
-            if (self.quote_part(parts[0])):
-                new_part = parts.pop(0)
-                next_part = parts.pop(0)
-                while not (self.quote_part(next_part)):
-                    new_part += "," + next_part
-                    next_part = parts.pop(0)
-                new_part += "," + next_part
-                parts.insert(0, new_part)
             for i, part in enumerate(parts):
-                if i == 0:
-                    continue
-                count = self.bracket_count(part)
-                if (count > 0):
+                check = part.strip()
+                if check[0] =='"':
+                    # Dealing with a String
+                    if check[-1] == '"':
+                        if check[-2] != '\\':
+                            # Part is a full sting fine
+                            continue
+                    # Save start of String and get next part
                     new_part = parts.pop(i)
-                    while count > 0:
-                        next_part = parts.pop(i)
-                        count += self.bracket_count(next_part)
+                    next_part = parts.pop(i)
+                    new_check = next_part.strip()
+                    while new_check[-1] != '"' or new_check[-2] == '\\':
+                        # Still not end of String so add and get next
                         new_part += "," + next_part
+                        next_part = parts.pop(i)
+                        new_check = next_part.strip()
+                    # Add the end and put back new in the list
+                    new_part += "," + next_part
                     parts.insert(i, new_part)
+                else:
+                    # Not a String so look for function
+                    count = self.bracket_count(part)
+                    if (count > 0):
+                        # More opening and closing brackets so in function
+                        new_part = parts.pop(i)
+                        # Keep combining parts until you find the last closing
+                        while count > 0:
+                            next_part = parts.pop(i)
+                            count += self.bracket_count(next_part)
+                            new_part += "," + next_part
+                        # Put the new part back into the list
+                        parts.insert(i, new_part)
             return parts
+
         except Exception:
             raise Exception("Unexpected line {} at {} in {}".format(
                 self._log_full, line_num, self._src))

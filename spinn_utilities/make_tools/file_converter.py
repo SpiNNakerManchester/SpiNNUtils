@@ -348,6 +348,8 @@ class FileConverter(object):
                             new_part += "," + next_part
                         # Put the new part back into the list
                         parts.insert(i, new_part)
+            if parts[0][0] == '"' and parts[0][-1] == '"':
+                parts[0] = parts[0][1:-1]
             return parts
 
         except Exception:

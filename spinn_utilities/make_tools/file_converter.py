@@ -402,7 +402,7 @@ class FileConverter(object):
                 if match.endswith("f"):
                     back += ", float_to_int({})".format(parts[i + 1])
                 elif match.endswith("F"):
-                        back += DOUBLE_HEX.format(parts[i + 1])
+                    back += DOUBLE_HEX.format(parts[i + 1])
                 else:
                     back += ", {}".format(parts[i+1])
             front += '", {}'.format(self._message_id)

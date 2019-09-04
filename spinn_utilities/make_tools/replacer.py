@@ -53,7 +53,7 @@ class Replacer(object):
         replaced = six.b(original).decode("unicode_escape")
         if len(parts) > 1:
             matches = FORMAT_EXP.findall(original)
-             # Remove any blanks due to double spacing
+            # Remove any blanks due to double spacing
             matches = [x for x in matches if x != ""]
             # Start at 0 so first i+1 puts you at 1 as part 0 is the short
             i = 0

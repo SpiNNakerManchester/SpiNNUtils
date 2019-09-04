@@ -53,20 +53,32 @@ class Replacer(object):
         replaced = six.b(original).decode("unicode_escape")
         if len(parts) > 1:
             matches = FORMAT_EXP.findall(original)
-            if len(matches) != len(parts) - 1:
-                # try removing any blanks due to double spacing
-                matches = [x for x in matches if x != ""]
-            if len(matches) != len(parts) - 1:
-                # wrong number of elements so not short after all
+             # Remove any blanks due to double spacing
+            matches = [x for x in matches if x != ""]
+            # Start at 0 so first i+1 puts you at 1 as part 0 is the short
+            i = 0
+            try:
+                for match in matches:
+                    i += 1
+                    if match.endswith("f"):
+                        replacement = str(self.hex_to_float(parts[i]))
+                    elif match.endswith("F"):
+                        replacement = str(self.hexes_to_double(
+                            parts[i], parts[i+1]))
+                        i += 1
+                    else:
+                        replacement = parts[i]
+                    replaced = replaced.replace(match, replacement, 1)
+            except Exception:
                 return short
-            for i, match in enumerate(matches):
-                if match == "%f":
-                    print(match, original)
-                    replacement = str(self.hex_to_float(parts[i + 1]))
-                else:
-                    replacement = parts[i + 1]
-                replaced = replaced.replace(match, replacement, 1)
+
         return preface + replaced
 
     def hex_to_float(self, hex):
         return struct.unpack('!f', struct.pack("!I", int(hex, 16)))[0]
+
+    def hexes_to_double(self, upper, lower):
+        return struct.unpack(
+            '!d',
+            struct.pack("!I", int(upper, 16)) +
+            struct.pack("!I", int(lower, 16)))[0]

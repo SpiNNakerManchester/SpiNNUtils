@@ -21,11 +21,12 @@ TOKEN = chr(30)  # Record Separator
 
 COMMA_SPLIITER = re.compile(r'(?!\B"[^"]*),(?![^"]*"\B)')
 STRING_REGEXP = re.compile(r'"([^"]|\\"|(""))*"')
-FORMAT_EXP = re.compile(r"(?:^|[^%])(%\d*(?:\.\d+)?[cdfiksuxR])")
+FORMAT_EXP = re.compile(r"(?:^|[^%])(%\d*(?:\.\d+)?[cdfiksuxRF])")
 LOG_END_REGEX = re.compile(r'\)(\s)*;')
 END_COMMENT_REGEX = re.compile(r"/*/")
 LOG_START_REGEX = re.compile(
     r"log_((info)|(error)|(debug)|(warning))(\s)*\(")
+DOUBLE_HEX = ", double_to_upper({0}), double_to_lower({0})"
 
 # Status values
 NORMAL_CODE = 0
@@ -317,7 +318,7 @@ class FileConverter(object):
             parts = main.split(",")
             for i, part in enumerate(parts):
                 check = part.strip()
-                if check[0] =='"':
+                if check[0] == '"':
                     # Dealing with a String
                     if check[-1] == '"':
                         if check[-2] != '\\':
@@ -393,11 +394,15 @@ class FileConverter(object):
             for i, match in enumerate(matches):
                 front += TOKEN
                 if match.endswith("f"):
-                    front += match[:-1] + "x"
+                    front += "%x"
+                elif match.endswith("F"):
+                    front += "%x" + TOKEN + "%x"
                 else:
                     front += match
                 if match.endswith("f"):
                     back += ", float_to_int({})".format(parts[i + 1])
+                elif match.endswith("F"):
+                        back += DOUBLE_HEX.format(parts[i + 1])
                 else:
                     back += ", {}".format(parts[i+1])
             front += '", {}'.format(self._message_id)

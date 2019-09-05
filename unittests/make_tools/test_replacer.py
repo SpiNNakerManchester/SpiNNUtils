@@ -52,7 +52,7 @@ class TestReplacer(unittest.TestCase):
         ratio = diff / a
         return abs(ratio) < 0.0000001
 
-    def test_float_to_hex(self):
+    def test_hex_to_float(self):
         """
         Test the convertor against hex values returned from Spinnaker
 
@@ -77,3 +77,26 @@ class TestReplacer(unittest.TestCase):
         assert float("Inf") == replacer.hex_to_float("7f800000")
         assert 0-float("Inf") == replacer.hex_to_float("ff800000")
         assert math.isnan(replacer.hex_to_float("7fc00000"))
+
+    def test_hexes_to_double(self):
+        """
+        Test the convertor against hexes values returned from Spinnaker
+
+        """
+        replacer = Replacer(os.path.join(PATH, "test"))
+        assert self.near_equals(
+            0, replacer.hexes_to_double("0", "0"))
+        assert self.near_equals(
+            455424364531.3463460,
+            replacer.hexes_to_double("425a825a", "13fcd62b"))
+        assert self.near_equals(
+            -455424364531.3463460,
+            replacer.hexes_to_double("c25a825a", "13fcd62b"))
+        assert self.near_equals(
+            23.60, replacer.hexes_to_double("40379999", "9999999a"))
+        assert self.near_equals(
+            -1, replacer.hexes_to_double("bff00000", "0"))
+        assert self.near_equals(
+            1, replacer.hexes_to_double("3ff00000", "0"))
+        assert self.near_equals(
+            0.0000000004, replacer.hexes_to_double("3dfb7cdf", "d9d7bdbb"))

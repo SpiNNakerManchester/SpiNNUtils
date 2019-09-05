@@ -21,11 +21,12 @@ TOKEN = chr(30)  # Record Separator
 
 COMMA_SPLIITER = re.compile(r'(?!\B"[^"]*),(?![^"]*"\B)')
 STRING_REGEXP = re.compile(r'"([^"]|\\"|(""))*"')
-FORMAT_EXP = re.compile(r"(?:^|[^%])(%\d*(?:\.\d+)?[cdfiksuxR])")
+FORMAT_EXP = re.compile(r"(?:^|[^%])(%\d*(?:\.\d+)?[cdfiksuxRF])")
 LOG_END_REGEX = re.compile(r'\)(\s)*;')
 END_COMMENT_REGEX = re.compile(r"/*/")
 LOG_START_REGEX = re.compile(
     r"log_((info)|(error)|(debug)|(warning))(\s)*\(")
+DOUBLE_HEX = ", double_to_upper({0}), double_to_lower({0})"
 
 # Status values
 NORMAL_CODE = 0
@@ -306,6 +307,56 @@ class FileConverter(object):
         # Now check for the end of log command
         return self._process_line_in_log(dest_f, line_num, text[start_len:])
 
+    def quote_part(self, text):
+        return (text.count('"') - text.count('\\"')) % 2 > 0
+
+    def bracket_count(self, text):
+        return (text.count('(') - text.count(')'))
+
+    def split_by_comma_plus(self, main, line_num):
+        try:
+            parts = main.split(",")
+            for i, part in enumerate(parts):
+                check = part.strip()
+                if check[0] == '"':
+                    # Dealing with a String
+                    if check[-1] == '"':
+                        if check[-2] != '\\':
+                            # Part is a full sting fine
+                            continue
+                    # Save start of String and get next part
+                    new_part = parts.pop(i)
+                    next_part = parts.pop(i)
+                    new_check = next_part.strip()
+                    while new_check[-1] != '"' or new_check[-2] == '\\':
+                        # Still not end of String so add and get next
+                        new_part += "," + next_part
+                        next_part = parts.pop(i)
+                        new_check = next_part.strip()
+                    # Add the end and put back new in the list
+                    new_part += "," + next_part
+                    parts.insert(i, new_part)
+                else:
+                    # Not a String so look for function
+                    count = self.bracket_count(part)
+                    if (count > 0):
+                        # More opening and closing brackets so in function
+                        new_part = parts.pop(i)
+                        # Keep combining parts until you find the last closing
+                        while count > 0:
+                            next_part = parts.pop(i)
+                            count += self.bracket_count(next_part)
+                            new_part += "," + next_part
+                        # Put the new part back into the list
+                        parts.insert(i, new_part)
+            if parts[0][0] == '"' and parts[0][-1] == '"':
+                parts[0] = parts[0][1:-1]
+            return parts
+
+        except Exception:
+            raise Exception("Unexpected line {} at {} in {}".format(
+                self._log_full, line_num, self._src))
+
     def _short_log(self, line_num):
         """ shortens the log string message and adds the id
 
@@ -316,10 +367,11 @@ class FileConverter(object):
         """
         try:
             match = LOG_END_REGEX.search(self._log_full)
-            parts = COMMA_SPLIITER.split(self._log_full[:-len(match.group(0))])
+            main = self._log_full[:-len(match.group(0))]
         except Exception:
             raise Exception("Unexpected line {} at {} in {}".format(
                 self._log_full, line_num, self._src))
+        parts = self.split_by_comma_plus(main, line_num)
         original = parts[0]
         count = original.count("%") - original.count("%%")*2
         if count == 0:
@@ -342,11 +394,15 @@ class FileConverter(object):
             for i, match in enumerate(matches):
                 front += TOKEN
                 if match.endswith("f"):
-                    front += match[:-1] + "x"
+                    front += "%x"
+                elif match.endswith("F"):
+                    front += "%x" + TOKEN + "%x"
                 else:
                     front += match
                 if match.endswith("f"):
                     back += ", float_to_int({})".format(parts[i + 1])
+                elif match.endswith("F"):
+                    back += DOUBLE_HEX.format(parts[i + 1])
                 else:
                     back += ", {}".format(parts[i+1])
             front += '", {}'.format(self._message_id)

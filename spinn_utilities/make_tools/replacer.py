@@ -24,6 +24,48 @@ import six
 logger = FormatAdapter(logging.getLogger(__name__))
 
 
+def pass_through(self, parts):
+    return parts.pop(0)
+
+
+def pass_two(parts):
+    return parts.pop(0) + " "
+    parts.pop(0)
+
+
+def hex_to_float(parts):
+    return struct.unpack('!f', struct.pack("!I", int(parts.pop(0), 16)))[0]
+
+
+def hexes_to_double(parts):
+    return struct.unpack(
+        '!d',
+        struct.pack("!I", int(parts.pop(0), 16)) +
+        struct.pack("!I", int(parts.pop(0), 16)))[0]
+
+
+def hex_to_signed_int(parts):
+    return "signed_int:" + parts.pop(0)
+
+
+CONVERTER = {'a': pass_through,  # float in hexidecimal Specifically 1 word
+             # double in hexidecimal Specifically 2 word
+             'A': pass_two,
+             'c': pass_through,  # character
+             'd': hex_to_signed_int,  # signed decimal number.
+             'f': hex_to_float,  # float Specifically 1 word
+             'F': hexes_to_double,  # double Specifically 2 word
+             'i': hex_to_signed_int,  # signed decimal number.
+             # 'k': TOKEN + "%x",  # ISO signed accum (s1615)
+             # 'K': TOKEN + "%x",  # ISO unsigned accum (u1616)
+             # 'r': TOKEN + "%x",  # ISO signed fract (s015)
+             #  'R': TOKEN + "%x",  # ISO unsigned fract (u016)
+             #  's': TOKEN + "%s",  # string
+             #  'u': TOKEN + "%x",  # decimal unsigned int
+             'x': pass_through,  # Fixed point
+             }
+
+
 class Replacer(object):
 
     def __init__(self, dict_pointer):
@@ -59,26 +101,12 @@ class Replacer(object):
             i = 0
             try:
                 for match in matches:
-                    i += 1
-                    if match.endswith("f"):
-                        replacement = str(self.hex_to_float(parts[i]))
-                    elif match.endswith("F"):
-                        replacement = str(self.hexes_to_double(
-                            parts[i], parts[i+1]))
-                        i += 1
-                    else:
-                        replacement = parts[i]
+                    replacement = CONVERTER[match[-1]](parts)
                     replaced = replaced.replace(match, replacement, 1)
             except Exception:
                 return short
+            #while i < len(parts) - 1:
+            #    replaced += " ??? " + parts[i+1]
+            #    i += 1
 
         return preface + replaced
-
-    def hex_to_float(self, hex):
-        return struct.unpack('!f', struct.pack("!I", int(hex, 16)))[0]
-
-    def hexes_to_double(self, upper, lower):
-        return struct.unpack(
-            '!d',
-            struct.pack("!I", int(upper, 16)) +
-            struct.pack("!I", int(lower, 16)))[0]

@@ -34,6 +34,8 @@ class TestConverter(unittest.TestCase):
         src = os.path.join("mock_src", file_name)
         dest = os.path.join("modified_src", file_name)
         dict = dest + "dict"
+        if os.path.exists(dict):
+            os.remove(dict)
         FileConverter.convert(src, dest, dict, 2000)
         src_lines = sum(1 for line in open(src))
         modified_lines = sum(1 for line in open(dest))
@@ -44,7 +46,7 @@ class TestConverter(unittest.TestCase):
         assert("this is ok" in data)
         assert("this is fine on two lines" in data)
         assert("before comment after comment" in data)
-        assert("One line commted" in data)
+        assert("One line commented" in data)
         assert("this is for alan); so there!" in data)
         assert("Test %u for alan); so there!" in data)
         assert("\\t back off = %u, time between spikes %u" in data)

@@ -15,7 +15,7 @@
 
 import sys
 
-if sys.version_info >= (3, 9):
+if sys.version_info >= (3, 6):
     from collections.abc import MutableSet
     from collections import OrderedDict
 
@@ -55,7 +55,7 @@ else:
 
 
 class OrderedSet(MutableSet):
-    if sys.version_info >= (3, 9):
+    if sys.version_info >= (3, 6):
 
         # Depend on an ordered dict
         __slots__ = ("_map")
@@ -91,7 +91,7 @@ class OrderedSet(MutableSet):
             else:
                 return next(self)
 
-    else:  # if sys.version_info >= (3, 9):
+    else:  # if sys.version_info >= (3, 6):
 
         # As Python 2.7 does not have an order dict we need a linked list
         __slots__ = (

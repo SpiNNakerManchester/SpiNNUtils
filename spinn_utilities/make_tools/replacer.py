@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import decimal
 import logging
 import os
 import struct
@@ -53,6 +54,23 @@ def hex_to_unsigned_int(parts):
     #return "signed_int:" + str(struct.pack("!I", int(parts.pop(0), 16)))
 
 
+def hex_to_S1615(parts):
+    return str(
+        struct.unpack('!i', _pop_bytes(parts))[0]/decimal.Decimal("32768"))
+
+def hex_to_S015(parts):
+    return str(
+        struct.unpack('!i', _pop_bytes(parts))[0] / decimal.Decimal("2147483648"))
+
+def hex_to_U1616(parts):
+    i_value = struct.unpack('!I', _pop_bytes(parts))[0]
+    return str(i_value / decimal.Decimal("65536"))
+
+def hex_to_U016(parts):
+    return str(
+        struct.unpack('!I', _pop_bytes(parts))[0] / decimal.Decimal("2147483648"))
+
+
 CONVERTER = {'a': pass_through,  # float in hexidecimal Specifically 1 word
              # double in hexidecimal Specifically 2 word
              'A': pass_two,
@@ -61,9 +79,9 @@ CONVERTER = {'a': pass_through,  # float in hexidecimal Specifically 1 word
              'f': hex_to_float,  # float Specifically 1 word
              'F': hexes_to_double,  # double Specifically 2 word
              'i': hex_to_signed_int,  # signed decimal number.
-             'k': pass_through,  # ISO signed accum (s1615)
-             'K': pass_through,  # ISO unsigned accum (u1616)
-             'r': pass_through,  # ISO signed fract (s015)
+             'k': hex_to_S1615,  # ISO signed accum (s1615)
+             'K': hex_to_U1616,  # ISO unsigned accum (u1616)
+             'r': hex_to_S015,  # ISO signed fract (s015)
              'R': pass_through,  # ISO unsigned fract (u016)
              's': pass_through,  # string
              'u': hex_to_unsigned_int,  # decimal unsigned int
@@ -91,8 +109,6 @@ class Replacer(object):
                          .format(dict_path))
 
     def replace(self, short):
-        if short.startswith("13"):
-            print(short)
         parts = short.split(TOKEN)
         if not parts[0].isdigit():
             return short
@@ -110,6 +126,9 @@ class Replacer(object):
                     replaced = replaced.replace(match, replacement, 1)
             except Exception as ex:
                 print(ex)
+                print(match)
+                print(short)
+                print(_id, preface, original)
                 return short
 
         return preface + replaced

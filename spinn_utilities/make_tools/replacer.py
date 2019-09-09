@@ -24,6 +24,9 @@ import six
 logger = FormatAdapter(logging.getLogger(__name__))
 
 
+def _pop_bytes(parts):
+   return struct.pack("!I", int(parts.pop(0), 16))
+
 def pass_through(parts):
     return str(parts.pop(0))
 
@@ -33,18 +36,20 @@ def pass_two(parts):
 
 
 def hex_to_float(parts):
-    return str(struct.unpack('!f', struct.pack("!I", int(parts.pop(0), 16)))[0])
+    return str(struct.unpack('!f', _pop_bytes(parts))[0])
 
 
 def hexes_to_double(parts):
     return str(struct.unpack(
-        '!d',
-        struct.pack("!I", int(parts.pop(0), 16)) +
-        struct.pack("!I", int(parts.pop(0), 16)))[0])
+        '!d', _pop_bytes(parts) + _pop_bytes(parts))[0])
 
 
 def hex_to_signed_int(parts):
-    return "signed_int:" + parts.pop(0)
+    return str(struct.unpack('!i', _pop_bytes(parts))[0])
+
+
+def hex_to_unsigned_int(parts):
+    return str(struct.unpack('!I', _pop_bytes(parts))[0])
     #return "signed_int:" + str(struct.pack("!I", int(parts.pop(0), 16)))
 
 
@@ -61,7 +66,7 @@ CONVERTER = {'a': pass_through,  # float in hexidecimal Specifically 1 word
              'r': pass_through,  # ISO signed fract (s015)
              'R': pass_through,  # ISO unsigned fract (u016)
              's': pass_through,  # string
-             'u': hex_to_signed_int,  # decimal unsigned int
+             'u': hex_to_unsigned_int,  # decimal unsigned int
              'x': pass_through,  # Fixed point
              }
 

@@ -24,28 +24,28 @@ import six
 logger = FormatAdapter(logging.getLogger(__name__))
 
 
-def pass_through(self, parts):
-    return parts.pop(0)
+def pass_through(parts):
+    return str(parts.pop(0))
 
 
 def pass_two(parts):
-    return parts.pop(0) + " "
-    parts.pop(0)
+    return str(parts.pop(0)) + " " + str(parts.pop(0))
 
 
 def hex_to_float(parts):
-    return struct.unpack('!f', struct.pack("!I", int(parts.pop(0), 16)))[0]
+    return str(struct.unpack('!f', struct.pack("!I", int(parts.pop(0), 16)))[0])
 
 
 def hexes_to_double(parts):
-    return struct.unpack(
+    return str(struct.unpack(
         '!d',
         struct.pack("!I", int(parts.pop(0), 16)) +
-        struct.pack("!I", int(parts.pop(0), 16)))[0]
+        struct.pack("!I", int(parts.pop(0), 16)))[0])
 
 
 def hex_to_signed_int(parts):
     return "signed_int:" + parts.pop(0)
+    #return "signed_int:" + str(struct.pack("!I", int(parts.pop(0), 16)))
 
 
 CONVERTER = {'a': pass_through,  # float in hexidecimal Specifically 1 word
@@ -56,12 +56,12 @@ CONVERTER = {'a': pass_through,  # float in hexidecimal Specifically 1 word
              'f': hex_to_float,  # float Specifically 1 word
              'F': hexes_to_double,  # double Specifically 2 word
              'i': hex_to_signed_int,  # signed decimal number.
-             # 'k': TOKEN + "%x",  # ISO signed accum (s1615)
-             # 'K': TOKEN + "%x",  # ISO unsigned accum (u1616)
-             # 'r': TOKEN + "%x",  # ISO signed fract (s015)
-             #  'R': TOKEN + "%x",  # ISO unsigned fract (u016)
-             #  's': TOKEN + "%s",  # string
-             #  'u': TOKEN + "%x",  # decimal unsigned int
+             'k': pass_through,  # ISO signed accum (s1615)
+             'K': pass_through,  # ISO unsigned accum (u1616)
+             'r': pass_through,  # ISO signed fract (s015)
+             'R': pass_through,  # ISO unsigned fract (u016)
+             's': pass_through,  # string
+             'u': hex_to_signed_int,  # decimal unsigned int
              'x': pass_through,  # Fixed point
              }
 
@@ -86,27 +86,25 @@ class Replacer(object):
                          .format(dict_path))
 
     def replace(self, short):
+        if short.startswith("13"):
+            print(short)
         parts = short.split(TOKEN)
         if not parts[0].isdigit():
             return short
         if not parts[0] in self._messages:
             return short
-        (_id, preface, original) = self._messages[parts[0]]
+        (_id, preface, original) = self._messages[parts.pop(0)]
         replaced = six.b(original).decode("unicode_escape")
-        if len(parts) > 1:
+        if len(parts) > 0:
             matches = FORMAT_EXP.findall(original)
             # Remove any blanks due to double spacing
             matches = [x for x in matches if x != ""]
-            # Start at 0 so first i+1 puts you at 1 as part 0 is the short
-            i = 0
             try:
                 for match in matches:
                     replacement = CONVERTER[match[-1]](parts)
                     replaced = replaced.replace(match, replacement, 1)
-            except Exception:
+            except Exception as ex:
+                print(ex)
                 return short
-            #while i < len(parts) - 1:
-            #    replaced += " ??? " + parts[i+1]
-            #    i += 1
 
         return preface + replaced

@@ -29,19 +29,32 @@ class TestConverter(unittest.TestCase):
         os.chdir(path)
         converter.RANGE_DIR = ""
 
+    def _max_id(self, dict):
+        max_id = 0
+        with open(dict, 'r') as dict_f:
+            for line in dict_f:
+                parts = line.strip().split(",", 2)
+                if len(parts) == 3 and parts[0].isdigit():
+                    id = int(parts[0])
+                    if id > max_id:
+                        max_id = id
+        return max_id
+
     def test_convert(self):
         src = "mock_src"
         dest = "modified_src"
-        dict = os.path.join("modified_src", "test.dict")
-        Converter.convert(src, dest, dict)
-
-    def test_convert_ranged(self):
-        src = "mock_src"
-        dest = "modified_src"
-        dict = os.path.join("modified_src", "test.dict")
-        Converter.convert(src, dest, dict)
-        dict = os.path.join("modified_src", "test2.dict")
-        Converter.convert(src, dest, dict)
+        dict1 = os.path.join("modified_src", "test.dict")
+        if os.path.exists(dict1):
+            os.remove(dict1)
+        Converter.convert(src, dest, dict1)
+        dict2 = os.path.join("modified_src", "test.dict2")
+        if os.path.exists(dict2):
+            os.remove(dict2)
+        Converter.convert(src, dest, dict2)
+        Converter.convert(src, dest, dict2)
+        Converter.convert(src, dest, dict2)
+        Converter.convert(src, dest, dict2)
+        self.assertEquals(self._max_id(dict1) * 4, self._max_id(dict2))
 
     def test_replace(self):
         src = "mock_src"

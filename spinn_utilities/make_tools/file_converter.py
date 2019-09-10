@@ -41,7 +41,7 @@ FORMAT_PART = {'a': TOKEN + "%x",  # float in hexidecimal Specifically 1 word
                's': TOKEN + "%s",  # string
                'u': TOKEN + "%x",  # decimal unsigned int
                'x': TOKEN + "%x",  # Fixed point
-              }
+               }
 PARAM_PART = {'a': ", float_to_int({0})",
               'A': ", double_to_upper({0}), double_to_lower({0})",
               'c': ", {0}",

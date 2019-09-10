@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import math
-import struct
 import unittest
 import os
 from spinn_utilities.make_tools.replacer import (
@@ -97,6 +96,6 @@ class TestReplacer(unittest.TestCase):
         assert self.near_equals(
             -1, float(hexes_to_double(["bff00000", "0"])))
         assert self.near_equals(
-            1,float(hexes_to_double(["3ff00000", "0"])))
+            1, float(hexes_to_double(["3ff00000", "0"])))
         assert self.near_equals(
             0.0000000004, float(hexes_to_double(["3dfb7cdf", "d9d7bdbb"])))

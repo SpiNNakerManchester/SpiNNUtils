@@ -26,7 +26,8 @@ logger = FormatAdapter(logging.getLogger(__name__))
 
 
 def _pop_bytes(parts):
-   return struct.pack("!I", int(parts.pop(0), 16))
+    return struct.pack("!I", int(parts.pop(0), 16))
+
 
 def pass_through(parts):
     return str(parts.pop(0))
@@ -51,24 +52,27 @@ def hex_to_signed_int(parts):
 
 def hex_to_unsigned_int(parts):
     return str(struct.unpack('!I', _pop_bytes(parts))[0])
-    #return "signed_int:" + str(struct.pack("!I", int(parts.pop(0), 16)))
 
 
 def hex_to_S1615(parts):
     return str(
         struct.unpack('!i', _pop_bytes(parts))[0]/decimal.Decimal("32768"))
 
+
 def hex_to_S015(parts):
     return str(
-        struct.unpack('!i', _pop_bytes(parts))[0] / decimal.Decimal("2147483648"))
+        struct.unpack('!i', _pop_bytes(parts))[0] /
+        decimal.Decimal("2147483648"))
 
 def hex_to_U1616(parts):
     i_value = struct.unpack('!I', _pop_bytes(parts))[0]
     return str(i_value / decimal.Decimal("65536"))
 
+
 def hex_to_U016(parts):
     return str(
-        struct.unpack('!I', _pop_bytes(parts))[0] / decimal.Decimal("2147483648"))
+        struct.unpack('!I', _pop_bytes(parts))[0] /
+        decimal.Decimal("2147483648"))
 
 
 CONVERTER = {'a': pass_through,  # float in hexidecimal Specifically 1 word

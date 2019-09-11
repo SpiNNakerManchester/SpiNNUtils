@@ -38,12 +38,14 @@ class Converter(object):
         "_dest_basename",
         # File to hold dictionary mappings
         "_dict",
+        # Flags to say if a new dict sould be used
+        "_new_dict",
         # Full source directory
         "_src",
         # Part of source directory to take out when converting paths
         "_src_basename"]
 
-    def __init__(self, src, dest, dict_file):
+    def __init__(self, src, dest, dict_file, new_dict):
         """ Converts a whole directory including sub directories
 
         :param src: Full source directory
@@ -68,6 +70,7 @@ class Converter(object):
         self._src_basename = src_basename
         self._dest_basename = dest_basename
         self._dict = os.path.abspath(dict_file)
+        self._new_dict = new_dict
 
     def run(self):
         """ Runs the file converter on a whole directory including sub \
@@ -97,10 +100,19 @@ class Converter(object):
                     print("Unexpected file {}".format(source))
 
     def _get_id(self):
-        # Check the dict file exixts.
-        if not os.path.exists(self._dict):
+        if self._new_dict:
+            if os.path.exists(self._dict):
+                print("Warning deleting existing dict file {}".format(
+                    self._dict))
             with open(self._dict, 'w') as dict_f:
                 dict_f.write(DICTIONARY_HEADER)
+        else:
+            # Check the dict file exixts.
+            if not os.path.exists(self._dict):
+                raise Exception(
+                    "No dict file found at {}. "
+                    "Please make sure your environment variables are set "
+                    "correctly and run a full system make.")
         # Added a line saying what you converted
         with open(self._dict, 'a') as dict_f:
             dict_f.write("{},{},{}\n".format(
@@ -117,7 +129,6 @@ class Converter(object):
                         max_id = id
 
         return max_id + 1
-
 
     def _any_destination(self, path):
         # Here we need the local separator
@@ -141,8 +152,8 @@ class Converter(object):
             [os.environ['SPINN_DIRS'], os.environ['NEURAL_MODELLING_DIRS']]))
 
     @staticmethod
-    def convert(src, dest, dict_file):
-        converter = Converter(src, dest, dict_file)
+    def convert(src, dest, dict_file, new_dict):
+        converter = Converter(src, dest, dict_file, new_dict)
         converter.run()
 
 
@@ -150,4 +161,8 @@ if __name__ == '__main__':
     src = sys.argv[1]
     dest = sys.argv[2]
     dict_file = sys.argv[3]
-    Converter.convert(src, dest, dict_file)
+    if len(sys.argv) > 4:
+        new_dict = bool(sys.argv[3])
+    else:
+        new_dict = False
+    Converter.convert(src, dest, dict_file, new_dict)

@@ -46,21 +46,21 @@ class TestConverter(unittest.TestCase):
         dict1 = os.path.join("modified_src", "test.dict")
         if os.path.exists(dict1):
             os.remove(dict1)
-        Converter.convert(src, dest, dict1)
+        Converter.convert(src, dest, dict1, True)
         dict2 = os.path.join("modified_src", "test.dict2")
         if os.path.exists(dict2):
             os.remove(dict2)
-        Converter.convert(src, dest, dict2)
-        Converter.convert(src, dest, dict2)
-        Converter.convert(src, dest, dict2)
-        Converter.convert(src, dest, dict2)
+        Converter.convert(src, dest, dict2, True)
+        Converter.convert(src, dest, dict2, False)
+        Converter.convert(src, dest, dict2, False)
+        Converter.convert(src, dest, dict2, False)
         self.assertEquals(self._max_id(dict1) * 4, self._max_id(dict2))
 
     def test_replace(self):
         src = "mock_src"
         dest = "modified_src"
         dict = os.path.join("modified_src", "test.dict")
-        c = Converter(src, dest, dict)
+        c = Converter(src, dest, dict, True)
         path = "/home/me/mock_src/FEC/c_common/fec/mock_src/"
         path = path.replace("/", os.path.sep)
         new_path = "/home/me/mock_src/FEC/c_common/fec/modified_src/"
@@ -75,11 +75,13 @@ class TestConverter(unittest.TestCase):
         src = "foo/"
         dest = "bar/"
         dict = os.path.join("bar", "test.dict")
-        c = Converter(src, dest, dict)
+        if os.path.exists(os.path.abspath(dict)):
+            os.remove(os.path.abspath(dict))
+        c = Converter(src, dest, dict, True)
         c.run()
         weird_dir = os.path.join(dir_path, "foo", "bar", "gamma")
         os.chdir(weird_dir)
         dict = os.path.join("bar", "test.dict")
-        c = Converter(src, dest, dict)
+        c = Converter(src, dest, dict, True)
         c.run()
         os.chdir(cwd)

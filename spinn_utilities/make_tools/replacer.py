@@ -26,10 +26,8 @@ logger = FormatAdapter(logging.getLogger(__name__))
 
 class Replacer(object):
 
-    def __init__(self, dict_pointer):
+    def __init__(self, dict_path):
         self._messages = {}
-        rest, _ = os.path.splitext(dict_pointer)
-        dict_path = rest + ".dict"
         if os.path.isfile(dict_path):
             with open(dict_path) as dict_info:
                 for line in dict_info:

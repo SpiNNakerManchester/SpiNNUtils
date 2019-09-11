@@ -25,7 +25,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 class TestReplacer(unittest.TestCase):
 
     def test_replacer(self):
-        replacer = Replacer(os.path.join(PATH, "test.aplx"))
+        replacer = Replacer(os.path.join(PATH, "test.dict"))
         new = replacer.replace("1001")
         assert ("[INFO] (weird;file.c: 9): this is ok" == new)
 
@@ -34,12 +34,12 @@ class TestReplacer(unittest.TestCase):
         assert ("1001" == replacer.replace("1001"))
 
     def test_not_extension(self):
-        replacer = Replacer(os.path.join(PATH, "test"))
+        replacer = Replacer(os.path.join(PATH, "test.dict"))
         new = replacer.replace("1014" + TOKEN + "123")
         assert ("[INFO] (weird;file.c: 47): second 123" == new)
 
     def test_tab(self):
-        replacer = Replacer(os.path.join(PATH, "test"))
+        replacer = Replacer(os.path.join(PATH, "test.dict"))
         new = replacer.replace("1007" + TOKEN + "10" + TOKEN + "20")
         message = "[INFO] (weird;file.c: 29): \t back off = 10, time between"\
                   " spikes 20"

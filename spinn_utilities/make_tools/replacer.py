@@ -77,7 +77,7 @@ def hex_to_U016(parts):
 
 CONVERTER = {'a': pass_through,  # float in hexidecimal Specifically 1 word
              # double in hexidecimal Specifically 2 word
-             'A': pass_two,
+             'A': pass_through,
              'c': pass_through,  # character
              'd': hex_to_signed_int,  # signed decimal number.
              'f': hex_to_float,  # float Specifically 1 word

@@ -87,7 +87,7 @@ static String woops = "log_info(";
     log_info("test one %x", 1.0f);
     log_info("test two %x", 2.0f);
     log_info("test string comma, %u is fluff ", 12);
-    log_info("test string %%s in string, %u fluff", 45);
+    log_info("test double percent %%s in string, %u fluff", 45);
     log_info("test string quote \" in string, %u fluff", 45);
     log_info("test string bacKslash %s fluff", "Rowley \" wins");
     log_info("test string comma %s fluff ", "Rowley, wins");
@@ -104,6 +104,8 @@ static String woops = "log_info(";
     fluff fluff
 
     two = 2; log_info("two %u", two);
+
+    log_info("nospace %u%u", 1, 2);
 
     log_info("this is a float %f fluff", 1.0);
 

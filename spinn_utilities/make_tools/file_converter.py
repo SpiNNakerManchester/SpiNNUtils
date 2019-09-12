@@ -25,9 +25,9 @@ FORMAT_EXP = re.compile(r"(?:^|[^%])(%\d*(?:\.\d+)?[aAcdfFikKrRsux])")
 LOG_END_REGEX = re.compile(r'\)(\s)*;')
 END_COMMENT_REGEX = re.compile(r"/*/")
 LOG_START_REGEX = re.compile(r"log_((info)|(error)|(debug)|(warning))(\s)*\(")
-FORMAT_PART = {'a': TOKEN + "%x",  # float in hexidecimal Specifically 1 word
+FORMAT_PART = {'a': TOKEN + "%08x",  # float in hexidecimal Specifically 1 word
                # double in hexidecimal Specifically 2 word
-               'A': TOKEN + "%x" + TOKEN + "%x",
+               'A': TOKEN + "%08x%08x",
                'c': TOKEN + "%c",  # character
                'd': TOKEN + "%x",  # signed decimal number.
                'f': TOKEN + "%x",  # float Specifically 1 word

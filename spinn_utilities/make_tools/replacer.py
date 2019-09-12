@@ -64,6 +64,7 @@ def hex_to_S015(parts):
         struct.unpack('!i', _pop_bytes(parts))[0] /
         decimal.Decimal("2147483648"))
 
+
 def hex_to_U1616(parts):
     i_value = struct.unpack('!I', _pop_bytes(parts))[0]
     return str(i_value / decimal.Decimal("65536"))

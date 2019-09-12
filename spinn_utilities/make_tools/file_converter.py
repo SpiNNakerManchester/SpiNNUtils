@@ -21,7 +21,7 @@ TOKEN = chr(30)  # Record Separator
 
 COMMA_SPLIITER = re.compile(r'(?!\B"[^"]*),(?![^"]*"\B)')
 STRING_REGEXP = re.compile(r'"([^"]|\\"|(""))*"')
-FORMAT_EXP = re.compile(r"(?:^|[^%])(%\d*(?:\.\d+)?[cdfiksuxRF])")
+FORMAT_EXP = re.compile(r"(%+\d*(?:\.\d+)?[cdfiksuxRF])")
 LOG_END_REGEX = re.compile(r'\)(\s)*;')
 END_COMMENT_REGEX = re.compile(r"/*/")
 LOG_START_REGEX = re.compile(
@@ -380,6 +380,7 @@ class FileConverter(object):
             front = '"%u'
             back = ""
             matches = FORMAT_EXP.findall(original)
+            matches = list(filter(lambda x: not x.startswith("%%"), matches))
             if len(matches) != count:
                 raise Exception(
                     "Unexpected formatString in {}".format(original))

@@ -99,3 +99,4 @@ class TestReplacer(unittest.TestCase):
             1, float(hexes_to_double(["3ff00000", "0"])))
         assert self.near_equals(
             0.0000000004, float(hexes_to_double(["3dfb7cdf", "d9d7bdbb"])))
+        assert float("Inf") == float(hexes_to_double(["7ff00000", "00000000"]))

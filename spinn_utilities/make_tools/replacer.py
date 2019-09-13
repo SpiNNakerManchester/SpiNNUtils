@@ -42,8 +42,11 @@ def hex_to_float(parts):
 
 
 def hexes_to_double(parts):
+    p1 = _pop_bytes(parts)
+    p2 = _pop_bytes(parts)
+    print(p1 + p2)
     return str(struct.unpack(
-        '!d', _pop_bytes(parts) + _pop_bytes(parts))[0])
+        '!d', p1 + p2)[0])
 
 
 def hex_to_signed_int(parts):

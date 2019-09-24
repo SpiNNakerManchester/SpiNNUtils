@@ -90,7 +90,7 @@ CONVERTER = {'a': pass_through,  # float in hexidecimal Specifically 1 word
              'k': hex_to_S1615,  # ISO signed accum (s1615)
              'K': hex_to_U1616,  # ISO unsigned accum (u1616)
              'r': hex_to_S015,  # ISO signed fract (s015)
-             'R': pass_through,  # ISO unsigned fract (u016)
+             'R': hex_to_U016,  # ISO unsigned fract (u016)
              's': pass_through,  # string
              'u': hex_to_unsigned_int,  # decimal unsigned int
              'x': pass_through,  # Fixed point

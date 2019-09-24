@@ -17,3 +17,4 @@
 
 log_info("test u %u", 2);
 log_info("test f %f", 2.0f);
+log_info("test 08x %08x", 2);

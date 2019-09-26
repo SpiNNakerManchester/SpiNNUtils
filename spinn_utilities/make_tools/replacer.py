@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import decimal
 import logging
 import os
 import struct
@@ -22,6 +23,78 @@ from .file_converter import TOKEN
 import six
 
 logger = FormatAdapter(logging.getLogger(__name__))
+
+
+def _pop_bytes(parts):
+    return struct.pack("!I", int(parts.pop(0), 16))
+
+
+def pass_through(parts):
+    return str(parts.pop(0))
+
+
+def pass_two(parts):
+    return str(parts.pop(0)) + " " + str(parts.pop(0))
+
+
+def hex_to_float(parts):
+    return str(struct.unpack('!f', _pop_bytes(parts))[0])
+
+
+def hexes_to_double(parts):
+    p1 = _pop_bytes(parts)
+    p2 = _pop_bytes(parts)
+    print(p1 + p2)
+    return str(struct.unpack(
+        '!d', p1 + p2)[0])
+
+
+def hex_to_signed_int(parts):
+    return str(struct.unpack('!i', _pop_bytes(parts))[0])
+
+
+def hex_to_unsigned_int(parts):
+    return str(struct.unpack('!I', _pop_bytes(parts))[0])
+
+
+def hex_to_S1615(parts):
+    return str(
+        struct.unpack('!i', _pop_bytes(parts))[0]/decimal.Decimal("32768"))
+
+
+def hex_to_S015(parts):
+    return str(
+        struct.unpack('!i', _pop_bytes(parts))[0] /
+        decimal.Decimal("2147483648"))
+
+
+def hex_to_U1616(parts):
+    i_value = struct.unpack('!I', _pop_bytes(parts))[0]
+    return str(i_value / decimal.Decimal("65536"))
+
+
+def hex_to_U016(parts):
+    return str(
+        struct.unpack('!I', _pop_bytes(parts))[0] /
+        decimal.Decimal("2147483648"))
+
+
+CONVERTER = {'a': pass_through,  # float in hexidecimal Specifically 1 word
+             # double in hexidecimal Specifically 2 word
+             'A': pass_through,
+             'c': pass_through,  # character
+             'd': hex_to_signed_int,  # signed decimal number.
+             'f': hex_to_float,  # float Specifically 1 word
+             'F': hexes_to_double,  # double Specifically 2 word
+             'i': hex_to_signed_int,  # signed decimal number.
+             'k': hex_to_S1615,  # ISO signed accum (s1615)
+             'K': hex_to_U1616,  # ISO unsigned accum (u1616)
+             'r': hex_to_S015,  # ISO signed fract (s015)
+             'R': hex_to_U016,  # ISO unsigned fract (u016)
+             's': pass_through,  # string
+             'u': hex_to_unsigned_int,  # decimal unsigned int
+             'x': pass_through,  # Fixed point
+             }
 
 
 class Replacer(object):
@@ -49,36 +122,21 @@ class Replacer(object):
             return short
         if not parts[0] in self._messages:
             return short
-        (_id, preface, original) = self._messages[parts[0]]
+        (_id, preface, original) = self._messages[parts.pop(0)]
         replaced = six.b(original).decode("unicode_escape")
-        if len(parts) > 1:
+        if len(parts) > 0:
             matches = FORMAT_EXP.findall(original)
             # Remove any blanks due to double spacing
             matches = [x for x in matches if x != ""]
-            # Start at 0 so first i+1 puts you at 1 as part 0 is the short
-            i = 0
             try:
                 for match in matches:
-                    i += 1
-                    if match.endswith("f"):
-                        replacement = str(self.hex_to_float(parts[i]))
-                    elif match.endswith("F"):
-                        replacement = str(self.hexes_to_double(
-                            parts[i], parts[i+1]))
-                        i += 1
-                    else:
-                        replacement = parts[i]
+                    replacement = CONVERTER[match[-1]](parts)
                     replaced = replaced.replace(match, replacement, 1)
-            except Exception:
+            except Exception as ex:
+                print(ex)
+                print(match)
+                print(short)
+                print(_id, preface, original)
                 return short
 
         return preface + replaced
-
-    def hex_to_float(self, hex):
-        return struct.unpack('!f', struct.pack("!I", int(hex, 16)))[0]
-
-    def hexes_to_double(self, upper, lower):
-        return struct.unpack(
-            '!d',
-            struct.pack("!I", int(upper, 16)) +
-            struct.pack("!I", int(lower, 16)))[0]

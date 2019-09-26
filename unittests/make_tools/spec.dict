@@ -1,0 +1,8 @@
+Id,Preface,Original
+,DO NOT EDIT,THIS FILE IS USED BY UNITTESTS
+1001,[INFO] (weird;file.c: 9): ,this is ok
+1002,[INFO] (weird;file.c: 47): ,second %u
+1003,[INFO] (weird;file.c: 29): ,\t back off = %u, time between spikes %u
+1004,[INFO] (formats.c: 20): ,test 08x %08x
+
+

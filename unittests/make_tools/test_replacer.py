@@ -16,7 +16,8 @@
 import math
 import unittest
 import os
-from spinn_utilities.make_tools.replacer import Replacer
+from spinn_utilities.make_tools.replacer import (
+    hexes_to_double, hex_to_float, Replacer)
 from spinn_utilities.make_tools.file_converter import TOKEN
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -25,7 +26,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 class TestReplacer(unittest.TestCase):
 
     def test_replacer(self):
-        replacer = Replacer(os.path.join(PATH, "test.aplx"))
+        replacer = Replacer(os.path.join(PATH, "spec.aplx"))
         new = replacer.replace("1001")
         assert ("[INFO] (weird;file.c: 9): this is ok" == new)
 
@@ -34,15 +35,21 @@ class TestReplacer(unittest.TestCase):
         assert ("1001" == replacer.replace("1001"))
 
     def test_not_extension(self):
-        replacer = Replacer(os.path.join(PATH, "test"))
-        new = replacer.replace("1014" + TOKEN + "123")
+        replacer = Replacer(os.path.join(PATH, "spec"))
+        new = replacer.replace("1002" + TOKEN + hex(123))
         assert ("[INFO] (weird;file.c: 47): second 123" == new)
 
     def test_tab(self):
-        replacer = Replacer(os.path.join(PATH, "test"))
-        new = replacer.replace("1007" + TOKEN + "10" + TOKEN + "20")
+        replacer = Replacer(os.path.join(PATH, "spec"))
+        new = replacer.replace("1003" + TOKEN + hex(10) + TOKEN + hex(20))
         message = "[INFO] (weird;file.c: 29): \t back off = 10, time between"\
                   " spikes 20"
+        assert (message == new)
+
+    def test_08x(self):
+        replacer = Replacer(os.path.join(PATH, "spec"))
+        new = replacer.replace("1004" + TOKEN + "1e")
+        message = "[INFO] (formats.c: 20): test 08x 1e"
         assert (message == new)
 
     def near_equals(self, a, b):
@@ -57,46 +64,45 @@ class TestReplacer(unittest.TestCase):
         Test the convertor against hex values returned from Spinnaker
 
         """
-        replacer = Replacer(os.path.join(PATH, "test"))
         assert self.near_equals(
-            -345443332234.13432143, replacer.hex_to_float("d2a0dc0e"))
+            -345443332234.13432143, float(hex_to_float(["d2a0dc0e"])))
         assert self.near_equals(
-            -2000, replacer.hex_to_float("c4fa0000"))
+            -2000, float(hex_to_float(["c4fa0000"])))
         assert self.near_equals(
-            -1, replacer.hex_to_float("bf800000"))
+            -1, float(hex_to_float(["bf800000"])))
         assert self.near_equals(
-            0, replacer.hex_to_float("0"))
+            0, float(hex_to_float(["0"])))
         assert self.near_equals(
-            0.00014, replacer.hex_to_float("3912ccf7"))
+            0.00014, float(hex_to_float(["3912ccf7"])))
         assert self.near_equals(
-            1, replacer.hex_to_float("3f800000"))
+            1, float(hex_to_float(["3f800000"])))
         assert self.near_equals(
-            200, replacer.hex_to_float("43480000"))
+            200, float(hex_to_float(["43480000"])))
         assert self.near_equals(
-            455424364531.3463460, replacer.hex_to_float("52d412d1"))
-        assert float("Inf") == replacer.hex_to_float("7f800000")
-        assert 0-float("Inf") == replacer.hex_to_float("ff800000")
-        assert math.isnan(replacer.hex_to_float("7fc00000"))
+            455424364531.3463460, float(hex_to_float(["52d412d1"])))
+        assert float("Inf") == float(hex_to_float(["7f800000"]))
+        assert 0-float("Inf") == float(hex_to_float(["ff800000"]))
+        assert math.isnan(float((hex_to_float(["7fc00000"]))))
 
     def test_hexes_to_double(self):
         """
         Test the convertor against hexes values returned from Spinnaker
 
         """
-        replacer = Replacer(os.path.join(PATH, "test"))
         assert self.near_equals(
-            0, replacer.hexes_to_double("0", "0"))
+            0, float(hexes_to_double(["0", "0"])))
         assert self.near_equals(
             455424364531.3463460,
-            replacer.hexes_to_double("425a825a", "13fcd62b"))
+            float(hexes_to_double(["425a825a", "13fcd62b"])))
         assert self.near_equals(
             -455424364531.3463460,
-            replacer.hexes_to_double("c25a825a", "13fcd62b"))
+            float(hexes_to_double(["c25a825a", "13fcd62b"])))
         assert self.near_equals(
-            23.60, replacer.hexes_to_double("40379999", "9999999a"))
+            23.60, float(hexes_to_double(["40379999", "9999999a"])))
         assert self.near_equals(
-            -1, replacer.hexes_to_double("bff00000", "0"))
+            -1, float(hexes_to_double(["bff00000", "0"])))
         assert self.near_equals(
-            1, replacer.hexes_to_double("3ff00000", "0"))
+            1, float(hexes_to_double(["3ff00000", "0"])))
         assert self.near_equals(
-            0.0000000004, replacer.hexes_to_double("3dfb7cdf", "d9d7bdbb"))
+            0.0000000004, float(hexes_to_double(["3dfb7cdf", "d9d7bdbb"])))
+        assert float("Inf") == float(hexes_to_double(["7ff00000", "00000000"]))

@@ -24,9 +24,39 @@ STRING_REGEXP = re.compile(r'"([^"]|\\"|(""))*"')
 FORMAT_EXP = re.compile(r"(%+\d*(?:\.\d+)?[cdfiksuxRF])")
 LOG_END_REGEX = re.compile(r'\)(\s)*;')
 END_COMMENT_REGEX = re.compile(r"/*/")
-LOG_START_REGEX = re.compile(
-    r"log_((info)|(error)|(debug)|(warning))(\s)*\(")
-DOUBLE_HEX = ", double_to_upper({0}), double_to_lower({0})"
+LOG_START_REGEX = re.compile(r"log_((info)|(error)|(debug)|(warning))(\s)*\(")
+FORMAT_PART = {'a': TOKEN + "%08x",  # float in hexidecimal Specifically 1 word
+               # double in hexidecimal Specifically 2 word
+               'A': TOKEN + "%08x%08x",
+               'c': TOKEN + "%c",  # character
+               'd': TOKEN + "%x",  # signed decimal number.
+               'f': TOKEN + "%x",  # float Specifically 1 word
+               # double Specifically 2 word
+               'F': TOKEN + "%x" + TOKEN + "%x",
+               'i': TOKEN + "%x",  # signed decimal number.
+               'k': TOKEN + "%x",  # ISO signed accum (s1615)
+               'K': TOKEN + "%x",  # ISO unsigned accum (u1616)
+               'r': TOKEN + "%x",  # ISO signed fract (s015)
+               'R': TOKEN + "%x",  # ISO unsigned fract (u016)
+               's': TOKEN + "%s",  # string
+               'u': TOKEN + "%x",  # decimal unsigned int
+               'x': TOKEN + "%x",  # Fixed point
+               }
+PARAM_PART = {'a': ", float_to_int({0})",
+              'A': ", double_to_upper({0}), double_to_lower({0})",
+              'c': ", {0}",
+              'd': ", {0}",
+              'f': ", float_to_int({0})",
+              'F': ", double_to_upper({0}), double_to_lower({0})",
+              'i': ", {0}",
+              'k': ", {0}",
+              'K': ", {0}",
+              'r': ", {0}",
+              'R': ", {0}",
+              's': ", {0}",
+              'u': ", {0}",
+              'x': ", {0}",
+              }
 
 # Status values
 NORMAL_CODE = 0
@@ -372,7 +402,7 @@ class FileConverter(object):
             raise Exception("Unexpected line {} at {} in {}".format(
                 self._log_full, line_num, self._src))
         parts = self.split_by_comma_plus(main, line_num)
-        original = parts[0]
+        original = parts.pop(0)
         count = original.count("%") - original.count("%%")*2
         if count == 0:
             return original, '"%u", {});'.format(self._message_id)
@@ -384,28 +414,18 @@ class FileConverter(object):
             if len(matches) != count:
                 raise Exception(
                     "Unexpected formatString in {}".format(original))
-            if len(parts) < count + 1:
+            if len(parts) < count:
                 raise Exception("Too few parameters in line {} at {} in "
                                 "{}".format(self._log_full, line_num,
                                             self._src))
-            if len(parts) > count + 1:
+            if len(parts) > count:
                 raise Exception("Too many parameters in line {} at {} in "
                                 "{}".format(self._log_full, line_num,
                                             self._src))
-            for i, match in enumerate(matches):
-                front += TOKEN
-                if match.endswith("f"):
-                    front += "%x"
-                elif match.endswith("F"):
-                    front += "%x" + TOKEN + "%x"
-                else:
-                    front += match
-                if match.endswith("f"):
-                    back += ", float_to_int({})".format(parts[i + 1])
-                elif match.endswith("F"):
-                    back += DOUBLE_HEX.format(parts[i + 1])
-                else:
-                    back += ", {}".format(parts[i+1])
+            for match, part in zip(matches, parts):
+                type_char = match[-1]
+                front += FORMAT_PART[type_char]
+                back += PARAM_PART[type_char].format(part)
             front += '", {}'.format(self._message_id)
             back += ");"
         return original, front + back

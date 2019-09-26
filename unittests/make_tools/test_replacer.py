@@ -36,7 +36,6 @@ class TestReplacer(unittest.TestCase):
 
     def test_not_extension(self):
         replacer = Replacer(os.path.join(PATH, "spec"))
-        a = hex(123)
         new = replacer.replace("1002" + TOKEN + hex(123))
         assert ("[INFO] (weird;file.c: 47): second 123" == new)
 

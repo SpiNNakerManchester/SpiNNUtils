@@ -16,6 +16,7 @@
 import sys
 
 if sys.version_info >= (3, 6):
+    # pylint: disable=import-error, no-name-in-module
     from collections.abc import MutableSet
     from collections import OrderedDict
 else:

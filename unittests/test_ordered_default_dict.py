@@ -23,7 +23,8 @@ def test_standard_default():
     assert o is not None
     o["bar"] = 2
     with pytest.raises(KeyError):  # @UndefinedVariable
-        _dummy = o["FOO"]
+        x = o["FOO"]
+        assert x is None
     assert o["bar"] == 2
 
 
@@ -46,7 +47,7 @@ def test_orderedset_default():
 
 
 def test_keys_in_order():
-    o = DefaultOrderedDict(lambda : bytes(b"abc"))
+    o = DefaultOrderedDict(lambda: bytes(b"abc"))
     a = o["a"]
     b = o["b"]
     c = o["c"]

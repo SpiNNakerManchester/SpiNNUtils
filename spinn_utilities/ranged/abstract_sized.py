@@ -67,20 +67,19 @@ class AbstractSized(object):
         elif slice_start < 0:
             slice_start = self._size + slice_start
             if slice_start < 0:
-                if self._is_id_type(slice_start):
-                    logger.warning(
-                        "Specified slice start was {} while size is only {}. "
-                        "Therefore slice will start at index 0".format(
-                            slice_start - self._size, self._size))
-                    slice_start = 0
-                else:
+                if not self._is_id_type(slice_start):
                     raise TypeError("Invalid argument type {}.".format(
                         type(slice_start)))
+                logger.warning(
+                    "Specified slice start was %d while size is only %d. "
+                    "Therefore slice will start at index 0",
+                    slice_start - self._size, self._size)
+                slice_start = 0
         elif slice_start >= len(self):
             logger.warning(
-                "Specified slice start was {} while size is only {}. "
-                "Therefore slice will be empty".format(
-                    slice_start - self._size, self._size))
+                "Specified slice start was %d while size is only %d. "
+                "Therefore slice will be empty",
+                slice_start - self._size, self._size)
             return (self._size, self._size)
 
         if slice_stop is None or slice_stop == sys.maxsize:
@@ -96,54 +95,54 @@ class AbstractSized(object):
                 raise TypeError("Invalid argument type {}.".format(
                     type(slice_start)))
             logger.warning(
-                "Specified slice has a start {} greater than its stop {} "
-                "(based on size {}). Therefore slice will be empty".format(
-                    slice_start, slice_stop, self._size))
+                "Specified slice has a start %d greater than its stop %d "
+                "(based on size %d). Therefore slice will be empty",
+                slice_start, slice_stop, self._size)
             return (self._size, self._size)
         if slice_stop > len(self):
             if not self._is_id_type(slice_stop):
                 raise TypeError("Invalid argument type {}.".format(
                     type(slice_start)))
             logger.warning(
-                "Specified slice has a start {} equal to its stop {} "
-                "(based on size {}). Therefore slice will be empty".format(
-                    slice_start, slice_stop, self._size))
+                "Specified slice has a start %d equal to its stop %d "
+                "(based on size %d). Therefore slice will be empty",
+                slice_start, slice_stop, self._size)
         if slice_stop < 0:
             logger.warning(
-                "Specified slice stop was {} while size is only {}. "
-                "Therefore slice will be empty".format(
-                    slice_stop-self._size, self._size))
+                "Specified slice stop was %d while size is only %d. "
+                "Therefore slice will be empty",
+                slice_stop - self._size, self._size)
             return (self._size, self._size)
         elif slice_start > slice_stop:
             logger.warning(
-                "Specified slice has a start {} greater than its stop {} "
-                "(based on size {}). Therefore slice will be empty".format(
-                    slice_start, slice_stop, self._size))
+                "Specified slice has a start %d greater than its stop %d "
+                "(based on size %d). Therefore slice will be empty",
+                slice_start, slice_stop, self._size)
             return (self._size, self._size)
         elif slice_start == slice_stop:
             logger.warning(
-                "Specified slice has a start {} equal to its stop {} "
-                "(based on size {}). Therefore slice will be empty".format(
-                    slice_start, slice_stop, self._size))
+                "Specified slice has a start %d equal to its stop %d "
+                "(based on size %d). Therefore slice will be empty",
+                slice_start, slice_stop, self._size)
         elif slice_stop > len(self):
             logger.warning(
-                "Specified slice stop was {} while size is only {}. "
-                "Therefore slice will be truncated".format(
-                    slice_stop, self._size))
+                "Specified slice stop was %d while size is only %d. "
+                "Therefore slice will be truncated",
+                slice_stop, self._size)
             slice_stop = self._size
         return slice_start, slice_stop
 
     def _check_mask_size(self, selector):
         if len(selector) < self._size:
             logger.warning(
-                "The boolean mask is too short. The expected length was {} "
-                "but the length was only {}. All the missing entries will be "
-                "treated as False!".format(self._size, len(selector)))
+                "The boolean mask is too short. The expected length was %d "
+                "but the length was only %d. All the missing entries will be "
+                "treated as False!", self._size, len(selector))
         elif len(selector) > self._size:
             logger.warning(
-                "The boolean mask is too long. The expected length was {} "
-                "but the length was only {}. All the missing entries will be "
-                "ignored!".format(self._size, len(selector)))
+                "The boolean mask is too long. The expected length was %d "
+                "but the length was only %d. All the missing entries will be "
+                "ignored!", self._size, len(selector))
 
     def selector_to_ids(self, selector, warn=False):
         """ Gets the list of IDs covered by this selector. \

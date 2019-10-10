@@ -84,7 +84,7 @@ def load_modules(
         print(module)
         try:
             __import__(module)
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             if gather_errors:
                 errors.append((module, sys.exc_info()))
             else:

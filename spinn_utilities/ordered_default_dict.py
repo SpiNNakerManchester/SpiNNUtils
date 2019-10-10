@@ -21,11 +21,11 @@ except ImportError:
 
 class DefaultOrderedDict(OrderedDict):
     # Source: https://stackoverflow.com/questions/6190331
-    def __init__(self, default_factory=None, *a, **kw):
-        if (default_factory is not None and
-           not isinstance(default_factory, Callable)):
+    def __init__(self, default_factory, *args, **kwargs):
+        if default_factory is not None and \
+                not isinstance(default_factory, Callable):
             raise TypeError('first argument must be callable')
-        OrderedDict.__init__(self, *a, **kw)
+        OrderedDict.__init__(self, *args, **kwargs)
         self.default_factory = default_factory
 
     def __getitem__(self, key):

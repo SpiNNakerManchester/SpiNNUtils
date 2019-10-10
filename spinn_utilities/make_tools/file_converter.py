@@ -373,41 +373,41 @@ class FileConverter(object):
                 self._log_full, line_num, self._src))
         parts = self.split_by_comma_plus(main, line_num)
         original = parts[0]
-        count = original.count("%") - original.count("%%")*2
+        count = original.count("%") - original.count("%%") * 2
         if count == 0:
             return original, '"%u", {});'.format(self._message_id)
-        else:
-            front = '"%u'
-            back = ""
-            matches = FORMAT_EXP.findall(original)
-            matches = list(filter(lambda x: not x.startswith("%%"), matches))
-            if len(matches) != count:
-                raise Exception(
-                    "Unexpected formatString in {}".format(original))
-            if len(parts) < count + 1:
-                raise Exception("Too few parameters in line {} at {} in "
-                                "{}".format(self._log_full, line_num,
-                                            self._src))
-            if len(parts) > count + 1:
-                raise Exception("Too many parameters in line {} at {} in "
-                                "{}".format(self._log_full, line_num,
-                                            self._src))
-            for i, match in enumerate(matches):
-                front += TOKEN
-                if match.endswith("f"):
-                    front += "%x"
-                elif match.endswith("F"):
-                    front += "%x" + TOKEN + "%x"
-                else:
-                    front += match
-                if match.endswith("f"):
-                    back += ", float_to_int({})".format(parts[i + 1])
-                elif match.endswith("F"):
-                    back += DOUBLE_HEX.format(parts[i + 1])
-                else:
-                    back += ", {}".format(parts[i+1])
-            front += '", {}'.format(self._message_id)
-            back += ");"
+
+        front = '"%u'
+        back = ""
+        matches = [x for x in FORMAT_EXP.findall(original)
+                   if not x.startswith("%%")]
+        if len(matches) != count:
+            raise Exception(
+                "Unexpected formatString in {}".format(original))
+        if len(parts) < count + 1:
+            raise Exception(
+                "Too few parameters in line {} at {} in {}".format(
+                    self._log_full, line_num, self._src))
+        if len(parts) > count + 1:
+            raise Exception(
+                "Too many parameters in line {} at {} in {}".format(
+                    self._log_full, line_num, self._src))
+        for i, match in enumerate(matches):
+            front += TOKEN
+            if match.endswith("f"):
+                front += "%x"
+            elif match.endswith("F"):
+                front += "%x" + TOKEN + "%x"
+            else:
+                front += match
+            if match.endswith("f"):
+                back += ", float_to_int({})".format(parts[i + 1])
+            elif match.endswith("F"):
+                back += DOUBLE_HEX.format(parts[i + 1])
+            else:
+                back += ", {}".format(parts[i+1])
+        front += '", {}'.format(self._message_id)
+        back += ");"
         return original, front + back
 
     def _write_log_method(self, dest_f, line_num, tail=""):

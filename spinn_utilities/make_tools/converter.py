@@ -165,7 +165,7 @@ class Converter(object):
 
 
 if __name__ == '__main__':
-    src = sys.argv[1]
-    dest = sys.argv[2]
-    dict_file = sys.argv[3]
-    Converter.convert(src, dest, dict_file)
+    _src = sys.argv[1]
+    _dest = sys.argv[2]
+    _dict_file = sys.argv[3]
+    Converter.convert(_src, _dest, _dict_file)

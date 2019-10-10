@@ -17,7 +17,7 @@ import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
 from six.moves import configparser
 
 
-# pylint: disable=slots-on-old-class
+# pylint: disable=slots-on-old-class, bad-option-value
 class CamelCaseConfigParser(configparser.RawConfigParser):
     # RawConfigParser is a classobj in Python 2.7, not a type (i.e., it
     # doesn't inherit from object), and so cannot be used with super().
@@ -35,10 +35,11 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         self._none_marker = none_marker
         self._read_files = list()
 
-    def read(self, filenames):
+    def read(self, filenames, encoding=None):
         """ Read and parse a filename or a list of filenames.
         """
-        new_files = configparser.RawConfigParser.read(self, filenames)
+        new_files = configparser.RawConfigParser.read(
+            self, filenames, encoding)
         self._read_files.extend(new_files)
         return new_files
 

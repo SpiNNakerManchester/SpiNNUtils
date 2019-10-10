@@ -19,7 +19,7 @@ if sys.version_info >= (3, 6):
     from collections.abc import MutableSet
     from collections import OrderedDict
 else:
-    from collections import MutableSet
+    from collections import MutableSet  # pylint: disable=no-name-in-module
 
     # Only need Node if we dont have an ordered dict
     class _Node(object):

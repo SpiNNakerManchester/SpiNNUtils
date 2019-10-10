@@ -167,10 +167,12 @@ class FormatAdapter(logging.LoggerAdapter):
         def error(self, msg, *args, **kwargs):
             self.log(logging.ERROR, msg, *args, **kwargs)
 
+        # pylint: disable=arguments-differ
         @overrides(logging.LoggerAdapter.exception)
-        def exception(self, msg, *args, exc_info=True, **kwargs):
-            kwargs["exc_info"] = 1
-            self.log(logging.ERROR, msg, *args, exc_info=exc_info, **kwargs)
+        def exception(self, msg, *args, **kwargs):
+            if "exc_info" not in kwargs:
+                kwargs["exc_info"] = True
+            self.log(logging.ERROR, msg, *args, **kwargs)
 
         @overrides(logging.LoggerAdapter.info)
         def info(self, msg, *args, **kwargs):

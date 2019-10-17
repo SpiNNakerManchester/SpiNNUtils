@@ -35,10 +35,16 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         self._none_marker = none_marker
         self._read_files = list()
 
-    def read(self, filenames):
+    # pylint: disable=arguments-differ
+    def read(self, filenames, encoding=None):
         """ Read and parse a filename or a list of filenames.
         """
-        new_files = configparser.RawConfigParser.read(self, filenames)
+        if encoding is not None:
+            # pylint: disable=too-many-function-args
+            new_files = configparser.RawConfigParser.read(
+                self, filenames, encoding)
+        else:
+            new_files = configparser.RawConfigParser.read(self, filenames)
         self._read_files.extend(new_files)
         return new_files
 

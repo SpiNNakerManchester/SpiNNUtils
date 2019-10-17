@@ -19,11 +19,12 @@ from spinn_utilities.ordered_set import OrderedSet
 
 
 def test_standard_default():
-    o = DefaultOrderedDict()
+    o = DefaultOrderedDict(None)
     assert o is not None
     o["bar"] = 2
     with pytest.raises(KeyError):  # @UndefinedVariable
-        o["FOO"]
+        x = o["FOO"]
+        assert x is None
     assert o["bar"] == 2
 
 
@@ -43,3 +44,12 @@ def test_ordered_set_default():
     o["foo"].add(1)
     assert 2 in o["foo"]
     assert 1 not in o["bar"]
+
+
+def test_keys_in_order():
+    o = DefaultOrderedDict(lambda: bytes(b"abc"))
+    a = o["a"]
+    b = o["b"]
+    c = o["c"]
+    assert a == b == c
+    assert tuple(o) == ("a", "b", "c")

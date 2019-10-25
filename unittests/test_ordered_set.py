@@ -131,3 +131,12 @@ def test_obscure_stuff():
     o2 |= [4]
     assert o != o2
     assert repr(OrderedSet()) == "OrderedSet()"
+
+
+def test_peek():
+    o = OrderedSet()
+    o.add(1)
+    o.add(2)
+    o.add(3)
+    p1 = o.peek()
+    assert p1 == 3

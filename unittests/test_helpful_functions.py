@@ -67,6 +67,7 @@ def test_lcm():
     c = [34]
     assert lcm(c) == 34
 
+
 # Support class for test_get_valid_components
 class a_b(object):  # noqa: N801
     pass

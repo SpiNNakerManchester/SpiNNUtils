@@ -78,8 +78,8 @@ def lcm(*numbers):
     if len(numbers) == 1:
         try:
             return reduce(_lcm, iter(numbers[0]), 1)
-        except:
-            pass
+        except Exception:
+            return numbers[0]
     return reduce(_lcm, numbers, 1)
 
 
@@ -102,6 +102,6 @@ def gcd(*numbers):
     if len(numbers) == 1:
         try:
             return reduce(_gcd, iter(numbers[0]))
-        except:
+        except Exception:
             return numbers[0]
     return reduce(_gcd, numbers)

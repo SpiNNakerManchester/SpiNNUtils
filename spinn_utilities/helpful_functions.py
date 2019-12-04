@@ -21,9 +21,9 @@ import sys
 from six import string_types
 
 if sys.version_info >= (3, 5):
-    from math import gcd as _gcd
+    from math import gcd as gcd_2_values
 else:
-    from fractions import gcd as _gcd
+    from fractions import gcd as gcd_2_values
 
 logger = logging.getLogger(__name__)
 FINISHED_FILENAME = "finished"
@@ -57,7 +57,7 @@ def is_singleton(value):
 
 
 def _lcm(a, b):
-    return (a * b) // _gcd(a, b)
+    return (a * b) // gcd_2_values(a, b)
 
 
 def lcm(*numbers):
@@ -78,7 +78,7 @@ def lcm(*numbers):
     if len(numbers) == 1:
         try:
             return reduce(_lcm, iter(numbers[0]), 1)
-        except Exception:
+        except TypeError:
             return numbers[0]
     return reduce(_lcm, numbers, 1)
 
@@ -101,7 +101,7 @@ def gcd(*numbers):
     """
     if len(numbers) == 1:
         try:
-            return reduce(_gcd, iter(numbers[0]))
-        except Exception:
+            return reduce(gcd_2_values, iter(numbers[0]))
+        except TypeError:
             return numbers[0]
-    return reduce(_gcd, numbers)
+    return reduce(gcd_2_values, numbers)

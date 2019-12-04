@@ -21,7 +21,8 @@ import sys
 from six import string_types
 
 if sys.version_info >= (3, 5):
-    from math import gcd as gcd_2_values
+    from functools import reduce   # pylint: disable=redefined-builtin
+    from math import gcd as gcd_2_values  # pylint: disable=no-name-in-module
 else:
     from fractions import gcd as gcd_2_values  # noqa: ignore=W1505
 

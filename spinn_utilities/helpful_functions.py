@@ -23,7 +23,7 @@ from six import string_types
 if sys.version_info >= (3, 5):
     from math import gcd as gcd_2_values
 else:
-    from fractions import gcd as gcd_2_values
+    from fractions import gcd as gcd_2_values  # noqa: ignore=W1505
 
 logger = logging.getLogger(__name__)
 FINISHED_FILENAME = "finished"
@@ -71,7 +71,7 @@ def lcm(*numbers):
     This can be zero, one or more int values or\
     a singelton which is an iterator (possibly empty) of ints.
     :return: the lcm or 1 if numbers is empty or an empty iterator
-    :rtype int
+    :rtype: int
     :raises TypeError: If any value can not be interpreted as an Integer
     :raises ZeroDivisionError: May be raised if one of the values is zero
     """

@@ -91,12 +91,12 @@ def gcd(*numbers):
     this function will either produce incorrect results or raise an exception.
 
     :param numbers: The Positive integers to get the lcm for.\
-    This can be one or more int values or\
-    a singelton which is an iterator (not empty) of ints.
+        This can be one or more int values or\
+        a singelton which is an iterator (not empty) of ints.
     :return: the lcm or 1 if numbers is empty or an empty iterator
     :rtype int
     :raises TypeError: If any value can not be interpreted as an Integer or\
-    if no value a are provided
+        if no value a are provided
     :raises ZeroDivisionError: May be raised if one of the values is zero
     """
     if len(numbers) == 1:

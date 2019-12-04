@@ -57,7 +57,7 @@ def is_singleton(value):
 
 
 def _lcm(a, b):
-    return (a * b) // gcd_2_values(a, b)
+    return (a * b) // gcd_2_values(a, b)  # noqa: ignore=W1505
 
 
 def lcm(*numbers):
@@ -94,7 +94,7 @@ def gcd(*numbers):
         This can be one or more int values or\
         a singelton which is an iterator (not empty) of ints.
     :return: the lcm or 1 if numbers is empty or an empty iterator
-    :rtype int
+    :rtype: int
     :raises TypeError: If any value can not be interpreted as an Integer or\
         if no value a are provided
     :raises ZeroDivisionError: May be raised if one of the values is zero

@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from functools import reduce
 import logging
 import inspect
 import re
@@ -58,7 +57,7 @@ def is_singleton(value):
 
 
 def _lcm(a, b):
-    return (a * b) // gcd_2_values(a, b)  # noqa: ignore=W1505
+    return (a * b) // gcd_2_values(a, b)  # noqa: ignore=W1505 # pylint: disable=deprecated-method
 
 
 def lcm(*numbers):

@@ -94,18 +94,22 @@ class overrides(object):
                 if arg not in self._additional_arguments]
         if len(all_args) != len(super_args.args):
             raise AttributeError(
-                "Method has {} arguments but {} has {}"
+                "Method {} in {} has {} arguments but {} has {}"
                 " arguments".format(
+                    method.__name__, inspect.getsourcefile(method),
                     len(method_args.args), self._override_name,
                     len(super_args.args)))
         for arg, super_arg in zip(all_args, super_args.args):
             if arg != super_arg:
                 raise AttributeError(
-                    "Missing argument {}".format(super_arg))
+                    "Method {} in {} has Missing argument {}".format(
+                        method.__name__, inspect.getsourcefile(method),
+                        super_arg))
         if not self.__match_defaults(
                 default_args, super_args.defaults, self._extend_defaults):
             raise AttributeError(
-                "Default arguments don't match {}".format(
+                "Method {} in {} has Default arguments don't match {}".format(
+                    method.__name__, inspect.getsourcefile(method),
                     self._override_name))
 
     def __call__(self, method):

@@ -14,6 +14,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
+import inspect
+import numpy
 import os
 import sys
 import traceback
@@ -55,6 +57,26 @@ def all_modules(directory, prefix, remove_pyc_files=False):
                                remove_pyc_files))
     return results
 
+if (sys.version_info > (3, 0)):
+    def check_module(module_name):
+        __import__(module_name)
+        module = sys.modules[module_name]
+        for name, obj in inspect.getmembers(module):
+            if inspect.isclass(obj):
+                if inspect.getmodule(obj) == module:
+                    if not inspect.isabstract(obj):
+                        argspec = inspect.getfullargspec(obj.__new__)
+                        if argspec[0] == ["type"]:
+                            if numpy.ndarray in inspect.getmro(obj):
+                                print("skipping {} as it is a numpy.ndarray"
+                                      "".format(name))
+                            else:
+                                obj.__new__(obj)
+else:
+    # Obj.__new__ does not work in python2 USE Python 3!
+    def check_module(module_name):
+        __import__(module_name)
+
 
 def load_modules(
         directory, prefix, remove_pyc_files=False, exclusions=None,
@@ -77,18 +99,18 @@ def load_modules(
         exclusions = []
     modules = all_modules(directory, prefix, remove_pyc_files)
     errors = list()
-    for module in modules:
-        if module in exclusions:
-            print("SKIPPING " + module)
+    for module_name in modules:
+        if module_name in exclusions:
+            print("SKIPPING " + module_name)
             continue
-        print(module)
-        try:
-            __import__(module)
-        except Exception:  # pylint: disable=broad-except
-            if gather_errors:
-                errors.append((module, sys.exc_info()))
-            else:
-                raise
+        print(module_name)
+        #try:
+        check_module(module_name)
+        #except Exception:  # pylint: disable=broad-except
+        #    if gather_errors:
+        #        errors.append((module_name, sys.exc_info()))
+        #    else:
+        #        raise
 
     for module, (exc_type, exc_value, exc_traceback) in errors:
         print("Error importing {}:".format(module))

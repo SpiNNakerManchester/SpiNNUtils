@@ -254,4 +254,3 @@ class FormatAdapter(logging.LoggerAdapter):
             key: kwargs[key]
             for key in getfullargspec(self.do_log).args[1:]
             if key in kwargs}
-

@@ -13,8 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+import atexit
 import logging
 import re
+import sys
+
 try:
     from inspect import getfullargspec
 except ImportError:
@@ -138,6 +142,25 @@ class _BraceMessage(object):
         return str(self.fmt).format(*self.args, **self.kwargs)
 
 
+class LogLevelTooHighException(Exception):
+    """
+    An Exception throw when the System tries to log at a level where an
+    Exception is a better option.
+    """
+
+
+@atexit.register
+def repeat_messages():
+    if len(FormatAdapter._repeat_messages) > 0:
+        level = logging.getLevelName(FormatAdapter._repeat_at_end)
+        print("\nThese log messages where generated at level {} or above"
+              "".format(level), file=sys.stderr)
+    for message in FormatAdapter._repeat_messages:
+        print(message, file=sys.stderr)
+    # to allow this to be used in testing
+    FormatAdapter._repeat_messages = []
+
+
 class FormatAdapter(logging.LoggerAdapter):
     """ An adaptor for logging with messages that uses Python format strings.
 
@@ -147,6 +170,24 @@ class FormatAdapter(logging.LoggerAdapter):
         log.info("this message has {} inside {}", 123, 'itself')
         # --> INFO: this message has 123 inside itself
     """
+    __kill_level = logging.CRITICAL + 1
+    _repeat_at_end = logging.WARNING
+    _repeat_messages = []
+
+    @staticmethod
+    def set_kill_level(level=None):
+        """
+        Allow system to change the level at which a log is changed to an
+        Exception
+
+        Static so effects all log messages
+        :param level:
+        :return:
+        """
+        if level is None:
+            FormatAdapter.__kill_level = logging.CRITICAL + 1
+        else:
+            FormatAdapter.__kill_level = level
 
     def __init__(self, logger, extra=None):
         if extra is None:
@@ -188,12 +229,17 @@ class FormatAdapter(logging.LoggerAdapter):
             transformations to allow the log message to be written using\
             Python format string, rather than via `%`-substitutions.
         """
+        if level >= FormatAdapter.__kill_level:
+            raise LogLevelTooHighException(_BraceMessage(msg, args, kwargs))
+        message = _BraceMessage(msg, args, kwargs)
+        if level >= FormatAdapter._repeat_at_end:
+            FormatAdapter._repeat_messages.append((message))
         if self.isEnabledFor(level):
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
                 log_kwargs["exc_info"] = kwargs["exc_info"]
             self.do_log(
-                level, _BraceMessage(msg, args, kwargs), (), **log_kwargs)
+                level, message, (), **log_kwargs)
 
     @overrides(logging.LoggerAdapter.process, extend_doc=False)
     def process(self, msg, kwargs):
@@ -208,3 +254,4 @@ class FormatAdapter(logging.LoggerAdapter):
             key: kwargs[key]
             for key in getfullargspec(self.do_log).args[1:]
             if key in kwargs}
+

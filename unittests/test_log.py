@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from spinn_utilities.log import FormatAdapter
+from spinn_utilities.log import FormatAdapter, LogLevelTooHighException
 
 
 class MockLog(object):
@@ -64,6 +64,14 @@ def test_logger_adapter():
     logger.critical("bar")
     assert str(log.last_msg) == "bar"
     assert log.last_level == logging.CRITICAL
+    logger.set_kill_level(logging.CRITICAL)
+    try:
+        logger.critical("This is too high")
+        assert False
+    except LogLevelTooHighException:
+        pass
+    logger.set_kill_level()
+    logger.critical("Should be ok now")
 
 
 def test_logger_exception():

@@ -149,18 +149,6 @@ class LogLevelTooHighException(Exception):
     """
 
 
-@atexit.register
-def repeat_messages():
-    if len(FormatAdapter._repeat_messages) > 0:
-        level = logging.getLevelName(FormatAdapter._repeat_at_end)
-        print("\nThese log messages where generated at level {} or above"
-              "".format(level), file=sys.stderr)
-    for message in FormatAdapter._repeat_messages:
-        print(message, file=sys.stderr)
-    # to allow this to be used in testing
-    FormatAdapter._repeat_messages = []
-
-
 class FormatAdapter(logging.LoggerAdapter):
     """ An adaptor for logging with messages that uses Python format strings.
 
@@ -171,8 +159,8 @@ class FormatAdapter(logging.LoggerAdapter):
         # --> INFO: this message has 123 inside itself
     """
     __kill_level = logging.CRITICAL + 1
-    _repeat_at_end = logging.WARNING
-    _repeat_messages = []
+    __repeat_at_end = logging.WARNING
+    __repeat_messages = []
 
     @staticmethod
     def set_kill_level(level=None):
@@ -232,8 +220,8 @@ class FormatAdapter(logging.LoggerAdapter):
         if level >= FormatAdapter.__kill_level:
             raise LogLevelTooHighException(_BraceMessage(msg, args, kwargs))
         message = _BraceMessage(msg, args, kwargs)
-        if level >= FormatAdapter._repeat_at_end:
-            FormatAdapter._repeat_messages.append((message))
+        if level >= FormatAdapter.__repeat_at_end:
+            FormatAdapter.__repeat_messages.append((message))
         if self.isEnabledFor(level):
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
@@ -254,3 +242,29 @@ class FormatAdapter(logging.LoggerAdapter):
             key: kwargs[key]
             for key in getfullargspec(self.do_log).args[1:]
             if key in kwargs}
+
+    @classmethod
+    def _atexit_handler(cls):
+        messages = cls._repeat_log()
+        if messages:
+            level = logging.getLevelName(cls.__repeat_at_end)
+            print("\nThese log messages where generated at level {} or above"
+                  "".format(level), file=sys.stderr)
+            for message in messages:
+                print(message, file=sys.stderr)
+
+    @classmethod
+    def _repeat_log(cls):
+        """ Returns the log of messages to print on exit and \
+        *clears that log*.
+
+        .. note::
+            Should only be called externally from test code!
+        """
+        try:
+            return cls.__repeat_messages
+        finally:
+            cls.__repeat_messages = []
+
+
+atexit.register(FormatAdapter._atexit_handler)

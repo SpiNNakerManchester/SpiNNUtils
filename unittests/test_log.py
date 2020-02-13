@@ -72,6 +72,7 @@ def test_logger_adapter():
         pass
     logger.set_kill_level()
     logger.critical("Should be ok now")
+    assert len(logger._repeat_log()) == 4
 
 
 def test_logger_exception():
@@ -91,3 +92,4 @@ def test_logger_exception():
     assert str(log.last_msg) == "ho"
     assert "exc_info" in log.last_kwargs
     assert log.last_level == logging.ERROR
+    assert len(logger._repeat_log()) == 1

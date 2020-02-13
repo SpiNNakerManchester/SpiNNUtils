@@ -48,6 +48,7 @@ class MockLog(object):
 def test_logger_adapter():
     log = MockLog()
     logger = FormatAdapter(log)
+    logger._repeat_log()  # clear the log
     logger.debug("Debug {}", "debug")
     assert log.last_level is None
     logger.info("Info {}", "info")
@@ -78,6 +79,7 @@ def test_logger_adapter():
 def test_logger_exception():
     log = MockLog()
     logger = FormatAdapter(log)
+    logger._repeat_log()  # clear the log
 
     class Exn(Exception):
         pass

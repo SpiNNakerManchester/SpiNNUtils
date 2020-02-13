@@ -21,9 +21,9 @@ import sys
 from six import string_types
 
 if sys.version_info >= (3, 5):
-    from math import gcd as gcd_2_values  # pylint: disable=no-name-in-module
+    from math import gcd as _gcd  # pylint: disable=no-name-in-module
 else:
-    from fractions import gcd as gcd_2_values  # noqa: ignore=W1505
+    from fractions import gcd as _gcd  # noqa: ignore=W1505
 
 logger = logging.getLogger(__name__)
 FINISHED_FILENAME = "finished"
@@ -57,7 +57,7 @@ def is_singleton(value):
 
 
 def _lcm(a, b):
-    return (a * b) // gcd_2_values(a, b)  # noqa: ignore=W1505 # pylint: disable=deprecated-method
+    return (a * b) // _gcd(a, b)  # noqa: ignore=W1505 # pylint: disable=deprecated-method
 
 
 def lcm(*numbers):
@@ -101,7 +101,7 @@ def gcd(*numbers):
     """
     if len(numbers) == 1:
         try:
-            return reduce(gcd_2_values, iter(numbers[0]))
+            return reduce(_gcd, iter(numbers[0]))
         except TypeError:
             return numbers[0]
-    return reduce(gcd_2_values, numbers)
+    return reduce(_gcd, numbers)

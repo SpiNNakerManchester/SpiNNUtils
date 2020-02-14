@@ -18,11 +18,52 @@ import logging
 import sys
 import math
 import os
+from collections import defaultdict
+from datetime import date
+import random
+
 from spinn_utilities.overrides import overrides
 from spinn_utilities import logger_utils
+import spinn_utilities
 
 logger = logging.getLogger(__name__)
 
+# verify that its either april fools or capocaccia or valantines day
+today = date.today()
+date_in_string_format = today.strftime("%B %d")
+DATES_TO_PLAY_WITH = [
+    "April 1", "February 14", "April 27", "April 28", "April 29", "April 30",
+    "May 1", "May 2", "May 3", "May 4", "May 5", "May 6", "May 7", "May 8",
+    "May 9", "May 10"]
+TIME_TO_PLAY = date_in_string_format in DATES_TO_PLAY_WITH
+
+# read in the songs once for performance reasons
+CHAR_FILE = "bacon.txt"
+line_no = 0
+song_id = 0
+step_characters = defaultdict(list)
+reader = open(os.path.join(
+            os.path.dirname(os.path.realpath(spinn_utilities.__file__)),
+            CHAR_FILE))
+lines = reader.readlines()
+
+# allow the losing of the distance as well
+replace_distance = lines[0] == "True\n"
+
+# turn into array of songs
+for line in lines[1:-1]:
+    bits = line.split(":")
+    step_characters[int(bits[0])].append(bits[1])
+
+# clean up lines so that spaces are still visible
+for song_id in step_characters:
+    for line_no in range(0, len(step_characters[song_id])):
+        step_characters[song_id][line_no] = (
+            step_characters[song_id][line_no].replace(" ", "_"))
+
+# reset trackers for start of the first progress bar
+song_id = random.randint(1, len(step_characters))
+line_no = 0
 
 class ProgressBar(object):
     """ Progress bar for telling the user where a task is up to
@@ -35,7 +76,7 @@ class ProgressBar(object):
     __slots__ = (
         "_number_of_things", "_currently_completed", "_destination",
         "_chars_per_thing", "_chars_done", "_string",
-        "_step_character", "_end_character", "_in_bad_terminal"
+        "_step_character", "_end_character", "_in_bad_terminal",
     )
 
     def __init__(self, total_number_of_things_to_do,
@@ -95,11 +136,16 @@ class ProgressBar(object):
         second_space = mid_point - 5
 
         # Print the progress bar itself
-        print(
-            "{}0%{}50%{}100%{}".format(
-                self._end_character, " " * first_space,
-                " " * second_space, self._end_character),
-            end="", file=self._destination)
+        if TIME_TO_PLAY and replace_distance:
+            print(step_characters[song_id][line_no], end="",
+                  file=self._destination)
+            self._set_song_line()
+        else:
+            print(
+                "{}0%{}50%{}100%{}".format(
+                    self._end_character, " " * first_space,
+                    " " * second_space, self._end_character),
+                end="", file=self._destination)
         if self._in_bad_terminal:
             print("", file=self._destination)
             print(" ", end="", file=self._destination)
@@ -110,16 +156,43 @@ class ProgressBar(object):
             self._print_overwritten_line(self._end_character)
         else:
             chars_to_print = length - self._chars_done
+
         for _ in range(int(chars_to_print)):
-            print(self._step_character, end='', file=self._destination)
+            if TIME_TO_PLAY:
+                if not self._in_bad_terminal:
+                    print(step_characters[song_id][line_no][
+                          0:self._chars_done + chars_to_print])
+                else:
+                    print(step_characters[song_id][line_no][
+                          self._chars_done:self._chars_done + 1],
+                          end='', file=self._destination)
+                    self._chars_done += 1
+            else:
+                print(self._step_character, end='', file=self._destination)
         self._destination.flush()
 
     def _print_progress_done(self):
         self._print_progress(ProgressBar.MAX_LENGTH_IN_CHARS)
         if not self._in_bad_terminal:
+            # nothing to see here
+            if TIME_TO_PLAY:
+                self._print_overwritten_line(self._end_character)
+                for _ in range(self.MAX_LENGTH_IN_CHARS):
+                    print(self._step_character, end='', file=self._destination)
             print(self._end_character, file=self._destination)
         else:
             print("", file=self._destination)
+        if TIME_TO_PLAY:
+            self._set_song_line()
+
+    def _set_song_line(self):
+        global line_no
+        global song_id
+        if line_no + 1 >= len(step_characters[song_id]):
+            song_id = random.randint(1, len(step_characters))
+            line_no = 0
+        else:
+            line_no += 1
 
     def _create_initial_progress_bar(self, description):
         if self._number_of_things == 0:

@@ -62,12 +62,12 @@ try:
         for line_no in range(0, len(step_characters[song_id])):
             step_characters[song_id][line_no] = (
                 step_characters[song_id][line_no].replace(" ", "_"))
+
+    # reset trackers for start of the first progress bar
+    song_id = random.randint(1, len(step_characters))
+    line_no = 0
 except IOError:
     TIME_TO_PLAY = False
-
-# reset trackers for start of the first progress bar
-song_id = random.randint(1, len(step_characters))
-line_no = 0
 
 
 class ProgressBar(object):

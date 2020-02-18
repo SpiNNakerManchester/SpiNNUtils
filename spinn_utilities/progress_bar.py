@@ -48,10 +48,11 @@ reader = open(os.path.join(
 lines = reader.readlines()
 
 # allow the losing of the distance as well
-replace_distance = lines[0] == "True\n"
+LICENSE_LINES = 14
+replace_distance = lines[LICENSE_LINES] == "True\n"
 
 # turn into array of songs
-for line in lines[1:-1]:
+for line in lines[LICENSE_LINES + 1:-1]:
     bits = line.split(":")
     step_characters[int(bits[0])].append(bits[1])
 

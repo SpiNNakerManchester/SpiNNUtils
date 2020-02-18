@@ -65,6 +65,7 @@ for song_id in step_characters:
 song_id = random.randint(1, len(step_characters))
 line_no = 0
 
+
 class ProgressBar(object):
     """ Progress bar for telling the user where a task is up to
     """

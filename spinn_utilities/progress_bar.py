@@ -42,25 +42,28 @@ CHAR_FILE = "bacon.txt"
 line_no = 0
 song_id = 0
 step_characters = defaultdict(list)
-reader = open(os.path.join(
-            os.path.dirname(os.path.realpath(spinn_utilities.__file__)),
-            CHAR_FILE))
-lines = reader.readlines()
+bacon_path = os.path.join(
+    os.path.dirname(os.path.realpath(spinn_utilities.__file__)), CHAR_FILE)
+try:
+    reader = open(bacon_path)
+    lines = reader.readlines()
 
-# allow the losing of the distance as well
-LICENSE_LINES = 14
-replace_distance = lines[LICENSE_LINES] == "True\n"
+    # allow the losing of the distance as well
+    LICENSE_LINES = 14
+    replace_distance = lines[LICENSE_LINES] == "True\n"
 
-# turn into array of songs
-for line in lines[LICENSE_LINES + 1:-1]:
-    bits = line.split(":")
-    step_characters[int(bits[0])].append(bits[1])
+    # turn into array of songs
+    for line in lines[LICENSE_LINES + 1:-1]:
+        bits = line.split(":")
+        step_characters[int(bits[0])].append(bits[1])
 
-# clean up lines so that spaces are still visible
-for song_id in step_characters:
-    for line_no in range(0, len(step_characters[song_id])):
-        step_characters[song_id][line_no] = (
-            step_characters[song_id][line_no].replace(" ", "_"))
+    # clean up lines so that spaces are still visible
+    for song_id in step_characters:
+        for line_no in range(0, len(step_characters[song_id])):
+            step_characters[song_id][line_no] = (
+                step_characters[song_id][line_no].replace(" ", "_"))
+except IOError:
+    TIME_TO_PLAY = False
 
 # reset trackers for start of the first progress bar
 song_id = random.randint(1, len(step_characters))

@@ -17,8 +17,8 @@ import sys
 
 if sys.version_info >= (3, 7):
     # acquire the most accurate measurement available (perf_counter_ns)
-    from time import perf_counter_ns as \
-        now  # pylint: disable=no-name-in-module
+    from time import \
+        perf_counter_ns as now  # pylint: disable=no-name-in-module
 
     # have to convert to a timedelta for rest of code to read
     from datetime import timedelta  # pylint: disable=no-name-in-module

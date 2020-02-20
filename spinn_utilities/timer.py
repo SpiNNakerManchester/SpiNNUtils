@@ -17,10 +17,11 @@ import sys
 
 if sys.version_info >= (3, 7):
     # acquire the most accurate measurement available (monotonic_ns)
-    from time import monotonic_ns as now # pylint: disable=no-name-in-module
+    from time import monotonic_ns as now  # pylint: disable=no-name-in-module
 
     # have to convert to a timedelta for rest of code to read
-    from future.backports.datetime import timedelta # pylint: disable=no-name-in-module
+    from future.backports.datetime import \
+        timedelta  # pylint: disable=no-name-in-module
 
     # conversion factor
     NANO_TO_MICRO = 1000.0
@@ -31,10 +32,11 @@ if sys.version_info >= (3, 7):
         return timedelta(microseconds=time_diff / NANO_TO_MICRO)
 elif sys.version_info >= (3, 3):
     # acquire the most accurate measurement available (monotonic)
-    from time import monotonic as now # pylint: disable=no-name-in-module
+    from time import monotonic as now  # pylint: disable=no-name-in-module
 
     # have to convert to a timedelta for rest of code to read
-    from future.backports.datetime import timedelta # pylint: disable=no-name-in-module
+    from future.backports.datetime import \
+        timedelta  # pylint: disable=no-name-in-module
 
     # as montonic is fractional seconds, put into correct time delta
     def convert_to_timedelta(time_diff):

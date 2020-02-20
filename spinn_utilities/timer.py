@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 
-
+# pylint: disable=no-name-in-module
 if sys.version_info >= (3, 7):
     # acquire the most accurate measurement available (monotonic_ns)
     from time import monotonic_ns as now

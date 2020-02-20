@@ -16,7 +16,7 @@ import sys
 
 
 if sys.version_info >= (3, 7):
-    # acquire the most accurate measurement available (monotonic_ns)
+    # acquire the most accurate measurement available (perf_counter_ns)
     from time import perf_counter_ns as now  # pylint: disable=no-name-in-module
 
     # have to convert to a timedelta for rest of code to read
@@ -25,18 +25,18 @@ if sys.version_info >= (3, 7):
     # conversion factor
     NANO_TO_MICRO = 1000.0
 
-    # as montonic_ns is nano seconds, and time delta lowest is micro,
+    # as perf_counter_ns is nano seconds, and time delta lowest is micro,
     # need to convert
     def convert_to_timedelta(time_diff):
         return timedelta(microseconds=time_diff / NANO_TO_MICRO)
 
 elif sys.version_info >= (3, 3):
-    # acquire the most accurate measurement available (monotonic)
+    # acquire the most accurate measurement available (perf_counter)
     from time import perf_counter as now  # pylint: disable=no-name-in-module
     from datetime import timedelta  # pylint: disable=no-name-in-module
     # have to convert to a timedelta for rest of code to read
 
-    # as montonic is fractional seconds, put into correct time delta
+    # as perf_counter is fractional seconds, put into correct time delta
     def convert_to_timedelta(time_diff):
         return timedelta(seconds=time_diff)
 

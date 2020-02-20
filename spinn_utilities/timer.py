@@ -12,8 +12,42 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import sys
 
-import datetime
+
+if sys.version_info >= (3, 7):
+    # acquire the most accurate measurement available (monotonic_ns)
+    from time import monotonic_ns as now
+
+    # have to convert to a timedelta for rest of code to read
+    from future.backports.datetime import timedelta
+
+    # conversion factor
+    NANO_TO_MICRO = 1000.0
+
+    # as montonic_ns is nano seconds, and time delta lowest is micro,
+    # need to convert
+    def convert_to_timedelta(time_diff):
+        return timedelta(microseconds=time_diff / NANO_TO_MICRO)
+elif sys.version_info >= (3, 3):
+    # acquire the most accurate measurement available (monotonic)
+    from time import monotonic as now
+
+    # have to convert to a timedelta for rest of code to read
+    from future.backports.datetime import timedelta
+
+    # as montonic is fractional seconds, put into correct time delta
+    def convert_to_timedelta(time_diff):
+        return timedelta(seconds=time_diff)
+
+else:
+    # acquire the most accurate measurement available (datetime)
+    import datetime
+    now = datetime.datetime.now
+
+    # as diff of 2 datetime are a timedelta, just return the timedelta
+    def convert_to_timedelta(diff):
+        return diff
 
 
 class Timer(object):
@@ -52,7 +86,7 @@ class Timer(object):
     def start_timing(self):
         """ Start the timing. Use :py:meth:`take_sample` to get the end.
         """
-        self._start_time = datetime.datetime.now()
+        self._start_time = now()
 
     def take_sample(self):
         """ Describes how long has elapsed since the instance that the\
@@ -60,9 +94,9 @@ class Timer(object):
 
         :rtype: datetime.timedelta
         """
-        time_now = datetime.datetime.now()
+        time_now = now()
         diff = time_now - self._start_time
-        return diff
+        return convert_to_timedelta(diff)
 
     def __enter__(self):
         self.start_timing()

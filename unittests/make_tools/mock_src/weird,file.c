@@ -117,4 +117,9 @@ static String woops = "log_info(";
         *coverage[i]->bit_field_addresses[bf_index],
         region_addresses));
 
+    log_info("1:%u 2:%u 3:%u 4:%u 5:%u 6:%u 7:%u 8:%u 9:%u 10:%u"
+             "11:%u 12:%u 13:%u 14:%u 15:%u 16:%u 17:%u 18:%u 19:%u 20:%u",
+              1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+              11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
+
     the end

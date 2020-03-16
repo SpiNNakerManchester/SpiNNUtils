@@ -14,9 +14,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
+import inspect
 import os
 import sys
 import traceback
+from spinn_utilities.abstract_base import AbstractBase
 
 
 def all_modules(directory, prefix, remove_pyc_files=False):
@@ -84,6 +86,27 @@ def load_modules(
         print(module)
         try:
             __import__(module)
+            for name, obj in inspect.getmembers(sys.modules[module]):
+                if inspect.isclass(obj):
+                    if obj.__module__ != module:
+                        #print("other")
+                        continue
+                    print("   ", name, obj)
+                    if type(obj) == AbstractBase:
+                        print ("*****AbstractBase")
+                        continue
+                    constructor = getattr(obj, "__new__")
+                    #params = constructor.parameters
+                    params = inspect.getfullargspec(constructor)
+                    print("         ", params[0])
+                    if params[0] != ['type']:
+                        print("Wierd")
+                        continue
+                    instance = constructor(obj)  #if constructor is object.__new__ else constructor(obj)
+                    print("OK")
+
+
+
         except Exception:  # pylint: disable=broad-except
             if gather_errors:
                 errors.append((module, sys.exc_info()))
@@ -121,4 +144,4 @@ def load_module(
 
 
 if __name__ == '__main__':  # pragma: no cover
-    load_module("spinn_utilities", True)
+    load_module("spinn_utilities", True, gather_errors=False)

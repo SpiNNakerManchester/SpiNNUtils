@@ -20,8 +20,6 @@ try:
 except ImportError:
     # Python 2.7 hack
     from inspect import getargspec as getfullargspec
-
-
 from .overrides import overrides
 from six import PY2
 
@@ -169,9 +167,11 @@ class FormatAdapter(logging.LoggerAdapter):
         def error(self, msg, *args, **kwargs):
             self.log(logging.ERROR, msg, *args, **kwargs)
 
+        # pylint: disable=arguments-differ
         @overrides(logging.LoggerAdapter.exception)
         def exception(self, msg, *args, **kwargs):
-            kwargs["exc_info"] = 1
+            if "exc_info" not in kwargs:
+                kwargs["exc_info"] = True
             self.log(logging.ERROR, msg, *args, **kwargs)
 
         @overrides(logging.LoggerAdapter.info)
@@ -203,6 +203,7 @@ class FormatAdapter(logging.LoggerAdapter):
             Return the message and *kwargs* modified (or not) to suit your\
             needs.
         """
+        # pylint: disable=deprecated-method
         return msg, {
             key: kwargs[key]
             for key in getfullargspec(self.do_log).args[1:]

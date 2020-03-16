@@ -67,13 +67,13 @@ class Replacer(object):
                     else:
                         replacement = parts[i]
                     replaced = replaced.replace(match, replacement, 1)
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 return short
 
         return preface + replaced
 
-    def hex_to_float(self, hex):
-        return struct.unpack('!f', struct.pack("!I", int(hex, 16)))[0]
+    def hex_to_float(self, hex_str):
+        return struct.unpack('!f', struct.pack("!I", int(hex_str, 16)))[0]
 
     def hexes_to_double(self, upper, lower):
         return struct.unpack(

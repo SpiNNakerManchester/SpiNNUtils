@@ -158,11 +158,11 @@ class Converter(object):
 
 
 if __name__ == '__main__':
-    src = sys.argv[1]
-    dest = sys.argv[2]
-    dict_file = sys.argv[3]
+    _src = sys.argv[1]
+    _dest = sys.argv[2]
+    _dict_file = sys.argv[3]
     if len(sys.argv) > 4:
-        new_dict = bool(sys.argv[3])
+        _new_dict = bool(sys.argv[3])
     else:
-        new_dict = False
-    Converter.convert(src, dest, dict_file, new_dict)
+        _new_dict = False
+    Converter.convert(_src, _dest, _dict_file, _new_dict)

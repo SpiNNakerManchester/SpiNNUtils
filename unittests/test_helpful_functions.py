@@ -15,7 +15,7 @@
 
 import unittests
 from spinn_utilities.helpful_functions import (
-    get_valid_components, is_singleton)
+    get_valid_components, is_singleton, gcd, lcm)
 
 
 def test_is_singleton():
@@ -40,6 +40,32 @@ def test_get_valid_components():
     assert d['a'] == a_c
     assert d['a_b'] == a_b
     assert d['b'] == b_c
+
+
+def test_gcd():
+    assert gcd(2) == 2
+    assert gcd(30, 40) == 10
+    assert gcd(120, 40, 60) == 20
+    a = [2, 3, 4]
+    assert gcd(a) == 1
+    b = set([1000, 500, 1500])
+    assert gcd(b) == 500
+    c = [34]
+    assert gcd(c) == 34
+
+
+def test_lcm():
+    assert lcm(2) == 2
+    assert lcm(30, 40) == 120
+    assert lcm(120, 40, 60) == 120
+    assert lcm() == 1
+    assert lcm([]) == 1
+    a = [2, 3, 4]
+    assert lcm(a) == 12
+    b = set([1000, 500, 1500])
+    assert lcm(b) == 3000
+    c = [34]
+    assert lcm(c) == 34
 
 
 # Support class for test_get_valid_components

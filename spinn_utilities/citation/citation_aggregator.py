@@ -98,6 +98,7 @@ class CitationAggregator(object):
                         continue
                     if module not in modules_seen_so_far:
                         import_name = pypi_to_import_map.get(module, module)
+                        #  pylint: disable=broad-except
                         try:
                             imported_module = importlib.import_module(
                                 import_name)

@@ -16,11 +16,11 @@
 import sys
 
 if sys.version_info >= (3, 6):
+    # pylint: disable=import-error, no-name-in-module
     from collections.abc import MutableSet
     from collections import OrderedDict
-
 else:
-    from collections import MutableSet
+    from collections import MutableSet  # pylint: disable=no-name-in-module
 
     # Only need Node if we dont have an ordered dict
     class _Node(object):
@@ -55,10 +55,12 @@ else:
 
 
 class OrderedSet(MutableSet):
-    if sys.version_info >= (3, 6):
+    __slots__ = (
+        "_end", "_map"
+    )
 
+    if sys.version_info >= (3, 6):
         # Depend on an ordered dict
-        __slots__ = ("_map")
 
         def __init__(self, iterable=None):
             # Always use OrderedDict as plain dict does not support
@@ -92,11 +94,7 @@ class OrderedSet(MutableSet):
                 return next(self)
 
     else:  # if sys.version_info >= (3, 6):
-
         # As Python 2.7 does not have an order dict we need a linked list
-        __slots__ = (
-            "_end", "_map"
-        )
 
         def __init__(self, iterable=None):
             # sentinel node for doubly linked list

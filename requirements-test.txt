@@ -22,4 +22,4 @@ testfixtures
 Sphinx==1.5.3
 pyyaml
 requests
-httpretty
+httpretty != 1.0.0

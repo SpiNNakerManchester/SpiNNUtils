@@ -18,7 +18,6 @@ import atexit
 import logging
 import re
 import sys
-
 try:
     from inspect import getfullargspec
 except ImportError:
@@ -27,7 +26,7 @@ except ImportError:
 from .overrides import overrides
 from six import PY2
 
-levels = {
+_LEVELS = {
     'debug': logging.DEBUG,
     'info': logging.INFO,
     'warning': logging.WARNING,
@@ -44,7 +43,7 @@ class ConfiguredFilter(object):
 
     def __init__(self, conf):
         self._levels = ConfiguredFormatter.construct_logging_parents(conf)
-        self._default_level = levels[conf.get("Logging", "default")]
+        self._default_level = _LEVELS[conf.get("Logging", "default")]
 
     def filter(self, record):
         """ Get the level for the deepest parent, and filter appropriately.
@@ -65,15 +64,12 @@ class ConfiguredFormatter(logging.Formatter):
     __last_component = re.compile(r'\.[^.]+$')
 
     def __init__(self, conf):
-        level = conf.get("Logging", "default")
-        if level == "debug":
-            super(ConfiguredFormatter, self).__init__(
-                fmt="%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s",
-                datefmt="%Y-%m-%d %H:%M:%S")
+        if conf.get("Logging", "default") == "debug":
+            fmt = "%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s"
         else:
-            super(ConfiguredFormatter, self).__init__(
-                fmt="%(asctime)-15s %(levelname)s: %(message)s",
-                datefmt="%Y-%m-%d %H:%M:%S")
+            fmt = "%(asctime)-15s %(levelname)s: %(message)s"
+        super(ConfiguredFormatter, self).__init__(
+            fmt=fmt, datefmt="%Y-%m-%d %H:%M:%S")
 
     @staticmethod
     def construct_logging_parents(conf):
@@ -86,7 +82,7 @@ class ConfiguredFormatter(logging.Formatter):
         if not conf.has_section("Logging"):
             return _levels
 
-        for label, level in levels.items():
+        for label, level in _LEVELS.items():
             if conf.has_option("Logging", label):
                 modules = [s.strip() for s in
                            conf.get('Logging', label).split(',')]
@@ -162,20 +158,21 @@ class FormatAdapter(logging.LoggerAdapter):
     __repeat_at_end = logging.WARNING
     __repeat_messages = []
 
-    @staticmethod
-    def set_kill_level(level=None):
+    @classmethod
+    def set_kill_level(cls, level=None):
         """
         Allow system to change the level at which a log is changed to an
         Exception
 
         Static so effects all log messages
-        :param level:
-        :return:
+
+        :param int level:
+            The level to set. The values in :py:mod:`logging` are recommended.
         """
         if level is None:
-            FormatAdapter.__kill_level = logging.CRITICAL + 1
+            cls.__kill_level = logging.CRITICAL + 1
         else:
-            FormatAdapter.__kill_level = level
+            cls.__kill_level = level
 
     def __init__(self, logger, extra=None):
         if extra is None:

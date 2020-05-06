@@ -73,9 +73,8 @@ class ExecutableFinder(object):
                 return potential_filename
 
         # No executable found
-        raise FailedToFindBinaryException(
-            "failed to locate binary for {}. Fix and try again".format(
-                executable_name))
+        raise KeyError("Executable {} not found in path".format(
+            executable_name))
 
     def get_executable_paths(self, executable_names):
         """ Finds each executables within the set of folders.\

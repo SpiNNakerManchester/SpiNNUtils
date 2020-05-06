@@ -14,10 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from spinn_utilities.executable_finder import ExecutableFinder
-
 import pytest
-
-from spinn_utilities.exceptions import FailedToFindBinaryException
 
 
 def test_create_and_config(tmpdir):
@@ -32,7 +29,7 @@ def test_create_and_config(tmpdir):
 
 def test_find_in_no_places():
     ef = ExecutableFinder([])
-    with pytest.raises(FailedToFindBinaryException):
+    with pytest.raises(KeyError):
         ef.get_executable_path("abc.aplx")
 
 
@@ -59,7 +56,7 @@ def test_find_in_two_places(tmpdir):
     w2.remove()
     assert ef.get_executable_path("abc.aplx") == str(w1)
     w1.remove()
-    with pytest.raises(FailedToFindBinaryException):
+    with pytest.raises(KeyError):
         ef.get_executable_path("abc.aplx")
 
 

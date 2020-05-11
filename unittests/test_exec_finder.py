@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from spinn_utilities.executable_finder import ExecutableFinder
+import pytest
 
 
 def test_create_and_config(tmpdir):
@@ -28,7 +29,8 @@ def test_create_and_config(tmpdir):
 
 def test_find_in_no_places():
     ef = ExecutableFinder([])
-    assert ef.get_executable_path("abc.aplx") is None
+    with pytest.raises(KeyError):
+        ef.get_executable_path("abc.aplx")
 
 
 def test_find_in_one_place(tmpdir):
@@ -54,7 +56,8 @@ def test_find_in_two_places(tmpdir):
     w2.remove()
     assert ef.get_executable_path("abc.aplx") == str(w1)
     w1.remove()
-    assert ef.get_executable_path("abc.aplx") is None
+    with pytest.raises(KeyError):
+        ef.get_executable_path("abc.aplx")
 
 
 def test_find_no_duplicates(tmpdir):

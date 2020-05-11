@@ -13,8 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+import atexit
 import logging
 import re
+import sys
 try:
     from inspect import getfullargspec
 except ImportError:
@@ -23,7 +26,7 @@ except ImportError:
 from .overrides import overrides
 from six import PY2
 
-levels = {
+_LEVELS = {
     'debug': logging.DEBUG,
     'info': logging.INFO,
     'warning': logging.WARNING,
@@ -40,7 +43,7 @@ class ConfiguredFilter(object):
 
     def __init__(self, conf):
         self._levels = ConfiguredFormatter.construct_logging_parents(conf)
-        self._default_level = levels[conf.get("Logging", "default")]
+        self._default_level = _LEVELS[conf.get("Logging", "default")]
 
     def filter(self, record):
         """ Get the level for the deepest parent, and filter appropriately.
@@ -61,15 +64,12 @@ class ConfiguredFormatter(logging.Formatter):
     __last_component = re.compile(r'\.[^.]+$')
 
     def __init__(self, conf):
-        level = conf.get("Logging", "default")
-        if level == "debug":
-            super(ConfiguredFormatter, self).__init__(
-                fmt="%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s",
-                datefmt="%Y-%m-%d %H:%M:%S")
+        if conf.get("Logging", "default") == "debug":
+            fmt = "%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s"
         else:
-            super(ConfiguredFormatter, self).__init__(
-                fmt="%(asctime)-15s %(levelname)s: %(message)s",
-                datefmt="%Y-%m-%d %H:%M:%S")
+            fmt = "%(asctime)-15s %(levelname)s: %(message)s"
+        super(ConfiguredFormatter, self).__init__(
+            fmt=fmt, datefmt="%Y-%m-%d %H:%M:%S")
 
     @staticmethod
     def construct_logging_parents(conf):
@@ -82,7 +82,7 @@ class ConfiguredFormatter(logging.Formatter):
         if not conf.has_section("Logging"):
             return _levels
 
-        for label, level in levels.items():
+        for label, level in _LEVELS.items():
             if conf.has_option("Logging", label):
                 modules = [s.strip() for s in
                            conf.get('Logging', label).split(',')]
@@ -138,6 +138,13 @@ class _BraceMessage(object):
         return str(self.fmt).format(*self.args, **self.kwargs)
 
 
+class LogLevelTooHighException(Exception):
+    """
+    An Exception throw when the System tries to log at a level where an
+    Exception is a better option.
+    """
+
+
 class FormatAdapter(logging.LoggerAdapter):
     """ An adaptor for logging with messages that uses Python format strings.
 
@@ -147,6 +154,25 @@ class FormatAdapter(logging.LoggerAdapter):
         log.info("this message has {} inside {}", 123, 'itself')
         # --> INFO: this message has 123 inside itself
     """
+    __kill_level = logging.CRITICAL + 1
+    __repeat_at_end = logging.WARNING
+    __repeat_messages = []
+
+    @classmethod
+    def set_kill_level(cls, level=None):
+        """
+        Allow system to change the level at which a log is changed to an
+        Exception
+
+        Static so effects all log messages
+
+        :param int level:
+            The level to set. The values in :py:mod:`logging` are recommended.
+        """
+        if level is None:
+            cls.__kill_level = logging.CRITICAL + 1
+        else:
+            cls.__kill_level = level
 
     def __init__(self, logger, extra=None):
         if extra is None:
@@ -188,12 +214,17 @@ class FormatAdapter(logging.LoggerAdapter):
             transformations to allow the log message to be written using\
             Python format string, rather than via `%`-substitutions.
         """
+        if level >= FormatAdapter.__kill_level:
+            raise LogLevelTooHighException(_BraceMessage(msg, args, kwargs))
+        message = _BraceMessage(msg, args, kwargs)
+        if level >= FormatAdapter.__repeat_at_end:
+            FormatAdapter.__repeat_messages.append((message))
         if self.isEnabledFor(level):
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
                 log_kwargs["exc_info"] = kwargs["exc_info"]
             self.do_log(
-                level, _BraceMessage(msg, args, kwargs), (), **log_kwargs)
+                level, message, (), **log_kwargs)
 
     @overrides(logging.LoggerAdapter.process, extend_doc=False)
     def process(self, msg, kwargs):
@@ -208,3 +239,29 @@ class FormatAdapter(logging.LoggerAdapter):
             key: kwargs[key]
             for key in getfullargspec(self.do_log).args[1:]
             if key in kwargs}
+
+    @classmethod
+    def _atexit_handler(cls):
+        messages = cls._repeat_log()
+        if messages:
+            level = logging.getLevelName(cls.__repeat_at_end)
+            print("\nThese log messages where generated at level {} or above"
+                  "".format(level), file=sys.stderr)
+            for message in messages:
+                print(message, file=sys.stderr)
+
+    @classmethod
+    def _repeat_log(cls):
+        """ Returns the log of messages to print on exit and \
+        *clears that log*.
+
+        .. note::
+            Should only be called externally from test code!
+        """
+        try:
+            return cls.__repeat_messages
+        finally:
+            cls.__repeat_messages = []
+
+
+atexit.register(FormatAdapter._atexit_handler)

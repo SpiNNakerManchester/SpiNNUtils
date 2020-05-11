@@ -72,10 +72,12 @@ class Replacer(object):
 
         return preface + replaced
 
-    def hex_to_float(self, hex_str):
+    @staticmethod
+    def hex_to_float(hex_str):
         return struct.unpack('!f', struct.pack("!I", int(hex_str, 16)))[0]
 
-    def hexes_to_double(self, upper, lower):
+    @staticmethod
+    def hexes_to_double(upper, lower):
         return struct.unpack(
             '!d',
             struct.pack("!I", int(upper, 16)) +

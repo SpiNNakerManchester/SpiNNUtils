@@ -29,9 +29,10 @@ class TestConverter(unittest.TestCase):
         os.chdir(path)
         converter.RANGE_DIR = ""
 
-    def _max_id(self, dict):
+    @staticmethod
+    def _max_id(dict_file):
         max_id = 0
-        with open(dict, 'r') as dict_f:
+        with open(dict_file, 'r') as dict_f:
             for line in dict_f:
                 parts = line.strip().split(",", 2)
                 if len(parts) == 3 and parts[0].isdigit():
@@ -59,8 +60,8 @@ class TestConverter(unittest.TestCase):
     def test_replace(self):
         src = "mock_src"
         dest = "modified_src"
-        dict = os.path.join("modified_src", "test.dict")
-        c = Converter(src, dest, dict, True)
+        dict_path = os.path.join("modified_src", "test.dict")
+        c = Converter(src, dest, dict_path, True)
         path = "/home/me/mock_src/FEC/c_common/fec/mock_src/"
         path = path.replace("/", os.path.sep)
         new_path = "/home/me/mock_src/FEC/c_common/fec/modified_src/"
@@ -81,7 +82,7 @@ class TestConverter(unittest.TestCase):
         c.run()
         weird_dir = os.path.join(dir_path, "foo", "bar", "gamma")
         os.chdir(weird_dir)
-        dict = os.path.join("bar", "test.dict")
-        c = Converter(src, dest, dict, True)
+        dict_path = os.path.join("bar", "test.dict")
+        c = Converter(src, dest, dict_path, True)
         c.run()
         os.chdir(cwd)

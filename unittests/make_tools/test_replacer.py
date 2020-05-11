@@ -54,7 +54,7 @@ class TestReplacer(unittest.TestCase):
 
     def test_hex_to_float(self):
         """
-        Test the convertor against hex values returned from Spinnaker
+        Test the converter against hex values returned from Spinnaker
 
         """
         replacer = Replacer(os.path.join(PATH, "test"))
@@ -80,7 +80,7 @@ class TestReplacer(unittest.TestCase):
 
     def test_hexes_to_double(self):
         """
-        Test the convertor against hexes values returned from Spinnaker
+        Test the converter against hexes values returned from Spinnaker
 
         """
         replacer = Replacer(os.path.join(PATH, "test"))

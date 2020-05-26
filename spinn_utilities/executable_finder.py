@@ -15,7 +15,6 @@
 
 import os
 
-from spinn_utilities.exceptions import FailedToFindBinaryException
 from .ordered_set import OrderedSet
 
 

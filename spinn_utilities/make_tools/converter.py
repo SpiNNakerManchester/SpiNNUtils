@@ -17,6 +17,7 @@ from .file_converter import FileConverter
 import datetime
 import os
 import sys
+from spinn_utilities.make_tools.make_utils import find_dict
 
 
 DICTIONARY_HEADER = "Id,Preface,Original\n" \
@@ -45,15 +46,13 @@ class Converter(object):
         # Part of source directory to take out when converting paths
         "_src_basename"]
 
-    def __init__(self, src, dest, dict_file, new_dict):
+    def __init__(self, src, dest, new_dict):
         """ Converts a whole directory including sub directories
 
         :param src: Full source directory
         :type src: str
         :param dest: Full destination directory
         :type dest: str
-        :param dict_file: Full path to dictionary file
-        :type dict_file: str
         :param new_dict: says if we should generate a new dict
         :type new_dict: bool
         """
@@ -71,7 +70,8 @@ class Converter(object):
             raise Exception("src and destination must be siblings")
         self._src_basename = src_basename
         self._dest_basename = dest_basename
-        self._dict = os.path.abspath(dict_file)
+        self._dict = find_dict()
+
         self._new_dict = new_dict
 
     def run(self):
@@ -143,17 +143,16 @@ class Converter(object):
             raise Exception("mkdir failed {}".format(destination))
 
     @staticmethod
-    def convert(src, dest, dict_file, new_dict):
-        converter = Converter(src, dest, dict_file, new_dict)
+    def convert(src, dest, new_dict):
+        converter = Converter(src, dest, new_dict)
         converter.run()
 
 
 if __name__ == '__main__':
     _src = sys.argv[1]
     _dest = sys.argv[2]
-    _dict_file = sys.argv[3]
-    if len(sys.argv) > 4:
+    if len(sys.argv) > 3:
         _new_dict = bool(sys.argv[3])
     else:
         _new_dict = False
-    Converter.convert(_src, _dest, _dict_file, _new_dict)
+    Converter.convert(_src, _dest, _new_dict)

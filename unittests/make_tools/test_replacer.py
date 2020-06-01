@@ -25,21 +25,26 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 class TestReplacer(unittest.TestCase):
 
     def test_replacer(self):
-        replacer = Replacer(os.path.join(PATH, "test.dict"))
+        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        replacer = Replacer()
         new = replacer.replace("1001")
         assert ("[INFO] (weird;file.c: 9): this is ok" == new)
 
     def test_not_there(self):
-        replacer = Replacer("not_there.pointer")
+        # Point SPINN_DIRS to a directory with no logs.dict
+        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "foo"))
+        replacer = Replacer()
         assert ("1001" == replacer.replace("1001"))
 
     def test_not_extension(self):
-        replacer = Replacer(os.path.join(PATH, "test.dict"))
+        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        replacer = Replacer()
         new = replacer.replace("1014" + TOKEN + "123")
         assert ("[INFO] (weird;file.c: 47): second 123" == new)
 
     def test_tab(self):
-        replacer = Replacer(os.path.join(PATH, "test.dict"))
+        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        replacer = Replacer()
         new = replacer.replace("1007" + TOKEN + "10" + TOKEN + "20")
         message = "[INFO] (weird;file.c: 29): \t back off = 10, time between"\
                   " spikes 20"
@@ -57,7 +62,7 @@ class TestReplacer(unittest.TestCase):
         Test the converter against hex values returned from Spinnaker
 
         """
-        replacer = Replacer(os.path.join(PATH, "test"))
+        replacer = Replacer()
         assert self.near_equals(
             -345443332234.13432143, replacer.hex_to_float("d2a0dc0e"))
         assert self.near_equals(
@@ -83,7 +88,7 @@ class TestReplacer(unittest.TestCase):
         Test the converter against hexes values returned from Spinnaker
 
         """
-        replacer = Replacer(os.path.join(PATH, "test"))
+        replacer = Replacer()
         assert self.near_equals(
             0, replacer.hexes_to_double("0", "0"))
         assert self.near_equals(

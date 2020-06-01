@@ -19,6 +19,7 @@ import unittest
 
 from spinn_utilities.make_tools.converter import Converter
 import spinn_utilities.make_tools.converter as converter
+from spinn_utilities.make_tools.make_utils import find_dict
 
 
 class TestConverter(unittest.TestCase):
@@ -28,6 +29,7 @@ class TestConverter(unittest.TestCase):
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
         converter.RANGE_DIR = ""
+        os.environ["SPINN_DIRS"] = str(path)
 
     @staticmethod
     def _max_id(dict_file):
@@ -44,24 +46,18 @@ class TestConverter(unittest.TestCase):
     def test_convert(self):
         src = "mock_src"
         dest = "modified_src"
-        dict1 = os.path.join("modified_src", "test.dict")
-        if os.path.exists(dict1):
-            os.remove(dict1)
-        Converter.convert(src, dest, dict1, True)
-        dict2 = os.path.join("modified_src", "test.dict2")
-        if os.path.exists(dict2):
-            os.remove(dict2)
-        Converter.convert(src, dest, dict2, True)
-        Converter.convert(src, dest, dict2, False)
-        Converter.convert(src, dest, dict2, False)
-        Converter.convert(src, dest, dict2, False)
-        self.assertEquals(self._max_id(dict1) * 4, self._max_id(dict2))
+        Converter.convert(src, dest, True)
+        single = self._max_id(find_dict())
+        Converter.convert(src, dest, True)
+        Converter.convert(src, dest, False)
+        Converter.convert(src, dest, False)
+        Converter.convert(src, dest, False)
+        self.assertEquals(single * 4, self._max_id(find_dict()))
 
     def test_replace(self):
         src = "mock_src"
         dest = "modified_src"
-        dict_path = os.path.join("modified_src", "test.dict")
-        c = Converter(src, dest, dict_path, True)
+        c = Converter(src, dest, True)
         path = "/home/me/mock_src/FEC/c_common/fec/mock_src/"
         path = path.replace("/", os.path.sep)
         new_path = "/home/me/mock_src/FEC/c_common/fec/modified_src/"
@@ -75,14 +71,13 @@ class TestConverter(unittest.TestCase):
         os.chdir(weird_dir)
         src = "foo/"
         dest = "bar/"
-        dict = os.path.join("bar", "test.dict")
+        dict = find_dict()
         if os.path.exists(os.path.abspath(dict)):
             os.remove(os.path.abspath(dict))
-        c = Converter(src, dest, dict, True)
+        c = Converter(src, dest, True)
         c.run()
         weird_dir = os.path.join(dir_path, "foo", "bar", "gamma")
         os.chdir(weird_dir)
-        dict_path = os.path.join("bar", "test.dict")
-        c = Converter(src, dest, dict_path, True)
+        c = Converter(src, dest, True)
         c.run()
         os.chdir(cwd)

@@ -20,13 +20,15 @@ from spinn_utilities.log import FormatAdapter
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
 import six
+from spinn_utilities.make_tools.make_utils import find_dict
 
 logger = FormatAdapter(logging.getLogger(__name__))
 
 
 class Replacer(object):
 
-    def __init__(self, dict_path):
+    def __init__(self):
+        dict_path = find_dict()
         self._messages = {}
         if os.path.isfile(dict_path):
             with open(dict_path) as dict_info:

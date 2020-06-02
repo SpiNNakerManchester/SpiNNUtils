@@ -18,7 +18,8 @@ import sys
 import unittest
 
 from spinn_utilities.make_tools.file_converter import FileConverter
-
+from spinn_utilities.make_tools.log_id_mapper import LogIdMapper
+from spinn_utilities.make_tools.make_utils import find_dict
 ranged_file = "local_ranges.txt"
 
 
@@ -28,18 +29,18 @@ class TestConverter(unittest.TestCase):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
+        os.environ["SPINN_DIRS"] = str(path)
+        LogIdMapper.reset_logs()
 
     def test_convert(self):
         file_name = "weird,file.c"
         src = os.path.join("mock_src", file_name)
         dest = os.path.join("modified_src", file_name)
-        dict = dest + "dict"
-        if os.path.exists(dict):
-            os.remove(dict)
-        FileConverter.convert(src, dest, dict, 2000)
+        FileConverter.convert(src, dest)
         src_lines = sum(1 for line in open(src))
         modified_lines = sum(1 for line in open(dest))
         self.assertEqual(src_lines, modified_lines)
+        dict = find_dict()
         with open(dict, 'r') as dictfile:
             data = dictfile.read()
         assert("this is ok" in data)

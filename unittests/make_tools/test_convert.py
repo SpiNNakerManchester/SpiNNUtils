@@ -28,7 +28,6 @@ class TestConverter(unittest.TestCase):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
-        converter.RANGE_DIR = ""
         os.environ["SPINN_DIRS"] = str(path)
 
     @staticmethod

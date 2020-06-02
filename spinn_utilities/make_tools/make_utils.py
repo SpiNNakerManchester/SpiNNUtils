@@ -17,6 +17,7 @@ import os
 
 alternative_path = None
 
+
 def find_dict():
     if alternative_path is not None:
         return alternative_path

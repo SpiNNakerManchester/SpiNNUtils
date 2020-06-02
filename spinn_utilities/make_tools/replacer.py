@@ -27,7 +27,7 @@ logger = FormatAdapter(logging.getLogger(__name__))
 
 class Replacer(object):
 
-    def __init__(self):
+    def __enter__(self):
         dict_path = find_dict()
         self._messages = {}
         if os.path.isfile(dict_path):
@@ -42,6 +42,11 @@ class Replacer(object):
         else:
             logger.error("Unable to find a dictionary file at {}"
                          .format(dict_path))
+        return self
+
+    def __exit__(self, type, value, traceback):
+        # nothing yet
+        pass
 
     def replace(self, short):
         parts = short.split(TOKEN)

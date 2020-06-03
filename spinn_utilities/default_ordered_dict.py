@@ -13,18 +13,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from collections import OrderedDict
 try:
-    from collections.abc import Callable
+    from collections.abc import OrderedDict, Callable
 except ImportError:
-    from collections import Callable
+    from collections import OrderedDict, Callable
 
 
 class DefaultOrderedDict(OrderedDict):
     # Source: https://stackoverflow.com/questions/6190331
-    def __init__(self, default_factory, *args, **kwargs):
-        if default_factory is not None and \
-                not isinstance(default_factory, Callable):
+    def __init__(self, default_factory=None, *args, **kwargs):
+        if (default_factory is not None and
+                not isinstance(default_factory, Callable)):
             raise TypeError('first argument must be callable')
         OrderedDict.__init__(self, *args, **kwargs)
         self.default_factory = default_factory
@@ -60,5 +59,5 @@ class DefaultOrderedDict(OrderedDict):
                           copy.deepcopy(self.items()))
 
     def __repr__(self):
-        return 'OrderedDefaultDict(%s, %s)' % (self.default_factory,
-                                               OrderedDict.__repr__(self))
+        return 'OrderedDefaultDict(%s, %s)' % (
+            self.default_factory, OrderedDict.__repr__(self))

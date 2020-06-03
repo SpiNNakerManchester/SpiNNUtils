@@ -22,8 +22,7 @@ CREATE TABLE IF NOT EXISTS log(
     log_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	preface STRING NOT NULL,
 	original STRING NOT NULL,
-    file_id  STRING NOT NULL,
-        REFERENCES file(file_id) ON DELETE RESTRICT,
+    file_id  STRING NOT NULL REFERENCES file(file_id) ON DELETE RESTRICT
 	);
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -31,12 +30,18 @@ CREATE TABLE IF NOT EXISTS log(
 CREATE TABLE IF NOT EXISTS file(
     file_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	src_path STRING NOT NULL,
-	dest_path STRING UNIQUE NOT NULL,
-    convert_time INTEGER
+	dest_path STRING NOT NULL,
+    convert_time INTEGER,
+    last_build INTEGER
 	);
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Glue the bits together to show the information that people think is here
-CREATE VIEW IF NOT EXISTS file_view AS
+CREATE VIEW IF NOT EXISTS current_file_view AS
+    SELECT log_id, preface, original, file_id, src_path, dest_path, convert_time
+    FROM log NATURAL JOIN file
+    WHERE last_build = 1;
+
+CREATE VIEW IF NOT EXISTS all_file_view AS
     SELECT log_id, preface, original, file_id, src_path, dest_path, convert_time
     FROM log NATURAL JOIN file;

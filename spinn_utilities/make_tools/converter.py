@@ -16,7 +16,7 @@
 import os
 import sys
 from .file_converter import FileConverter
-from .log_id_mapper import LogIdMapper
+from .log_sqllite_database import LogSqlLiteDatabase
 
 SKIPPABLE_FILES = ["common.mk", "Makefile.common",
                    "paths.mk", "Makefile.paths",
@@ -59,7 +59,8 @@ class Converter(object):
         self._src_basename = src_basename
         self._dest_basename = dest_basename
         if new_dict:
-            LogIdMapper.reset_logs()
+            with LogSqlLiteDatabase() as sql:
+                sql.clear()
 
     def run(self):
         """ Runs the file converter on a whole directory including sub \

@@ -27,8 +27,8 @@ class TestReplacer(unittest.TestCase):
     def test_replacer(self):
         os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
         with Replacer() as replacer:
-            new = replacer.replace("1001")
-        assert ("[INFO] (weird;file.c: 9): this is ok" == new)
+            new = replacer.replace("3")
+        assert ("[INFO] (weird;file.c: 33): this is ok" == new)
 
     def test_not_there(self):
         # Point SPINN_DIRS to a directory with no logs.dict
@@ -36,17 +36,11 @@ class TestReplacer(unittest.TestCase):
         with Replacer() as replacer:
             assert ("1001" == replacer.replace("1001"))
 
-    def test_not_extension(self):
-        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
-        with Replacer() as replacer:
-            new = replacer.replace("1014" + TOKEN + "123")
-        assert ("[INFO] (weird;file.c: 47): second 123" == new)
-
     def test_tab(self):
         os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
         with Replacer() as replacer:
-            new = replacer.replace("1007" + TOKEN + "10" + TOKEN + "20")
-        message = "[INFO] (weird;file.c: 29): \t back off = 10, time between"\
+            new = replacer.replace("9" + TOKEN + "10" + TOKEN + "20")
+        message = "[INFO] (weird;file.c: 53): \t back off = 10, time between"\
                   " spikes 20"
         assert (message == new)
 

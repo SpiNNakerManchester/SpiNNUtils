@@ -14,12 +14,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import shutil
 import sys
 import unittest
 
 from spinn_utilities.make_tools.converter import Converter
-import spinn_utilities.make_tools.converter as converter
-from spinn_utilities.make_tools.make_utils import find_dict
+from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 
 
 class TestConverter(unittest.TestCase):
@@ -30,28 +30,28 @@ class TestConverter(unittest.TestCase):
         os.chdir(path)
         os.environ["SPINN_DIRS"] = str(path)
 
-    @staticmethod
-    def _max_id(dict_file):
-        max_id = 0
-        with open(dict_file, 'r') as dict_f:
-            for line in dict_f:
-                parts = line.strip().split(",", 2)
-                if len(parts) == 3 and parts[0].isdigit():
-                    id = int(parts[0])
-                    if id > max_id:
-                        max_id = id
-        return max_id
-
     def test_convert(self):
+        with LogSqlLiteDatabase() as sql:
+            sql.clear()
         src = "mock_src"
         dest = "modified_src"
+        formats = os.path.join(src, "formats.c")
+        # make sure the first formats is there
+        shutil.copyfile("formats.c1", formats)
         Converter.convert(src, dest, True)
-        single = self._max_id(find_dict())
-        Converter.convert(src, dest, True)
+        with LogSqlLiteDatabase() as sql:
+            single = sql.get_max_log_id()
+        # Unchanged file a secomnd time should give same ids
         Converter.convert(src, dest, False)
+        with LogSqlLiteDatabase() as sql:
+            self.assertEquals(single, sql.get_max_log_id())
+        # Now use the second formats which as one extra log and moves 1 down
+        shutil.copyfile("formats.c2", formats)
         Converter.convert(src, dest, False)
-        Converter.convert(src, dest, False)
-        self.assertEquals(single * 4, self._max_id(find_dict()))
+        with LogSqlLiteDatabase() as sql:
+            # Need two more ids for the new log and then changed line number
+            self.assertEquals(single + 2, sql.get_max_log_id())
+
 
     def test_replace(self):
         src = "mock_src"
@@ -70,9 +70,8 @@ class TestConverter(unittest.TestCase):
         os.chdir(weird_dir)
         src = "foo/"
         dest = "bar/"
-        dict = find_dict()
-        if os.path.exists(os.path.abspath(dict)):
-            os.remove(os.path.abspath(dict))
+        with LogSqlLiteDatabase() as sql:
+            sql.clear()
         c = Converter(src, dest, True)
         c.run()
         weird_dir = os.path.join(dir_path, "foo", "bar", "gamma")

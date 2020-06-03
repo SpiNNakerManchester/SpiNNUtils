@@ -16,7 +16,7 @@
 import os
 import re
 import sys
-from .log_id_mapper import LogIdMapper
+from .log_sqllite_database import LogSqlLiteDatabase
 
 TOKEN = chr(30)  # Record Separator
 
@@ -28,6 +28,10 @@ END_COMMENT_REGEX = re.compile(r"/*/")
 LOG_START_REGEX = re.compile(
     r"log_((info)|(error)|(debug)|(warning))(\s)*\(")
 DOUBLE_HEX = ", double_to_upper({0}), double_to_lower({0})"
+LEVELS = {"log_info(": "[INFO]",
+          "log_error(": "[ERROR]",
+          "log_debug(": "[DEBUG]",
+          "log_warning(": "[WARNING]"}
 
 # Status values
 NORMAL_CODE = 0
@@ -45,8 +49,10 @@ class FileConverter(object):
     __slots__ = [
         # Full destination directory
         "_dest",
-        # Object which handles the mapping of id to log messages
-        "_log_id_mapper",
+        # Database which handles the mapping of id to log messages
+        "_log_database",
+        # Id in the database for this file
+        "_log_file_id",
         # original c log method found
         # variable created each time a log method found
         "_log",
@@ -72,19 +78,20 @@ class FileConverter(object):
         "_too_many_lines"
     ]
 
-    def __init__(self, src, dest, log_id_mapper):
+    def __init__(self, src, dest, log_database):
         """ Creates the file_convertor to convert one file
 
         :param src: Full source directory
         :type src: str
         :param dest: Full destination directory
         :type dest: str
-        :param log_id_mapper: Object which handles the mapping of id to log messages
-        :type log_id_mapper: :py:class:`.log_id_mapper.LogIdMapper`
+        :param log_database: Databasewhich handles the mapping of id to log messages
+        :type log_database: :py:class:`.log_sqllite_database.LogSqlLiteDatabase`
         """
         self._src = os.path.abspath(src)
         self._dest = os.path.abspath(dest)
-        self._log_id_mapper = log_id_mapper
+        self._log_database = log_database
+        self._log_file_id = log_database.get_file_id(src, dest)
         self._log = None
         self._log_full = None
         self._log_lines = None
@@ -353,7 +360,14 @@ class FileConverter(object):
                 self._log_full, line_num, self._src))
         parts = self.split_by_comma_plus(main, line_num)
         original = parts[0]
-        message_id = self._log_id_mapper.add_log(line_num, original, self._log)
+        preface = "{} ({}: {}): ".format(
+            LEVELS[self._log], os.path.basename(self._src).replace(",", ";"),
+            line_num + 1, original)
+
+        message_id = self._log_database.set_log_info(
+            preface, original, self._log_file_id)
+        if message_id is None:
+            raise Exception ("oops")
         count = original.count("%") - original.count("%%") * 2
 
         if count == 0:
@@ -587,8 +601,8 @@ class FileConverter(object):
         :param dest: Full destination directory
         :type dest: str
         """
-        with LogIdMapper(src, dest) as log_id_mapper:
-            converter = FileConverter(src, dest, log_id_mapper)
+        with LogSqlLiteDatabase() as log_database:
+            converter = FileConverter(src, dest, log_database)
             converter._run()  # pylint: disable=protected-access
 
 

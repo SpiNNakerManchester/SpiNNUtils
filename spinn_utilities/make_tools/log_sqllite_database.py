@@ -16,11 +16,6 @@
 import os
 import sqlite3
 import time
-import sys
-
-if sys.version_info < (3,):
-    # pylint: disable=redefined-builtin, undefined-variable
-    memoryview = buffer  # noqa
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
 _SECONDS_TO_MICRO_SECONDS_CONVERSION = 1000
@@ -28,10 +23,8 @@ DB_FILE_NAME = "logs.sqlite3"
 
 database_file = None
 
-
 def _timestamp():
     return int(time.time() * _SECONDS_TO_MICRO_SECONDS_CONVERSION)
-
 
 class LogSqlLiteDatabase(object):
     """ Specific implementation of the Database for SQLite 3.
@@ -60,8 +53,7 @@ class LogSqlLiteDatabase(object):
                 raise Exception("Environment variable SPINN_DIRS MUST be set")
             if not os.path.exists(spin_dirs):
                 raise Exception(
-                    "Unable to locate spin_dirs directory {}".format(
-                        spin_dirs))
+                    "Unable to locate spin_dirs directory {}".format(spin_dirs))
             database_file = os.path.join(spin_dirs, DB_FILE_NAME)
 
         self._db = sqlite3.connect(database_file)
@@ -96,7 +88,8 @@ class LogSqlLiteDatabase(object):
         """ Set up the database if required.
         """
         self._db.row_factory = sqlite3.Row
-        self._db.text_factory = memoryview
+        # Don't use memoryview / buffer as hard to deal with difference
+        self._db.text_factory = str
         with open(_DDL_FILE) as f:
             sql = f.read()
         self._db.executescript(sql)
@@ -107,8 +100,7 @@ class LogSqlLiteDatabase(object):
             cursor.execute("DELETE FROM log")
             cursor.execute("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='log'")
             cursor.execute("DELETE FROM file")
-            cursor.execute(
-                "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='file'")
+            cursor.execute("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='file'")
 
     def get_file_id(self, src_path, dest_path):
         with self._db:
@@ -122,11 +114,10 @@ class LogSqlLiteDatabase(object):
                     """, [dest_path])
                 # always create new one to distinguish new from old logs
                 cursor.execute(
-                    """
-                    INSERT INTO file(
-                        src_path, dest_path, convert_time, last_build)
-                    VALUES(?, ?, ?, 1)
-                    """, (src_path, dest_path, _timestamp()))
+                """
+                INSERT INTO file(src_path, dest_path, convert_time, last_build)
+                VALUES(?, ?, ?, 1)
+                """, (src_path, dest_path, _timestamp()))
                 return cursor.lastrowid
 
     def set_log_info(self, preface, original, file_id):
@@ -167,8 +158,7 @@ class LogSqlLiteDatabase(object):
                     WHERE log_id = ?
                     LIMIT 1
                     """, [log_id]):
-                return row["preface"].tobytes().decode(), \
-                       row["original"].tobytes().decode()
+                return row["preface"], row["original"]
 
     def check_original(self, original):
         with self._db:
@@ -189,7 +179,6 @@ class LogSqlLiteDatabase(object):
                     FROM log
                      """):
                 return row["max_id"]
-
 
 def set_alternative_log_path(new_path):
     global database_file

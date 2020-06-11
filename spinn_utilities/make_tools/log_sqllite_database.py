@@ -23,8 +23,10 @@ DB_FILE_NAME = "logs.sqlite3"
 
 database_file = None
 
+
 def _timestamp():
     return int(time.time() * _SECONDS_TO_MICRO_SECONDS_CONVERSION)
+
 
 class LogSqlLiteDatabase(object):
     """ Specific implementation of the Database for SQLite 3.
@@ -52,8 +54,8 @@ class LogSqlLiteDatabase(object):
             if spin_dirs is None:
                 raise Exception("Environment variable SPINN_DIRS MUST be set")
             if not os.path.exists(spin_dirs):
-                raise Exception(
-                    "Unable to locate spin_dirs directory {}".format(spin_dirs))
+                raise Exception("Unable to locate spin_dirs directory {}"
+                                "".format(spin_dirs))
             database_file = os.path.join(spin_dirs, DB_FILE_NAME)
 
         self._db = sqlite3.connect(database_file)
@@ -100,7 +102,8 @@ class LogSqlLiteDatabase(object):
             cursor.execute("DELETE FROM log")
             cursor.execute("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='log'")
             cursor.execute("DELETE FROM file")
-            cursor.execute("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='file'")
+            cursor.execute(
+                "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='file'")
 
     def get_file_id(self, src_path, dest_path):
         with self._db:
@@ -114,10 +117,11 @@ class LogSqlLiteDatabase(object):
                     """, [dest_path])
                 # always create new one to distinguish new from old logs
                 cursor.execute(
-                """
-                INSERT INTO file(src_path, dest_path, convert_time, last_build)
-                VALUES(?, ?, ?, 1)
-                """, (src_path, dest_path, _timestamp()))
+                    """
+                    INSERT INTO file(
+                        src_path, dest_path, convert_time, last_build)
+                    VALUES(?, ?, ?, 1)
+                    """, (src_path, dest_path, _timestamp()))
                 return cursor.lastrowid
 
     def set_log_info(self, preface, original, file_id):
@@ -179,6 +183,7 @@ class LogSqlLiteDatabase(object):
                     FROM log
                      """):
                 return row["max_id"]
+
 
 def set_alternative_log_path(new_path):
     global database_file

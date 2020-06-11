@@ -352,7 +352,7 @@ class FileConverter(object):
         """ shortens the log string message and adds the id
 
         :param line_num: Line number of the original log
-        :return: original log and shorten form
+        :return: shorten form
         """
         try:
             match = LOG_END_REGEX.search(self._log_full)
@@ -371,7 +371,7 @@ class FileConverter(object):
         count = original.count("%") - original.count("%%") * 2
 
         if count == 0:
-            return original, '"%u", {});'.format(message_id)
+            return '"%u", {});'.format(message_id)
 
         front = '"%u'
         back = ""
@@ -404,7 +404,7 @@ class FileConverter(object):
                 back += ", {}".format(parts[i+1])
         front += '", {}'.format(message_id)
         back += ");"
-        return original, front + back
+        return front + back
 
     def _write_log_method(self, dest_f, line_num, tail=""):
         """ Writes the log message and the dict value
@@ -420,7 +420,7 @@ class FileConverter(object):
         :param text: Text of that line including whitespace
         """
         self._log_full = self._log_full.replace('""', '')
-        original, short_log = self._short_log(line_num)
+        short_log = self._short_log(line_num)
 
         dest_f.write(" " * self._log_start)
         dest_f.write(MINIS[self._log])
@@ -609,6 +609,4 @@ class FileConverter(object):
 if __name__ == '__main__':
     _src = sys.argv[1]
     _dest = sys.argv[2]
-    _dict_file = sys.argv[3]
-    _range_start = int(sys.argv[4])
-    FileConverter.convert(_src, _dest, _dict_file, _range_start)
+    FileConverter.convert(_src, _dest)

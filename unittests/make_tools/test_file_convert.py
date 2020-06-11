@@ -50,7 +50,8 @@ class TestConverter(unittest.TestCase):
             sql.check_original("this is for alan); so there!")
             sql.check_original("Test %u for alan); so there!")
             sql.check_original("\\t back off = %u, time between spikes %u")
-            sql.check_original("the neuron %d has been determined to not spike")
+            sql.check_original(
+                "the neuron %d has been determined to not spike")
             sql.check_original("Inside a loop")
             sql.check_original("then a space")
             sql.check_original("then a newline simple")

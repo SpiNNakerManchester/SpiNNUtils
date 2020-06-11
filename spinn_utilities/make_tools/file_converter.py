@@ -85,8 +85,10 @@ class FileConverter(object):
         :type src: str
         :param dest: Full destination directory
         :type dest: str
-        :param log_database: Databasewhich handles the mapping of id to log messages
-        :type log_database: :py:class:`.log_sqllite_database.LogSqlLiteDatabase`
+        :param log_database:
+            Database which handles the mapping of id to log messages
+        :type log_database:
+            :py:class:`.log_sqllite_database.LogSqlLiteDatabase`
         """
         self._src = os.path.abspath(src)
         self._dest = os.path.abspath(dest)
@@ -362,12 +364,10 @@ class FileConverter(object):
         original = parts[0]
         preface = "{} ({}: {}): ".format(
             LEVELS[self._log], os.path.basename(self._src).replace(",", ";"),
-            line_num + 1, original)
+            line_num + 1)
 
         message_id = self._log_database.set_log_info(
             preface, original, self._log_file_id)
-        if message_id is None:
-            raise Exception ("oops")
         count = original.count("%") - original.count("%%") * 2
 
         if count == 0:

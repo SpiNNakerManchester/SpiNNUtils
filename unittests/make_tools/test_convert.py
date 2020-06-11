@@ -52,7 +52,6 @@ class TestConverter(unittest.TestCase):
             # Need two more ids for the new log and then changed line number
             self.assertEquals(single + 2, sql.get_max_log_id())
 
-
     def test_replace(self):
         src = "mock_src"
         dest = "modified_src"

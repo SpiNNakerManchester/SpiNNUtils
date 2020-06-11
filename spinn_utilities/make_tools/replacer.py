@@ -27,7 +27,7 @@ logger = FormatAdapter(logging.getLogger(__name__))
 class Replacer(LogSqlLiteDatabase):
 
     def __enter__(self):
-       return self
+        return self
 
     def __exit__(self, type, value, traceback):
         # nothing yet

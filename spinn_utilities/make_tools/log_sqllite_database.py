@@ -54,7 +54,7 @@ class LogSqlLiteDatabase(object):
         if spin_dirs is None:
             if os.environ.get(
                     'CONTINUOUS_INTEGRATION', 'false').lower() == 'true':
-                spin_dirs= tempfile.TemporaryDirectory()
+                spin_dirs = tempfile.TemporaryDirectory()
             else:
                 raise Exception("Environment variable SPINN_DIRS MUST be set")
         if not os.path.exists(spin_dirs):

@@ -15,7 +15,6 @@
 
 import os
 import sqlite3
-import tempfile
 import time
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")

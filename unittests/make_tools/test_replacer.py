@@ -56,6 +56,7 @@ class TestReplacer(unittest.TestCase):
         Test the converter against hex values returned from Spinnaker
 
         """
+        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
         with Replacer() as replacer:
             assert self.near_equals(
                 -345443332234.13432143, replacer.hex_to_float("d2a0dc0e"))
@@ -82,6 +83,7 @@ class TestReplacer(unittest.TestCase):
         Test the converter against hexes values returned from Spinnaker
 
         """
+        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
         with Replacer() as replacer:
             assert self.near_equals(
                 0, replacer.hexes_to_double("0", "0"))

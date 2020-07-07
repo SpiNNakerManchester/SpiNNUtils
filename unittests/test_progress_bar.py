@@ -78,6 +78,7 @@ def test_iteration_style(pbclass):
     assert total == 10
     assert p._number_of_things == 5
 
+
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_set_completed(pbclass):
     logger_utils.reset()

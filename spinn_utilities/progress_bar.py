@@ -76,6 +76,22 @@ class ProgressBar(object):
         self._currently_completed += amount_to_add
         self._check_differences()
 
+    def set_completed(self, amount_completed):
+        """ Update the progress bar to a given amount
+
+        If the amount is less than a previous amount the update is ignored
+        as it is impossible to print negative.
+
+        :param amount_to_add:
+        :rtype: None
+        """
+        if amount_completed > self._number_of_things:
+            logger_utils.error_once(logger, self.TOO_MANY_ERROR)
+            return
+        if self._currently_completed < amount_completed:
+            self._currently_completed = amount_completed
+            self._check_differences()
+
     def _print_overwritten_line(self, string):
         print("\r" + string, end="", file=self._destination)
 

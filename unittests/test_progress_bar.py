@@ -77,3 +77,18 @@ def test_iteration_style(pbclass):
         total += value
     assert total == 10
     assert p._number_of_things == 5
+
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
+def test_set_completed(pbclass):
+    logger_utils.reset()
+    with LogCapture() as lc:
+        p = pbclass(5, "Test set_completed")
+        p.set_completed(2)
+        p.set_completed(4)
+        p.set_completed(3)
+        p.set_completed(5)
+        p.set_completed(3)
+        p.end()
+        p.end()
+        log_checker._assert_logs_not_contains(
+            "ERROR", lc.records, ProgressBar.TOO_MANY_ERROR)

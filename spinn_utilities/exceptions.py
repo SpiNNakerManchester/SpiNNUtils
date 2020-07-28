@@ -1,4 +1,4 @@
-# Copyright (c) 2018 The University of Manchester
+# Copyright (c) 2019-2020 The University of Manchester
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,13 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
--r requirements.txt
-flake8
-coverage >= 4.4, < 5.0
-# pytest will be brought in by pytest-cov
-pytest-cov
-testfixtures
-Sphinx==1.5.3
-pyyaml
-requests
-httpretty != 1.0.0
+
+class SpiNNUtilsException(Exception):
+    """ Superclass of all exceptions from the SpiNNUtils module.
+    """
+
+
+class FailedToFindBinaryException(SpiNNUtilsException):
+    """ Raised when the executable finder cant find the binary
+    """

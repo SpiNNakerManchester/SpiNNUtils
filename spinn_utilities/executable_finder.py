@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+
 from .ordered_set import OrderedSet
 
 
@@ -71,20 +72,21 @@ class ExecutableFinder(object):
                 return potential_filename
 
         # No executable found
-        return None
+        raise KeyError("Executable {} not found in path".format(
+            executable_name))
 
     def get_executable_paths(self, executable_names):
         """ Finds each executables within the set of folders.\
 
-            The names are assumed to be comma seperated
+            The names are assumed to be comma separated
             The set of folders is searched sequentially\
             and the first match for each name is returned.
 
             Names not found are ignored and not added to the list.
 
-        :param executable_name: The name of the executable to find.\
-            Assumed to be comma seperated.
-        :type executable_name: str
+        :param executable_names: The name of the executable to find.\
+            Assumed to be comma separated.
+        :type executable_names: str
         :return:\
             The full path of the discovered executable, or ``None`` if no \
             executable was found in the set of folders

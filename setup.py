@@ -26,8 +26,8 @@ assert __version__
 
 # Build a list of all project modules, as well as supplementary files
 main_package = "spinn_utilities"
-extensions = {".aplx", ".boot", ".cfg", ".json", ".sql", ".template", ".xml",
-              ".xsd"}
+extensions = {".aplx", ".boot", ".cfg", ".json", ".sql", ".template", ".txt",
+              ".xml", ".xsd"}
 main_package_dir = os.path.join(os.path.dirname(__file__), main_package)
 start = len(main_package_dir)
 packages = []

@@ -14,12 +14,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, division
+from collections import defaultdict
+from datetime import date
 import logging
-import sys
 import math
 import os
+import random
+import sys
+from six import PY3
 from spinn_utilities.overrides import overrides
 from spinn_utilities import logger_utils
+import spinn_utilities
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +40,7 @@ class ProgressBar(object):
     __slots__ = (
         "_number_of_things", "_currently_completed", "_destination",
         "_chars_per_thing", "_chars_done", "_string",
-        "_step_character", "_end_character", "_in_bad_terminal"
+        "_step_character", "_end_character", "_in_bad_terminal",
     )
 
     def __init__(self, total_number_of_things_to_do,
@@ -111,14 +116,16 @@ class ProgressBar(object):
         second_space = mid_point - 5
 
         # Print the progress bar itself
-        print(
-            "{}0%{}50%{}100%{}".format(
-                self._end_character, " " * first_space,
-                " " * second_space, self._end_character),
-            end="", file=self._destination)
+        self._print_distance_line(first_space, second_space)
         if self._in_bad_terminal:
             print("", file=self._destination)
             print(" ", end="", file=self._destination)
+
+    def _print_distance_line(self, first_space, second_space):
+        line = "{}0%{}50%{}100%{}".format(
+            self._end_character, " " * first_space, " " * second_space,
+            self._end_character)
+        print(line, end="", file=self._destination)
 
     def _print_progress(self, length):
         chars_to_print = length
@@ -126,9 +133,14 @@ class ProgressBar(object):
             self._print_overwritten_line(self._end_character)
         else:
             chars_to_print = length - self._chars_done
+
         for _ in range(int(chars_to_print)):
-            print(self._step_character, end='', file=self._destination)
+            self._print_progress_unit(chars_to_print)
         self._destination.flush()
+
+    def _print_progress_unit(self, chars_to_print):
+        # pylint: disable=unused-argument
+        print(self._step_character, end='', file=self._destination)
 
     def _print_progress_done(self):
         self._print_progress(ProgressBar.MAX_LENGTH_IN_CHARS)
@@ -148,8 +160,8 @@ class ProgressBar(object):
         self._check_differences()
 
     def _check_differences(self):
-        expected_chars_done = math.floor(
-            self._currently_completed * self._chars_per_thing)
+        expected_chars_done = int(math.floor(
+            self._currently_completed * self._chars_per_thing))
         if self._currently_completed == self._number_of_things:
             expected_chars_done = ProgressBar.MAX_LENGTH_IN_CHARS
         self._print_progress(expected_chars_done)
@@ -212,6 +224,111 @@ class ProgressBar(object):
         finally:
             if finish_at_end:
                 self.end()
+
+    def __new__(cls, *args, **kwargs):
+        if _EnhancedProgressBar._ENABLED:
+            cls = _EnhancedProgressBar
+        if PY3:
+            # Disable a pylint error about something that doesn't apply in 2.7
+            # pylint: disable=missing-super-argument
+            return super().__new__(cls)
+        else:
+            return object.__new__(cls, *args, **kwargs)
+
+
+class _EnhancedProgressBar(ProgressBar):
+    """ Nothing to see here.
+    """
+
+    _line_no = 0
+    _seq_id = 0
+    _step_characters = defaultdict(list)
+    _ENABLE_DATES = (
+        "0401", "0214", "0427", "0428", "0429", "0430", "0501", "0502",
+        "0503", "0504", "0505", "0506", "0507", "0508", "0509", "0510")
+    _ENABLED = False
+    _DATA_FILE = "progress_bar.txt"
+
+    def _print_distance_line(self, first_space, second_space):
+        print(self.__line, end="", file=self._destination)
+        self.__next_line()
+
+    def _print_progress_unit(self, chars_to_print):
+        song_line = self.__line
+        if not self._in_bad_terminal:
+            print(song_line[0:self._chars_done + chars_to_print],
+                  file=self._destination)
+        else:
+            print(song_line[self._chars_done:self._chars_done + 1],
+                  end='', file=self._destination)
+            self._chars_done += 1
+
+    def _print_progress_done(self):
+        self._print_progress(ProgressBar.MAX_LENGTH_IN_CHARS)
+        if not self._in_bad_terminal:
+            self._print_overwritten_line(self._end_character)
+            for _ in range(ProgressBar.MAX_LENGTH_IN_CHARS):
+                print(self._step_character, end='', file=self._destination)
+            print(self._end_character, file=self._destination)
+        else:
+            print("", file=self._destination)
+        self.__next_line()
+
+    @property
+    def __line(self):
+        return _EnhancedProgressBar._step_characters[
+            _EnhancedProgressBar._seq_id][_EnhancedProgressBar._line_no]
+
+    @classmethod
+    def __next_line(cls):
+        if cls._line_no + 1 >= len(cls._step_characters[cls._seq_id]):
+            cls._seq_id = random.randint(1, len(cls._step_characters))
+            cls._line_no = 0
+        else:
+            cls._line_no += 1
+
+    @classmethod
+    def init_once(cls):
+        # verify that its either April Fools', Capocaccia or Valentine's Day
+        enabled = date.today().strftime("%m%d") in cls._ENABLE_DATES
+
+        # read in the songs once for performance reasons
+        path = os.path.join(
+            os.path.dirname(os.path.realpath(spinn_utilities.__file__)),
+            cls._DATA_FILE)
+        try:
+            with open(path) as reader:
+                lines = reader.readlines()
+
+            # turn into array of songs, skipping comments and blanks
+            for line in lines:
+                if line.startswith("#") or line.strip() == "":
+                    continue
+                bits = line.split(":")
+                if len(bits) != 3:
+                    # Bad data! Abort!
+                    enabled = False
+                    break
+                cls._step_characters[int(bits[0])].append(bits[1])
+
+            # clean up lines so that spaces are still visible
+            for _seq_id in cls._step_characters:
+                step = cls._step_characters[_seq_id]
+                for _line_no in range(len(step)):
+                    step[_line_no] = step[_line_no].replace(" ", "_")
+
+            # reset trackers for start of the first progress bar
+            cls._seq_id = random.randint(1, len(cls._step_characters))
+        except IOError:
+            enabled = False
+            cls._seq_id = 0
+        finally:
+            cls._line_no = 0
+            cls._ENABLED = enabled
+
+
+# Perform one-time initialisation
+_EnhancedProgressBar.init_once()
 
 
 class DummyProgressBar(ProgressBar):

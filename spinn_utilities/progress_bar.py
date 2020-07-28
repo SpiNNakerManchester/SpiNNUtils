@@ -24,6 +24,7 @@ import random
 from spinn_utilities.overrides import overrides
 from spinn_utilities import logger_utils
 import spinn_utilities
+from six import PY3
 
 logger = logging.getLogger(__name__)
 
@@ -208,22 +209,26 @@ class ProgressBar(object):
             if finish_at_end:
                 self.end()
 
-    def __new__(self, cls, *args, **kwargs):
-        if TIME_TO_PLAY:
+    def __new__(cls, *args, **kwargs):
+        if _BaconEnabledProgressBar._TIME_TO_PLAY:
             cls = _BaconEnabledProgressBar
-        return object.__new__(self, cls, *args, **kwargs)
+        if PY3:
+            return super().__new__(cls)
+        return object.__new__(cls, *args, **kwargs)
 
 
 class _BaconEnabledProgressBar(ProgressBar):
     """ Nothing to see here.
     """
 
-    line_no = 0
-    song_id = 0
-    step_characters = defaultdict(list)
-    DATES_TO_PLAY_WITH = (
+    _line_no = 0
+    _song_id = 0
+    _step_characters = defaultdict(list)
+    _DATES_TO_PLAY_WITH = (
         "0401", "0214", "0427", "0428", "0429", "0430", "0501", "0502",
         "0503", "0504", "0505", "0506", "0507", "0508", "0509", "0510")
+    _TIME_TO_PLAY = False
+    _SONG_FILE = "bacon.txt"
 
     def _print_distance_line(self, first_space, second_space):
         print(self.__song_line, end="", file=self._destination)
@@ -252,27 +257,28 @@ class _BaconEnabledProgressBar(ProgressBar):
 
     @property
     def __song_line(self):
-        return _BaconEnabledProgressBar.step_characters[
-            _BaconEnabledProgressBar.song_id][_BaconEnabledProgressBar.line_no]
+        return _BaconEnabledProgressBar._step_characters[
+            _BaconEnabledProgressBar._song_id][
+                _BaconEnabledProgressBar._line_no]
 
     @classmethod
     def __next_song_line(cls):
-        if cls.line_no + 1 >= len(cls.step_characters[cls.song_id]):
-            cls.song_id = random.randint(1, len(cls.step_characters))
-            cls.line_no = 0
+        if cls._line_no + 1 >= len(cls._step_characters[cls._song_id]):
+            cls._song_id = random.randint(1, len(cls._step_characters))
+            cls._line_no = 0
         else:
-            cls.line_no += 1
+            cls._line_no += 1
 
     @classmethod
-    def _load(cls, char_file):
+    def init_once(cls):
         # verify that its either April Fools', Capocaccia or Valentine's Day
         date_in_string_format = date.today().strftime("%m%d")
-        time_to_play = date_in_string_format in cls.DATES_TO_PLAY_WITH
+        time_to_play = date_in_string_format in cls._DATES_TO_PLAY_WITH
 
         # read in the songs once for performance reasons
         bacon_path = os.path.join(
             os.path.dirname(os.path.realpath(spinn_utilities.__file__)),
-            char_file)
+            cls._SONG_FILE)
         try:
             with open(bacon_path) as reader:
                 lines = reader.readlines()
@@ -286,24 +292,26 @@ class _BaconEnabledProgressBar(ProgressBar):
                     # Bad data! Abort!
                     time_to_play = False
                     break
-                cls.step_characters[int(bits[0])].append(bits[1])
+                cls._step_characters[int(bits[0])].append(bits[1])
 
             # clean up lines so that spaces are still visible
-            for _song_id in cls.step_characters:
-                song = cls.step_characters[_song_id]
+            for _song_id in cls._step_characters:
+                song = cls._step_characters[_song_id]
                 for _line_no in range(len(song)):
                     song[_line_no] = song[_line_no].replace(" ", "_")
 
             # reset trackers for start of the first progress bar
-            cls.song_id = random.randint(1, len(cls.step_characters))
+            cls._song_id = random.randint(1, len(cls._step_characters))
         except IOError:
             time_to_play = False
-            cls.song_id = 0
-        cls.line_no = 0
-        return time_to_play
+            cls._song_id = 0
+        finally:
+            cls._line_no = 0
+            cls._TIME_TO_PLAY = time_to_play
 
 
-TIME_TO_PLAY = _BaconEnabledProgressBar._load("bacon.txt")
+# Perform one-time initialisation
+_BaconEnabledProgressBar.init_once()
 
 
 class DummyProgressBar(ProgressBar):

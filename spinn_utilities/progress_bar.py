@@ -14,17 +14,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, division
-import logging
-import sys
-import math
-import os
 from collections import defaultdict
 from datetime import date
+import logging
+import math
+import os
 import random
+import sys
+from six import PY3
 from spinn_utilities.overrides import overrides
 from spinn_utilities import logger_utils
 import spinn_utilities
-from six import PY3
 
 logger = logging.getLogger(__name__)
 
@@ -213,8 +213,11 @@ class ProgressBar(object):
         if _BaconEnabledProgressBar._TIME_TO_PLAY:
             cls = _BaconEnabledProgressBar
         if PY3:
+            # Disable a pylint error about something that doesn't apply in 2.7
+            # pylint: disable=missing-super-argument
             return super().__new__(cls)
-        return object.__new__(cls, *args, **kwargs)
+        else:
+            return object.__new__(cls, *args, **kwargs)
 
 
 class _BaconEnabledProgressBar(ProgressBar):

@@ -22,6 +22,7 @@ from spinn_utilities.testing import log_checker
 from spinn_utilities import logger_utils
 EPB._ENABLED = False
 
+
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_operation(pbclass):
     p = pbclass(2, "abc")

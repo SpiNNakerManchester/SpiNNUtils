@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2018 The University of Manchester
+# Copyright (c) 2020 The University of Manchester
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import collections
 
 class UnigueList(list):
     """
@@ -28,7 +27,7 @@ class UnigueList(list):
         :param iterable seq: initial values to use
         """
         list.__init__([])
-        for  p_object in seq:
+        for p_object in seq:
             self.append(p_object)
 
     def append(self, p_object):
@@ -47,7 +46,7 @@ class UnigueList(list):
         :return: a new list
         :rtype: UnigueList
         """
-        new_list =  UnigueList(self)
+        new_list = UnigueList(self)
         new_list.extend(self)
         return new_list
 
@@ -64,15 +63,15 @@ class UnigueList(list):
         """
         insert object before index
         
-        note:  If the object was already in the list it is removed and then 
+        note:  If the object was already in the list it is removed and then
         reinserted in the requested place. Therefor this call could cause items
-        lower than index to move while items higher than index may not move. 
-        
+        lower than index to move while items higher than index may not move.
+
         :param int index: (new) location for the object
         :param p_object: object to add in
         """
         if p_object in self:
-           self.remove(p_object)
+            self.remove(p_object)
         super(UnigueList, self).insert(index, p_object)
 
     def __add__(self, *args, **kwargs):
@@ -85,7 +84,7 @@ class UnigueList(list):
         location found
         :rtype: UnigueList
         """
-        new_list =  UnigueList(self)
+        new_list = UnigueList(self)
         new_list.extend(args[0])
         return new_list
 

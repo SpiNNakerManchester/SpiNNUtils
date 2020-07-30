@@ -1,4 +1,4 @@
-# Copyright (c) 2018 The University of Manchester
+# Copyright (c) 2020 The University of Manchester
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,12 +15,14 @@
 
 from spinn_utilities.unigue_list import UnigueList
 
+
 def test_basic():
     ul = UnigueList()
     ul.append(1)
     ul.append(4)
     ul.append(1)
     assert(ul == [1, 4])
+
 
 def test_insert():
     ul = UnigueList([0, 1, 2, 3, 4, 5])
@@ -36,6 +38,7 @@ def test_insert():
     assert(ul == [0, 6, 7, 1, 3, 2, 4, 5])
     assert(type(ul) == UnigueList)
 
+
 def test_extend():
     ul = UnigueList([0, 1, 2, 3, 4, 5])
     ul.extend([3, 1, 6, 7, 8, 9, 7, 4])
@@ -44,14 +47,16 @@ def test_extend():
     assert(ul == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     assert(type(ul) == UnigueList)
 
+
 def test_add():
     ul = UnigueList([0, 1, 2, 3, 4, 5])
     ul2 = ul + [3, 1, 6, 7, 8, 9, 7, 4]
     assert(ul2 == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     assert(type(ul2) == UnigueList)
-    l2 =  [3, 1, 6, 7, 8, 9, 7, 4] + ul
+    l2 = [3, 1, 6, 7, 8, 9, 7, 4] + ul
     assert(l2 == [3, 1, 6, 7, 8, 9, 7, 4, 0, 1, 2, 3, 4, 5])
     assert(type(l2) == list)
+
 
 def test_copy():
     ul = UnigueList([0, 1, 2, 3, 4, 5])
@@ -59,6 +64,7 @@ def test_copy():
     assert(type(nl) == UnigueList)
     ul.append(8)
     assert(nl == [0, 1, 2, 3, 4, 5])
+
 
 def test_standard_ops():
     ul = UnigueList([4, 6, 3, 1, 7])

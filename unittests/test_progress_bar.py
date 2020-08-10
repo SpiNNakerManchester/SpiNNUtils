@@ -15,12 +15,15 @@
 
 import pytest
 from testfixtures import LogCapture
-from spinn_utilities.progress_bar import ProgressBar, DummyProgressBar
+from spinn_utilities.progress_bar import (
+    ProgressBar, DummyProgressBar, _EnhancedProgressBar as
+    EPB)
 from spinn_utilities.testing import log_checker
 from spinn_utilities import logger_utils
+EPB._ENABLED = False
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_operation(pbclass):
     p = pbclass(2, "abc")
     p.update()
@@ -28,7 +31,7 @@ def test_operation(pbclass):
     p.end()
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_two_end(pbclass):
     p = pbclass(2, "abc2")
     p.update()
@@ -37,14 +40,14 @@ def test_two_end(pbclass):
     p.end()
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_with_operation(pbclass):
     with pbclass(2, "with_p") as p:
         p.update()
         p.update()
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_check_length_full(pbclass):
     logger_utils.reset()
     p = pbclass(2, None)
@@ -55,7 +58,7 @@ def test_check_length_full(pbclass):
     p.end()
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_check_length_addition(pbclass):
     logger_utils.reset()
     p = pbclass(2, None)
@@ -68,7 +71,7 @@ def test_check_length_addition(pbclass):
     p.end()
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_iteration_style(pbclass):
     coll = range(5)
     p = pbclass(coll, None)
@@ -93,3 +96,12 @@ def test_set_completed(pbclass):
         p.end()
         log_checker._assert_logs_not_contains(
             "ERROR", lc.records, ProgressBar.TOO_MANY_ERROR)
+
+@pytest.mark.parametrize("pbmagic", [False, True])
+def test_bacon_enhancement(pbmagic):
+    try:
+        EPB._ENABLED = pbmagic
+        seq = (1, 2, 3)
+        assert sum(ProgressBar(seq, "foo").over(seq)) == 6
+    finally:
+        EPB._ENABLED = False

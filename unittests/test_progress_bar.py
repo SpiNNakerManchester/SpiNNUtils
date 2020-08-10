@@ -97,6 +97,7 @@ def test_set_completed(pbclass):
         log_checker._assert_logs_not_contains(
             "ERROR", lc.records, ProgressBar.TOO_MANY_ERROR)
 
+
 @pytest.mark.parametrize("pbmagic", [False, True])
 def test_bacon_enhancement(pbmagic):
     try:

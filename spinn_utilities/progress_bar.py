@@ -209,15 +209,17 @@ class ProgressBar(object):
             if finish_at_end:
                 self.end()
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):  # @UnusedVariable
+        # pylint: disable=unused-argument
+        c = cls
         if _EnhancedProgressBar._ENABLED:
-            cls = _EnhancedProgressBar
+            c = _EnhancedProgressBar
         if PY3:
             # Disable a pylint error about something that doesn't apply in 2.7
             # pylint: disable=missing-super-argument
-            return super().__new__(cls)
+            return super().__new__(c)
         else:
-            return object.__new__(cls, *args, **kwargs)
+            return object.__new__(c)
 
 
 class _EnhancedProgressBar(ProgressBar):

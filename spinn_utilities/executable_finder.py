@@ -14,16 +14,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-
 from .ordered_set import OrderedSet
-
 
 class ExecutableFinder(object):
     """ Manages a set of folders in which to search for binaries,\
         and allows for binaries to be discovered within this path
     """
     __slots__ = [
-        "_binary_search_paths"]
+        "_binary_search_paths",
+        "_binary_log",
+        "_paths_log"]
 
     def __init__(self, binary_search_paths):
         """
@@ -31,6 +31,16 @@ class ExecutableFinder(object):
             The initial set of folders to search for binaries.
         :type binary_search_paths: iterable of str
         """
+        binary_logs_path = os.environ.get("BINARY_LOGS_DIR", None)
+        if  binary_logs_path:
+            self._paths_log = os.path.join(
+                binary_logs_path, "binary_paths_used.log")
+            self._binary_log = os.path.join(
+                binary_logs_path, "binary_files_used.log")
+        else:
+            self._paths_log = None
+            self._binary_log = None
+
         self._binary_search_paths = OrderedSet()
         for path in binary_search_paths:
             self.add_path(path)
@@ -46,6 +56,13 @@ class ExecutableFinder(object):
         :rtype: None
         """
         self._binary_search_paths.add(path)
+        if self._paths_log:
+            try:
+                with open(self._paths_log, "a") as log_file:
+                    log_file.write(path)
+                    log_file.write("\n")
+            except Exception:
+                pass
 
     @property
     def binary_paths(self):
@@ -69,6 +86,13 @@ class ExecutableFinder(object):
 
             # If this filename exists, return it
             if os.path.isfile(potential_filename):
+                if self._binary_log:
+                    try:
+                        with open(self._binary_log, "a") as log_file:
+                            log_file.write(potential_filename)
+                            log_file.write("\n")
+                    except Exception:
+                        pass
                 return potential_filename
 
         # No executable found
@@ -98,3 +122,25 @@ class ExecutableFinder(object):
             if path:
                 results.append(path)
         return results
+
+    def check_logs(self):
+        folders = set()
+        with open(self._paths_log, "r") as log_file:
+            for line in log_file:
+                folders.add(line.strip())
+        print(folders)
+
+        all_binaries = set()
+        for folder in folders:
+            for file_name in os.listdir(folder):
+                if file_name.endswith(".aplx"):
+                    all_binaries.add(os.path.join(folder,file_name))
+        print(all_binaries)
+
+        use_binaries = set()
+        with open(self._binary_log, "r") as log_file:
+            for line in log_file:
+                use_binaries.add(line.strip())
+        print(use_binaries)
+
+        print(all_binaries - use_binaries)

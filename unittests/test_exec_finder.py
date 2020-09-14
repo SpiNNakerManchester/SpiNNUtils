@@ -64,6 +64,9 @@ def test_find_in_two_places(tmpdir):
 def test_logs(tmpdir):
     if "BINARY_LOGS_DIR" not in os.environ:
         os.environ["BINARY_LOGS_DIR"] = tmpdir.strpath
+    else:
+        # Do not run this test to not upset the report
+        return
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
     ef = ExecutableFinder([str(a), str(b)])

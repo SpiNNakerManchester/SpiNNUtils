@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from .ordered_set import OrderedSet
+from spinn_utilities.ordered_set import OrderedSet
 
 class ExecutableFinder(object):
     """ Manages a set of folders in which to search for binaries,\
@@ -124,23 +124,34 @@ class ExecutableFinder(object):
         return results
 
     def check_logs(self):
+        if not self._paths_log:
+            print("environ BINARY_LOGS_DIR not set!")
+            return
+
         folders = set()
         with open(self._paths_log, "r") as log_file:
             for line in log_file:
                 folders.add(line.strip())
-        print(folders)
 
         all_binaries = set()
         for folder in folders:
             for file_name in os.listdir(folder):
                 if file_name.endswith(".aplx"):
                     all_binaries.add(os.path.join(folder,file_name))
-        print(all_binaries)
 
         use_binaries = set()
         with open(self._binary_log, "r") as log_file:
             for line in log_file:
                 use_binaries.add(line.strip())
-        print(use_binaries)
 
-        print(all_binaries - use_binaries)
+        print("Found {} binaries of which {} where used.".format(
+            len(all_binaries), len(use_binaries)))
+        if len(all_binaries) > len(use_binaries):
+            print("Missing binaries are:")
+            for binary in (all_binaries - use_binaries):
+                print(binary)
+
+
+if __name__ == "__main__":
+    ef = ExecutableFinder([])
+    ef.check_logs()

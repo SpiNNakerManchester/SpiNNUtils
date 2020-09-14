@@ -83,6 +83,7 @@ def test_logs(tmpdir):
     ef2 = ExecutableFinder([])
     ef2.check_logs()
 
+
 def test_find_no_duplicates(tmpdir):
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")

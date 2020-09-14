@@ -16,6 +16,7 @@
 import os
 from spinn_utilities.ordered_set import OrderedSet
 
+
 class ExecutableFinder(object):
     """ Manages a set of folders in which to search for binaries,\
         and allows for binaries to be discovered within this path
@@ -32,7 +33,7 @@ class ExecutableFinder(object):
         :type binary_search_paths: iterable of str
         """
         binary_logs_path = os.environ.get("BINARY_LOGS_DIR", None)
-        if  binary_logs_path:
+        if binary_logs_path:
             self._paths_log = os.path.join(
                 binary_logs_path, "binary_paths_used.log")
             self._binary_log = os.path.join(
@@ -137,7 +138,7 @@ class ExecutableFinder(object):
         for folder in folders:
             for file_name in os.listdir(folder):
                 if file_name.endswith(".aplx"):
-                    all_binaries.add(os.path.join(folder,file_name))
+                    all_binaries.add(os.path.join(folder, file_name))
 
         use_binaries = set()
         with open(self._binary_log, "r") as log_file:

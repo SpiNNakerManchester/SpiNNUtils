@@ -150,10 +150,13 @@ class ExecutableFinder(object):
                 use_binaries.add(line.strip())
 
         missing = all_binaries - use_binaries
-        print("{} binaries used while {} binaries never used.".format(
+        print("{} binaries asked for while {} binaries never asked for.".format(
             len(all_binaries), len(missing)))
         if len(missing) > 0:
-            print("Unused binaries are:")
+            print("Binaries asked for are:")
+            for binary in (use_binaries):
+                print(binary)
+            print("Binaries never asked for are:")
             for binary in (missing):
                 print(binary)
 

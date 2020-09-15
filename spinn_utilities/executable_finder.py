@@ -134,27 +134,27 @@ class ExecutableFinder(object):
             for line in log_file:
                 folders.add(line.strip())
 
-        all_binaries = set()
+        binaries_in_folders = set()
         for folder in folders:
             try:
                 for file_name in os.listdir(folder):
                     if file_name.endswith(".aplx"):
-                        all_binaries.add(os.path.join(folder, file_name))
+                        binaries_in_folders.add(os.path.join(folder, file_name))
             except Exception:
                 # Skip folders not found
                 pass
 
-        use_binaries = set()
+        used_binaries = set()
         with open(self._binary_log, "r") as log_file:
             for line in log_file:
-                use_binaries.add(line.strip())
+                used_binaries.add(line.strip())
 
-        missing = all_binaries - use_binaries
+        missing = binaries_in_folders - used_binaries
         print("{} binaries asked for while {} binaries never asked for.".format(
-            len(all_binaries), len(missing)))
+            len(used_binaries), len(missing)))
         if len(missing) > 0:
             print("Binaries asked for are:")
-            for binary in (use_binaries):
+            for binary in (used_binaries):
                 print(binary)
             print("Binaries never asked for are:")
             for binary in (missing):

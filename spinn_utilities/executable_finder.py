@@ -136,23 +136,39 @@ class ExecutableFinder(object):
 
         all_binaries = set()
         for folder in folders:
-            for file_name in os.listdir(folder):
-                if file_name.endswith(".aplx"):
-                    all_binaries.add(os.path.join(folder, file_name))
+            try:
+                for file_name in os.listdir(folder):
+                    if file_name.endswith(".aplx"):
+                        all_binaries.add(os.path.join(folder, file_name))
+            except Exception:
+                # Skip folders not found
+                pass
 
         use_binaries = set()
         with open(self._binary_log, "r") as log_file:
             for line in log_file:
                 use_binaries.add(line.strip())
 
-        print("Found {} binaries of which {} where used.".format(
-            len(all_binaries), len(use_binaries)))
-        if len(all_binaries) > len(use_binaries):
-            print("Missing binaries are:")
-            for binary in (all_binaries - use_binaries):
+        missing = all_binaries - use_binaries
+        print("{} binaries used while {} binaries never used.".format(
+            len(all_binaries), len(missing)))
+        if len(missing) > 0:
+            print("Unused binaries are:")
+            for binary in (missing):
                 print(binary)
+
+    def clear_logs(self):
+        if not self._paths_log:
+            print("environ BINARY_LOGS_DIR not set!")
+            return
+        if os.path.isfile(self._paths_log):
+            os.remove(self._paths_log)
 
 
 if __name__ == "__main__":
     ef = ExecutableFinder([])
-    ef.check_logs()
+    try:
+        ef.check_logs()
+        ef.clear_logs()
+    except Exception as ex:
+        print(ex)

@@ -64,12 +64,10 @@ def test_find_in_two_places(tmpdir):
 def test_logs(tmpdir):
     if "BINARY_LOGS_DIR" not in os.environ:
         os.environ["BINARY_LOGS_DIR"] = tmpdir.strpath
-    else:
-        # Do not run this test to not upset the report
-        return
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
     ef = ExecutableFinder([str(a), str(b)])
+    ef.add_path("bad_directory_name")
     w = tmpdir.join("a/abc.aplx")
     w.write("any old content")
     w = tmpdir.join("b/def.aplx")
@@ -82,6 +80,7 @@ def test_logs(tmpdir):
     ef.get_executable_path("jkl.aplx")
     ef2 = ExecutableFinder([])
     ef2.check_logs()
+    ef2.clear_logs()
 
 
 def test_find_no_duplicates(tmpdir):

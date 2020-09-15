@@ -166,6 +166,8 @@ class ExecutableFinder(object):
             return
         if os.path.isfile(self._paths_log):
             os.remove(self._paths_log)
+        if os.path.isfile(self._binary_log):
+            os.remove(self._binary_log)
 
 
 if __name__ == "__main__":

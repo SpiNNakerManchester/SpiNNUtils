@@ -14,8 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-
-from .ordered_set import OrderedSet
+from spinn_utilities.ordered_set import OrderedSet
 
 
 class ExecutableFinder(object):
@@ -23,7 +22,9 @@ class ExecutableFinder(object):
         and allows for binaries to be discovered within this path
     """
     __slots__ = [
-        "_binary_search_paths"]
+        "_binary_search_paths",
+        "_binary_log",
+        "_paths_log"]
 
     def __init__(self, binary_search_paths):
         """
@@ -31,6 +32,16 @@ class ExecutableFinder(object):
             The initial set of folders to search for binaries.
         :type binary_search_paths: iterable of str
         """
+        binary_logs_path = os.environ.get("BINARY_LOGS_DIR", None)
+        if binary_logs_path:
+            self._paths_log = os.path.join(
+                binary_logs_path, "binary_paths_used.log")
+            self._binary_log = os.path.join(
+                binary_logs_path, "binary_files_used.log")
+        else:
+            self._paths_log = None
+            self._binary_log = None
+
         self._binary_search_paths = OrderedSet()
         for path in binary_search_paths:
             self.add_path(path)
@@ -46,6 +57,13 @@ class ExecutableFinder(object):
         :rtype: None
         """
         self._binary_search_paths.add(path)
+        if self._paths_log:
+            try:
+                with open(self._paths_log, "a") as log_file:
+                    log_file.write(path)
+                    log_file.write("\n")
+            except Exception:
+                pass
 
     @property
     def binary_paths(self):
@@ -69,6 +87,13 @@ class ExecutableFinder(object):
 
             # If this filename exists, return it
             if os.path.isfile(potential_filename):
+                if self._binary_log:
+                    try:
+                        with open(self._binary_log, "a") as log_file:
+                            log_file.write(potential_filename)
+                            log_file.write("\n")
+                    except Exception:
+                        pass
                 return potential_filename
 
         # No executable found
@@ -98,3 +123,57 @@ class ExecutableFinder(object):
             if path:
                 results.append(path)
         return results
+
+    def check_logs(self):
+        if not self._paths_log:
+            print("environ BINARY_LOGS_DIR not set!")
+            return
+
+        folders = set()
+        with open(self._paths_log, "r") as log_file:
+            for line in log_file:
+                folders.add(line.strip())
+
+        in_folders = set()
+        for folder in folders:
+            try:
+                for file_name in os.listdir(folder):
+                    if file_name.endswith(".aplx"):
+                        in_folders.add(os.path.join(folder, file_name))
+            except Exception:
+                # Skip folders not found
+                pass
+
+        used_binaries = set()
+        with open(self._binary_log, "r") as log_file:
+            for line in log_file:
+                used_binaries.add(line.strip())
+
+        missing = in_folders - used_binaries
+        print("{} binaries asked for. {} binaries never asked for.".format(
+            len(used_binaries), len(missing)))
+        if len(missing) > 0:
+            print("Binaries asked for are:")
+            for binary in (used_binaries):
+                print(binary)
+            print("Binaries never asked for are:")
+            for binary in (missing):
+                print(binary)
+
+    def clear_logs(self):
+        if not self._paths_log:
+            print("environ BINARY_LOGS_DIR not set!")
+            return
+        if os.path.isfile(self._paths_log):
+            os.remove(self._paths_log)
+        if os.path.isfile(self._binary_log):
+            os.remove(self._binary_log)
+
+
+if __name__ == "__main__":
+    ef = ExecutableFinder([])
+    try:
+        ef.check_logs()
+        ef.clear_logs()
+    except Exception as ex:
+        print(ex)

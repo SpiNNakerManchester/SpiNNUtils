@@ -61,16 +61,10 @@ jobs:
         sphinx-build -W -T -E -b html -d _build/doctrees-readthedocsdirhtml -D language=en . _build/html
         sphinx-build -W -T -b json -d _build/doctrees-json -D language=en . _build/json
         sphinx-build -W -T -b singlehtml -d _build/doctrees-readthedocssinglehtmllocalmedia -D language=en . _build/localmedia
-    - env:
-        COVERALLS_PARALLEL: true
-      name: Submit to Coveralls
-      run: |
-        pwd
-        ls
-        COVERALLS_REPO_TOKEN=${{ secrets.GITHUB_TOKEN }} coveralls
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }} 
-        parallel_finished: true
+    - name: Run coveralls and report coverage
+      env:
+        COVERALLS_SERVICE_NAME: 'GitHub CI'
+        COVERALLS_REPO_TOKEN : ${{ secrets.COVERALLS_REPO_TOKEN }}
+        NODE_COVERALLS_DEBUG: 0
+      run: coveralls
         

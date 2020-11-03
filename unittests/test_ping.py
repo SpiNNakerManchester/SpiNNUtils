@@ -24,8 +24,9 @@ def test_spalloc():
 def test_google_dns():
     # *REALLY* should be able to reach Google's DNS..
     assert(Ping.host_is_reachable("8.8.8.8"))
-
 """
+
+
 def test_localhost():
     # Can't ping localhost? Network catastrophically bad!
     assert(Ping.host_is_reachable("localhost"))

@@ -63,9 +63,11 @@ jobs:
         sphinx-build -W -T -b singlehtml -d _build/doctrees-readthedocssinglehtmllocalmedia -D language=en . _build/localmedia
     - env:
         COVERALLS_PARALLEL: true
-        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       name: Submit to Coveralls
-      run: coveralls
+      run: |
+        pwd
+        ls
+        COVERALLS_REPO_TOKEN=${{ secrets.GITHUB_TOKEN }} coveralls
     - name: Coveralls Finished
       uses: coverallsapp/github-action@master
       with:

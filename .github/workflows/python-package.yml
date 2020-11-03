@@ -55,3 +55,13 @@ jobs:
     - name: Test with pytest
       run: |
         pytest . --cov spinn_utilities
+    - name: Build documentation with sphinx
+      run: |
+        cd doc/source
+        sphinx-build -W -T -E -b html -d _build/doctrees-readthedocsdirhtml -D language=en . _build/html
+        sphinx-build -W -T -b json -d _build/doctrees-json -D language=en . _build/json
+        sphinx-build -W -T -b singlehtml -d _build/doctrees-readthedocssinglehtmllocalmedia -D language=en . _build/localmedia
+    - name: Coveralls
+      run: |
+        cd ../..
+        coveralls  

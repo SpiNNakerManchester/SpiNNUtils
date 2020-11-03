@@ -62,6 +62,6 @@ jobs:
         sphinx-build -W -T -b json -d _build/doctrees-json -D language=en . _build/json
         sphinx-build -W -T -b singlehtml -d _build/doctrees-readthedocssinglehtmllocalmedia -D language=en . _build/localmedia
     - name: Coveralls
-      run: |
-        cd $GITHUB_WORKSPACE
-        coveralls  
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }} 

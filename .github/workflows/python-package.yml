@@ -63,5 +63,5 @@ jobs:
         sphinx-build -W -T -b singlehtml -d _build/doctrees-readthedocssinglehtmllocalmedia -D language=en . _build/localmedia
     - name: Coveralls
       run: |
-        cd ../..
+        cd $GITHUB_WORKSPACE
         coveralls  

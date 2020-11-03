@@ -65,9 +65,7 @@ jobs:
       env:
         COVERALLS_SERVICE_NAME: 'GitHub CI'
         COVERALLS_REPO_TOKEN : ${{ secrets.COVERALLS_REPO_TOKEN }}
-        NODE_COVERALLS_DEBUG: 0
+        NODE_COVERALLS_DEBUG: 1
       run: |
-        echo $COVERALLS_REPO_TOKEN
-        echo $COVERALLS_SERVICE_NAME
         coveralls
         

@@ -12,19 +12,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+import os
+import pytest
 from spinn_utilities.ping import Ping
 
-"""
+skip_ping_tests = pytest.mark.skipif(
+    (os.getenv("SKIP_PING_TESTS", "false") == "true"),
+    "No remote ICMP ECHO in Github Actions")
+
+
+@skip_ping_tests
 def test_spalloc():
     # Should be able to reach Spalloc...
     assert(Ping.host_is_reachable("spinnaker.cs.man.ac.uk"))
 
 
+@skip_ping_tests
 def test_google_dns():
     # *REALLY* should be able to reach Google's DNS..
     assert(Ping.host_is_reachable("8.8.8.8"))
-"""
 
 
 def test_localhost():

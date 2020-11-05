@@ -56,11 +56,17 @@ jobs:
       if: matrix.python-version == 3.6
       run: |
         pytest unittests --cov spinn_utilities
+      env:
+        # Tests using ping won't work in Github Actions because of system config
+        SKIP_PING_TESTS: true
 
     - name: Test with pytest
       if: matrix.python-version != 3.6
       run: |
         pytest unittests
+      env:
+        # Tests using ping won't work in Github Actions because of system config
+        SKIP_PING_TESTS: true
 
     - name: Lint with flake8
       run: |

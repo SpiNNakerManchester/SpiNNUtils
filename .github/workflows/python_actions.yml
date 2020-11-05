@@ -13,12 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# This workflow will install Python dependencies, run tests, lint and rat with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python package
+name: Python Actions
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build:
@@ -29,43 +29,62 @@ jobs:
         python-version: [2.7, 3.6, 3.7, 3.8]
 
     steps:
-    - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Pre-install
-      run: |
-        git clone https://github.com/SpiNNakerManchester/SupportScripts.git support
-        support/rat.sh download
-    - name: Install dependencies
+
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Checkout SupportScripts
+      uses: actions/checkout@v2
+      with:
+        repository: SpiNNakerManchester/SupportScripts
+        path: support
+
+    - name: Install -pip
       run: |
         python -m pip install --upgrade pip
-        python ./setup.py install
-        pip install -r requirements-test.txt
         pip install 'pylint<2.5' python-coveralls 'coverage>=4.4,<5.0'
+
+    - name: Install
+      run: |
+        python setup.py develop
+        pip install -r requirements-test.txt
+
+    - name: Test with pytest and coverage
+      if: matrix.python-version == 3.6
+      run: |
+        pytest unittests --cov spinn_utilities
+
+    - name: Test with pytest
+      if: matrix.python-version != 3.6
+      run: |
+        pytest unittests
+
     - name: Lint with flake8
       run: |
         # run flake8
         flake8 spinn_utilities unittests
+
     - name: Run rat copyright enforcement
+      if: matrix.python-version == 3.6
       run: |
-        # Run rat
+        support/rat.sh download
         support/rat.sh run
-    - name: Test with pytest
-      run: |
-        pytest . --cov spinn_utilities
+
     - name: Build documentation with sphinx
+      if: matrix.python-version == 3.6
       run: |
         cd doc/source
         sphinx-build -W -T -E -b html -d _build/doctrees-readthedocsdirhtml -D language=en . _build/html
         sphinx-build -W -T -b json -d _build/doctrees-json -D language=en . _build/json
         sphinx-build -W -T -b singlehtml -d _build/doctrees-readthedocssinglehtmllocalmedia -D language=en . _build/localmedia
+
     - name: Run coveralls and report coverage
+      if: matrix.python-version == 3.6
       env:
         COVERALLS_SERVICE_NAME: 'GitHub CI'
         COVERALLS_REPO_TOKEN : ${{ secrets.COVERALLS_REPO_TOKEN }}
         NODE_COVERALLS_DEBUG: 1
-      run: |
-        coveralls
-        
+      run: coveralls

@@ -18,7 +18,7 @@ from spinn_utilities.ping import Ping
 
 skip_ping_tests = pytest.mark.skipif(
     (os.getenv("SKIP_PING_TESTS", "false") == "true"),
-    "No remote ICMP ECHO in Github Actions")
+    reason="No remote ICMP ECHO in Github Actions")
 
 
 @skip_ping_tests

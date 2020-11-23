@@ -49,24 +49,25 @@ class overrides(object):
             additional_arguments=None, extend_defaults=False):
         """
         :param super_class_method: The method to override in the superclass
-        :param extend_doc:\
-            True the method doc string should be appended to the super-method\
-            doc string, False if the documentation should be set to the\
+        :param bool extend_doc:
+            True the method doc string should be appended to the super-method
+            doc string, False if the documentation should be set to the
             super-method doc string only if there isn't a doc string already
-        :param additional_arguments:\
-            Additional arguments taken by the subclass method over the\
+        :param iterable(str) additional_arguments:
+            Additional arguments taken by the subclass method over the
             superclass method, e.g., that are to be injected
-        :param extend_defaults: \
+        :param bool extend_defaults:
             Whether the subclass may specify extra defaults for the parameters
         """
         self._superclass_method = super_class_method
-        self._extend_doc = extend_doc
-        self._additional_arguments = additional_arguments
-        self._extend_defaults = extend_defaults
+        self._extend_doc = bool(extend_doc)
+        self._extend_defaults = bool(extend_defaults)
         self._relax_name_check = False
         self._override_name = "super class method"
         if additional_arguments is None:
             self._additional_arguments = {}
+        else:
+            self._additional_arguments = frozenset(additional_arguments)
         if isinstance(super_class_method, property):
             self._superclass_method = super_class_method.fget
 
@@ -109,6 +110,8 @@ class overrides(object):
                     self._override_name))
 
     def __call__(self, method):
+        """ Apply the decorator to the given method.
+        """
 
         # Check and fail if this is a property
         if isinstance(method, property):

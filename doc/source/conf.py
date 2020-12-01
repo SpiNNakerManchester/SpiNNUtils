@@ -29,7 +29,6 @@
 
 # import sys
 import os
-from sphinx import apidoc
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -47,8 +46,14 @@ from sphinx import apidoc
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.autosummary',
 ]
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3.6', None),
+    'numpy': ("https://numpy.org/doc/stable/", None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -356,4 +361,23 @@ for f in os.listdir("."):
     if (os.path.isfile(f) and f.endswith(
             ".rst") and f != "index.rst" and f != "modules.rst"):
         os.remove(f)
-apidoc.main([None, '-o', ".", "../../spinn_utilities"])
+
+
+# UGH!
+output_dir = os.path.abspath(".")
+os.chdir("../..")
+
+options = ['-o', output_dir, "spinn_utilities",
+           "spinn_utilities/citation/[a-z]*.py",
+           "spinn_utilities/configs/[a-z]*.py",
+           "spinn_utilities/make_tools/[a-z]*.py",
+           "spinn_utilities/matrix/[a-z]*.py",
+           "spinn_utilities/ranged/[a-z]*.py"]
+try:
+    # Old style API; Python 2.7
+    from sphinx import apidoc
+    options = [None] + options
+except ImportError:
+    # New style API; Python 3.6 onwards
+    from sphinx.ext import apidoc
+apidoc.main(options)

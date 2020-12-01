@@ -14,6 +14,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
-from .citation_aggregator import CitationAggregator
+from .citation_aggregator import (
+    CitationAggregator, generate_aggregate)
 
-__all__ = ["CitationUpdaterAndDoiGenerator", "CitationAggregator"]
+__all__ = [
+    "CitationAggregator", "CitationUpdaterAndDoiGenerator",
+    "generate_aggregate"]

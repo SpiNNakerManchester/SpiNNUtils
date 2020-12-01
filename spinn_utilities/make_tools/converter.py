@@ -48,12 +48,9 @@ class Converter(object):
     def __init__(self, src, dest, dict_file):
         """ Converts a whole directory including sub directories
 
-        :param src: Full source directory
-        :type src: str
-        :param dest: Full destination directory
-        :type dest: str
-        :param dict_file: Full path to dictionary file
-        :type dict_file: str
+        :param str src: Full source directory
+        :param str dest: Full destination directory
+        :param str dict_file: Full path to dictionary file
         """
         self._src = os.path.abspath(src)
         if not os.path.exists(self._src):
@@ -72,15 +69,15 @@ class Converter(object):
         self._dict = os.path.abspath(dict_file)
 
     def run(self):
-        """ Runs the file converter on a whole directory including sub \
-            directories
+        """ Runs the file converter on a whole directory including \
+            sub-directories.
 
-        WARNING. This code is absolutely not thread safe.
-        Interwoven calls even on different FileConverter objects is dangerous!
-        It is highly likely that dict files become corrupted and the same
-        message_id is used multiple times.
-
-        :return:
+        .. warning::
+            This code is absolutely not thread safe.
+            Interwoven calls even on different FileConverter objects is
+            dangerous!
+            It is highly likely that dict files become corrupted and the same
+            ``message_id`` is used multiple times.
         """
         self._mkdir(self._dest)
         with open(self._dict, 'w') as dict_f:
@@ -160,6 +157,8 @@ class Converter(object):
 
     @staticmethod
     def convert(src, dest, dict_file):
+        """ Wrapper function around this class.
+        """
         converter = Converter(src, dest, dict_file)
         converter.run()
 

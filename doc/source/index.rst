@@ -9,14 +9,15 @@ SpiNNUtils
 ==========
 
 .. automodule:: spinn_utilities
+    :noindex:
 
 Contents
 --------
 
 .. toctree::
-   :maxdepth: 10
+    :maxdepth: 10
 
-   modules
+    modules
 
 
 Indices and tables

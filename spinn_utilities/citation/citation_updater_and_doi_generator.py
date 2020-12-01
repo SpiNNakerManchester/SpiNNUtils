@@ -46,6 +46,21 @@ AUTHOR_ORCID = "orcid"
 IDENTIFIER = 'identifier'
 
 
+class _ZenodoException(Exception):
+    """ Exception from a call to Zenodo.
+    """
+
+    def __init__(self, operation, expected, request):
+        Exception.__init__(
+            self,
+            "don't know what went wrong. got wrong status code when trying "
+            "to {}. Got error code {} (when expecting {}) with response "
+            "content {}".format(
+                operation, request.status_code, expected, request.content))
+        self.request = request
+        self.expected = expected
+
+
 class _Zenodo(object):
     """ Manages low level access to Zenodo.
     """
@@ -53,11 +68,12 @@ class _Zenodo(object):
     # pragma: no cover
     __slots__ = ("__zenodo_token", )
 
-    _DEPOSIT_GET_URL = "https://zenodo.org/api/deposit/depositions"
-    _DEPOSIT_PUT_URL = 'https://zenodo.org/api/deposit/depositions/{}/files'
-    _PUBLISH_URL = \
-        'https://zenodo.org/api/deposit/depositions/{}/actions/publish'
+    _BASE_URI = "https://zenodo.org/api"
+    _DEPOSIT_GET_URL = _BASE_URI + "/deposit/depositions"
+    _DEPOSIT_PUT_URL = _BASE_URI + "/deposit/depositions/{}/files"
+    _PUBLISH_URL = _BASE_URI + "/deposit/depositions/{}/actions/publish"
     _CONTENT_TYPE = "Content-Type"
+    _JSON = "application/json"
     _ACCESS_TOKEN = 'access_token'
     _RELATED_IDENTIFIERS = 'related_identifiers'
     _VALID_STATUS_REQUEST_GET = 200
@@ -71,7 +87,7 @@ class _Zenodo(object):
     def _json(r):
         try:
             return r.json()
-        except:  # pylint: disable=bare-except
+        except Exception:  # pylint: disable=broad-except
             return None
 
     def get_verify(self, related):
@@ -79,12 +95,10 @@ class _Zenodo(object):
             self._DEPOSIT_GET_URL,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
                     self._RELATED_IDENTIFIERS: related},
-            json={}, headers={self._CONTENT_TYPE: "application/json"})
+            json={}, headers={self._CONTENT_TYPE: self._JSON})
         if r.status_code != self._VALID_STATUS_REQUEST_GET:
-            raise Exception(
-                "don't know what went wrong. got wrong status code when "
-                "trying to request a DOI. Got error code {} with response "
-                "content {}".format(r.status_code, r.content))
+            raise _ZenodoException(
+                "request a DOI", self._VALID_STATUS_REQUEST_GET, r)
         return self._json(r)
 
     def post_create(self, related):
@@ -92,12 +106,10 @@ class _Zenodo(object):
             self._DEPOSIT_GET_URL,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
                     self._RELATED_IDENTIFIERS: related},
-            json={}, headers={self._CONTENT_TYPE: "application/json"})
+            json={}, headers={self._CONTENT_TYPE: self._JSON})
         if r.status_code != self._VALID_STATUS_REQUEST_POST:
-            raise Exception(
-                "don't know what went wrong. got wrong status code when "
-                "trying to get a empty upload. Got error code {} with response"
-                " content {}".format(r.status_code, r.content))
+            raise _ZenodoException(
+                "get an empty upload", self._VALID_STATUS_REQUEST_POST, r)
         return self._json(r)
 
     def post_upload(self, deposit_id, data, files):
@@ -106,11 +118,9 @@ class _Zenodo(object):
             params={self._ACCESS_TOKEN: self.__zenodo_token},
             data=data, files=files)
         if r.status_code != self._VALID_STATUS_REQUEST_POST:
-            raise Exception(
-                "don't know what went wrong. got wrong status code when "
-                "trying to put files and data into the preallocated DOI. "
-                "Got error code {} with response content {}".format(
-                    r.status_code, r.content))
+            raise _ZenodoException(
+                "to put files and data into the preallocated DOI",
+                self._VALID_STATUS_REQUEST_POST, r)
         return self._json(r)
 
     def post_publish(self, deposit_id):
@@ -118,9 +128,8 @@ class _Zenodo(object):
             self._PUBLISH_URL.format(deposit_id),
             params={self._ACCESS_TOKEN: self.__zenodo_token})
         if r.status_code != self._VALID_STATUS_REQUEST_PUBLISH:
-            raise Exception(
-                "don't know what went wrong. got wrong status code when "
-                "trying to publish the DOI")
+            raise _ZenodoException(
+                "publish the DOI", self._VALID_STATUS_REQUEST_PUBLISH, r)
         return self._json(r)
 
 
@@ -304,10 +313,8 @@ class CitationUpdaterAndDoiGenerator(object):
 
         :param version_month: version month, in text form
         :type version_month: str or int
-        :param version_year: version year
-        :type version_year: int
-        :param version_day: version day of month
-        :type version_day: int
+        :param int version_year: version year
+        :param int version_day: version day of month
         :return: the string representation for the cff file
         :rtype: str
         """

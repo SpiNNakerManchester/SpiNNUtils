@@ -157,6 +157,8 @@ class FormatAdapter(logging.LoggerAdapter):
     __kill_level = logging.CRITICAL + 1
     __repeat_at_end = logging.WARNING
     __repeat_messages = []
+    __write_normal = True
+    __report_file = None
 
     @classmethod
     def set_kill_level(cls, level=None):
@@ -173,6 +175,19 @@ class FormatAdapter(logging.LoggerAdapter):
             cls.__kill_level = logging.CRITICAL + 1
         else:
             cls.__kill_level = level
+
+    @classmethod
+    def set_report_File(cls, report_file, write_normal=True):
+        """
+
+        :param report_file:
+        :param write_normal:
+        :return:
+        """
+        cls.__write_normal = write_normal
+        cls.__report_file = report_file
+        with open(report_file, "a") as report_file:
+            report_file.write("This is a record of all logged messages\n")
 
     def __init__(self, logger, extra=None):
         if extra is None:
@@ -223,8 +238,12 @@ class FormatAdapter(logging.LoggerAdapter):
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
                 log_kwargs["exc_info"] = kwargs["exc_info"]
-            self.do_log(
-                level, message, (), **log_kwargs)
+            if self.__write_normal:
+                self.do_log(level, message, (), **log_kwargs)
+            if self.__report_file:
+                with open(self.__report_file, "a") as report_file:
+                    report_file.write(message.fmt)
+                    report_file.write("\n")
 
     @overrides(logging.LoggerAdapter.process, extend_doc=False)
     def process(self, msg, kwargs):
@@ -245,10 +264,20 @@ class FormatAdapter(logging.LoggerAdapter):
         messages = cls._repeat_log()
         if messages:
             level = logging.getLevelName(cls.__repeat_at_end)
-            print("\nThese log messages where generated at level {} or above"
-                  "".format(level), file=sys.stderr)
-            for message in messages:
-                print(message, file=sys.stderr)
+            if cls.__write_normal:
+                print("\nThese log messages where generated at level {} or "
+                      "above".format(level), file=sys.stderr)
+                for message in messages:
+                    print(message, file=sys.stderr)
+            else:
+                print("\nWARNING: {} log messages where generated at level {} " \
+                      "or above.".format(len(messages), level),
+                      file=sys.stderr)
+                print("This may mean that the results are invalid.",
+                      file=sys.stderr)
+                print("You are advised to check the details of these here: {}"
+                      "".format(cls.__report_file),
+                      file=sys.stderr)
 
     @classmethod
     def _repeat_log(cls):

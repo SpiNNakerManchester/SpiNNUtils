@@ -19,13 +19,14 @@ import re
 from six.moves import reduce
 import sys
 from six import string_types
+from spinn_utilities.log import FormatAdapter
 
 if sys.version_info >= (3, 5):
     from math import gcd as _gcd  # pylint: disable=no-name-in-module
 else:
     from fractions import gcd as _gcd  # noqa: ignore=W1505
 
-logger = logging.getLogger(__name__)
+logger = FormatAdapter(logging.getLogger(__name__))
 FINISHED_FILENAME = "finished"
 
 

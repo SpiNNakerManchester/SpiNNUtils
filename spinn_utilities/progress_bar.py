@@ -22,11 +22,12 @@ import os
 import random
 import sys
 from six import PY3
+from spinn_utilities.log import FormatAdapter
 from spinn_utilities.overrides import overrides
 from spinn_utilities import logger_utils
 import spinn_utilities
 
-logger = logging.getLogger(__name__)
+logger = FormatAdapter(logging.getLogger(__name__))
 
 
 class ProgressBar(object):

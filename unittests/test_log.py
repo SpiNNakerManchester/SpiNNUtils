@@ -101,7 +101,7 @@ def test_waning_file():
     log = MockLog()
     logger = FormatAdapter(log)
     log2 = MockLog()
-    logger2 = FormatAdapter(log)
+    logger2 = FormatAdapter(log2)
     report_file = tempfile.mktemp()
     logger2.set_report_File(report_file)
     logger.warning("This is a warning")

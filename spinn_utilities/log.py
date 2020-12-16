@@ -266,10 +266,9 @@ class FormatAdapter(logging.LoggerAdapter):
         if messages:
             level = logging.getLevelName(cls.__repeat_at_end)
             if cls.__report_file:
-                if cls.__report_file:
-                    print("\nWARNING: {} log messages where generated at "
-                          "level {} or above.".format(len(messages), level),
-                          file=sys.stderr)
+                print("\nWARNING: {} log messages where generated at "
+                      "level {} or above.".format(len(messages), level),
+                      file=sys.stderr)
                 print("This may mean that the results are invalid.",
                       file=sys.stderr)
                 print("You are advised to check the details of these here: {}"

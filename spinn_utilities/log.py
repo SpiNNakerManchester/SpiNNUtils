@@ -258,10 +258,11 @@ class FormatAdapter(logging.LoggerAdapter):
         .. note::
             Should only be called externally from test code!
         """
-        try:
-            return cls.__repeat_messages
-        finally:
-            cls.__repeat_messages = []
+        # try:
+        #     return cls.__repeat_messages
+        # finally:
+        #     cls.__repeat_messages = []
+        return []
 
 
 atexit.register(FormatAdapter._atexit_handler)

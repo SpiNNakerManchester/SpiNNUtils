@@ -97,6 +97,7 @@ def test_logger_exception():
     assert log.last_level == logging.ERROR
     assert len(logger._repeat_log()) == 1
 
+
 def test_waning_file():
     log = MockLog()
     logger = FormatAdapter(log)

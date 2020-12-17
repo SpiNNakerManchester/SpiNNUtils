@@ -115,7 +115,7 @@ def test_weird_config1():
 class MockConfig2():
 
     def get(self, section, option):
-        return "foo,bar"
+        return "critical"
 
     def has_section(self, section):
         return True

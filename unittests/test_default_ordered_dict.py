@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import copy
+import pickle
 import pytest
 from spinn_utilities.default_ordered_dict import DefaultOrderedDict
 from spinn_utilities.ordered_set import OrderedSet
@@ -53,3 +55,24 @@ def test_keys_in_order():
     c = o["c"]
     assert a == b == c
     assert tuple(o) == ("a", "b", "c")
+
+def test_callable():
+    try:
+        DefaultOrderedDict("Not callable")
+        assert False
+    except TypeError:
+        pass
+
+def test_special_methods():
+    o = DefaultOrderedDict(list)
+    o["gamma"].append("bacon")
+    # test _-reduce
+    pickle.dumps(o)
+    # test copy
+    o2 = o.copy()
+    assert o2["gamma"] == ["bacon"]
+    o3 = copy.deepcopy(o)
+    assert o3["gamma"] == ["bacon"]
+    a = repr(o)
+    b = repr(o3)
+    assert a == b

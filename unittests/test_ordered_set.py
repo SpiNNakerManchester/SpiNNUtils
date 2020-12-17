@@ -144,6 +144,8 @@ def test_peek():
     assert p1 == p2
     p3 = o.peek(last=False)
     assert p3 == 1
+    p4 = o.pop(last=False)
+    assert p4 == p3
 
 
 def test_reverse():

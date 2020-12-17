@@ -56,7 +56,7 @@ class OrderedSet(MutableSet):
         if last:
             return next(reversed(self))
         else:
-            return next(self)
+            return next(iter(self))
 
     def __len__(self):
         return len(self._map)

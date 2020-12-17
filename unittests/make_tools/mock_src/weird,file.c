@@ -30,6 +30,10 @@ static String woops = "log_info(";
 
     log_info("test -three %f", -3.0f);
 
+    log_info("test double %F", -3.0d);
+
+    log_info("test slash // %f", 3/2);
+
     log_info("this is ok");
 
     //log_info("this is just a comment");
@@ -99,6 +103,9 @@ static String woops = "log_info(";
             ds_regions->version >> VERSION_SHIFT,
             ds_regions->version & VERSION_MASK);
 
+    log_inf("blah",
+            ")",
+            "more");
     /* comment */ log_info("comment before");
 
     fluff fluff

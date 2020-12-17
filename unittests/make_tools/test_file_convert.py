@@ -60,3 +60,38 @@ class TestConverter(unittest.TestCase):
         assert("then a backslash comment on a middle line" in data)
         assert("then a standard comment on a middle line" in data)
         assert("comment before" in data)
+
+    def test_exceptions(self):
+        file_name = "weird,file.c"
+        src = os.path.join("mock_src", file_name)
+        dest = os.path.join("modified_src", file_name)
+        dict = dest + "dict"
+        convertor =  FileConverter(src, dest, dict)
+        try:
+            convertor.split_by_comma_plus(None, 12)
+            assert False
+        except Exception as ex1:
+            assert "Unexpected line" in str(ex1)
+        try:
+            convertor._short_log(12)
+            assert False
+        except Exception as ex2:
+            assert "Unexpected line" in str(ex2)
+        try:
+            convertor._log_full = '"test %f", -3.0f, 12);'
+            convertor._short_log(12)
+            assert False
+        except Exception as ex2:
+            assert "Too many" in str(ex2)
+        try:
+            convertor._log_full = '"test %f %i", -3.0f);'
+            convertor._short_log(12)
+            assert False
+        except Exception as ex2:
+            assert "Too few" in str(ex2)
+        try:
+            convertor._log_full = '"test %1", -3.0f);'
+            convertor._short_log(12)
+            assert False
+        except Exception as ex2:
+            assert "Unexpected formatString" in str(ex2)

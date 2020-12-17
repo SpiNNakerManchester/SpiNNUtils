@@ -14,7 +14,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from spinn_utilities.log import FormatAdapter, LogLevelTooHighException
+from spinn_utilities.log import (
+    ConfiguredFilter, ConfiguredFormatter, FormatAdapter,
+    LogLevelTooHighException)
 
 
 class MockLog(object):
@@ -95,3 +97,32 @@ def test_logger_exception():
     assert "exc_info" in log.last_kwargs
     assert log.last_level == logging.ERROR
     assert len(logger._repeat_log()) == 1
+
+
+class MockConfig1():
+
+    def get(self, section, option):
+        return "debug"
+
+    def has_section(self, section):
+        return False
+
+
+def test_weird_config1():
+    ConfiguredFormatter(MockConfig1())
+    ConfiguredFilter(MockConfig1())
+
+class MockConfig2():
+
+    def get(self, section, option):
+        return "foo,bar"
+
+    def has_section(self, section):
+        return True
+
+    def has_option(self, section, option):
+        return option == 'warning'
+
+def test_weird_config2():
+    ConfiguredFormatter(MockConfig2())
+    ConfiguredFilter(MockConfig2())

@@ -45,6 +45,25 @@ class TestReplacer(unittest.TestCase):
                   " spikes 20"
         assert (message == new)
 
+    def test_float(self):
+        replacer = Replacer(os.path.join(PATH, "test"))
+        new = replacer.replace("1021" + TOKEN + "3f800000")
+        message = "[INFO] (weird;file.c: 32): a float 1.0"
+        assert (message == new)
+
+    def test_double(self):
+        replacer = Replacer(os.path.join(PATH, "test"))
+        new = replacer.replace("1022" + TOKEN + "40379999" + TOKEN + "9999999a")
+        message = "[INFO] (weird;file.c: 34): a double 23.6"
+        assert (message == new)
+
+    def test_bad(self):
+        replacer = Replacer(os.path.join(PATH, "test"))
+        new = replacer.replace("1007" + TOKEN + "10")
+        # An exception so just output the input
+        message = "1007" + TOKEN + "10"
+        assert (message == new)
+
     def near_equals(self, a, b):
         diff = a - b
         if diff == 0:

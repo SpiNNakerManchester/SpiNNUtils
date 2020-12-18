@@ -396,16 +396,13 @@ class FileConverter(object):
             front += TOKEN
             if match.endswith("f"):
                 front += "%x"
-            elif match.endswith("F"):
-                front += "%x" + TOKEN + "%x"
-            else:
-                front += match
-            if match.endswith("f"):
                 back += ", float_to_int({})".format(parts[i + 1])
             elif match.endswith("F"):
+                front += "%x" + TOKEN + "%x"
                 back += DOUBLE_HEX.format(parts[i + 1])
             else:
-                back += ", {}".format(parts[i+1])
+                front += match
+                back += ", {}".format(parts[i + 1])
         front += '", {}'.format(self._message_id)
         back += ");"
         return original, front + back

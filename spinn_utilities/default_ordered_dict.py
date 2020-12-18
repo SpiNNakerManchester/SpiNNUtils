@@ -18,6 +18,7 @@ try:
     from collections.abc import Callable
 except ImportError:
     from collections import Callable
+from six import PY2
 
 
 class DefaultOrderedDict(OrderedDict):
@@ -47,7 +48,11 @@ class DefaultOrderedDict(OrderedDict):
             args = tuple()
         else:
             args = self.default_factory,
-        return type(self), args, None, None, iter(self.items())
+        if PY2:
+            return type(self), args, None, None, self.items()
+        else:
+            return type(self), args, None, None, iter(self.items())
+
 
     def copy(self):
         return self.__copy__()
@@ -57,8 +62,12 @@ class DefaultOrderedDict(OrderedDict):
 
     def __deepcopy__(self, memo):
         import copy
-        return type(self)(self.default_factory,
-                          copy.deepcopy(iter(self.items())))
+        if PY2:
+            return type(self)(self.default_factory,
+                              copy.deepcopy(self.items()))
+        else:
+            return type(self)(self.default_factory,
+                              copy.deepcopy(iter(self.items())))
 
     def __repr__(self):
         return 'OrderedDefaultDict(%s, %s)' % (

@@ -53,7 +53,6 @@ class DefaultOrderedDict(OrderedDict):
         else:
             return type(self), args, None, None, iter(self.items())
 
-
     def copy(self):
         return self.__copy__()
 

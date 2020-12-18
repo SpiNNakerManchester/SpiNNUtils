@@ -66,7 +66,7 @@ class TestConverter(unittest.TestCase):
         src = os.path.join("mock_src", file_name)
         dest = os.path.join("modified_src", file_name)
         dict = dest + "dict"
-        convertor =  FileConverter(src, dest, dict)
+        convertor = FileConverter(src, dest, dict)
         try:
             convertor.split_by_comma_plus(None, 12)
             assert False

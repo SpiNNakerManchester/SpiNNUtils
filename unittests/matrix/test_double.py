@@ -51,6 +51,7 @@ def test_singleSet_inverted():
     assert double["foo"][1] == "One"
     assert double[1]["bar"] == "Two"
 
+
 def test_errors():
     matrix = DemoMatrix()
     double = DoubleDict(xtype=str, ytype=int, matrix=matrix)
@@ -85,4 +86,3 @@ def test_errors():
         assert False
     except KeyError as ex:
         assert "unexpected type" in str(ex)
-

@@ -112,6 +112,7 @@ def test_weird_config1():
     ConfiguredFormatter(MockConfig1())
     ConfiguredFilter(MockConfig1())
 
+
 class MockConfig2():
 
     def get(self, section, option):
@@ -122,6 +123,7 @@ class MockConfig2():
 
     def has_option(self, section, option):
         return option == 'warning'
+
 
 def test_weird_config2():
     ConfiguredFormatter(MockConfig2())

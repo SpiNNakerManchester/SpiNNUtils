@@ -53,7 +53,8 @@ class TestReplacer(unittest.TestCase):
 
     def test_double(self):
         replacer = Replacer(os.path.join(PATH, "test"))
-        new = replacer.replace("1022" + TOKEN + "40379999" + TOKEN + "9999999a")
+        new = replacer.replace(
+            "1022" + TOKEN + "40379999" + TOKEN + "9999999a")
         message = "[INFO] (weird;file.c: 34): a double 23.6"
         assert (message == new)
 

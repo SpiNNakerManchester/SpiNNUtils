@@ -56,12 +56,14 @@ def test_keys_in_order():
     assert a == b == c
     assert tuple(o) == ("a", "b", "c")
 
+
 def test_callable():
     try:
         DefaultOrderedDict("Not callable")
         assert False
     except TypeError:
         pass
+
 
 def test_special_methods():
     o = DefaultOrderedDict(list)

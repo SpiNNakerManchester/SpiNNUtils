@@ -14,9 +14,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from spinn_utilities.log import (
-    ConfiguredFilter, ConfiguredFormatter, FormatAdapter,
-    LogLevelTooHighException)
+import tempfile
+from spinn_utilities.log import (ConfiguredFilter, ConfiguredFormatter)
+from spinn_utilities.log import FormatAdapter, LogLevelTooHighException
 
 
 class MockLog(object):
@@ -128,3 +128,18 @@ class MockConfig2():
 def test_weird_config2():
     ConfiguredFormatter(MockConfig2())
     ConfiguredFilter(MockConfig2())
+
+
+def test_waning_file():
+    log = MockLog()
+    logger = FormatAdapter(log)
+    log2 = MockLog()
+    logger2 = FormatAdapter(log2)
+    report_file = tempfile.mktemp()
+    logger2.set_report_File(report_file)
+    logger.warning("This is a warning")
+    logger2.error("And an Error")
+    with open(report_file, "r") as myfile:
+        data = myfile.readlines()
+    assert ("This is a warning\n" in data)
+    assert ("And an Error\n" in data)

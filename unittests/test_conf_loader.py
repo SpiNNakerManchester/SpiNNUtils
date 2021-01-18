@@ -217,3 +217,20 @@ def test_advanced_use(tmpdir, default_config):
                                          config_parsers=[("Abc", parseAbc)])
         assert config.options("Abc") == ["ghi"]
         assert config.getfloat("Abc", "ghi") == 3.75
+
+
+def test_str_list(tmpdir):
+    with tmpdir.as_cwd():
+        f = tmpdir.join(CFGFILE)
+        f.write("[abc]\n"
+                "as_list=bacon, is,so ,cool \n"
+                "as_none=None\n"
+                "as_empty=\n"
+                "fluff=more\n")
+        config = conf_loader.load_config(CFGFILE, [CFGPATH])
+        assert config.get_str_list("abc", "as_list") == \
+               ["bacon", "is", "so", "cool"]
+        assert config.get_str_list("abc", "as_none") == []
+        assert config.get_str_list("abc", "as_empty") == []
+        assert config.get_str_list("abc", "fluff") == ["more"]
+

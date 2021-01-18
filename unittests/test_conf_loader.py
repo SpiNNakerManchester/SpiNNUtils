@@ -233,4 +233,3 @@ def test_str_list(tmpdir):
         assert config.get_str_list("abc", "as_none") == []
         assert config.get_str_list("abc", "as_empty") == []
         assert config.get_str_list("abc", "fluff") == ["more"]
-

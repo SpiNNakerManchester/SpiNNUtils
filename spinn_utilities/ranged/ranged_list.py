@@ -275,6 +275,8 @@ class RangedList(AbstractList):
             values = list(function_iterator(value, size, ids))
         else:
             values = list(value)
+        if len(values) == 0:
+            values = [[] for _ in range(size)]
         if len(values) != size:
             raise Exception("The number of values does not equal the size")
         return values

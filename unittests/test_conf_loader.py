@@ -16,6 +16,7 @@
 # pylint: disable=redefined-outer-name, unused-argument
 import os
 import pytest
+import random
 from six.moves import configparser
 import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture
@@ -32,19 +33,21 @@ TWOFILE = "config_two.cfg"
 TWOPATH = os.path.join(os.path.dirname(unittests.__file__), TWOFILE)
 VALIDATION_PATH = os.path.join(os.path.dirname(unittests.__file__),
                                "validation_config.cfg")
-NOTTHERE = "test_config_for_spinnutils_unittests.txt"
-NOTTHEREPATH = os.path.join(os.path.expanduser("~"), ".{}".format(NOTTHERE))
 
 
 @pytest.fixture
 def not_there():
-    if os.path.exists(NOTTHEREPATH):
+    name = "test_config_for_spinnutils_unittests.{}.txt".format(
+        random.randint(1, 1000000))
+    place = os.path.join(os.path.expanduser("~"), ".{}".format(name))
+    if os.path.exists(place):
         # Check existing is a config from previsous test run
         config = configparser.ConfigParser()
-        config.read(NOTTHEREPATH)
+        config.read(place)
         # Remove it
-        os.remove(NOTTHEREPATH)
-    return NOTTHEREPATH
+        os.remove(place)
+    yield (name, place)
+    os.remove(place)
 
 
 @pytest.fixture
@@ -148,30 +151,34 @@ def test_new_section(tmpdir, default_config):
         assert config.get("other", "sam") == "cat"
 
 
-def test_use_one_default(not_there):
-    with pytest.raises(NoConfigFoundException):
-        conf_loader.load_config(NOTTHERE, [CFGPATH])
-    # Load the now created file
-    config = configparser.ConfigParser()
-    config.read(NOTTHEREPATH)
-    assert config is not None
-    assert config.sections() == ["sect"]
-    assert config.options("sect") == ["foobob"]
-    assert config.get("sect", "foobob") == "bar"
+def test_use_one_default(tmpdir, not_there):
+    name, place = not_there
+    with tmpdir.as_cwd():
+        with pytest.raises(NoConfigFoundException):
+            conf_loader.load_config(name, [CFGPATH])
+        # Load the now created file
+        config = configparser.ConfigParser()
+        config.read(place)
+        assert config is not None
+        assert config.sections() == ["sect"]
+        assert config.options("sect") == ["foobob"]
+        assert config.get("sect", "foobob") == "bar"
 
 
 def test_use_two_default(tmpdir, default_config, not_there):  # @UnusedVariable
-    with pytest.raises(NoConfigFoundException):
-        conf_loader.load_config(NOTTHERE, [ONEPATH, TWOPATH])
-    # Load the now created file
-    config = configparser.ConfigParser()
-    config.read(NOTTHEREPATH)
-    assert config is not None
-    assert config.sections() == ["sect", "extra"]
-    assert config.options("sect") == ["foo", "bar"]
-    assert config.get("sect", "foo") == "notbar"
-    assert config.options("extra") == ["bob", "sam"]
-    assert config.get("extra", "sam") == "cat"
+    name, place = not_there
+    with tmpdir.as_cwd():
+        with pytest.raises(NoConfigFoundException):
+            conf_loader.load_config(name, [ONEPATH, TWOPATH])
+        # Load the now created file
+        config = configparser.ConfigParser()
+        config.read(place)
+        assert config is not None
+        assert config.sections() == ["sect", "extra"]
+        assert config.options("sect") == ["foo", "bar"]
+        assert config.get("sect", "foo") == "notbar"
+        assert config.options("extra") == ["bob", "sam"]
+        assert config.get("extra", "sam") == "cat"
 
 
 def test_None_machine_spec_file(tmpdir, default_config):

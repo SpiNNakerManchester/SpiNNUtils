@@ -57,7 +57,7 @@ def is_singleton(value):
     if hasattr(value, '__iter__'):
         if isinstance(value, string_types):
             return True
-        return not value  #  includes len(value) == 0
+        return not value  # includes len(value) == 0
     return True
 
 

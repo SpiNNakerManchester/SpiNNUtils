@@ -472,3 +472,10 @@ def test_numpy_selector():
     rl = RangedList(value=range(5))
     selector = numpy.array([1, 3, 4])
     assert [1, 3, 4] == rl.selector_to_ids(selector)
+
+
+def test_array_or_arrays_start_empty():
+    rl = RangedList(value=[], size=5)
+    assert [[], [], [], [], []] == list(rl)
+    rl.set_value_by_ids(ids=[1], value=[[2]])
+    assert [[], [2], [], [], []] == list(rl)

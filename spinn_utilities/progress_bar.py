@@ -215,12 +215,7 @@ class ProgressBar(object):
         c = cls
         if _EnhancedProgressBar._ENABLED:
             c = _EnhancedProgressBar
-        if PY3:
-            # Disable a pylint error about something that doesn't apply in 2.7
-            # pylint: disable=missing-super-argument
-            return super().__new__(c)
-        else:
-            return object.__new__(c)
+        return super().__new__(c)
 
 
 class _EnhancedProgressBar(ProgressBar):

@@ -17,10 +17,7 @@ import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
 from six.moves import configparser
 
 
-# pylint: disable=slots-on-old-class
 class CamelCaseConfigParser(configparser.RawConfigParser):
-    # RawConfigParser is a classobj in Python 2.7, not a type (i.e., it
-    # doesn't inherit from object), and so cannot be used with super().
     __slots__ = ["_none_marker", "_read_files"]
 
     def optionxform(self, optionstr):

@@ -54,7 +54,11 @@ def is_singleton(value):
         Strings are considered singleton as rarely will someone use a String
         to represent an iterable of characters
     """
-    return not hasattr(value, '__iter__') or isinstance(value, string_types)
+    if hasattr(value, '__iter__'):
+        if isinstance(value, string_types):
+            return True
+        return not value  #  includes len(value) == 0
+    return True
 
 
 def _lcm(a, b):

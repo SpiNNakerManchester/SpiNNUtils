@@ -13,15 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=redefined-builtin
-from past.builtins import range, xrange
-from six import raise_from
+import numpy
 from spinn_utilities.overrides import overrides
 from spinn_utilities.helpful_functions import is_singleton
 from .abstract_list import AbstractList
 from .multiple_values_exception import MultipleValuesException
-
-import numpy
 
 
 def function_iterator(function, size, ids=None):
@@ -31,14 +27,15 @@ def function_iterator(function, size, ids=None):
         list(function_iterator(lambda x: x * 2 , 3, ids=[2, 4, 6]))
 
     :param function: A function with one integer parameter that returns a value
-    :param size: The number of elements to put in the list. If used, the\
-        function will be called with `range(size)`. Ignored if `ids` provided
+    :param size: The number of elements to put in the list. If used, the
+        function will be called with ``range(size)``. Ignored if ``ids``
+        provided
     :param ids: A list of IDs to call the function for or None to use the size.
     :type ids: list of int
     :return: a list of values
     """
     if ids is None:
-        ids = xrange(size)
+        ids = range(size)
     for _id in ids:
         yield function(_id)
 
@@ -55,7 +52,7 @@ class RangedList(AbstractList):
         """
         :param size: Fixed length of the list
         :param value: value to given to all elements in the list
-        :param key: The dict key this list covers.\
+        :param key: The dict key this list covers.
             This is used only for better Exception messages
         :param use_list_as_value: True if the value *is* a list
         """
@@ -156,7 +153,7 @@ class RangedList(AbstractList):
         """
         if self._ranged_based:
             for (start, stop, value) in self._ranges:
-                for _ in xrange(stop - start):
+                for _ in range(stop - start):
                     yield value
         else:
             for value in self._ranges:
@@ -180,7 +177,7 @@ class RangedList(AbstractList):
             while start < slice_stop:
                 first = max(start, slice_start)
                 end_point = min(stop, slice_stop)
-                for _ in xrange(end_point - first):
+                for _ in range(end_point - first):
                     yield value
                 try:
                     (start, stop, value) = next(ranges)
@@ -249,7 +246,7 @@ class RangedList(AbstractList):
         """ Determines if the value should be treated as a list.
 
         .. note::
-            This method can be extended to add other checks for list in which\
+            This method can be extended to add other checks for list in which
             case :py:meth:`as_list` must also be extended.
         """
 
@@ -264,7 +261,7 @@ class RangedList(AbstractList):
             An exception is raised if value cannot be given size elements.
 
         .. note::
-            This method can be extended to add other conversions to list in\
+            This method can be extended to add other conversions to list in
             which case :py:meth:`is_list` must also be extended.
 
         :param value:
@@ -305,8 +302,8 @@ class RangedList(AbstractList):
         """ Sets the value for a single ID to the new value.
 
         .. note::
-            This method only works for a single positive int ID.\
-            Use `set` or `__set__` for slices, tuples, lists and negative\
+            This method only works for a single positive int ID.
+            Use ``set`` or ``__set__`` for slices, tuples, lists and negative
             indexes.
 
         :param id: Single ID
@@ -370,8 +367,8 @@ class RangedList(AbstractList):
         """ Sets the value for a single range to the new value.
 
         .. note::
-            This method only works for a single positive int ID.\
-            Use `set` or `__set__` for slices, tuples, lists and negative\
+            This method only works for a single positive int ID.
+            Use ``set`` or ``__set__`` for slices, tuples, lists and negative
             indexes.
 
         :param slice_start: Start of the range
@@ -393,7 +390,7 @@ class RangedList(AbstractList):
 
         # If non-ranged-based, set the values directly
         if not self._ranged_based:
-            for id_value in xrange(slice_start, slice_stop):
+            for id_value in range(slice_start, slice_stop):
                 self._ranges[id_value] = value
             return
 
@@ -467,7 +464,7 @@ class RangedList(AbstractList):
                 self.set_value_by_id(id_value, value)
 
     def set_value_by_selector(self, selector, value, use_list_as_value=False):
-        """ Support for the `list[x] =` format.
+        """ Support for the ``list[x] =`` format.
 
         :param id: A single ID, a slice of IDs or a list of IDs
         :param value:
@@ -517,4 +514,4 @@ class RangedList(AbstractList):
         try:
             return self._default
         except AttributeError as e:
-            raise_from(Exception("Default value not set."), e)
+            raise Exception("Default value not set.") from e

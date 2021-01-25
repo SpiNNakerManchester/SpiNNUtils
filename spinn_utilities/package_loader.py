@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
 import os
 import sys
 import traceback
@@ -23,12 +22,13 @@ def all_modules(directory, prefix, remove_pyc_files=False):
     """ List all the python files found in this directory giving then the\
         prefix.
 
-    Any file that ends in either ``.py`` or ``.pyc`` is assume a python module\
+    Any file that ends in either ``.py`` or ``.pyc`` is assume a python module
     and added to the result set.
 
-    :param directory: path to check for python files
-    :param prefix: package prefix top add to the file name
+    :param str directory: path to check for python files
+    :param str prefix: package prefix top add to the file name
     :return: set of python package names
+    :rtype: set(str)
     """
     results = set()
     for module in os.listdir(directory):
@@ -62,14 +62,14 @@ def load_modules(
     """ Loads all the python files found in this directory, giving them the\
         specified prefix
 
-    Any file that ends in either ``.py`` or ``.pyc`` is assume a python module\
+    Any file that ends in either ``.py`` or ``.pyc`` is assume a python module
     and added to the result set.
 
-    :param directory: path to check for python files
-    :param prefix: package prefix top add to the file name
-    :param remove_pyc_files: True if ``.pyc`` files should be deleted
-    :param exclusions: a list of modules to exclude
-    :param gather_errors:\
+    :param str directory: path to check for python files
+    :param str prefix: package prefix top add to the file name
+    :param bool remove_pyc_files: True if ``.pyc`` files should be deleted
+    :param list(str) exclusions: a list of modules to exclude
+    :param bool gather_errors:
         True if errors should be gathered, False to report on first error
     :return: None
     """
@@ -105,10 +105,10 @@ def load_module(
         name, remove_pyc_files=False, exclusions=None, gather_errors=True):
     """ Loads this modules and all its children.
 
-    :param name: name of the modules
-    :param remove_pyc_files: True if ``.pyc`` files should be deleted
-    :param exclusions: a list of modules to exclude
-    :param gather_errors:\
+    :param str name: name of the modules
+    :param bool remove_pyc_files: True if ``.pyc`` files should be deleted
+    :param list(str) exclusions: a list of modules to exclude
+    :param bool gather_errors:
         True if errors should be gathered, False to report on first error
     :return: None
     """

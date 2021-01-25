@@ -13,15 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
 import os
 import yaml
 import io
 import importlib
 import argparse
 import sys
-
-from spinn_utilities.citation import CitationUpdaterAndDoiGenerator
+from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
 
 REQUIREMENTS_FILE = "requirements.txt"
 C_REQUIREMENTS_FILE = "c_requirements.txt"
@@ -55,7 +53,7 @@ class CitationAggregator(object):
             self, module_to_start_at, aggregated_citation_file):
         """ Entrance method for building the aggregated citation file
 
-        :param module_to_start_at:\
+        :param module_to_start_at:
             the top level module to figure out its citation file for
         :type module_to_start_at: python module
         :param aggregated_citation_file: file name of aggregated citation file
@@ -68,7 +66,7 @@ class CitationAggregator(object):
             os.path.abspath(module_to_start_at.__file__))), CITATION_FILE)
         modules_seen_so_far = set()
         modules_seen_so_far.add("")  # Make sure the empty entry is absent
-        with open(top_citation_file_path, 'r') as stream:
+        with open(top_citation_file_path) as stream:
             top_citation_file = yaml.safe_load(stream)
         top_citation_file[REFERENCES_YAML_POINTER] = list()
 
@@ -91,7 +89,7 @@ class CitationAggregator(object):
                 pypi_to_import_map_file)
 
         if os.path.isfile(requirements_file_path):
-            with open(requirements_file_path, "r") as r_file:
+            with open(requirements_file_path) as r_file:
                 for line in r_file:
                     module = line.strip()
                     if module.startswith("#"):
@@ -111,7 +109,7 @@ class CitationAggregator(object):
                                   .format(module, str(e)))
 
         if os.path.isfile(c_requirements_file_path):
-            with open(c_requirements_file_path, "r") as r_file:
+            with open(c_requirements_file_path) as r_file:
                 for line in r_file:
                     module = line.strip()
                     if module.startswith("#"):
@@ -132,11 +130,13 @@ class CitationAggregator(object):
 
         :param aggregated_citation_file: file path to the PYPI map
         :return: map between PYPI names and import names
+        :rtype: dict
         """
         pypi_to_import_map = dict()
-        for line in open(aggregated_citation_file, "r"):
-            [pypi, import_command] = line.split(":")
-            pypi_to_import_map[pypi] = import_command.split("\n")[0]
+        with open(aggregated_citation_file) as f:
+            for line in f:
+                [pypi, import_command] = line.split(":")
+                pypi_to_import_map[pypi] = import_command.split("\n")[0]
         return pypi_to_import_map
 
     def _handle_c_dependency(
@@ -144,10 +144,8 @@ class CitationAggregator(object):
         """ Handle a c code dependency
 
         :param top_citation_file: YAML file for the top citation file
-        :param module: module to find
+        :param str module: module to find
         :type top_citation_file: YAML file
-        :type module: str
-        :return: None
         """
         cleaned_path = self.locate_path_for_c_dependency(module)
         if cleaned_path is not None:
@@ -187,10 +185,9 @@ class CitationAggregator(object):
         """ Go though the top level path and tries to locate other cff \
             files that need to be added to the references pile
 
-        :param reference_entry:\
+        :param reference_entry:
             The reference entry to add new dependencies as references for.
         :param software_path: the path to search in
-        :rtype: None
         """
         for possible_extra_citation_file in os.listdir(software_path):
             if possible_extra_citation_file.endswith(".cff"):
@@ -213,7 +210,7 @@ class CitationAggregator(object):
         :type top_citation_file: YAML file
         :param imported_module: the actual imported module
         :type imported_module: ModuleType
-        :param modules_seen_so_far: \
+        :param modules_seen_so_far:
             list of names of dependencies already processed
         :type modules_seen_so_far: list
         :param module_name: the name of this module to consider as a dependency
@@ -246,14 +243,13 @@ class CitationAggregator(object):
             module_name):
         """ Take a module level and tries to locate and process a citation file
 
-        :param citation_level_dir: \
+        :param str citation_level_dir:
             the expected level where the CITATION.cff should be
-        :type citation_level_dir: str
         :param imported_module: the module after being imported
         :type imported_module: python module
         :param modules_seen_so_far: list of dependencies already processed
         :type modules_seen_so_far: list
-        :return: the reference entry in json format
+        :return: the reference entry in JSON format
         :rtype: dict
         """
 

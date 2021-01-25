@@ -62,7 +62,7 @@ class ExecutableFinder(object):
                 with open(self._paths_log, "a") as log_file:
                     log_file.write(path)
                     log_file.write("\n")
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 pass
 
     @property
@@ -92,7 +92,7 @@ class ExecutableFinder(object):
                         with open(self._binary_log, "a") as log_file:
                             log_file.write(potential_filename)
                             log_file.write("\n")
-                    except Exception:
+                    except Exception:  # pylint: disable=broad-except
                         pass
                 return potential_filename
 
@@ -140,7 +140,7 @@ class ExecutableFinder(object):
                 for file_name in os.listdir(folder):
                     if file_name.endswith(".aplx"):
                         in_folders.add(os.path.join(folder, file_name))
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 # Skip folders not found
                 pass
 
@@ -175,5 +175,5 @@ if __name__ == "__main__":
     try:
         ef.check_logs()
         ef.clear_logs()
-    except Exception as ex:
+    except Exception as ex:  # pylint: disable=broad-except
         print(ex)

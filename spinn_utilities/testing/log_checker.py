@@ -13,8 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-
 _WRITE_LOGS_TO_STDOUT = True
 
 
@@ -43,7 +41,7 @@ def assert_logs_contains_once(level, log_records, message):
         level with the given sub-message.
 
     .. note::
-        While this code does not depend on testfixtures,\
+        While this code does not depend on testfixtures,
         you will need testfixtures to generate the input data
 
     :param level: The log level. Probably "INFO", "WARNING" or "ERROR".
@@ -74,7 +72,7 @@ def assert_logs_error_contains(log_records, submessage):
     """ Checks it the log records contain an ERROR log with this sub-message
 
     .. note::
-        While this code does not depend on testfixtures,\
+        While this code does not depend on testfixtures,
         you will need testfixtures to generate the input data
 
     :param log_records: list of log records returned by testfixtures.LogCapture
@@ -89,7 +87,7 @@ def assert_logs_info_contains(log_records, sub_message):
     """ Checks it the log records contain an INFO log with this sub-message
 
     .. note::
-        While this code does not depend on testfixtures,\
+        While this code does not depend on testfixtures,
         you will need testfixtures to generate the input data
 
     :param log_records: list of log records returned by testfixtures.LogCapture
@@ -105,7 +103,7 @@ def assert_logs_error_not_contains(log_records, submessage):
         sub-message
 
     .. note::
-        While this code does not depend on testfixtures,\
+        While this code does not depend on testfixtures,
         you will need testfixtures to generate the input data
 
     :param log_records: list of log records returned by testfixtures.LogCapture
@@ -121,7 +119,7 @@ def assert_logs_info_not_contains(log_records, submessage):
         sub-message
 
     .. note::
-        While this code does not depend on testfixtures,\
+        While this code does not depend on testfixtures,
         you will need testfixtures to generate the input data
 
     :param log_records: list of log records returned by testfixtures.LogCapture

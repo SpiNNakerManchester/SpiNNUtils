@@ -17,9 +17,9 @@
 from __future__ import print_function
 import appdirs
 import collections
+import configparser
 import logging
 import os
-from six.moves import configparser
 from spinn_utilities import log
 from spinn_utilities.configs import (
     CamelCaseConfigParser, CaseSensitiveParser, NoConfigFoundException,

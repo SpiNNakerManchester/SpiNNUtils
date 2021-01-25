@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, division
 from collections import defaultdict
 from datetime import date
 import logging
@@ -21,7 +20,6 @@ import math
 import os
 import random
 import sys
-from six import PY3
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.overrides import overrides
 from spinn_utilities import logger_utils
@@ -35,8 +33,9 @@ class ProgressBar(object):
     """
     MAX_LENGTH_IN_CHARS = 60
 
-    TOO_MANY_ERROR = "Too many update steps in progress bar! " \
-                     "This may be a sign that something else has gone wrong!"
+    TOO_MANY_ERROR = (
+        "Too many update steps in progress bar! "
+        "This may be a sign that something else has gone wrong!")
 
     __slots__ = (
         "_number_of_things", "_currently_completed", "_destination",
@@ -175,11 +174,11 @@ class ProgressBar(object):
                 p.update()
                 ...
 
-        This method does not have any parameters because any parameters in the\
-        with :samp:`ProgressBar(...)` call have been passed to\
+        This method does not have any parameters because any parameters in the
+        with :samp:`ProgressBar(...)` call have been passed to
         :py:meth:`__init__`
 
-        Like :samp:`__new__` this method has to return self as in theory it\
+        Like :samp:`__new__` this method has to return self as in theory it
         could pass back a different object. Welcome to Python.
 
         :return: The Progress bar
@@ -196,9 +195,9 @@ class ProgressBar(object):
             The progress bar should have been initialised to the size of the\
             collection being iterated over.
 
-        :param collection:\
+        :param collection:
             The base collection (any iterable) being iterated over
-        :param finish_at_end: \
+        :param bool finish_at_end:
             Flag to say if the bar should finish at the end of the collection
         :return: An iterable. Expected to be directly used in a for.
         """

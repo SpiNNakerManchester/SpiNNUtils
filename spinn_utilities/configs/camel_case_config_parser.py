@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import configparser
 import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
-from six.moves import configparser
 
 
 class CamelCaseConfigParser(configparser.RawConfigParser):

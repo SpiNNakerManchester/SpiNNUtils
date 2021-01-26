@@ -17,7 +17,7 @@ import unittest
 from spinn_utilities.ranged.ranged_list_of_lists import RangedListOfList
 
 
-class Test(unittest.TestCase):
+class TestRangeListOfLists(unittest.TestCase):
 
     def test_simple(self):
         rl = RangedListOfList(4, [1, 2, 3])

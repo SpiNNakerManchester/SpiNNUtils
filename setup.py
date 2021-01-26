@@ -13,12 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-from collections import defaultdict
 import os
+from distutils.core import setup
+from collections import defaultdict
 
 __version__ = None
 exec(open("spinn_utilities/_version.py").read())
@@ -73,7 +70,6 @@ setup(
     package_data=package_data,
     install_requires=[
         "appdirs",
-        "future",
         "numpy > 1.13, < 1.20; python_version == '3.6'",
         "numpy > 1.13, < 1.21; python_version == '3.7'",
         "numpy; python_version >= '3.8'",

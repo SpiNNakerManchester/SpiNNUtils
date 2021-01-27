@@ -13,12 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from six import add_metaclass
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 
-@add_metaclass(AbstractBase)
-class AbstractDict(object):
+class AbstractDict(object, metaclass=AbstractBase):
     """ Base class for the :py:class:`RangeDictionary` and *all* views.\
     This allows the users to not have to worry if they have a view.
     """

@@ -14,16 +14,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import numbers
-from six import add_metaclass
+import numpy
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides
 from .abstract_sized import AbstractSized
 from .multiple_values_exception import MultipleValuesException
-import numpy
 
 
-@add_metaclass(AbstractBase)
-class AbstractList(AbstractSized):
+class AbstractList(AbstractSized, metaclass=AbstractBase):
     """ A ranged implementation of list.
 
     Functions that change the size of the list are *not* supported.\
@@ -496,11 +494,11 @@ class AbstractList(AbstractSized):
         raise Exception("__mul__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         """ Support for `new_list = list1 / list2`. \
         Applies the division operator over this and other to create a new list.
 
-        The values of the new list are created on the fly so any changes to\
+        The values of the new list are created on the fly so any changes to
         the original lists are reflected.
 
         :param other: another list
@@ -517,9 +515,6 @@ class AbstractList(AbstractSized):
             return SingleList(a_list=self, operation=lambda x: x / other)
         raise Exception("__div__ operation only supported for other "
                         "RangedLists and numerical Values")
-
-    # Python 3 support
-    __truediv__ = __div__
 
     def __floordiv__(self, other):
         """ Support for `new_list = list1 // list2`. \
@@ -554,8 +549,7 @@ class AbstractList(AbstractSized):
         return SingleList(a_list=self, operation=operation)
 
 
-@add_metaclass(AbstractBase)
-class SingleList(AbstractList):
+class SingleList(AbstractList, metaclass=AbstractBase):
     """ A List that performs an operation on the elements of another list.
     """
     __slots__ = [
@@ -607,8 +601,7 @@ class SingleList(AbstractList):
             yield (start, stop, self._operation(value))
 
 
-@add_metaclass(AbstractBase)
-class DualList(AbstractList):
+class DualList(AbstractList, metaclass=AbstractBase):
     """ A list which combines two other lists with an operation.
     """
     __slots__ = [

@@ -76,7 +76,6 @@ setup(
         "numpy > 1.13, < 1.20; python_version == '3.6'",
         "numpy > 1.13, < 1.21; python_version == '3.7'",
         "numpy; python_version >= '3.8'",
-        "six",
         "pyyaml",
         "requests",
     ],

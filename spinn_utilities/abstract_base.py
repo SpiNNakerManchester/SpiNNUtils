@@ -23,6 +23,7 @@ If using ``@add_metaclass``, this requires::
 Using Python 3 style ``metaclass=AbstractBase`` is preferred.
 """
 
+
 def abstractmethod(funcobj):
     """ A decorator indicating abstract methods.
 

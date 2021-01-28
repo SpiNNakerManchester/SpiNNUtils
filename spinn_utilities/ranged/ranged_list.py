@@ -473,8 +473,11 @@ class RangedList(AbstractList):
         :param value:
         """
 
-        # Handle a slice
+        if selector is None:
+            self.set_value(value, use_list_as_value)
+            return
         if isinstance(selector, slice):
+            # Handle a slice
             if selector.step is None or selector.step == 1:
                 (start, stop, _) = selector.indices(self._size)
                 self.set_value_by_slice(start, stop, value, use_list_as_value)

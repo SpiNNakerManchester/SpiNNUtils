@@ -68,6 +68,8 @@ class RangedList(AbstractList):
         AbstractList.__init__(self, size=size, key=key)
         if not use_list_as_value and not self.is_list(value, size):
             self._default = value
+        else:
+            self._default = None
         self.set_value(value, use_list_as_value)
 
     @overrides(AbstractList.range_based)
@@ -521,3 +523,34 @@ class RangedList(AbstractList):
             return self._default
         except AttributeError as e:
             raise_from(Exception("Default value not set."), e)
+
+    def copy_into(self, other):
+        """
+        Turns this List into a of the other list but keep its id
+
+        Depth is just enough so that any changes done through the RangedList
+        api on other will not change self
+
+        :param RangedList; Another Ranged List to copy the values from
+        """
+        # Assume the _default and key remain unchanged
+        self._ranged_based = other.range_based()
+        self._ranges.clear()
+        if self._ranged_based:
+            a = list(other.iter_ranges())
+            self._ranges.extend(other.iter_ranges())
+        else:
+            self._ranges.extend(other)
+
+    def copy(self):
+        """
+        Turns this List into a copy of the other
+
+        Depth is just enough so that any changes done through the RangedList
+        api on other will not change self
+
+        :param RangedList; Another Ranged List to copy the values from
+        """
+        clone = RangedList(self._size, self._default, self._key)
+        clone.copy_into(self)
+        return clone

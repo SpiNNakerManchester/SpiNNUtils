@@ -519,10 +519,7 @@ class RangedList(AbstractList):
 
         :return: Default Value
         """
-        try:
-            return self._default
-        except AttributeError as e:
-            raise_from(Exception("Default value not set."), e)
+        return self._default
 
     def copy_into(self, other):
         """

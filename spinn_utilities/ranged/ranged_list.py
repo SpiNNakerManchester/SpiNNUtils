@@ -15,7 +15,6 @@
 
 # pylint: disable=redefined-builtin
 from past.builtins import range, xrange
-from six import raise_from
 from spinn_utilities.overrides import overrides
 from spinn_utilities.helpful_functions import is_singleton
 from .abstract_list import AbstractList
@@ -535,7 +534,6 @@ class RangedList(AbstractList):
         # clear the list fast and 2.7 safe
         self._ranges *= 0
         if self._ranged_based:
-            a = list(other.iter_ranges())
             self._ranges.extend(other.iter_ranges())
         else:
             self._ranges.extend(other)

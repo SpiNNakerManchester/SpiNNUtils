@@ -532,7 +532,8 @@ class RangedList(AbstractList):
         """
         # Assume the _default and key remain unchanged
         self._ranged_based = other.range_based()
-        self._ranges.clear()
+        # clear the list fast and 2.7 safe
+        self._ranges *= 0
         if self._ranged_based:
             a = list(other.iter_ranges())
             self._ranges.extend(other.iter_ranges())

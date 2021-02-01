@@ -258,13 +258,15 @@ def test_copy():
     rd2 = rd.copy()
     a_list1_copy = rd2["list1"]
     assert a_list1_copy == [1, 2, 3]
-    assert list(a_list1_copy.iter_ranges()) == [(0, 1, 1), (1, 2, 2), (2, 3, 3)]
+    assert list(a_list1_copy.iter_ranges()) == \
+           [(0, 1, 1), (1, 2, 2), (2, 3, 3)]
     a_list2_copy = rd2["list2"]
     assert list(a_list2_copy.iter_ranges()) == [(0, 3, 5)]
     assert a_list2_copy == [5, 5, 5]
     calc1_copy = rd2["calc1"]
     assert calc1_copy == [4, 8, 12]
-    assert list(calc1_copy.iter_ranges()) == [(0, 1, 4), (1, 2, 8), (2, 3, 12)]
+    assert list(calc1_copy.iter_ranges()) == \
+           [(0, 1, 4), (1, 2, 8), (2, 3, 12)]
     calc2_copy = rd2["calc2"]
     assert calc2_copy == [20, 20, 20]
     assert list(calc2_copy.iter_ranges()) == [(0, 3, 20)]

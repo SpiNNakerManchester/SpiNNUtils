@@ -405,7 +405,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         Turns this dict into a copy of the other dict but keep its id
 
         :param RangedDict other: Another Ranged Dictionary assumed created by
-        cloning this one
+            cloning this one
         """
         for key in other.keys():
             value = other[key]

@@ -25,7 +25,7 @@ class _SliceView(AbstractView):
     def __init__(self, range_dict, start, stop):
         """ Use :py:meth:`RangeDictionary.view_factory` to create views
         """
-        super(_SliceView, self).__init__(range_dict)
+        super().__init__(range_dict)
         self._start = start
         self._stop = stop
 

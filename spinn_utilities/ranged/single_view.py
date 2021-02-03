@@ -25,8 +25,7 @@ class _SingleView(AbstractView):
     def __init__(self, range_dict, id):  # @ReservedAssignment
         """ Use :py:meth:`RangeDictionary.view_factory` to create views
         """
-        # print("Single")
-        super(_SingleView, self).__init__(range_dict)
+        super().__init__(range_dict)
         self._id = id
 
     def __str__(self):

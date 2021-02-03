@@ -67,7 +67,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :param key: The dict key this list covers.\
             This is used only for better Exception messages
         """
-        super(AbstractList, self).__init__(size)
+        super().__init__(size)
         self._key = key
 
     @abstractmethod
@@ -558,13 +558,13 @@ class SingleList(AbstractList, metaclass=AbstractBase):
     def __init__(self, a_list, operation, key=None):
         """
         :param a_list: The list to perform the operation on
-        :param operation:\
-            A function which takes a single value and returns the result of\
+        :param operation:
+            A function which takes a single value and returns the result of
             the operation on that value
-        :param key: The dict key this list covers.\
+        :param key: The dict key this list covers.
             This is used only for better Exception messages
         """
-        super(SingleList, self).__init__(size=len(a_list), key=key)
+        super().__init__(size=len(a_list), key=key)
         self._a_list = a_list
         self._operation = operation
 
@@ -611,16 +611,16 @@ class DualList(AbstractList, metaclass=AbstractBase):
         """
         :param left: The first list to combine
         :param right: The second list to combine
-        :param operation:\
-            The operation to perform as a function that takes two values and\
+        :param operation:
+            The operation to perform as a function that takes two values and
             returns the result of the operation
-        :param key:\
-            The dict key this list covers.\
+        :param key:
+            The dict key this list covers.
             This is used only for better Exception messages
         """
         if len(left) != len(right):
             raise Exception("Two list must have the same size")
-        super(DualList, self).__init__(size=len(left), key=key)
+        super().__init__(size=len(left), key=key)
         self._left = left
         self._right = right
         self._operation = operation

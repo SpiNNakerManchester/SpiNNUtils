@@ -43,7 +43,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         :param defaults: Default dictionary where all keys must be str
         :type defaults: dict
         """
-        super(RangeDictionary, self).__init__(size)
+        super().__init__(size)
         self._value_lists = dict()
         if defaults is not None:
             for key, value in defaults.items():

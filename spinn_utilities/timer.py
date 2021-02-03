@@ -13,42 +13,37 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import sys
-
+import time
+# have to convert to a timedelta for rest of code to read
+from datetime import timedelta
+# pylint: disable=no-name-in-module
 
 if sys.version_info >= (3, 7):
     # acquire the most accurate measurement available (perf_counter_ns)
-    from time import (  # pylint: disable=no-name-in-module
-        perf_counter_ns as now)  # pylint: disable=no-name-in-module
-
-    # have to convert to a timedelta for rest of code to read
-    from datetime import timedelta  # pylint: disable=no-name-in-module
-
+    now = time.perf_counter_ns  # pylint: disable=no-member
     # conversion factor
     NANO_TO_MICRO = 1000.0
 
-    # as perf_counter_ns is nano seconds, and time delta lowest is micro,
-    # need to convert
+
     def convert_to_timedelta(time_diff):
+        """ Have to convert to a timedelta for rest of code to read.
+
+        As perf_counter_ns is nano seconds, and time delta lowest is micro,
+        need to convert.
+        """
         return timedelta(microseconds=time_diff / NANO_TO_MICRO)
 
-elif sys.version_info >= (3, 3):
-    # acquire the most accurate measurement available (perf_counter)
-    from time import perf_counter as now  # pylint: disable=no-name-in-module
-    from datetime import timedelta  # pylint: disable=no-name-in-module
-    # have to convert to a timedelta for rest of code to read
-
-    # as perf_counter is fractional seconds, put into correct time delta
-    def convert_to_timedelta(time_diff):
-        return timedelta(seconds=time_diff)
-
 else:
-    # acquire the most accurate measurement available (datetime)
-    import datetime
-    now = datetime.datetime.now
+    # acquire the most accurate measurement available (perf_counter)
+    now = time.perf_counter  # pylint: disable=no-member
 
-    # as diff of 2 datetime are a timedelta, just return the timedelta
-    def convert_to_timedelta(diff):
-        return diff
+
+    def convert_to_timedelta(time_diff):
+        """ Have to convert to a timedelta for rest of code to read.
+
+        As perf_counter is fractional seconds, put into correct time delta.
+        """
+        return timedelta(seconds=time_diff)
 
 
 class Timer(object):

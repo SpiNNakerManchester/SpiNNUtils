@@ -59,10 +59,10 @@ class RangedList(AbstractList):
         if size is None:
             try:
                 size = len(value)
-            except TypeError:
+            except TypeError as e:
                 raise ValueError("value parameter must have a length to "
-                                 "determine the unsupplied size")
-        AbstractList.__init__(self, size=size, key=key)
+                                 "determine the unsupplied size") from e
+        super().__init__(size=size, key=key)
         if not use_list_as_value and not self.is_list(value, size):
             self._default = value
         self.set_value(value, use_list_as_value)

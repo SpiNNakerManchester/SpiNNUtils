@@ -62,8 +62,7 @@ class ConfiguredFormatter(logging.Formatter):
             fmt = "%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s"
         else:
             fmt = "%(asctime)-15s %(levelname)s: %(message)s"
-        super(ConfiguredFormatter, self).__init__(
-            fmt=fmt, datefmt="%Y-%m-%d %H:%M:%S")
+        super().__init__(fmt=fmt, datefmt="%Y-%m-%d %H:%M:%S")
 
     @staticmethod
     def construct_logging_parents(conf):
@@ -188,7 +187,7 @@ class FormatAdapter(logging.LoggerAdapter):
     def __init__(self, logger, extra=None):
         if extra is None:
             extra = {}
-        super(FormatAdapter, self).__init__(logger, extra)
+        super().__init__(logger, extra)
         self.do_log = logger._log  # pylint: disable=protected-access
 
     @overrides(logging.LoggerAdapter.log, extend_doc=False)

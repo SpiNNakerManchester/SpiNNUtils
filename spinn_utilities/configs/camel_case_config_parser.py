@@ -28,7 +28,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return lower.replace("_", "")
 
     def __init__(self, defaults=None, none_marker="None"):
-        configparser.RawConfigParser.__init__(self, defaults)
+        super().__init__(defaults)
         self._none_marker = none_marker
         self._read_files = list()
 

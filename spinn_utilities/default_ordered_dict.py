@@ -29,7 +29,7 @@ class DefaultOrderedDict(OrderedDict):
 
     def __getitem__(self, key):
         try:
-            return OrderedDict.__getitem__(self, key)
+            return super().__getitem__(key)
         except KeyError:
             return self.__missing__(key)
 

@@ -104,7 +104,7 @@ class AbstractBase(type):
 
     def __new__(cls, name, bases, namespace):
         # Actually make the class
-        abs_cls = super(AbstractBase, cls).__new__(cls, name, bases, namespace)
+        abs_cls = super().__new__(cls, name, bases, namespace)
 
         # Get set of abstract methods from namespace
         abstracts = set(nm for nm, val in namespace.items()

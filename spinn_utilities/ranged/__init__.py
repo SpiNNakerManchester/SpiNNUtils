@@ -25,9 +25,10 @@ from .abstract_sized import AbstractSized
 from .abstract_view import AbstractView
 from .multiple_values_exception import MultipleValuesException
 from .range_dictionary import RangeDictionary
-from .ranged_list import RangedList, function_iterator
+from .ranged_list import RangedList
+from .ranged_list_of_lists import RangedListOfList
 
 __all__ = [
     "AbstractDict", "AbstractList", "DualList", "SingleList", "AbstractSized",
     "AbstractView", "MultipleValuesException", "RangeDictionary",
-    "RangedList", "function_iterator"]
+    "RangedList", "RangedListOfList"]

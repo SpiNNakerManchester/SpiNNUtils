@@ -69,6 +69,23 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
             return None
         return value
 
+    def get_str_list(self, section, option, token=","):
+        """ Get the string value of an option split into a list
+
+        :param str section: What section to get the option from.
+        :param str option: What option to read.
+        :param token: The token to split the string into a list
+        :return: The list (possibly empty) of the option values
+        :rtype: list(str)
+        """
+        value = self.get(section, option)
+        if value == self._none_marker:
+            return []
+        if len(value.strip()) == 0:
+            return []
+        as_list = value.split(token)
+        return list(map(lambda x: x.strip(), as_list))
+
     def get_int(self, section, option):
         """ Get the integer value of an option.
 

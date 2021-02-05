@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/SpiNNakerManchester/SpiNNUtils.svg?branch=master)](https://travis-ci.com/SpiNNakerManchester/SpiNNUtils)
+[![Build Status](https://github.com/SpiNNakerManchester/SpiNNUtils/workflows/Python%20Actions/badge.svg?branch=master)](https://github.com/SpiNNakerManchester/SpiNNUtils/actions?query=workflow%3A%22Python+Actions%22+branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/github/SpiNNakerManchester/SpiNNUtils/badge.svg?branch=master)](https://coveralls.io/github/SpiNNakerManchester/SpiNNUtils?branch=master)
 
 SpiNNUtils

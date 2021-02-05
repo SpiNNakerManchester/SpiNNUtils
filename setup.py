@@ -72,9 +72,18 @@ setup(
     ],
     packages=packages,
     package_data=package_data,
-    install_requires=['appdirs',
-                      'future',
-                      'six'],
+    install_requires=[
+        "appdirs",
+        "future",
+        "numpy > 1.13, < 1.17; python_version == '2.7'",
+        "numpy > 1.13, < 1.19; python_version == '3.5'",
+        "numpy > 1.13, < 1.20; python_version == '3.6'",
+        "numpy > 1.13, < 1.21; python_version == '3.7'",
+        "numpy; python_version >= '3.8'",
+        "six",
+        "pyyaml",
+        "requests",
+    ],
     maintainer="SpiNNakerTeam",
     maintainer_email="spinnakerusers@googlegroups.com"
 )

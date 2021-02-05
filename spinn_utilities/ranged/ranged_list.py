@@ -15,7 +15,6 @@
 
 # pylint: disable=redefined-builtin
 from past.builtins import range, xrange
-from six import raise_from
 from spinn_utilities.overrides import overrides
 from spinn_utilities.helpful_functions import is_singleton
 from .abstract_list import AbstractList
@@ -68,6 +67,8 @@ class RangedList(AbstractList):
         AbstractList.__init__(self, size=size, key=key)
         if not use_list_as_value and not self.is_list(value, size):
             self._default = value
+        else:
+            self._default = None
         self.set_value(value, use_list_as_value)
 
     @overrides(AbstractList.range_based)
@@ -276,7 +277,7 @@ class RangedList(AbstractList):
         else:
             values = list(value)
         if len(values) != size:
-            raise Exception("The number of values does not equal the size")
+            raise ValueError("The number of values does not equal the size")
         return values
 
     def set_value(self, value, use_list_as_value=False):
@@ -473,8 +474,11 @@ class RangedList(AbstractList):
         :param value:
         """
 
-        # Handle a slice
+        if selector is None:
+            self.set_value(value, use_list_as_value)
+            return
         if isinstance(selector, slice):
+            # Handle a slice
             if selector.step is None or selector.step == 1:
                 (start, stop, _) = selector.indices(self._size)
                 self.set_value_by_slice(start, stop, value, use_list_as_value)
@@ -514,7 +518,35 @@ class RangedList(AbstractList):
 
         :return: Default Value
         """
-        try:
-            return self._default
-        except AttributeError as e:
-            raise_from(Exception("Default value not set."), e)
+        return self._default
+
+    def copy_into(self, other):
+        """
+        Turns this List into a of the other list but keep its id
+
+        Depth is just enough so that any changes done through the RangedList
+        api on other will not change self
+
+        :param RangedList; Another Ranged List to copy the values from
+        """
+        # Assume the _default and key remain unchanged
+        self._ranged_based = other.range_based()
+        # clear the list fast and 2.7 safe
+        self._ranges *= 0
+        if self._ranged_based:
+            self._ranges.extend(other.iter_ranges())
+        else:
+            self._ranges.extend(other)
+
+    def copy(self):
+        """
+        Turns this List into a copy of the other
+
+        Depth is just enough so that any changes done through the RangedList
+        api on other will not change self
+
+        :param RangedList; Another Ranged List to copy the values from
+        """
+        clone = RangedList(self._size, self._default, self._key)
+        clone.copy_into(self)
+        return clone

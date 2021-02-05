@@ -407,8 +407,7 @@ def test_range_merge():
 
 def test_no_default():
     rl = RangedList(value=[1, 2, 3])
-    with pytest.raises(Exception):
-        rl.get_default()
+    assert rl.get_default() is None
 
 
 def test_get_values_all():

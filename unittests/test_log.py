@@ -99,7 +99,7 @@ def test_logger_exception():
     assert len(logger._repeat_log()) == 1
 
 
-class MockConfig1():
+class MockConfig1(object):
 
     def get(self, section, option):
         return "debug"
@@ -113,7 +113,7 @@ def test_weird_config1():
     ConfiguredFilter(MockConfig1())
 
 
-class MockConfig2():
+class MockConfig2(object):
 
     def get(self, section, option):
         return "critical"

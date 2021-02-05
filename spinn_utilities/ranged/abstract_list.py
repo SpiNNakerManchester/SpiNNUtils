@@ -185,6 +185,9 @@ class AbstractList(AbstractSized):
         :return: The element[key] or the slice
         """
 
+        if selector is None:
+            return self
+
         # If the key is a slice, get the values from the slice
         if isinstance(selector, slice):
 

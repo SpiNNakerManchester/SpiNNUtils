@@ -399,3 +399,27 @@ class RangeDictionary(AbstractSized, AbstractDict):
     @overrides(AbstractDict.get_default)
     def get_default(self, key):
         return self._value_lists[key].get_default()
+
+    def copy_into(self, other):
+        """
+        Turns this dict into a copy of the other dict but keep its id
+
+        :param RangedDict other: Another Ranged Dictionary assumed created by
+            cloning this one
+        """
+        for key in other.keys():
+            value = other[key]
+            if isinstance(value, RangedList):
+                if key in self:
+                    self._value_lists[key].copy_into(value)
+                else:
+                    self._value_lists[key] = value.copy()
+            else:
+                self._value_lists[key] = RangedList(
+                    value._size, key=key)
+                self._value_lists[key].copy_into(value)
+
+    def copy(self):
+        copy = RangeDictionary(self._size)
+        copy.copy_into(self)
+        return copy

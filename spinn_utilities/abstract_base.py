@@ -12,7 +12,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 """
 A trimmed down version of standard Python Abstract Base classes.
 
@@ -102,9 +101,9 @@ class AbstractBase(type):
     Unlike ABC you can not register unrelated concrete classes.
     """
 
-    def __new__(cls, name, bases, namespace):
+    def __new__(cls, name, bases, namespace, **kwargs):
         # Actually make the class
-        abs_cls = super().__new__(cls, name, bases, namespace)
+        abs_cls = super().__new__(cls, name, bases, namespace, **kwargs)
 
         # Get set of abstract methods from namespace
         abstracts = set(nm for nm, val in namespace.items()

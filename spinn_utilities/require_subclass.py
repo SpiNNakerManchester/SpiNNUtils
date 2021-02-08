@@ -12,7 +12,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from spinn_utilities.abstract_base import AbstractBase
 
 
 def require_subclass(required_class):
@@ -43,11 +42,12 @@ def require_subclass(required_class):
         __class__ = target_class  # @ReservedAssignment # noqa: F841
 
         def __init_subclass__(cls, **kwargs):
-            if not issubclass(cls, required_class) and \
-                    type(cls) is not AbstractBase:
+            allow_derivation = kwargs.pop("allow_derivation", False)
+            if not issubclass(cls, required_class) and not allow_derivation:
                 raise TypeError(
                     f"{cls.__name__} must be a subclass "
-                    f"of {required_class.__name__}")
+                    f"of {required_class.__name__} and the derivation was not "
+                    "explicitly allowed with allow_derivation=True")
             super().__init_subclass__(**kwargs)
 
         setattr(target_class, '__init_subclass__',

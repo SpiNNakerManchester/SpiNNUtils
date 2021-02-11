@@ -48,7 +48,14 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.autosummary',
+    'sphinx.ext.intersphinx',
 ]
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3.6', None),
+    'numpy': ("https://numpy.org/doc/1.19/", None),
+    'matplotlib': ('https://matplotlib.org', None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

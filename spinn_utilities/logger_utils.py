@@ -12,8 +12,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from typing import Set
 
-_already_issued = set()
+_already_issued: Set[str] = set()
 
 
 def warn_once(logger, msg):

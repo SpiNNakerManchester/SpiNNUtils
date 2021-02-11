@@ -13,13 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Iterable
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 
 class AbstractMatrix(object, metaclass=AbstractBase):
     """ A rectangular 2D collection of data.
     """
-    __slots__ = []
+    __slots__: Iterable[str] = []
 
     @abstractmethod
     def get_data(self, x, y):

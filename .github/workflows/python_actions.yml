@@ -43,6 +43,8 @@ jobs:
         path: support
     - name: Install pip, etc.
       uses: ./support/actions/python-tools
+    - name: Install extra tools
+      run: pip install mypy
     - name: Setup
       uses: ./support/actions/run-setup
 
@@ -54,6 +56,8 @@ jobs:
         cover-packages: ${{ env.ROOT_PKG }}
         coveralls-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
+    - name: Type check
+      run: mypy $ROOT_PKG
     - name: Lint with flake8
       run: flake8 $ROOT_PKG unittests
     - name: Lint with pylint

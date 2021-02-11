@@ -44,7 +44,7 @@ jobs:
     - name: Install pip, etc.
       uses: ./support/actions/python-tools
     - name: Install extra tools
-      run: pip install mypy
+      run: pip install mypy data-science-types
     - name: Setup
       uses: ./support/actions/run-setup
 

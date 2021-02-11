@@ -224,7 +224,7 @@ class _EnhancedProgressBar(ProgressBar):
 
     _line_no = 0
     _seq_id = 0
-    _step_characters: Dict[int,List[str]] = defaultdict(list)
+    _step_characters: Dict[int, List[str]] = defaultdict(list)
     _ENABLE_DATES = (
         "0401", "0214", "0427", "0428", "0429", "0430", "0501", "0502",
         "0503", "0504", "0505", "0506", "0507", "0508", "0509", "0510")

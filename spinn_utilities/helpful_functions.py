@@ -13,18 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from functools import reduce
 import logging
 import inspect
+import math
 import re
-from six.moves import reduce
-import sys
-from six import string_types
 from spinn_utilities.log import FormatAdapter
 
-if sys.version_info >= (3, 5):
-    from math import gcd as _gcd  # pylint: disable=no-name-in-module
-else:
-    from fractions import gcd as _gcd  # noqa: ignore=W1505
 
 logger = FormatAdapter(logging.getLogger(__name__))
 FINISHED_FILENAME = "finished"
@@ -35,7 +30,7 @@ def get_valid_components(module, terminator):
         class names.
 
     :param module: The module containing the classes to obtain.
-    :param terminator: \
+    :param str terminator:
         Regular expression string to match the suffix. Anchoring not required.
     :return: mapping from (shortened) name to class
     :rtype: dict(str -> class)
@@ -54,23 +49,23 @@ def is_singleton(value):
         Strings are considered singleton as rarely will someone use a String
         to represent an iterable of characters
     """
-    return not hasattr(value, '__iter__') or isinstance(value, string_types)
+    return not hasattr(value, '__iter__') or isinstance(value, str)
 
 
 def _lcm(a, b):
-    return (a * b) // _gcd(a, b)  # noqa: ignore=W1505 # pylint: disable=deprecated-method
+    return (a * b) // math.gcd(a, b)
 
 
 def lcm(*numbers):
     """
     Lowest common multiple of 0, 1 or more integers.
 
-    GIGO: If any of the values are anything except positive int values\
+    GIGO: If any of the values are anything except positive int values
     this function will either produce incorrect results or raise an exception.
 
-    :param numbers: The Positive integers to get the lcm for.\
-    This can be zero, one or more int values or\
-    a singelton which is an iterator (possibly empty) of ints.
+    :param numbers: The Positive integers to get the lcm for.
+        This can be zero, one or more int values or
+        a singleton which is an iterator (possibly empty) of ints.
     :return: the lcm or 1 if numbers is empty or an empty iterator
     :rtype: int
     :raises TypeError: If any value can not be interpreted as an Integer
@@ -86,23 +81,23 @@ def lcm(*numbers):
 
 def gcd(*numbers):
     """
-    Greatest Common Divisor of 1 or more integers.
+    Greatest common divisor of 1 or more integers.
 
-    GIGO: If any of the values are anything except positive int values\
+    GIGO: If any of the values are anything except positive int values
     this function will either produce incorrect results or raise an exception.
 
-    :param numbers: The Positive integers to get the lcm for.\
-        This can be one or more int values or\
-        a singelton which is an iterator (not empty) of ints.
-    :return: the lcm or 1 if numbers is empty or an empty iterator
+    :param numbers: The Positive integers to get the GCD for.
+        This can be one or more int values or
+        a singleton which is an iterator (not empty) of ints.
+    :return: the gcd or 1 if numbers is empty or an empty iterator
     :rtype: int
-    :raises TypeError: If any value can not be interpreted as an Integer or\
-        if no value a are provided
+    :raises TypeError: If any value can not be interpreted as an Integer or
+        if no values are provided
     :raises ZeroDivisionError: May be raised if one of the values is zero
     """
     if len(numbers) == 1:
         try:
-            return reduce(_gcd, iter(numbers[0]))
+            return reduce(math.gcd, iter(numbers[0]))
         except TypeError:
             return numbers[0]
-    return reduce(_gcd, numbers)
+    return reduce(math.gcd, numbers)

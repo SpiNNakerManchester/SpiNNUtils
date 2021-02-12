@@ -17,7 +17,7 @@
 import os
 import pytest
 import random
-from six.moves import configparser
+import configparser
 import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture
 import spinn_utilities.conf_loader as conf_loader

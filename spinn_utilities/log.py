@@ -13,18 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
 import atexit
 import logging
 import re
 import sys
-try:
-    from inspect import getfullargspec
-except ImportError:
-    # Python 2.7 hack
-    from inspect import getargspec as getfullargspec
+from inspect import getfullargspec
 from .overrides import overrides
-from six import PY2
 
 _LEVELS = {
     'debug': logging.DEBUG,
@@ -68,8 +62,7 @@ class ConfiguredFormatter(logging.Formatter):
             fmt = "%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s"
         else:
             fmt = "%(asctime)-15s %(levelname)s: %(message)s"
-        super(ConfiguredFormatter, self).__init__(
-            fmt=fmt, datefmt="%Y-%m-%d %H:%M:%S")
+        super().__init__(fmt=fmt, datefmt="%Y-%m-%d %H:%M:%S")
 
     @staticmethod
     def construct_logging_parents(conf):
@@ -194,36 +187,8 @@ class FormatAdapter(logging.LoggerAdapter):
     def __init__(self, logger, extra=None):
         if extra is None:
             extra = {}
-        super(FormatAdapter, self).__init__(logger, extra)
+        super().__init__(logger, extra)
         self.do_log = logger._log  # pylint: disable=protected-access
-
-    if PY2:
-        @overrides(logging.LoggerAdapter.critical)
-        def critical(self, msg, *args, **kwargs):
-            self.log(logging.CRITICAL, msg, *args, **kwargs)
-
-        @overrides(logging.LoggerAdapter.debug)
-        def debug(self, msg, *args, **kwargs):
-            self.log(logging.DEBUG, msg, *args, **kwargs)
-
-        @overrides(logging.LoggerAdapter.error)
-        def error(self, msg, *args, **kwargs):
-            self.log(logging.ERROR, msg, *args, **kwargs)
-
-        # pylint: disable=arguments-differ
-        @overrides(logging.LoggerAdapter.exception)
-        def exception(self, msg, *args, **kwargs):
-            if "exc_info" not in kwargs:
-                kwargs["exc_info"] = True
-            self.log(logging.ERROR, msg, *args, **kwargs)
-
-        @overrides(logging.LoggerAdapter.info)
-        def info(self, msg, *args, **kwargs):
-            self.log(logging.INFO, msg, *args, **kwargs)
-
-        @overrides(logging.LoggerAdapter.warning)
-        def warning(self, msg, *args, **kwargs):
-            self.log(logging.WARNING, msg, *args, **kwargs)
 
     @overrides(logging.LoggerAdapter.log, extend_doc=False)
     def log(self, level, msg, *args, **kwargs):

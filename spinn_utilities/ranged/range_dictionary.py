@@ -13,9 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=redefined-builtin
-from six import iteritems
-from six.moves import xrange
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict
 from .abstract_list import AbstractList
@@ -37,8 +34,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
     def __init__(self, size, defaults=None):
         """
-        The Object is set up initially where every ID in the range will share\
-        the same value for each key. All keys must be of type str. The\
+        The Object is set up initially where every ID in the range will share
+        the same value for each key. All keys must be of type str. The
         default Values can be anything including None.
 
         :param size: Fixed number of IDs / Length of lists
@@ -46,17 +43,17 @@ class RangeDictionary(AbstractSized, AbstractDict):
         :param defaults: Default dictionary where all keys must be str
         :type defaults: dict
         """
-        super(RangeDictionary, self).__init__(size)
+        super().__init__(size)
         self._value_lists = dict()
         if defaults is not None:
-            for key, value in iteritems(defaults):
+            for key, value in defaults.items():
                 self._value_lists[key] = self.list_factory(
                     size=size, value=value, key=key)
 
     def list_factory(self, size, value, key):
         """ Defines which class or subclass of :py:class:`RangedList` to use.
 
-        Main purpose is for subclasses to use a subclass or RangedList.\
+        Main purpose is for subclasses to use a subclass or RangedList.
         All parameters are pass through ones to the List constructor
 
         :param size: Fixed length of the list
@@ -71,10 +68,10 @@ class RangeDictionary(AbstractSized, AbstractDict):
         This is the preferred way of creating new views as it checks\
         parameters and returns the most efficient view.
 
-        Note the ``__getitem__`` methods called by Object[id] and similar\
+        Note the ``__getitem__`` methods called by Object[id] and similar
         defer to this method so are fine to use.
 
-        The ID(s) used are the actual IDs in the range and not indexes on\
+        The ID(s) used are the actual IDs in the range and not indexes on
         the list of IDs
 
         :param key: A single int ID, a Slice object, or an iterable of int IDs
@@ -129,10 +126,9 @@ class RangeDictionary(AbstractSized, AbstractDict):
     def __getitem__(self, key):
         """ Support for the view[x] based the type of the key
 
-        If key is a str, a list type object of ``AbstractList`` is returned
-
-        Otherwise a view (AbstractView) over part of the IDs in the dict is\
-        returned
+        If key is a str, a list type object of ``AbstractList`` is returned.
+        Otherwise a view (AbstractView) over part of the IDs in the dict is
+        returned.
 
         Multiple str objects or None are not supported as keys here.
 
@@ -198,7 +194,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         else:  # Sub methods will check key type
             if update_save:
                 return self.update_safe_iter_all_values(
-                    key, xrange(self._size))
+                    key, range(self._size))
             return self._values_from_ranges(self.iter_ranges(key))
 
     def iter_values_by_slice(
@@ -211,7 +207,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         # Sub methods will check key type
         if update_save:
             return self.update_safe_iter_all_values(
-                key, xrange(slice_start, slice_stop))
+                key, range(slice_start, slice_stop))
         return self._values_from_ranges(self.iter_ranges_by_slice(
             slice_start=slice_start, slice_stop=slice_stop, key=key))
 
@@ -225,7 +221,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
     def _values_from_ranges(self, ranges):
         for (start, stop, value) in ranges:
-            for _ in xrange(start, stop):
+            for _ in range(start, stop):
                 yield value
 
     @overrides(AbstractDict.set_value)
@@ -238,9 +234,9 @@ class RangeDictionary(AbstractSized, AbstractDict):
         .. note:
             ``range[int] =`` is not supported
 
-        ``value`` can be a single object or ``None`` in\
+        ``value`` can be a single object or ``None`` in
         which case every value in the list is set to that.
-        ``value`` can be a collection but\
+        ``value`` can be a collection but
         then it must be exactly the size of all lists in this dictionary.
         ``value`` can be an ``AbstractList``
 
@@ -271,7 +267,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         :return: a list of the IDs in this Range
         :rtype: list(int)
         """
-        return range(self._size)
+        return list(range(self._size))
 
     @overrides(AbstractDict.has_key)
     def has_key(self, key):
@@ -339,8 +335,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
     def iter_ranges_by_slice(self, key, slice_start, slice_stop):
         """ Same as :py:meth:`iter_ranges` but limited to a simple slice.
 
-        ``slice_start`` and ``slice_stop`` are actual ID values and not\
-        indexes into the IDs. They must also be actual values, so ``None``,\
+        ``slice_start`` and ``slice_stop`` are actual ID values and not
+        indexes into the IDs. They must also be actual values, so ``None``,
         ``max_int``, and negative numbers are not supported.
 
         :param key: see :py:meth:`iter_ranges` parameter ``key``
@@ -383,11 +379,11 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """ Sets the default value for a single key.
 
         .. note::
-            Does not change any values but only changes what ``reset_value``\
+            Does not change any values but only changes what ``reset_value``
             would do
 
         .. warning::
-            If called on a View it sets the default for the *whole* range\
+            If called on a View it sets the default for the *whole* range
             and not just the view.
 
         :param key: Existing dict key

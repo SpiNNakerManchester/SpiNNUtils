@@ -85,7 +85,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         # Key is a slice - return a sliced view
         if isinstance(key, slice):
             slice_start, slice_stop = self._check_slice_in_range(
-               key.start, key.stop)
+                key.start, key.stop)
 
             if slice_start >= slice_stop:
                 msg = "{} would result in an empty view".format(key)

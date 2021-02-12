@@ -51,8 +51,8 @@ def all_modules(directory, prefix, remove_pyc_files=False):
         elif module != "__pycache__":
             full_path = os.path.join(directory, module)
             if os.path.isdir(full_path):
-                results.update(all_modules(full_path, prefix + "." + module,
-                               remove_pyc_files))
+                results.update(all_modules(
+                    full_path, prefix + "." + module, remove_pyc_files))
     return results
 
 

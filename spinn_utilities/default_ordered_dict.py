@@ -44,18 +44,17 @@ class DefaultOrderedDict(OrderedDict):
             args = tuple()
         else:
             args = self.default_factory,
-        return type(self), args, None, None, self.items()
+        return type(self), args, None, None, iter(self.items())
 
     def copy(self):
-        return self.__copy__()
+        return type(self)(self.default_factory, self.items())
 
-    def __copy__(self):
-        return type(self)(self.default_factory, self)
+    __copy__ = copy
 
     def __deepcopy__(self, memo):
         import copy
         return type(self)(self.default_factory,
-                          copy.deepcopy(self.items()))
+                          copy.deepcopy(iter(self.items())))
 
     def __repr__(self):
         return 'DefaultOrderedDict(%s, %s)' % (

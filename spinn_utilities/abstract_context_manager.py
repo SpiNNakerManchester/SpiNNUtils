@@ -13,12 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from six import add_metaclass
 from .abstract_base import AbstractBase, abstractmethod
 
 
-@add_metaclass(AbstractBase)
-class AbstractContextManager(object):
+class AbstractContextManager(object, metaclass=AbstractBase):
     """ Closeable class that supports being used as a simple context manager.
     """
 

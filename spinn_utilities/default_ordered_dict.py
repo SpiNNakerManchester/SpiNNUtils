@@ -14,10 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
-try:
-    from collections.abc import Callable
-except ImportError:
-    from collections import Callable
+from collections.abc import Callable
 
 
 class DefaultOrderedDict(OrderedDict):
@@ -27,12 +24,12 @@ class DefaultOrderedDict(OrderedDict):
         if (default_factory is not None and
                 not isinstance(default_factory, Callable)):
             raise TypeError('first argument must be callable')
-        OrderedDict.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.default_factory = default_factory
 
     def __getitem__(self, key):
         try:
-            return OrderedDict.__getitem__(self, key)
+            return super().__getitem__(key)
         except KeyError:
             return self.__missing__(key)
 

@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=redefined-builtin
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict
 from .abstract_view import AbstractView
@@ -26,7 +25,7 @@ class _SliceView(AbstractView):
     def __init__(self, range_dict, start, stop):
         """ Use :py:meth:`RangeDictionary.view_factory` to create views
         """
-        super(_SliceView, self).__init__(range_dict)
+        super().__init__(range_dict)
         self._start = start
         self._stop = stop
 

@@ -13,13 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from six import add_metaclass
 from spinn_utilities.abstract_base import (
     AbstractBase, abstractproperty, abstractmethod)
 
 
-@add_metaclass(AbstractBase)
-class AbstractHasLabel(object):
+class AbstractHasLabel(object, metaclass=AbstractBase):
     """ Represents an item with a label
     """
 
@@ -35,9 +33,8 @@ class AbstractHasLabel(object):
         """
 
     @abstractmethod
-    def set_label(selfself, label):
-        """
+    def set_label(self, label):
+        """ Set the label of the item.
 
         :param label:
-        :return:
         """

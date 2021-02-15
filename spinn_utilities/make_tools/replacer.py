@@ -41,7 +41,8 @@ class Replacer(LogSqlLiteDatabase):
         if data is None:
             return short
         (preface, original) = data
-        replaced = six.b(original).decode("unicode_escape")
+
+        replaced = original.encode("latin-1").decode("unicode_escape")
         if len(parts) > 1:
             matches = FORMAT_EXP.findall(original)
             # Remove any blanks due to double spacing

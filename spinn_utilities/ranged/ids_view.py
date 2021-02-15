@@ -25,7 +25,7 @@ class _IdsView(AbstractView):
     def __init__(self, range_dict, ids):
         """ Use :py:meth:`RangeDictionary.view_factory` to create views
         """
-        super(_IdsView, self).__init__(range_dict)
+        super().__init__(range_dict)
         self._ids = ids
 
     def __str__(self):

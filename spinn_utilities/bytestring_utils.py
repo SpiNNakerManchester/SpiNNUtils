@@ -13,8 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import six
-
 
 def as_string(bytestring, start=None, end=None):
     """
@@ -39,4 +37,4 @@ def as_hex(bytestring, start=None, end=None):
     :param end: the exclusive end of the slice to return. May be None
     :return: Comma separated hex values
     """
-    return ','.join('%02x' % i for i in six.iterbytes(bytestring[start:end]))
+    return ','.join('%02x' % i for i in iter(bytestring[start:end]))

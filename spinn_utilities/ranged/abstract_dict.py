@@ -13,13 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from six import add_metaclass
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 
-@add_metaclass(AbstractBase)
-class AbstractDict(object):
-    """ Base class for the :py:class:`RangeDictionary` and *all* views.
+class AbstractDict(object, metaclass=AbstractBase):
+    """ Base class for the :py:class:`RangeDictionary` and *all* views.\
     This allows the users to not have to worry if they have a view.
     """
     __slots__ = []
@@ -30,11 +28,11 @@ class AbstractDict(object):
 
         :param key: The key or keys to get the value of. Use None for all
         :type key: str or iterable(str) or None
-        :return: If key is a str, this returns the single object.\
-            If key is iterable (list, tuple, set, etc) of str (or None),\
+        :return: If key is a str, this returns the single object.
+            If key is iterable (list, tuple, set, etc) of str (or None),
             returns a dictionary object
-        :raises spinn_utilities.ranged.MultipleValuesException:\
-            If even one of the keys has multiple values set.\
+        :raises ~spinn_utilities.ranged.MultipleValuesException:
+            If even one of the keys has multiple values set.
             But not if other keys not asked for have multiple values
         """
 
@@ -48,16 +46,16 @@ class AbstractDict(object):
     @abstractmethod
     def set_value(self, key, value, use_list_as_value=False):
         """ Resets a already existing key to the new value. \
-        All IDs in the whole range or view will have this key set.
+            All IDs in the whole range or view will have this key set.
 
         .. warning::
-            This method does not allow adding keys.\
-            Using `dict[str] =` will add a new key, but it is not supported\
+            This method does not allow adding keys.
+            Using `dict[str] =` will add a new key, but it is not supported
             for views.
 
         .. warning::
-            If a View is created over multiple ranges this method would\
-            raise a `KeyError` if any the ranges does not have the key.\
+            If a View is created over multiple ranges this method would
+            raise a `KeyError` if any the ranges does not have the key.
             (Currently multiple ranges not yet supported.)
 
         :param key: key to value being set
@@ -74,8 +72,8 @@ class AbstractDict(object):
         to create the view is maintained.
 
         .. note::
-            If indexing into a view, you are picking the X'th ID.\
-            So if the IDs are `[2,3,4,5]` the `view[2]` will be the data for\
+            If indexing into a view, you are picking the X'th ID.
+            So if the IDs are `[2,3,4,5]` the `view[2]` will be the data for
             ID `4` and not `2`
 
         :return: list of IDs
@@ -89,12 +87,12 @@ class AbstractDict(object):
 
         :param key: The key or keys to get the value of. Use None for all keys
         :type key: str or iterable(str) or None
-        :param update_save: If set True the iteration will work even if values\
-            are updated during iteration. If left False the iterator may be\
-            faster but behaviour is *undefined* and *unchecked* if *any*\
+        :param update_save: If set True the iteration will work even if values
+            are updated during iteration. If left False the iterator may be
+            faster but behaviour is *undefined* and *unchecked* if *any*
             values are changed during iteration.
-        :return: If key is a str, this yields single objects.\
-            If key is iterable (list, tuple, set, etc) of str (or None),\
+        :return: If key is a str, this yields single objects.
+            If key is iterable (list, tuple, set, etc) of str (or None),
             yields dictionary objects
         """
 
@@ -104,16 +102,16 @@ class AbstractDict(object):
         more IDs.
 
         .. note::
-            As the data is created in a single call this is not affected\
+            As the data is created in a single call this is not affected
             by any updates.
 
         :param key: The key or keys to get the value of. Use None for all
         :type key: str or iterable(str) or None
-        :return: List of tuples of (`start`, `stop`, `value`).\
-            `start` is *inclusive* so is the first ID in the range.\
-            `stop` is *exclusive* so is the last ID in the range + 1.\
-            If `key` is a str, `value` is a single object.\
-            If `key` is iterable (list, tuple, set, etc) of str (or None) \
+        :return: List of tuples of (`start`, `stop`, `value`).
+            `start` is *inclusive* so is the first ID in the range.
+            `stop` is *exclusive* so is the last ID in the range + 1.
+            If `key` is a str, `value` is a single object.
+            If `key` is iterable (list, tuple, set, etc) of str (or None)
             `value` is a dictionary object
         """
         return list(self.iter_ranges(key=key))
@@ -125,17 +123,17 @@ class AbstractDict(object):
         more IDs.
 
         .. warning::
-            This iterator is *not* update safe!\
-            Behaviour is *undefined* and *unchecked* if *any* values are\
+            This iterator is *not* update safe!
+            Behaviour is *undefined* and *unchecked* if *any* values are
             changed during iteration.
 
         :param key: The key or keys to get the value of. Use None for all
         :type key: str or iterable(str) or None
-        :return: yields tuples of (`start`, `stop`, `value`).\
-            `start` is *inclusive* so is the first ID in the range.\
-            `stop` is *exclusive* so is the last ID in the range + 1.\
-            If `key` is a str, `value` is a single object.\
-            If `key` is iterable (list, tuple, set, etc) of str (or None),\
+        :return: yields tuples of (`start`, `stop`, `value`).
+            `start` is *inclusive* so is the first ID in the range.
+            `stop` is *exclusive* so is the last ID in the range + 1.
+            If `key` is a str, `value` is a single object.
+            If `key` is iterable (list, tuple, set, etc) of str (or None),
             `value` is a dictionary object
         """
 
@@ -145,7 +143,7 @@ class AbstractDict(object):
         Unless changed, the default is the original value.
 
         .. note::
-            Does not change any values but only changes what ``reset_value``\
+            Does not change any values but only changes what ``reset_value``
             would do
 
         :param key: Existing dict key
@@ -154,15 +152,15 @@ class AbstractDict(object):
         """
 
     def items(self):
-        """ Returns a list of (``key``, ``value``) tuples.
+        """ Returns a list of (``key``, ``value``) tuples.\
         Works only if the whole ranges/view has single values.
 
-        If the key is a str, the values are single objects.\
-        If the key is iterable (list, tuple, set, etc) of str (or None),\
+        If the key is a str, the values are single objects.
+        If the key is iterable (list, tuple, set, etc) of str (or None),
         the values are dictionary objects
 
         :return: List of (``key``, ``value``) tuples
-        :raises spinn_utilities.ranged.MultipleValuesException: \
+        :raises ~spinn_utilities.ranged.MultipleValuesException:
             If even one of the keys has multiple values set.
         """
         results = []
@@ -175,15 +173,15 @@ class AbstractDict(object):
         """ Iterates over the (``key``, ``value``) tuples. \
         Works only if the whole ranges/view has single values.
 
-        If the key is a str, the values are single objects.\
-        If the key is iterable (list, tuple, set, etc) of str (or None),\
+        If the key is a str, the values are single objects.
+        If the key is iterable (list, tuple, set, etc) of str (or None),
         the values are dictionary objects
 
-        This function is safe for value updates but may miss new keys\
+        This function is safe for value updates but may miss new keys
         added during iteration.
 
         :return: yield (``key``, ``value``) tuples
-        :raises spinn_utilities.ranged.MultipleValuesException: \
+        :raises ~spinn_utilities.ranged.MultipleValuesException:
             If even one of the keys has multiple values set.
         """
         for key in self.keys():
@@ -193,12 +191,12 @@ class AbstractDict(object):
         """ Returns a list of values.\
         Works only if the whole ranges/view has single values.
 
-        If key is a str, the values are single objects.\
-        If key is iterable (list, tuple, set, etc) of str (or None),\
+        If key is a str, the values are single objects.
+        If key is iterable (list, tuple, set, etc) of str (or None),
         values are dictionary objects
 
         :return: List of values
-        :raises spinn_utilities.ranged.MultipleValuesException: \
+        :raises ~spinn_utilities.ranged.MultipleValuesException:
             If even one of the keys has multiple values set.
         """
         results = []
@@ -211,15 +209,15 @@ class AbstractDict(object):
         """ Iterates over the values.\
         Works only if the whole ranges/view has single values.
 
-        If key is a str, the values are single objects.\
-        If key is iterable (list, tuple, set, etc) of str (or None),\
+        If key is a str, the values are single objects.
+        If key is iterable (list, tuple, set, etc) of str (or None),
         values are dictionary objects
 
-        This function is safe for value updates but may miss new keys\
+        This function is safe for value updates but may miss new keys
         added during iteration.
 
         :return: yield values
-        :raises spinn_utilities.ranged.MultipleValuesException: \
+        :raises ~spinn_utilities.ranged.MultipleValuesException:
             If even one of the keys has multiple values set.
         """
         for key in self.keys():
@@ -230,7 +228,7 @@ class AbstractDict(object):
 
         :param key: Dictionary key or ID to check
         :type key: str or int
-        :return: True if the str key is one of the dict keys or\
+        :return: True if the str key is one of the dict keys or
             if the int key is one of the range IDs. Otherwise False
         :rtype: bool
         """

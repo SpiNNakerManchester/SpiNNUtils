@@ -14,11 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
-try:
-    from collections.abc import Callable
-except ImportError:
-    from collections import Callable
-from six import PY2
+from collections.abc import Callable
 
 
 class DefaultOrderedDict(OrderedDict):
@@ -28,12 +24,12 @@ class DefaultOrderedDict(OrderedDict):
         if (default_factory is not None and
                 not isinstance(default_factory, Callable)):
             raise TypeError('first argument must be callable')
-        OrderedDict.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.default_factory = default_factory
 
     def __getitem__(self, key):
         try:
-            return OrderedDict.__getitem__(self, key)
+            return super().__getitem__(key)
         except KeyError:
             return self.__missing__(key)
 
@@ -48,10 +44,7 @@ class DefaultOrderedDict(OrderedDict):
             args = tuple()
         else:
             args = self.default_factory,
-        if PY2:
-            return type(self), args, None, None, self.items()
-        else:
-            return type(self), args, None, None, iter(self.items())
+        return type(self), args, None, None, self.items()
 
     def copy(self):
         return self.__copy__()
@@ -61,12 +54,8 @@ class DefaultOrderedDict(OrderedDict):
 
     def __deepcopy__(self, memo):
         import copy
-        if PY2:
-            return type(self)(self.default_factory,
-                              copy.deepcopy(self.items()))
-        else:
-            return type(self)(self.default_factory,
-                              copy.deepcopy(iter(self.items())))
+        return type(self)(self.default_factory,
+                          copy.deepcopy(self.items()))
 
     def __repr__(self):
         return 'DefaultOrderedDict(%s, %s)' % (

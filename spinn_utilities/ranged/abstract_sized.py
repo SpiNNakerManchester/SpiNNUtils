@@ -13,12 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=redefined-builtin
 import itertools
 import logging
 import sys
 import numpy
-from six import integer_types
 
 logger = logging.getLogger(__file__)
 
@@ -46,7 +44,7 @@ class AbstractSized(object):
     @staticmethod
     def _is_id_type(id):  # @ReservedAssignment
         """ Check if the given ID has a type acceptable for IDs. """
-        return isinstance(id, integer_types)
+        return isinstance(id, int)
 
     def _check_id_in_range(self, id):  # @ReservedAssignment
         if id < 0:
@@ -192,7 +190,7 @@ class AbstractSized(object):
                         range(self._size), selector))
                 raise TypeError(
                     "An iterable type must be all ints or all bools")
-            elif all(isinstance(item, (integer_types, numpy.integer))
+            elif all(isinstance(item, (int, numpy.integer))
                      for item in selector):
                 # list converts any specific numpy types
                 ids = list(selector)
@@ -220,7 +218,7 @@ class AbstractSized(object):
             (slice_start, slice_stop, step) = selector.indices(self._size)
             return range(slice_start, slice_stop, step)
 
-        if isinstance(selector, integer_types):
+        if isinstance(selector, int):
             if selector < 0:
                 selector = self._size + selector
             if selector < 0 or selector >= self._size:

@@ -70,24 +70,16 @@ class CitationUpdaterAndDoiGenerator(object):
         """ Take a CITATION.cff file and updates the version and \
             date-released fields, and rewrites the CITATION.cff file.
 
-        :param citation_file_path: The file path to the CITATION.cff file
-        :param create_doi: \
-            bool flag for using Zenodo DOI interface to grab a DOI
-        :type create_doi: bool
-        :param zenodo_access_token: the access token for Zenodo
-        :type zenodo_access_token: str
-        :param publish_doi: bool flag to publish the DOI on Zenodo
-        :type publish_doi: bool
-        :param previous_doi: the DOI to append the created DOI to
-        :type previous_doi: str
-        :param doi_title: the title for the created DOI
-        :type doi_title: str
-        :param module_path: path to the module to zip up
-        :type module_path: str
-        :param update_version:\
-            bool for if we should update the citation version
-        :type update_version: bool
-        :rtype: None
+        :param str citation_file_path: The file path to the CITATION.cff file
+        :param bool create_doi:
+            Whether to use Zenodo DOI interface to grab a DOI
+        :param str zenodo_access_token: the access token for Zenodo
+        :param bool publish_doi: Whether to publish the DOI on Zenodo
+        :param str previous_doi: the DOI to append the created DOI to
+        :param str doi_title: the title for the created DOI
+        :param str module_path: path to the module to zip up
+        :param bool update_version:
+            Whether we should update the citation version
         """
 
         # data holders
@@ -117,11 +109,8 @@ class CitationUpdaterAndDoiGenerator(object):
     def _request_doi(self, zenodo_access_token, previous_doi):
         """ Go to zenodo and requests a DOI
 
-        :param zenodo_access_token: zenodo access token
-        :type zenodo_access_token: str
-        :param previous_doi: the previous DOI for this module, if exists
-        :type previous_doi: str
-        :param module_path: the path to the module to create a DOI for
+        :param str zenodo_access_token: zenodo access token
+        :param str previous_doi: the previous DOI for this module, if exists
         :return: the DOI id, and deposit id
         :rtype: str, str
         """
@@ -176,15 +165,14 @@ class CitationUpdaterAndDoiGenerator(object):
             doi_description, yaml_file, module_path):
         """ Finishes the DOI on zenodo
 
-        :param deposit_id: the deposit id to publish
-        :param access_token: the access token needed to publish
-        :param title: the title of this DOI
-        :param doi_description: the description for the DOI
+        :param str deposit_id: the deposit id to publish
+        :param str access_token: the access token needed to publish
+        :param str title: the title of this DOI
+        :param str doi_description: the description for the DOI
         :param yaml_file: the citation file after its been read it
-        :param publish_doi: bool flagging if we should publish the DOI
+        :param bool publish_doi: whether we should publish the DOI
         :param files: the zipped up file for the zenodo DOI request
         :param module_path: the path to the module to DOI
-        :rtype: None
         """
 
         zipped_file = self._zip_up_module(module_path)
@@ -245,7 +233,6 @@ class CitationUpdaterAndDoiGenerator(object):
         :param module_path: the path to start the search at
         :param avoids: the set of avoids to avoid
         :param module_zip_file: the zip file to put into
-        :rtype: None
         """
 
         for directory_path, _, files in os.walk(module_path):
@@ -265,10 +252,8 @@ class CitationUpdaterAndDoiGenerator(object):
     def _fill_in_data(doi_title, doi_description, yaml_file):
         """ Add in data to the Zenodo metadata
 
-        :param doi_title: the title of the DOI
-        :type doi_title: str
-        :param doi_description: the description of the DOI
-        :type doi_description: str
+        :param str doi_title: the title of the DOI
+        :param str doi_description: the description of the DOI
         :param yaml_file: the citation file once read into the system
         :type yaml_file: dict
         :return: dict containing zenodo metadata
@@ -301,11 +286,9 @@ class CitationUpdaterAndDoiGenerator(object):
         """ Convert the 3 components of a date into a CFF date
 
         :param version_month: version month, in text form
-        :type version_month: text or int
-        :param version_year: version year
-        :type version_year: int
-        :param version_day: version day of month
-        :type version_day: int
+        :type version_month: str or int
+        :param int version_year: version year
+        :param int version_day: version day of month
         :return: the string representation for the cff file
         """
         return "{}-{}-{}".format(

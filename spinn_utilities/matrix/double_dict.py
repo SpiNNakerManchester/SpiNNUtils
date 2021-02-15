@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from six import raise_from
 from .x_view import XView
 from .y_view import YView
 
@@ -55,5 +54,5 @@ class DoubleDict(object):
             else:
                 raise KeyError("Key {} has an unexpected type".format(key))
         except AttributeError as e:
-            raise_from(ValueError("Value must of type dict. Or at least "
-                                  "implement keys() and __getitem__"), e)
+            raise ValueError("Value must of type dict. Or at least "
+                             "implement keys() and __getitem__") from e

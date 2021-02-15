@@ -240,7 +240,7 @@ def test_iter_by_slice():
 def test_update_slice_with_list():
     rl = RangedList(size=10, value="a", key="alpha")
     rl[2:5] = [2, 3, 4]
-    assert ["a", "a", 2, 3, 4, "a", "a", "a",  "a", "a"] == rl
+    assert ["a", "a", 2, 3, 4, "a", "a", "a", "a", "a"] == rl
 
 
 def test_iter_by_ids():

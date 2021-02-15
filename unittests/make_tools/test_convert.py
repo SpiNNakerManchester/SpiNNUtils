@@ -14,11 +14,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import shutil
 import sys
 import unittest
 
 from spinn_utilities.make_tools.converter import Converter
-import spinn_utilities.make_tools.converter as converter
+from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 
 
 class TestConverter(unittest.TestCase):
@@ -27,27 +28,34 @@ class TestConverter(unittest.TestCase):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
-        converter.RANGE_DIR = ""
+        os.environ["SPINN_DIRS"] = str(path)
 
     def test_convert(self):
+        with LogSqlLiteDatabase() as sql:
+            sql.clear()
         src = "mock_src"
         dest = "modified_src"
-        dict = os.path.join("modified_src", "test.dict")
-        Converter.convert(src, dest, dict)
-
-    def test_convert_ranged(self):
-        src = "mock_src"
-        dest = "modified_src"
-        dict = os.path.join("modified_src", "test.dict")
-        Converter.convert(src, dest, dict)
-        dict = os.path.join("modified_src", "test2.dict")
-        Converter.convert(src, dest, dict)
+        formats = os.path.join(src, "formats.c")
+        # make sure the first formats is there
+        shutil.copyfile("formats.c1", formats)
+        Converter.convert(src, dest, True)
+        with LogSqlLiteDatabase() as sql:
+            single = sql.get_max_log_id()
+        # Unchanged file a secomnd time should give same ids
+        Converter.convert(src, dest, False)
+        with LogSqlLiteDatabase() as sql:
+            self.assertEquals(single, sql.get_max_log_id())
+        # Now use the second formats which as one extra log and moves 1 down
+        shutil.copyfile("formats.c2", formats)
+        Converter.convert(src, dest, False)
+        with LogSqlLiteDatabase() as sql:
+            # Need two more ids for the new log and then changed line number
+            self.assertEquals(single + 2, sql.get_max_log_id())
 
     def test_replace(self):
         src = "mock_src"
         dest = "modified_src"
-        dict = os.path.join("modified_src", "test.dict")
-        c = Converter(src, dest, dict)
+        c = Converter(src, dest, True)
         path = "/home/me/mock_src/FEC/c_common/fec/mock_src/"
         path = path.replace("/", os.path.sep)
         new_path = "/home/me/mock_src/FEC/c_common/fec/modified_src/"
@@ -61,12 +69,12 @@ class TestConverter(unittest.TestCase):
         os.chdir(weird_dir)
         src = "foo/"
         dest = "bar/"
-        dict = os.path.join("bar", "test.dict")
-        c = Converter(src, dest, dict)
+        with LogSqlLiteDatabase() as sql:
+            sql.clear()
+        c = Converter(src, dest, True)
         c.run()
         weird_dir = os.path.join(dir_path, "foo", "bar", "gamma")
         os.chdir(weird_dir)
-        dict = os.path.join("bar", "test.dict")
-        c = Converter(src, dest, dict)
+        c = Converter(src, dest, True)
         c.run()
         os.chdir(cwd)

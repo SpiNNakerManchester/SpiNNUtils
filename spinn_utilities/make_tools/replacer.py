@@ -14,41 +14,33 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import os
 import struct
 from spinn_utilities.log import FormatAdapter
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
+from .log_sqllite_database import LogSqlLiteDatabase
 
 logger = FormatAdapter(logging.getLogger(__name__))
 
 
-class Replacer(object):
+class Replacer(LogSqlLiteDatabase):
 
-    def __init__(self, dict_pointer):
-        self._messages = {}
-        rest, _ = os.path.splitext(dict_pointer)
-        dict_path = rest + ".dict"
-        if os.path.isfile(dict_path):
-            with open(dict_path) as dict_info:
-                for line in dict_info:
-                    parts = line.strip().split(",", 2)
-                    if len(parts) != 3:
-                        continue
-                    if not parts[0].isdigit():
-                        continue
-                    self._messages[parts[0]] = parts
-        else:
-            logger.error("Unable to find a dictionary file at {}"
-                         .format(dict_path))
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        # nothing yet
+        pass
 
     def replace(self, short):
         parts = short.split(TOKEN)
         if not parts[0].isdigit():
             return short
-        if not parts[0] in self._messages:
+        data = self.get_log_info(parts[0])
+        if data is None:
             return short
-        (_id, preface, original) = self._messages[parts[0]]
+        (preface, original) = data
+
         replaced = original.encode("latin-1").decode("unicode_escape")
         if len(parts) > 1:
             matches = FORMAT_EXP.findall(original)
@@ -73,10 +65,12 @@ class Replacer(object):
 
         return preface + replaced
 
-    def hex_to_float(self, hex_str):
+    @staticmethod
+    def hex_to_float(hex_str):
         return struct.unpack('!f', struct.pack("!I", int(hex_str, 16)))[0]
 
-    def hexes_to_double(self, upper, lower):
+    @staticmethod
+    def hexes_to_double(upper, lower):
         return struct.unpack(
             '!d',
             struct.pack("!I", int(upper, 16)) +

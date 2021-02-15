@@ -18,7 +18,7 @@ import sys
 import unittest
 
 from spinn_utilities.make_tools.file_converter import FileConverter
-
+from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 ranged_file = "local_ranges.txt"
 
 
@@ -28,35 +28,36 @@ class TestConverter(unittest.TestCase):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
+        os.environ["SPINN_DIRS"] = str(path)
+        with LogSqlLiteDatabase() as sql:
+            sql.clear()
 
     def test_convert(self):
         file_name = "weird,file.c"
         src = os.path.join("mock_src", file_name)
         dest = os.path.join("modified_src", file_name)
-        dict = dest + "dict"
-        if os.path.exists(dict):
-            os.remove(dict)
-        FileConverter.convert(src, dest, dict, 2000)
+        FileConverter.convert(src, dest)
         src_lines = sum(1 for line in open(src))
         modified_lines = sum(1 for line in open(dest))
         self.assertEqual(src_lines, modified_lines)
-        with open(dict, 'r') as dictfile:
-            data = dictfile.read()
-        assert("this is ok" in data)
-        assert("this is ok" in data)
-        assert("this is fine on two lines" in data)
-        assert("before comment after comment" in data)
-        assert("One line commented" in data)
-        assert("this is for alan); so there!" in data)
-        assert("Test %u for alan); so there!" in data)
-        assert("\\t back off = %u, time between spikes %u" in data)
-        assert("the neuron %d has been determined to not spike" in data)
-        assert("Inside a loop" in data)
-        assert("then a space" in data)
-        assert("then a newline simple" in data)
-        assert("then a newline plus" in data)
-        assert("first" in data)
-        assert("second" in data)
-        assert("then a backslash comment on a middle line" in data)
-        assert("then a standard comment on a middle line" in data)
-        assert("comment before" in data)
+        with LogSqlLiteDatabase() as sql:
+            with self.assertRaises(Exception):
+                sql.check_original("this is bad")
+            sql.check_original("this is ok")
+            sql.check_original("this is fine on two lines")
+            sql.check_original("before comment after comment")
+            sql.check_original("One line commented")
+            sql.check_original("this is for alan); so there!")
+            sql.check_original("Test %u for alan); so there!")
+            sql.check_original("\\t back off = %u, time between spikes %u")
+            sql.check_original(
+                "the neuron %d has been determined to not spike")
+            sql.check_original("Inside a loop")
+            sql.check_original("then a space")
+            sql.check_original("then a newline simple")
+            sql.check_original("then a newline plus")
+            sql.check_original("first")
+            sql.check_original("second %u")
+            sql.check_original("then a backslash comment on a middle line")
+            sql.check_original("then a standard comment on a middle line")
+            sql.check_original("comment before")

@@ -16,6 +16,7 @@
 import os
 import re
 import sys
+from .log_sqllite_database import LogSqlLiteDatabase
 
 TOKEN = chr(30)  # Record Separator
 
@@ -27,6 +28,10 @@ END_COMMENT_REGEX = re.compile(r"/*/")
 LOG_START_REGEX = re.compile(
     r"log_((info)|(error)|(debug)|(warning))(\s)*\(")
 DOUBLE_HEX = ", double_to_upper({0}), double_to_lower({0})"
+LEVELS = {"log_info(": "[INFO]",
+          "log_error(": "[ERROR]",
+          "log_debug(": "[DEBUG]",
+          "log_warning(": "[WARNING]"}
 
 # Status values
 NORMAL_CODE = 0
@@ -39,20 +44,15 @@ MINIS = {"log_info(": "log_mini_info(",
          "log_debug(": "log_mini_debug(",
          "log_warning(": "log_mini_warning("}
 
-LEVELS = {"log_info(": "[INFO]",
-          "log_error(": "[ERROR]",
-          "log_debug(": "[DEBUG]",
-          "log_warning(": "[WARNING]"}
-
-MAX_LOG_PER_FILE = 100
-
 
 class FileConverter(object):
     __slots__ = [
         # Full destination directory
         "_dest",
-        # File to hold dictionary mappings
-        "_dict",
+        # Database which handles the mapping of id to log messages
+        "_log_database",
+        # Id in the database for this file
+        "_log_file_id",
         # original c log method found
         # variable created each time a log method found
         "_log",
@@ -65,8 +65,6 @@ class FileConverter(object):
         # Any other stuff found before the log method but on same line
         # variable created each time a log method found
         "_log_start",
-        # Id for next message
-        "_message_id",
         # The previous state
         # variable created when a comment found
         "_previous_status",
@@ -80,43 +78,37 @@ class FileConverter(object):
         "_too_many_lines"
     ]
 
-    def __init__(self, src, dest, dict_file):
+    def __init__(self, src, dest, log_database):
         """ Creates the file_convertor to convert one file
 
         :param src: Full source directory
         :type src: str
         :param dest: Full destination directory
         :type dest: str
-        :param dict_file: File to hold dictionary mappings
-        :type dict_file: str
+        :param log_database:
+            Database which handles the mapping of id to log messages
+        :type log_database:
+            :py:class:`.log_sqllite_database.LogSqlLiteDatabase`
         """
         self._src = os.path.abspath(src)
         self._dest = os.path.abspath(dest)
-        self._dict = dict_file
+        self._log_database = log_database
+        self._log_file_id = log_database.get_file_id(src, dest)
         self._log = None
         self._log_full = None
         self._log_lines = None
         self._log_start = None
-        self._message_id = None
         self._previous_status = None
         self._status = None
         self._too_many_lines = None
 
-    def _run(self, range_start):
+    def _run(self):
         """ Runs the file converter
 
         WARNING. This code is absolutely not thread safe.
         Interwoven calls even on different FileConverter objects is dangerous!
-        It is highly likely that dict files become corrupted and the same
-        message_id is used multiple times.
 
-
-        :param range_start: id of last dictionary key used
-        :type range_start: int
-        :return: The last message id use which can in turn be passed into
-        the next FileConverter
         """
-        self._message_id = range_start
         if not os.path.exists(self._src):
             raise Exception("Unable to locate source {}".format(self._src))
         dest_dir = os.path.dirname(os.path.realpath(self._dest))
@@ -141,7 +133,6 @@ class FileConverter(object):
                         self._status = previous_status
                         self._process_chars(dest_f, line_num, text)
         # print (self._dest)
-        return self._message_id
 
     def _process_line(self, dest_f, line_num, text):
         """ Process a single line
@@ -360,10 +351,8 @@ class FileConverter(object):
     def _short_log(self, line_num):
         """ shortens the log string message and adds the id
 
-        Assumes that self._message_id has already been updated
-
-        :param original: Source log messages
-        :return: new log message and the id
+        :param line_num: Line number of the original log
+        :return: shorten form
         """
         try:
             match = LOG_END_REGEX.search(self._log_full)
@@ -373,9 +362,16 @@ class FileConverter(object):
                 self._log_full, line_num, self._src))
         parts = self.split_by_comma_plus(main, line_num)
         original = parts[0]
+        preface = "{} ({}: {}): ".format(
+            LEVELS[self._log], os.path.basename(self._src).replace(",", ";"),
+            line_num + 1)
+
+        message_id = self._log_database.set_log_info(
+            preface, original, self._log_file_id)
         count = original.count("%") - original.count("%%") * 2
+
         if count == 0:
-            return original, '"%u", {});'.format(self._message_id)
+            return '"%u", {});'.format(message_id)
 
         front = '"%u'
         back = ""
@@ -406,9 +402,9 @@ class FileConverter(object):
                 back += DOUBLE_HEX.format(parts[i + 1])
             else:
                 back += ", {}".format(parts[i+1])
-        front += '", {}'.format(self._message_id)
+        front += '", {}'.format(message_id)
         back += ");"
-        return original, front + back
+        return front + back
 
     def _write_log_method(self, dest_f, line_num, tail=""):
         """ Writes the log message and the dict value
@@ -419,20 +415,12 @@ class FileConverter(object):
         - Parameters kept as is
         - Old log message with full text added as comment
 
-        Adds the data to the dict file including
-        - key/id
-        - log level
-        - file name
-        - line number
-        - original message
-
         :param dest_f: Open file like Object to write modified source to
         :param line_num: Line number in the source c file
         :param text: Text of that line including whitespace
         """
-        self._message_id += 1
         self._log_full = self._log_full.replace('""', '')
-        original, short_log = self._short_log(line_num)
+        short_log = self._short_log(line_num)
 
         dest_f.write(" " * self._log_start)
         dest_f.write(MINIS[self._log])
@@ -456,14 +444,6 @@ class FileConverter(object):
             dest_f.write(self._log_full)
             dest_f.write("*/")
             dest_f.write(end * (self._log_lines - 1))
-        with open(self._dict, 'a') as mess_f:
-            # Remove commas from filenames for csv format
-            # Remove start and end quotes from original
-            mess_f.write("{},{} ({}: {}): ,{}\n".format(
-                self._message_id, LEVELS[self._log],
-                os.path.basename(self._src).replace(",", ";"),
-                line_num + 1,
-                original))
 
     def _process_chars(self, dest_f, line_num, text):
         """ Deals with complex lines that can not be handled in one go
@@ -613,27 +593,20 @@ class FileConverter(object):
         return self._src[last_sep:]
 
     @staticmethod
-    def convert(src, dest, dict_file, range_start):
+    def convert(src, dest):
         """ Static method to create Object and do the conversion
 
         :param src: Full source directory
         :type src: str
         :param dest: Full destination directory
         :type dest: str
-        :param dict_file: File to hold dictionary mappings
-        :type dict_file: str
-        :param range_start:
-        :param range_start: id of last dictionary key used
-        :type range_start: int
-        :return: The last message id use which can in turn be passed into
         """
-        converter = FileConverter(src, dest, dict_file)
-        return converter._run(range_start)  # pylint: disable=protected-access
+        with LogSqlLiteDatabase() as log_database:
+            converter = FileConverter(src, dest, log_database)
+            converter._run()  # pylint: disable=protected-access
 
 
 if __name__ == '__main__':
     _src = sys.argv[1]
     _dest = sys.argv[2]
-    _dict_file = sys.argv[3]
-    _range_start = int(sys.argv[4])
-    FileConverter.convert(_src, _dest, _dict_file, _range_start)
+    FileConverter.convert(_src, _dest)

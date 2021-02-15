@@ -141,6 +141,7 @@ def test_peek():
     p1 = o.peek()
     assert p1 == 3
 
+
 def test_basic():
     ul = SetList()
     ul.append(1)

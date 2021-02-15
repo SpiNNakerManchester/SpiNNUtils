@@ -20,6 +20,7 @@ if sys.version_info >= (3, 6):
 else:
     from collections import MutableSet  # pylint: disable=no-name-in-module
 
+
 class SetList(list, MutableSet):
     """
     A object that acts both as a Set and a List where when the rules different
@@ -73,7 +74,7 @@ class SetList(list, MutableSet):
     def insert(self, index, p_object):
         """
         insert object before index
-        
+
         note:  If the object was already in the list it is removed and then
         reinserted in the requested place. Therefor this call could cause items
         lower than index to move while items higher than index may not move.
@@ -175,11 +176,11 @@ class SetList(list, MutableSet):
         """
         return SetList(self.as_set.intersection(*args, **kwargs))
 
-    #def intersection_update(self, *args, **kwargs):
-    #    """ Update a set with the intersection of itself and another. """
-    #    togo = self.as_set.difference(*args, **kwargs)
-    #    for p_object in togo:
-    #        self.remove(p_object)
+    def intersection_update(self, *args, **kwargs):
+        """ Update a set with the intersection of itself and another. """
+        togo = self.as_set.difference(*args, **kwargs)
+        for p_object in togo:
+            self.remove(p_object)
 
     def isdisjoint(self, *args, **kwargs):
         """ Return True if two sets have a null intersection. """
@@ -221,16 +222,17 @@ class SetList(list, MutableSet):
         """
         return SetList(self.symmetric_difference(*args, **kwargs))
 
-    #def symmetric_difference_update(self, *args,
-    #                                **kwargs):  # real signature unknown
-    #    """ Update a set with the symmetric difference of itself and another. """
-    #    for p_object in args[0]:
-    #        if p_object in self.as_set:
-    #            self.remove(p_object)
-    #        else:
-    #            self.append(p_object)
+    def symmetric_difference_update(self, *args, **kwargs):
+        """
+        Update a set with the symmetric difference of itself and another.
+        """
+        for p_object in args[0]:
+            if p_object in self.as_set:
+                self.remove(p_object)
+            else:
+                self.append(p_object)
 
-    def union(self, *args, **kwargs):  # real signature unknown
+    def union(self, *args, **kwargs):
         """
         Return the union of sets as a new set.
 
@@ -238,24 +240,24 @@ class SetList(list, MutableSet):
         """
         return SetList(self.union(*args, **kwargs))
 
-    def update(self, *args, **kwargs):  # real signature unknown
+    def update(self, *args, **kwargs):
         """ Update a set with the union of itself and others. """
         self.extend(args[0])
 
-    def __and__(self, *args, **kwargs):  # real signature unknown
+    def __and__(self, *args, **kwargs):
         """ Return self&value. """
         self.add(*args, **kwargs)
 
-    def __contains__(self, y):  # real signature unknown; restored from __doc__
+    def __contains__(self, y):
         """ x.__contains__(y) <==> y in x. """
         return self.as_set.__contains__(y)
 
-    def __eq__(self, *args, **kwargs): # real signature unknown
+    def __eq__(self, *args, **kwargs):
         if isinstance(args[0], list):
             return super(SetList, self).__eq__(*args, **kwargs)
         return self.as_set.__eq__(*args, **kwargs)
 
-    def __repr__(self, *args, **kwargs): # real signature unknown
+    def __repr__(self, *args, **kwargs):
         if self:
             repr = super(SetList, self).__repr__()
             return "SetList(" + repr + ")"
@@ -268,4 +270,3 @@ class SetList(list, MutableSet):
             return next(reversed(self))
         else:
             return next(self)
-

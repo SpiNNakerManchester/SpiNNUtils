@@ -62,7 +62,7 @@ class UnigueList(list):
     def insert(self, index, p_object):
         """
         insert object before index
-        
+
         note:  If the object was already in the list it is removed and then
         reinserted in the requested place. Therefor this call could cause items
         lower than index to move while items higher than index may not move.

@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Iterable
 from .abstract_base import AbstractBase, abstractmethod
 
 
@@ -20,7 +21,7 @@ class AbstractContextManager(object, metaclass=AbstractBase):
     """ Closeable class that supports being used as a simple context manager.
     """
 
-    __slots__ = []
+    __slots__: Iterable[str] = []
 
     @abstractmethod
     def close(self):

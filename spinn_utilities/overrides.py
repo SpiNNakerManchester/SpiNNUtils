@@ -15,12 +15,6 @@
 
 import inspect
 
-try:
-    # pylint: disable=no-member
-    _introspector = inspect.getfullargspec  # @UndefinedVariable
-except AttributeError:
-    _introspector = inspect.getargspec
-
 
 class overrides(object):
     """ A decorator for indicating that a method overrides another method in\
@@ -83,8 +77,8 @@ class overrides(object):
 
     def __verify_method_arguments(self, method):
         """ Check that the arguments match. """
-        method_args = _introspector(method)
-        super_args = _introspector(self._superclass_method)
+        method_args = inspect.getfullargspec(method)
+        super_args = inspect.getfullargspec(self._superclass_method)
         all_args = [
             arg for arg in method_args.args
             if arg not in self._additional_arguments]

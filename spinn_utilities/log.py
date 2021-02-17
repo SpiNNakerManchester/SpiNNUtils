@@ -19,6 +19,7 @@ import re
 import sys
 from inspect import getfullargspec
 from .overrides import overrides
+from typing import ClassVar, List, Tuple
 
 _LEVELS = {
     'debug': logging.DEBUG,
@@ -149,7 +150,7 @@ class FormatAdapter(logging.LoggerAdapter):
     """
     __kill_level = logging.CRITICAL + 1
     __repeat_at_end = logging.WARNING
-    __repeat_messages = []
+    __repeat_messages: ClassVar[List[Tuple[str]]] = []
     __write_normal = True
     __report_file = None
 

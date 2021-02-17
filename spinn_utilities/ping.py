@@ -16,10 +16,11 @@
 import platform
 import subprocess
 import time
+from typing import Set
 
 
 class Ping(object):
-    unreachable = set()
+    unreachable: Set[str] = set()
 
     @staticmethod
     def ping(ipaddr):

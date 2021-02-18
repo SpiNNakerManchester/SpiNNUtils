@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-
+# Place to store previously derived classes in case of multiple inheritance.
+# This is required because the __init_subclass__ removes the kwargs
 __allow_derivation_cache = dict()
 
 

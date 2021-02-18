@@ -14,6 +14,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+class _RequiresSubclassTypeError(TypeError):
+    """
+    A special exception to handle just the case where the decorator is applied
+    so that we can easily figure out when to pass on the extra meta-arguments.
+
+    Do not use outside this file. Outsiders should just see ``TypeError``.
+    """
+
+
 def require_subclass(required_class):
     """ Decorator that arranges for subclasses of the decorated class to\
         require that they are also subclasses of the given class.
@@ -41,14 +50,17 @@ def require_subclass(required_class):
         # pylint: disable=unused-variable
         __class__ = target_class  # @ReservedAssignment # noqa: F841
 
-        def __init_subclass__(cls, **kwargs):
-            allow_derivation = kwargs.pop("allow_derivation", False)
+        def __init_subclass__(cls, allow_derivation=False, **kwargs):
             if not issubclass(cls, required_class) and not allow_derivation:
-                raise TypeError(
+                raise _RequiresSubclassTypeError(
                     f"{cls.__name__} must be a subclass "
                     f"of {required_class.__name__} and the derivation was not "
                     "explicitly allowed with allow_derivation=True")
-            super().__init_subclass__(**kwargs)
+            try:
+                super().__init_subclass__(**kwargs)
+            except _RequiresSubclassTypeError:
+                super().__init_subclass__(
+                    allow_derivation=allow_derivation, **kwargs)
 
         setattr(target_class, '__init_subclass__',
                 classmethod(__init_subclass__))

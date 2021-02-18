@@ -46,6 +46,13 @@ class DerivedIfc(Ifc, allow_derivation=True):
     pass
 
 
+@require_subclass(Base)
+class Ifc2(object, metaclass=AbstractBase):
+    @abstractmethod
+    def bar(self):
+        pass
+
+
 def test_direct():
     class Foo1(FromBase, Ifc):
         def foo(self):
@@ -86,3 +93,22 @@ def test_non_base_double_indirect():
             def foo(self):
                 pass
         assert Foo6().bar == 234
+
+
+def test_double():
+    class Foo7(FromBase, Ifc, Ifc2):
+        pass
+
+
+def test_double_indirect():
+    class Ifc3(Ifc, Ifc2, allow_derivation=True):
+        pass
+
+    class Foo7(FromBase, Ifc3):
+        def foo(self):
+            return 123
+
+        def bar(self):
+            return 234
+
+    assert Foo7() is not None

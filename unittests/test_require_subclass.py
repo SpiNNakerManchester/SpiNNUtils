@@ -71,16 +71,6 @@ def test_indirect():
     assert Foo2().bar == 123
 
 
-def test_double_indirect():
-    class Foo3(FromBase, DoubleDerivedIfc):
-        def foo(self):
-            pass
-
-        def bacon(self):
-            pass
-    assert Foo3().bar == 123
-
-
 def test_non_base_direct():
     with pytest.raises(TypeError, match="Foo3 must be a subclass of Base"):
         class Foo3(NotFromBase, Ifc):
@@ -107,3 +97,24 @@ def test_non_base_double_indirect():
             def foo(self):
                 pass
         assert Foo6().bar == 234
+
+
+def test_double_indirect():
+    class Foo7(FromBase, DoubleDerivedIfc):
+        def foo(self):
+            pass
+
+        def bacon(self):
+            pass
+    assert Foo7().bar == 123
+
+
+def test_non_base_double_indirect_other():
+    with pytest.raises(TypeError, match="Foo8 must be a subclass of Base"):
+        class Foo8(NotFromBase, DoubleDerivedIfc):
+            def foo(self):
+                pass
+
+            def bacon(self):
+                pass
+        assert Foo8().bar == 123

@@ -31,6 +31,13 @@ class Ifc(object, metaclass=AbstractBase):
         pass
 
 
+@require_subclass(Base)
+class Ifc2(object, metaclass=AbstractBase):
+    @abstractmethod
+    def bacon(self):
+        pass
+
+
 class NotFromBase(object):
     def __init__(self):
         self.bar = 234
@@ -46,6 +53,10 @@ class DerivedIfc(Ifc, allow_derivation=True):
     pass
 
 
+class DoubleDerivedIfc(Ifc, Ifc2, allow_derivation=True):
+    pass
+
+
 def test_direct():
     class Foo1(FromBase, Ifc):
         def foo(self):
@@ -58,6 +69,16 @@ def test_indirect():
         def foo(self):
             pass
     assert Foo2().bar == 123
+
+
+def test_double_indirect():
+    class Foo3(FromBase, DoubleDerivedIfc):
+        def foo(self):
+            pass
+
+        def bacon(self):
+            pass
+    assert Foo3().bar == 123
 
 
 def test_non_base_direct():

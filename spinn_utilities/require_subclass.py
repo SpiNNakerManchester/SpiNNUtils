@@ -13,6 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+
+__allow_derivation_cache = dict()
+
 
 def require_subclass(required_class):
     """ Decorator that arranges for subclasses of the decorated class to\
@@ -43,6 +47,10 @@ def require_subclass(required_class):
 
         def __init_subclass__(cls, **kwargs):
             allow_derivation = kwargs.pop("allow_derivation", False)
+            if not allow_derivation:
+                allow_derivation = __allow_derivation_cache.get(cls, False)
+            __allow_derivation_cache[cls] = True
+
             if not issubclass(cls, required_class) and not allow_derivation:
                 raise TypeError(
                     f"{cls.__name__} must be a subclass "

@@ -13,6 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Files are listed here if they are NOT imported into their directory/module's
+# __init__.py and reexported with __all__.
+
 spinn_utilities/abstract_base.py
 spinn_utilities/abstract_context_manager.py
 spinn_utilities/bytestring_utils.py

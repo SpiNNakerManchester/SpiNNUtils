@@ -13,18 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
 import atexit
 import logging
 import re
 import sys
-try:
-    from inspect import getfullargspec
-except ImportError:
-    # Python 2.7 hack
-    from inspect import getargspec as getfullargspec
+from inspect import getfullargspec
 from .overrides import overrides
-from six import PY2
 
 _LEVELS = {
     'debug': logging.DEBUG,
@@ -68,8 +62,7 @@ class ConfiguredFormatter(logging.Formatter):
             fmt = "%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s"
         else:
             fmt = "%(asctime)-15s %(levelname)s: %(message)s"
-        super(ConfiguredFormatter, self).__init__(
-            fmt=fmt, datefmt="%Y-%m-%d %H:%M:%S")
+        super().__init__(fmt=fmt, datefmt="%Y-%m-%d %H:%M:%S")
 
     @staticmethod
     def construct_logging_parents(conf):
@@ -157,6 +150,8 @@ class FormatAdapter(logging.LoggerAdapter):
     __kill_level = logging.CRITICAL + 1
     __repeat_at_end = logging.WARNING
     __repeat_messages = []
+    __write_normal = True
+    __report_file = None
 
     @classmethod
     def set_kill_level(cls, level=None):
@@ -174,39 +169,26 @@ class FormatAdapter(logging.LoggerAdapter):
         else:
             cls.__kill_level = level
 
+    @classmethod
+    def set_report_File(cls, report_file):
+        """
+
+        :param report_file:
+        :param write_normal:
+        :return:
+        """
+        cls.__report_file = report_file
+        level = logging.getLevelName(cls.__repeat_at_end)
+        with open(report_file, "a") as report_file:
+            report_file.write(
+                "This is a record of all logged messages at level {} or "
+                "above\n".format(level))
+
     def __init__(self, logger, extra=None):
         if extra is None:
             extra = {}
-        super(FormatAdapter, self).__init__(logger, extra)
+        super().__init__(logger, extra)
         self.do_log = logger._log  # pylint: disable=protected-access
-
-    if PY2:
-        @overrides(logging.LoggerAdapter.critical)
-        def critical(self, msg, *args, **kwargs):
-            self.log(logging.CRITICAL, msg, *args, **kwargs)
-
-        @overrides(logging.LoggerAdapter.debug)
-        def debug(self, msg, *args, **kwargs):
-            self.log(logging.DEBUG, msg, *args, **kwargs)
-
-        @overrides(logging.LoggerAdapter.error)
-        def error(self, msg, *args, **kwargs):
-            self.log(logging.ERROR, msg, *args, **kwargs)
-
-        # pylint: disable=arguments-differ
-        @overrides(logging.LoggerAdapter.exception)
-        def exception(self, msg, *args, **kwargs):
-            if "exc_info" not in kwargs:
-                kwargs["exc_info"] = True
-            self.log(logging.ERROR, msg, *args, **kwargs)
-
-        @overrides(logging.LoggerAdapter.info)
-        def info(self, msg, *args, **kwargs):
-            self.log(logging.INFO, msg, *args, **kwargs)
-
-        @overrides(logging.LoggerAdapter.warning)
-        def warning(self, msg, *args, **kwargs):
-            self.log(logging.WARNING, msg, *args, **kwargs)
 
     @overrides(logging.LoggerAdapter.log, extend_doc=False)
     def log(self, level, msg, *args, **kwargs):
@@ -219,12 +201,15 @@ class FormatAdapter(logging.LoggerAdapter):
         message = _BraceMessage(msg, args, kwargs)
         if level >= FormatAdapter.__repeat_at_end:
             FormatAdapter.__repeat_messages.append((message))
+            if self.__report_file:
+                with open(self.__report_file, "a") as report_file:
+                    report_file.write(message.fmt)
+                    report_file.write("\n")
         if self.isEnabledFor(level):
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
                 log_kwargs["exc_info"] = kwargs["exc_info"]
-            self.do_log(
-                level, message, (), **log_kwargs)
+            self.do_log(level, message, (), **log_kwargs)
 
     @overrides(logging.LoggerAdapter.process, extend_doc=False)
     def process(self, msg, kwargs):
@@ -245,10 +230,20 @@ class FormatAdapter(logging.LoggerAdapter):
         messages = cls._repeat_log()
         if messages:
             level = logging.getLevelName(cls.__repeat_at_end)
-            print("\nThese log messages where generated at level {} or above"
-                  "".format(level), file=sys.stderr)
-            for message in messages:
-                print(message, file=sys.stderr)
+            if cls.__report_file:
+                print("\nWARNING: {} log messages were generated at "
+                      "level {} or above.".format(len(messages), level),
+                      file=sys.stderr)
+                print("This may mean that the results are invalid.",
+                      file=sys.stderr)
+                print("You are advised to check the details of these here: {}"
+                      "".format(cls.__report_file),
+                      file=sys.stderr)
+            else:
+                print("\nThese log messages where generated at level {} or "
+                      "above".format(level), file=sys.stderr)
+                for message in messages:
+                    print(message, file=sys.stderr)
 
     @classmethod
     def _repeat_log(cls):

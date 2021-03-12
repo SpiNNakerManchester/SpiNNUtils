@@ -9,7 +9,7 @@ SpiNNUtils
 ==========
 
 .. automodule:: spinn_utilities
-    :noindex:
+   :noindex:
 
 Contents
 --------
@@ -19,11 +19,9 @@ Contents
 
     modules
 
-
 Indices and tables
 ------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

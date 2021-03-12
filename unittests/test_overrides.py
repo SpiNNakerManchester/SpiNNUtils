@@ -39,7 +39,7 @@ def test_basic_use():
     class Sub(Base):
         @overrides(Base.foo)
         def foo(self, x, y, z):
-            return super(Sub, self).foo(z, y, x)
+            return super().foo(z, y, x)
     assert Sub().foo(1, 2, 3) == [3, 2, 1]
 
 

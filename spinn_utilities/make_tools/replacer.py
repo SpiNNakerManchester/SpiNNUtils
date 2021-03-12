@@ -19,7 +19,6 @@ import struct
 from spinn_utilities.log import FormatAdapter
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
-import six
 
 logger = FormatAdapter(logging.getLogger(__name__))
 
@@ -65,7 +64,7 @@ class Replacer(object):
         if not parts[0] in self._messages:
             return short
         (_id, preface, original) = self._messages[parts[0]]
-        replaced = six.b(original).decode("unicode_escape")
+        replaced = original.encode("latin-1").decode("unicode_escape")
         if len(parts) > 1:
             matches = FORMAT_EXP.findall(original)
             # Remove any blanks due to double spacing

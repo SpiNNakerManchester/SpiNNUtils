@@ -14,11 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
-try:
-    # pylint: disable=import-error, no-name-in-module
-    from collections.abc import MutableSet
-except ImportError:
-    from collections import MutableSet  # pylint: disable=no-name-in-module
+from collections.abc import MutableSet
 
 
 class OrderedSet(MutableSet):

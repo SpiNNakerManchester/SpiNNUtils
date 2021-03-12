@@ -13,15 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=redefined-builtin
-from past.builtins import range, xrange
-from six import raise_from
+import numpy
 from spinn_utilities.overrides import overrides
 from spinn_utilities.helpful_functions import is_singleton
 from .abstract_list import AbstractList
 from .multiple_values_exception import MultipleValuesException
-
-import numpy
 
 
 def function_iterator(function, size, ids=None):
@@ -31,14 +27,15 @@ def function_iterator(function, size, ids=None):
         list(function_iterator(lambda x: x * 2 , 3, ids=[2, 4, 6]))
 
     :param function: A function with one integer parameter that returns a value
-    :param size: The number of elements to put in the list. If used, the\
-        function will be called with `range(size)`. Ignored if `ids` provided
+    :param size: The number of elements to put in the list. If used, the
+        function will be called with ``range(size)``. Ignored if ``ids``
+        provided
     :param ids: A list of IDs to call the function for or None to use the size.
     :type ids: list of int
     :return: a list of values
     """
     if ids is None:
-        ids = xrange(size)
+        ids = range(size)
     for _id in ids:
         yield function(_id)
 
@@ -55,19 +52,21 @@ class RangedList(AbstractList):
         """
         :param size: Fixed length of the list
         :param value: value to given to all elements in the list
-        :param key: The dict key this list covers.\
+        :param key: The dict key this list covers.
             This is used only for better Exception messages
         :param use_list_as_value: True if the value *is* a list
         """
         if size is None:
             try:
                 size = len(value)
-            except TypeError:
+            except TypeError as e:
                 raise ValueError("value parameter must have a length to "
-                                 "determine the unsupplied size")
-        AbstractList.__init__(self, size=size, key=key)
+                                 "determine the unsupplied size") from e
+        super().__init__(size=size, key=key)
         if not use_list_as_value and not self.is_list(value, size):
             self._default = value
+        else:
+            self._default = None
         self.set_value(value, use_list_as_value)
 
     @overrides(AbstractList.range_based)
@@ -156,7 +155,7 @@ class RangedList(AbstractList):
         """
         if self._ranged_based:
             for (start, stop, value) in self._ranges:
-                for _ in xrange(stop - start):
+                for _ in range(stop - start):
                     yield value
         else:
             for value in self._ranges:
@@ -180,7 +179,7 @@ class RangedList(AbstractList):
             while start < slice_stop:
                 first = max(start, slice_start)
                 end_point = min(stop, slice_stop)
-                for _ in xrange(end_point - first):
+                for _ in range(end_point - first):
                     yield value
                 try:
                     (start, stop, value) = next(ranges)
@@ -249,7 +248,7 @@ class RangedList(AbstractList):
         """ Determines if the value should be treated as a list.
 
         .. note::
-            This method can be extended to add other checks for list in which\
+            This method can be extended to add other checks for list in which
             case :py:meth:`as_list` must also be extended.
         """
 
@@ -264,7 +263,7 @@ class RangedList(AbstractList):
             An exception is raised if value cannot be given size elements.
 
         .. note::
-            This method can be extended to add other conversions to list in\
+            This method can be extended to add other conversions to list in
             which case :py:meth:`is_list` must also be extended.
 
         :param value:
@@ -276,7 +275,7 @@ class RangedList(AbstractList):
         else:
             values = list(value)
         if len(values) != size:
-            raise Exception("The number of values does not equal the size")
+            raise ValueError("The number of values does not equal the size")
         return values
 
     def set_value(self, value, use_list_as_value=False):
@@ -305,8 +304,8 @@ class RangedList(AbstractList):
         """ Sets the value for a single ID to the new value.
 
         .. note::
-            This method only works for a single positive int ID.\
-            Use `set` or `__set__` for slices, tuples, lists and negative\
+            This method only works for a single positive int ID.
+            Use ``set`` or ``__set__`` for slices, tuples, lists and negative
             indexes.
 
         :param id: Single ID
@@ -370,8 +369,8 @@ class RangedList(AbstractList):
         """ Sets the value for a single range to the new value.
 
         .. note::
-            This method only works for a single positive int ID.\
-            Use `set` or `__set__` for slices, tuples, lists and negative\
+            This method only works for a single positive int ID.
+            Use ``set`` or ``__set__`` for slices, tuples, lists and negative
             indexes.
 
         :param slice_start: Start of the range
@@ -393,7 +392,7 @@ class RangedList(AbstractList):
 
         # If non-ranged-based, set the values directly
         if not self._ranged_based:
-            for id_value in xrange(slice_start, slice_stop):
+            for id_value in range(slice_start, slice_stop):
                 self._ranges[id_value] = value
             return
 
@@ -467,14 +466,17 @@ class RangedList(AbstractList):
                 self.set_value_by_id(id_value, value)
 
     def set_value_by_selector(self, selector, value, use_list_as_value=False):
-        """ Support for the `list[x] =` format.
+        """ Support for the ``list[x] =`` format.
 
         :param id: A single ID, a slice of IDs or a list of IDs
         :param value:
         """
 
-        # Handle a slice
+        if selector is None:
+            self.set_value(value, use_list_as_value)
+            return
         if isinstance(selector, slice):
+            # Handle a slice
             if selector.step is None or selector.step == 1:
                 (start, stop, _) = selector.indices(self._size)
                 self.set_value_by_slice(start, stop, value, use_list_as_value)
@@ -517,4 +519,35 @@ class RangedList(AbstractList):
         try:
             return self._default
         except AttributeError as e:
-            raise_from(Exception("Default value not set."), e)
+            raise Exception("Default value not set.") from e
+
+    def copy_into(self, other):
+        """
+        Turns this List into a of the other list but keep its id
+
+        Depth is just enough so that any changes done through the RangedList
+        API on other will not change self
+
+        :param RangedList; Another Ranged List to copy the values from
+        """
+        # Assume the _default and key remain unchanged
+        self._ranged_based = other.range_based()
+        # clear the list fast and 2.7 safe
+        self._ranges *= 0
+        if self._ranged_based:
+            self._ranges.extend(other.iter_ranges())
+        else:
+            self._ranges.extend(other)
+
+    def copy(self):
+        """
+        Turns this List into a copy of the other
+
+        Depth is just enough so that any changes done through the RangedList
+        API on other will not change self
+
+        :param RangedList; Another Ranged List to copy the values from
+        """
+        clone = RangedList(self._size, self._default, self._key)
+        clone.copy_into(self)
+        return clone

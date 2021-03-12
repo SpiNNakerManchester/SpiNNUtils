@@ -28,9 +28,8 @@ class ExecutableFinder(object):
 
     def __init__(self, binary_search_paths):
         """
-        :param binary_search_paths:\
+        :param iterable(str) binary_search_paths:
             The initial set of folders to search for binaries.
-        :type binary_search_paths: iterable of str
         """
         binary_logs_path = os.environ.get("BINARY_LOGS_DIR", None)
         if binary_logs_path:
@@ -51,10 +50,7 @@ class ExecutableFinder(object):
             added to the end of the list, so it is searched after all the\
             paths currently in the list.
 
-        :param path: The path to add
-        :type path: str
-        :return: Nothing is returned
-        :rtype: None
+        :param str path: The path to add
         """
         self._binary_search_paths.add(path)
         if self._paths_log:
@@ -62,23 +58,26 @@ class ExecutableFinder(object):
                 with open(self._paths_log, "a") as log_file:
                     log_file.write(path)
                     log_file.write("\n")
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 pass
 
     @property
     def binary_paths(self):
+        """ The set of folders to search for binaries, as a printable\
+            colon-separated string.
+
+        :rtype: str
+        """
         return " : ".join(self._binary_search_paths)
 
     def get_executable_path(self, executable_name):
         """ Finds an executable within the set of folders. The set of folders\
             is searched sequentially and the first match is returned.
 
-        :param executable_name: The name of the executable to find
-        :type executable_name: str
-        :return:\
-            The full path of the discovered executable, or ``None`` if no \
-            executable was found in the set of folders
+        :param str executable_name: The name of the executable to find
+        :return: The full path of the discovered executable
         :rtype: str
+        :raises KeyError: If no executable was found in the set of folders
         """
         # Loop through search paths
         for path in self._binary_search_paths:
@@ -92,7 +91,7 @@ class ExecutableFinder(object):
                         with open(self._binary_log, "a") as log_file:
                             log_file.write(potential_filename)
                             log_file.write("\n")
-                    except Exception:
+                    except Exception:  # pylint: disable=broad-except
                         pass
                 return potential_filename
 
@@ -101,27 +100,27 @@ class ExecutableFinder(object):
             executable_name))
 
     def get_executable_paths(self, executable_names):
-        """ Finds each executables within the set of folders.\
+        """ Finds each executables within the set of folders.
 
-            The names are assumed to be comma separated
-            The set of folders is searched sequentially\
-            and the first match for each name is returned.
+        The names are assumed to be comma separated
+        The set of folders is searched sequentially
+        and the first match for each name is returned.
 
-            Names not found are ignored and not added to the list.
+        Names not found are ignored and not added to the list.
 
-        :param executable_names: The name of the executable to find.\
+        :param str executable_names: The name of the executable to find.
             Assumed to be comma separated.
-        :type executable_names: str
-        :return:\
-            The full path of the discovered executable, or ``None`` if no \
+        :return:
+            The full path of the discovered executable, or ``None`` if no
             executable was found in the set of folders
         :rtype: list(str)
         """
         results = list()
         for name in executable_names.split(","):
-            path = self.get_executable_path(name)
-            if path:
-                results.append(path)
+            try:
+                results.append(self.get_executable_path(name))
+            except KeyError:
+                pass
         return results
 
     def check_logs(self):
@@ -140,7 +139,7 @@ class ExecutableFinder(object):
                 for file_name in os.listdir(folder):
                     if file_name.endswith(".aplx"):
                         in_folders.add(os.path.join(folder, file_name))
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 # Skip folders not found
                 pass
 
@@ -175,5 +174,5 @@ if __name__ == "__main__":
     try:
         ef.check_logs()
         ef.clear_logs()
-    except Exception as ex:
+    except Exception as ex:  # pylint: disable=broad-except
         print(ex)

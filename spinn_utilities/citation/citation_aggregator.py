@@ -13,15 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
 import os
 import yaml
 import io
 import importlib
 import argparse
 import sys
-
-from spinn_utilities.citation import CitationUpdaterAndDoiGenerator
+from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
 
 REQUIREMENTS_FILE = "requirements.txt"
 C_REQUIREMENTS_FILE = "c_requirements.txt"
@@ -64,7 +62,7 @@ class CitationAggregator(object):
             os.path.abspath(module_to_start_at.__file__))), CITATION_FILE)
         modules_seen_so_far = set()
         modules_seen_so_far.add("")  # Make sure the empty entry is absent
-        with open(top_citation_file_path, 'r') as stream:
+        with open(top_citation_file_path) as stream:
             top_citation_file = yaml.safe_load(stream)
         top_citation_file[REFERENCES_YAML_POINTER] = list()
 
@@ -87,7 +85,7 @@ class CitationAggregator(object):
                 pypi_to_import_map_file)
 
         if os.path.isfile(requirements_file_path):
-            with open(requirements_file_path, "r") as r_file:
+            with open(requirements_file_path) as r_file:
                 for line in r_file:
                     module = line.strip()
                     if module.startswith("#"):
@@ -107,7 +105,7 @@ class CitationAggregator(object):
                                   .format(module, str(e)))
 
         if os.path.isfile(c_requirements_file_path):
-            with open(c_requirements_file_path, "r") as r_file:
+            with open(c_requirements_file_path) as r_file:
                 for line in r_file:
                     module = line.strip()
                     if module.startswith("#"):
@@ -131,7 +129,7 @@ class CitationAggregator(object):
         :rtype: dict(str,str)
         """
         pypi_to_import_map = dict()
-        with open(aggregated_citation_file, "r") as f:
+        with open(aggregated_citation_file) as f:
             for line in f:
                 [pypi, import_command] = line.split(":")
                 pypi_to_import_map[pypi] = import_command.split("\n")[0]
@@ -143,6 +141,7 @@ class CitationAggregator(object):
 
         :param str top_citation_file: YAML file for the top citation file
         :param str module: module to find
+        :param set(str) modules_seen_so_far:
         """
         cleaned_path = self.locate_path_for_c_dependency(module)
         if cleaned_path is not None:
@@ -249,7 +248,7 @@ class CitationAggregator(object):
         :type imported_module: python module
         :param set(str) modules_seen_so_far:
             list of dependencies already processed
-        :return: the reference entry in json format
+        :return: the reference entry in JSON format
         :rtype: dict
         """
 

@@ -141,18 +141,18 @@ class CitationUpdaterAndDoiGenerator(object):
             self, citation_file_path, doi_title, create_doi, publish_doi,
             previous_doi, zenodo_access_token, module_path):
         """ Take a CITATION.cff file and updates the version and \
-            date-released fields, and rewrites the CITATION.cff file.
+            date-released fields, and rewrites the ``CITATION.cff`` file.
 
-        :param str citation_file_path: The file path to the CITATION.cff file
+        :param str citation_file_path: File path to the ``CITATION.cff`` file
         :param bool create_doi:
-            flag for using Zenodo DOI interface to grab a DOI
-        :param str zenodo_access_token: the access token for Zenodo
-        :param bool publish_doi: flag to publish the DOI on Zenodo
-        :param str previous_doi: the DOI to append the created DOI to
-        :param str doi_title: the title for the created DOI
-        :param str module_path: path to the module to zip up
+            Whether to use Zenodo DOI interface to grab a DOI
+        :param str zenodo_access_token: Access token for Zenodo
+        :param bool publish_doi: Whether to publish the DOI on Zenodo
+        :param str previous_doi: DOI to append the created DOI to
+        :param str doi_title: Title for the created DOI
+        :param str module_path: Path to the module to zip up
         :param bool update_version:
-            whether we should update the citation version
+            Whether we should update the citation version
         """
         self.__zenodo = _Zenodo(zenodo_access_token)
 
@@ -213,12 +213,11 @@ class CitationUpdaterAndDoiGenerator(object):
             doi_description, yaml_file, module_path):
         """ Finishes the DOI on zenodo
 
-        :param deposit_id: the deposit id to publish
-        :param title: the title of this DOI
-        :param doi_description: the description for the DOI
+        :param str deposit_id: the deposit id to publish
+        :param bool publish_doi: whether we should publish the DOI
+        :param str title: the title of this DOI
+        :param str doi_description: the description for the DOI
         :param yaml_file: the citation file after its been read it
-        :param publish_doi: bool flagging if we should publish the DOI
-        :param files: the zipped up file for the zenodo DOI request
         :param module_path: the path to the module to DOI
         """
         zipped_file = None
@@ -239,7 +238,7 @@ class CitationUpdaterAndDoiGenerator(object):
     def _zip_up_module(self, module_path):
         """ Zip up a module
 
-        :param module_path: the path to the module to zip up
+        :param str module_path: the path to the module to zip up
         :return: the filename to the zip file
         """
         if os.path.isfile('module.zip'):

@@ -13,14 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import configparser
 import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
-from six.moves import configparser
 
 
-# pylint: disable=slots-on-old-class
 class CamelCaseConfigParser(configparser.RawConfigParser):
-    # RawConfigParser is a classobj in Python 2.7, not a type (i.e., it
-    # doesn't inherit from object), and so cannot be used with super().
     __slots__ = ["_none_marker", "_read_files"]
 
     def optionxform(self, optionstr):
@@ -31,7 +28,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return lower.replace("_", "")
 
     def __init__(self, defaults=None, none_marker="None"):
-        configparser.RawConfigParser.__init__(self, defaults)
+        super().__init__(defaults)
         self._none_marker = none_marker
         self._read_files = list()
 
@@ -39,12 +36,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
     def read(self, filenames, encoding=None):
         """ Read and parse a filename or a list of filenames.
         """
-        if encoding is not None:
-            # pylint: disable=too-many-function-args
-            new_files = configparser.RawConfigParser.read(
-                self, filenames, encoding)
-        else:
-            new_files = configparser.RawConfigParser.read(self, filenames)
+        new_files = super().read(filenames, encoding)
         self._read_files.extend(new_files)
         return new_files
 
@@ -68,6 +60,23 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         if value == self._none_marker:
             return None
         return value
+
+    def get_str_list(self, section, option, token=","):
+        """ Get the string value of an option split into a list
+
+        :param str section: What section to get the option from.
+        :param str option: What option to read.
+        :param token: The token to split the string into a list
+        :return: The list (possibly empty) of the option values
+        :rtype: list(str)
+        """
+        value = self.get(section, option)
+        if value == self._none_marker:
+            return []
+        if len(value.strip()) == 0:
+            return []
+        as_list = value.split(token)
+        return list(map(lambda x: x.strip(), as_list))
 
     def get_int(self, section, option):
         """ Get the integer value of an option.

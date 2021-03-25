@@ -119,6 +119,27 @@ def test_new_section_validation(tmpdir, default_config):
         conf_loader.load_config(CFGFILE, [CFGPATH], validation_cfg="blank.cfg")
 
 
+def test_types(tmpdir, default_config):
+    with tmpdir.as_cwd():
+        f = tmpdir.join(CFGFILE)
+        default_config = (
+                default_config +
+                "[machine]\nmachineName=foo\nVersion=5\nsize=4.6\nb1=True\n"
+                "b2=true\nb3=False\nb4=False\nOops=None\n")
+        f.write(default_config)
+        config = conf_loader.load_config(
+            CFGFILE, [CFGPATH], validation_cfg="blank.cfg")
+        assert config.get_int("machine", "version") == 5
+        assert config.get_int("machine", "oops") is None
+        assert config.get_float("machine", "size") == 4.6
+        assert config.get_float("machine", "oops") is None
+        assert config.get_bool("machine", "b1")
+        assert config.get_bool("machine", "b2")
+        assert not config.get_bool("machine", "b3")
+        assert not config.get_bool("machine", "b4")
+        assert config.get_bool("machine", "oops") is None
+
+
 def test_dead_section(tmpdir, default_config):
     with tmpdir.as_cwd():
         f = tmpdir.join(CFGFILE)

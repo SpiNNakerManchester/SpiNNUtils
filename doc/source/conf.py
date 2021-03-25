@@ -47,8 +47,14 @@ from sphinx.ext import apidoc
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.autosummary',
 ]
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3.8', None),
+    'numpy': ("https://numpy.org/doc/stable/", None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

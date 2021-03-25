@@ -79,24 +79,24 @@ class TestReplacer(unittest.TestCase):
         """
         replacer = Replacer(os.path.join(PATH, "test"))
         assert self.near_equals(
-            -345443332234.13432143, replacer.hex_to_float("d2a0dc0e"))
+            -345443332234.13432143, replacer._hex_to_float("d2a0dc0e"))
         assert self.near_equals(
-            -2000, replacer.hex_to_float("c4fa0000"))
+            -2000, replacer._hex_to_float("c4fa0000"))
         assert self.near_equals(
-            -1, replacer.hex_to_float("bf800000"))
+            -1, replacer._hex_to_float("bf800000"))
         assert self.near_equals(
-            0, replacer.hex_to_float("0"))
+            0, replacer._hex_to_float("0"))
         assert self.near_equals(
-            0.00014, replacer.hex_to_float("3912ccf7"))
+            0.00014, replacer._hex_to_float("3912ccf7"))
         assert self.near_equals(
-            1, replacer.hex_to_float("3f800000"))
+            1, replacer._hex_to_float("3f800000"))
         assert self.near_equals(
-            200, replacer.hex_to_float("43480000"))
+            200, replacer._hex_to_float("43480000"))
         assert self.near_equals(
-            455424364531.3463460, replacer.hex_to_float("52d412d1"))
-        assert float("Inf") == replacer.hex_to_float("7f800000")
-        assert 0-float("Inf") == replacer.hex_to_float("ff800000")
-        assert math.isnan(replacer.hex_to_float("7fc00000"))
+            455424364531.3463460, replacer._hex_to_float("52d412d1"))
+        assert float("Inf") == replacer._hex_to_float("7f800000")
+        assert 0-float("Inf") == replacer._hex_to_float("ff800000")
+        assert math.isnan(replacer._hex_to_float("7fc00000"))
 
     def test_hexes_to_double(self):
         """
@@ -105,18 +105,18 @@ class TestReplacer(unittest.TestCase):
         """
         replacer = Replacer(os.path.join(PATH, "test"))
         assert self.near_equals(
-            0, replacer.hexes_to_double("0", "0"))
+            0, replacer._hexes_to_double("0", "0"))
         assert self.near_equals(
             455424364531.3463460,
-            replacer.hexes_to_double("425a825a", "13fcd62b"))
+            replacer._hexes_to_double("425a825a", "13fcd62b"))
         assert self.near_equals(
             -455424364531.3463460,
-            replacer.hexes_to_double("c25a825a", "13fcd62b"))
+            replacer._hexes_to_double("c25a825a", "13fcd62b"))
         assert self.near_equals(
-            23.60, replacer.hexes_to_double("40379999", "9999999a"))
+            23.60, replacer._hexes_to_double("40379999", "9999999a"))
         assert self.near_equals(
-            -1, replacer.hexes_to_double("bff00000", "0"))
+            -1, replacer._hexes_to_double("bff00000", "0"))
         assert self.near_equals(
-            1, replacer.hexes_to_double("3ff00000", "0"))
+            1, replacer._hexes_to_double("3ff00000", "0"))
         assert self.near_equals(
-            0.0000000004, replacer.hexes_to_double("3dfb7cdf", "d9d7bdbb"))
+            0.0000000004, replacer._hexes_to_double("3dfb7cdf", "d9d7bdbb"))

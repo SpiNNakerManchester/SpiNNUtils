@@ -24,8 +24,17 @@ logger = FormatAdapter(logging.getLogger(__name__))
 
 
 class Replacer(object):
+    """ Performs replacements.
+    """
+
+    _INT_FMT = struct.Struct("!I")
+    _FLT_FMT = struct.Struct("!f")
+    _DBL_FMT = struct.Struct("!d")
 
     def __init__(self, dict_pointer):
+        """
+        :param str dict_pointer: Where to find the dictionary file
+        """
         self._messages = {}
         rest, _ = os.path.splitext(dict_pointer)
         dict_path = rest + ".dict"
@@ -39,10 +48,16 @@ class Replacer(object):
                         continue
                     self._messages[parts[0]] = parts
         else:
-            logger.error("Unable to find a dictionary file at {}"
-                         .format(dict_path))
+            logger.error("Unable to find a dictionary file at {}".format(
+                dict_path))
 
     def replace(self, short):
+        """ Apply the replacements to a short message.
+
+        :param str short: The short message to apply the transform to.
+        :return: The expanded message.
+        :rtype: str
+        """
         parts = short.split(TOKEN)
         if not parts[0].isdigit():
             return short
@@ -60,9 +75,9 @@ class Replacer(object):
                 for match in matches:
                     i += 1
                     if match.endswith("f"):
-                        replacement = str(self.hex_to_float(parts[i]))
+                        replacement = str(self._hex_to_float(parts[i]))
                     elif match.endswith("F"):
-                        replacement = str(self.hexes_to_double(
+                        replacement = str(self._hexes_to_double(
                             parts[i], parts[i+1]))
                         i += 1
                     else:
@@ -73,11 +88,11 @@ class Replacer(object):
 
         return preface + replaced
 
-    def hex_to_float(self, hex_str):
-        return struct.unpack('!f', struct.pack("!I", int(hex_str, 16)))[0]
+    def _hex_to_float(self, hex_str):
+        return self._FLT_FMT.unpack(
+            self._INT_FMT.pack(int(hex_str, 16)))[0]
 
-    def hexes_to_double(self, upper, lower):
-        return struct.unpack(
-            '!d',
-            struct.pack("!I", int(upper, 16)) +
-            struct.pack("!I", int(lower, 16)))[0]
+    def _hexes_to_double(self, upper, lower):
+        return self._DBL_FMT.unpack(
+            self._INT_FMT.pack(int(upper, 16)) +
+            self._INT_FMT.pack(int(lower, 16)))[0]

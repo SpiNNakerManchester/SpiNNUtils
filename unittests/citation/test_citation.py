@@ -19,9 +19,7 @@ import os
 import yaml
 import httpretty
 from spinn_utilities.citation.citation_updater_and_doi_generator import (
-    ZENODO_DEPOSIT_GET_URL, ZENODO_VALID_STATUS_REQUEST_GET,
-    ZENODO_VALID_STATUS_REQUEST_POST, ZENODO_PUBLISH_URL,
-    ZENODO_VALID_STATUS_REQUEST_PUBLISH, ZENODO_DEPOSIT_PUT_URL)
+    _Zenodo as Zenodo)
 
 
 def test_generate_aggregate():
@@ -29,19 +27,19 @@ def test_generate_aggregate():
         f.write("test")
     deposit_id = 56789
     httpretty.register_uri(
-        httpretty.GET, ZENODO_DEPOSIT_GET_URL,
-        status=ZENODO_VALID_STATUS_REQUEST_GET)
+        httpretty.GET, Zenodo._DEPOSIT_GET_URL,
+        status=Zenodo._VALID_STATUS_REQUEST_GET)
     httpretty.register_uri(
-        httpretty.POST, ZENODO_DEPOSIT_GET_URL,
-        status=ZENODO_VALID_STATUS_REQUEST_POST,
+        httpretty.POST, Zenodo._DEPOSIT_GET_URL,
+        status=Zenodo._VALID_STATUS_REQUEST_POST,
         body=('{{"id": "{}", "metadata": {{'
               '"prereserve_doi": {{"doi": "12345"}}}}}}'.format(deposit_id)))
     httpretty.register_uri(
-        httpretty.POST, ZENODO_DEPOSIT_PUT_URL.format(deposit_id),
-        status=ZENODO_VALID_STATUS_REQUEST_POST)
+        httpretty.POST, Zenodo._DEPOSIT_PUT_URL.format(deposit_id),
+        status=Zenodo._VALID_STATUS_REQUEST_POST)
     httpretty.register_uri(
-        httpretty.POST, ZENODO_PUBLISH_URL.format(deposit_id),
-        status=ZENODO_VALID_STATUS_REQUEST_PUBLISH)
+        httpretty.POST, Zenodo._PUBLISH_URL.format(deposit_id),
+        status=Zenodo._VALID_STATUS_REQUEST_PUBLISH)
     output_path = tempfile.mktemp(".cff")
     os.environ["PATH"] = os.environ["PATH"] + os.pathsep + (
         os.path.dirname(__file__) + os.sep + "c_module")

@@ -172,10 +172,7 @@ class FormatAdapter(logging.LoggerAdapter):
     @classmethod
     def set_report_File(cls, report_file):
         """
-
-        :param report_file:
-        :param write_normal:
-        :return:
+        :param str report_file:
         """
         cls.__report_file = report_file
         level = logging.getLevelName(cls.__repeat_at_end)

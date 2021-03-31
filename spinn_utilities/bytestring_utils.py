@@ -20,10 +20,14 @@ def as_string(bytestring, start=None, end=None):
 
     The length is always the full length irrespective of the start and end.
 
-    :param bytestring: data as a bytestring
+    :param bytestring: data as a byte string
+    :type bytestring: bytes or bytearray or memoryview
     :param start: the inclusive start of the slice to return. May be None
+    :type start: int or None
     :param end: the exclusive end of the slice to return. May be None
-    :return: The length of the bytesting and the hex values, comma separated
+    :type end: int or None
+    :return: The length of the bytestring and the hex values, comma separated
+    :rtype: str
     """
     return "(" + str(len(bytestring)) + ")" + as_hex(bytestring, start, end)
 
@@ -32,9 +36,13 @@ def as_hex(bytestring, start=None, end=None):
     """
     Returns the bytestring as string showing the hex values
 
-    :param bytestring: data as a byteString
+    :param bytestring: data as a byte string
+    :type bytestring: bytes or bytearray or memoryview
     :param start: the inclusive start of the slice to return. May be None
+    :type start: int or None
     :param end: the exclusive end of the slice to return. May be None
+    :type end: int or None
     :return: Comma separated hex values
+    :rtype: str
     """
     return ','.join('%02x' % i for i in iter(bytestring[start:end]))

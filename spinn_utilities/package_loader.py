@@ -71,7 +71,8 @@ def load_modules(
     :param list(str) exclusions: a list of modules to exclude
     :param bool gather_errors:
         True if errors should be gathered, False to report on first error
-    :return: None
+    :raises Exception:
+        If anything goes wrong.
     """
     if exclusions is None:
         exclusions = []
@@ -110,7 +111,8 @@ def load_module(
     :param list(str) exclusions: a list of modules to exclude
     :param bool gather_errors:
         True if errors should be gathered, False to report on first error
-    :return: None
+    :raises Exception:
+        If anything goes wrong.
     """
     if exclusions is None:
         exclusions = []

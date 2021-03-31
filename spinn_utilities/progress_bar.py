@@ -29,7 +29,16 @@ logger = FormatAdapter(logging.getLogger(__name__))
 
 
 class ProgressBar(object):
-    """ Progress bar for telling the user where a task is up to
+    """ Progress bar for telling the user where a task is up to.
+
+    This is a context manager; you may use the progress bar like this::
+
+        with ProgressBar(...) as p:
+            ...
+            p.update()
+            ...
+            p.update()
+            ...
     """
     MAX_LENGTH_IN_CHARS = 60
 
@@ -46,6 +55,18 @@ class ProgressBar(object):
     def __init__(self, total_number_of_things_to_do,
                  string_describing_what_being_progressed,
                  step_character="=", end_character="|"):
+        """
+        :param total_number_of_things_to_do:
+            The number of steps (calls to :py:meth:`update`) expected,
+            or an iterable with that many elements.
+        :type total_number_of_things_to_do: int or ~collections.abc.Iterable
+        :param str string_describing_what_being_progressed:
+            The descriptive message to print associated with the progress bar.
+        :param str step_character:
+            Character to use for each step.
+        :param str end_character:
+            Character to use at each end of the progress bar.
+        """
         try:
             self._number_of_things = int(total_number_of_things_to_do)
         except TypeError:
@@ -71,8 +92,8 @@ class ProgressBar(object):
     def update(self, amount_to_add=1):
         """ Update the progress bar by a given amount
 
-        :param amount_to_add:
-        :rtype: None
+        :param int amount_to_add:
+            How many steps to advance by.
         """
 
         if self._currently_completed + amount_to_add > self._number_of_things:
@@ -153,8 +174,6 @@ class ProgressBar(object):
 
     def end(self):
         """ Close the progress bar, updating whatever is left if needed
-
-        :rtype: None
         """
         difference = self._number_of_things - self._currently_completed
         self._currently_completed += difference
@@ -181,11 +200,16 @@ class ProgressBar(object):
         Like :samp:`__new__` this method has to return self as in theory it
         could pass back a different object. Welcome to Python.
 
-        :return: The Progress bar
+        :return: The progress bar
+        :rtype: ProgressBar
         """
         return self
 
     def __exit__(self, exty, exval, traceback):  # @UnusedVariable
+        """
+        Terminates the progress bar cleanly.
+        Tells Python to resume any exception in progress (if relevant).
+        """
         self.end()
         return False
 
@@ -195,11 +219,13 @@ class ProgressBar(object):
             The progress bar should have been initialised to the size of the\
             collection being iterated over.
 
-        :param collection:
+        :param ~collections.abc.Iterable collection:
             The base collection (any iterable) being iterated over
         :param bool finish_at_end:
             Flag to say if the bar should finish at the end of the collection
-        :return: An iterable. Expected to be directly used in a for.
+        :return: An iterable of the values from ``collection``.
+            Expected to be directly used in a ``for`` loop.
+        :rtype: ~collections.abc.Iterable
         """
         try:
             for item in collection:
@@ -316,6 +342,10 @@ class DummyProgressBar(ProgressBar):
     """ This is a dummy version of the progress bar that just stubs out the\
         internal printing operations with code that does nothing. It otherwise\
         fails in exactly the same way.
+
+    .. note::
+        Use this if you need a dummy or mock object to pass to something that
+        needs a progress bar, but where you do not want to print anything.
     """
     @overrides(ProgressBar._print_overwritten_line)
     def _print_overwritten_line(self, string):

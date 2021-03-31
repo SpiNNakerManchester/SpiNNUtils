@@ -33,7 +33,7 @@ def get_valid_components(module, terminator):
     :param str terminator:
         Regular expression string to match the suffix. Anchoring not required.
     :return: mapping from (shortened) name to class
-    :rtype: dict(str -> class)
+    :rtype: dict(str, type)
     """
     terminator_re = re.compile(terminator + '$')
     return {terminator_re.sub('', name): router

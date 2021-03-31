@@ -19,10 +19,34 @@ import time
 
 
 class Ping(object):
-    unreachable = set()
+    """
+    Tests for ICMP host reachability.
+
+    .. note::
+        A properly booted SpiNNaker machine is guaranteed to respond to ICMP
+        ECHO requests.
+
+    .. warning::
+        These tests are able to fail in several ways. In particular, some ISPs
+        make hosts appear to be reachable even when they are not, and some
+        environments (such as Azure, used by Github Actions) make hosts appear
+        unreachable even when actually connecting to them with TCP or UDP will
+        work. These are fundamental limitations relating to host resolution
+        and firewalls.
+    """
+    _unreachable = set()
+    _MAX_TRIES = 10
 
     @staticmethod
     def ping(ipaddr):
+        """
+        Wrapper around the system ``ping`` program.
+
+        :param str ipaddr:
+            The IP address (or host name) of the machine to ping.
+        :return: The program exit code.
+        :rtype: int
+        """
         if platform.platform().lower().startswith("windows"):
             cmd = "ping -n 1 -w 1 "
         else:
@@ -34,15 +58,22 @@ class Ping(object):
         process.wait()
         return process.returncode
 
-    @staticmethod
-    def host_is_reachable(ipaddr):
-        if ipaddr in Ping.unreachable:
+    @classmethod
+    def host_is_reachable(cls, ipaddr):
+        """
+        Wrapper for :py:meth:`ping` that converts numeric results into a
+        reachability decision, retries a few times in case a temporary network
+        glitch is occurring, and caches (slow) unreachability results.
+
+        :param str ipaddr:
+            The IP address (or host name) of the machine to ping.
+        :return: ``True`` if the machine is reachable.
+        :rtype: bool
+        """
+        if ipaddr in cls._unreachable:
             return False
-        tries = 0
-        while (True):
-            if Ping.ping(ipaddr) == 0:
+        for _try in range(cls._MAX_TRIES):
+            if cls.ping(ipaddr) == 0:
                 return True
-            tries += 1
-            if tries > 10:
-                Ping.unreachable.add(ipaddr)
-                return False
+        cls._unreachable.add(ipaddr)
+        return False

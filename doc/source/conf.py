@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2017 The University of Manchester
+# Copyright (c) 2017-20 The University of Manchester
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -290,7 +290,7 @@ texinfo_documents = [
 epub_title = u'SpiNNUtils'
 epub_author = u''
 epub_publisher = u''
-epub_copyright = u'2014-2017'
+epub_copyright = u'2014-2021'
 
 # The basename for the epub file. It defaults to the project name.
 # epub_basename = u'data_allocation'

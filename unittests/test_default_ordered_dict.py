@@ -15,6 +15,7 @@
 
 import copy
 import pickle
+from contextlib import suppress
 import pytest
 from spinn_utilities.default_ordered_dict import DefaultOrderedDict
 from spinn_utilities.ordered_set import OrderedSet
@@ -58,11 +59,9 @@ def test_keys_in_order():
 
 
 def test_callable():
-    try:
+    with suppress(TypeError):
         DefaultOrderedDict("Not callable")
         assert False
-    except TypeError:
-        pass
 
 
 def test_special_methods():

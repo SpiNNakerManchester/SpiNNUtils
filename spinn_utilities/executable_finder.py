@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+from contextlib import suppress
 from spinn_utilities.ordered_set import OrderedSet
 
 
@@ -54,12 +55,9 @@ class ExecutableFinder(object):
         """
         self._binary_search_paths.add(path)
         if self._paths_log:
-            try:
-                with open(self._paths_log, "a") as log_file:
-                    log_file.write(path)
-                    log_file.write("\n")
-            except Exception:  # pylint: disable=broad-except
-                pass
+            with suppress(Exception), open(self._paths_log, "a") as f:
+                f.write(path)
+                f.write("\n")
 
     @property
     def binary_paths(self):
@@ -87,12 +85,9 @@ class ExecutableFinder(object):
             # If this filename exists, return it
             if os.path.isfile(potential_filename):
                 if self._binary_log:
-                    try:
-                        with open(self._binary_log, "a") as log_file:
-                            log_file.write(potential_filename)
-                            log_file.write("\n")
-                    except Exception:  # pylint: disable=broad-except
-                        pass
+                    with suppress(Exception), open(self._binary_log, "a") as f:
+                        f.write(potential_filename)
+                        f.write("\n")
                 return potential_filename
 
         # No executable found
@@ -117,10 +112,8 @@ class ExecutableFinder(object):
         """
         results = list()
         for name in executable_names.split(","):
-            try:
+            with suppress(KeyError):
                 results.append(self.get_executable_path(name))
-            except KeyError:
-                pass
         return results
 
     def check_logs(self):
@@ -135,13 +128,10 @@ class ExecutableFinder(object):
 
         in_folders = set()
         for folder in folders:
-            try:
+            with suppress(Exception):  # Skip folders not found
                 for file_name in os.listdir(folder):
                     if file_name.endswith(".aplx"):
                         in_folders.add(os.path.join(folder, file_name))
-            except Exception:  # pylint: disable=broad-except
-                # Skip folders not found
-                pass
 
         used_binaries = set()
         with open(self._binary_log, "r") as log_file:

@@ -15,6 +15,7 @@
 
 import logging
 import tempfile
+from contextlib import suppress
 from spinn_utilities.log import (ConfiguredFilter, ConfiguredFormatter)
 from spinn_utilities.log import FormatAdapter, LogLevelTooHighException
 
@@ -68,11 +69,9 @@ def test_logger_adapter():
     assert str(log.last_msg) == "bar"
     assert log.last_level == logging.CRITICAL
     logger.set_kill_level(logging.CRITICAL)
-    try:
+    with suppress(LogLevelTooHighException):
         logger.critical("This is too high")
         assert False
-    except LogLevelTooHighException:
-        pass
     logger.set_kill_level()
     logger.critical("Should be ok now")
     assert len(logger._repeat_log()) == 4

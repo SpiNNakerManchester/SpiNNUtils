@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from contextlib import suppress
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 
@@ -47,12 +48,11 @@ def test_acm_with_success():
 def test_acm_with_exception():
     states = []
     cm = CM()
-    try:
+    with suppress(CMTestExn):
         states.append(cm.state)
         with cm:
             states.append(cm.state)
             raise CMTestExn("boo")
-    except CMTestExn:
-        pass
+        states.append("unwanted")
     states.append(cm.state)
     assert states == [None, 0, "boo"]

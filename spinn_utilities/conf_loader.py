@@ -17,6 +17,7 @@
 import appdirs
 import collections
 import configparser
+from contextlib import suppress
 import logging
 import os
 from spinn_utilities import log
@@ -86,15 +87,13 @@ def logging_parser(config):
         You do not normally need to call this function; it is used\
         automatically to parse Logging configuration sections.
     """
-    try:
+    with suppress(configparser.NoOptionError):
         if config.getboolean("Logging", "instantiate"):
             logging.basicConfig(level=0)
 
         for handler in logging.root.handlers:
             handler.addFilter(log.ConfiguredFilter(config))
             handler.setFormatter(log.ConfiguredFormatter(config))
-    except configparser.NoOptionError:
-        pass
 
 
 def _outdated_config_section(validation_config, defaults, config, skip,

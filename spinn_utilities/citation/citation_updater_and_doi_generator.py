@@ -20,6 +20,7 @@ import zipfile
 import unicodedata
 import os
 from time import strptime
+from contextlib import contextmanager
 
 CITATION_FILE_VERSION_FIELD = "version"
 CITATION_FILE_DATE_FIELD = "date-released"
@@ -220,38 +221,40 @@ class CitationUpdaterAndDoiGenerator(object):
         :param yaml_file: the citation file after its been read it
         :param module_path: the path to the module to DOI
         """
-        zipped_file = None
-        try:
-            zipped_file = self._zip_up_module(module_path)
-            with open(zipped_file, "rb") as zipped_open_file:
-                files = {ZENODO_FILE: zipped_open_file}
-                data = self._fill_in_data(title, doi_description, yaml_file)
-                self.__zenodo.post_upload(deposit_id, data, files)
-        finally:
-            if zipped_file:
-                os.remove(zipped_file)
+        with self._zip_up_module(module_path) as open_zip_file:
+            files = {ZENODO_FILE: open_zip_file}
+            data = self._fill_in_data(title, doi_description, yaml_file)
+            self.__zenodo.post_upload(deposit_id, data, files)
 
         # publish DOI
         if publish_doi:
             self.__zenodo.post_publish(deposit_id)
 
-    def _zip_up_module(self, module_path):
-        """ Zip up a module
+    @contextmanager
+    def _zip_up_module(self, module_path, avoids=(
+            ".git", ".gitignore", ".gitattributes", ".travis.yml",
+            ".github", "model_binaries", "common_model_binaries",
+            ".coveragerc", ".idea")):
+        """ Zip up a module and make it available as an open file of data.
 
         :param str module_path: the path to the module to zip up
-        :return: the filename to the zip file
+        :param iterable(str) avoids: Filenames that shouldn't be in the ZIP
+        :return:
+            the open, created zip file; removed when context manager finishes
         """
-        if os.path.isfile('module.zip'):
-            os.remove('module.zip')
-
-        avoids = [".git", ".gitignore", ".gitattributes", ".travis.yml",
-                  ".github", "model_binaries", "common_model_binaries",
-                  ".coveragerc", ".idea"]
+        filename = 'module.zip'
+        if os.path.isfile(filename):
+            os.remove(filename)
 
         with zipfile.ZipFile(
-                'module.zip', 'w', zipfile.ZIP_DEFLATED) as module_zip_file:
-            self._zip_walker(module_path, avoids, module_zip_file)
-        return 'module.zip'
+                filename, 'w', zipfile.ZIP_DEFLATED) as module_zip_file:
+            self._zip_walker(module_path, frozenset(avoids), module_zip_file)
+
+        try:
+            with open(filename, "rb") as f:
+                yield f
+        finally:
+            os.remove(filename)
 
     @staticmethod
     def _zip_walker(module_path, avoids, module_zip_file):
@@ -262,17 +265,13 @@ class CitationUpdaterAndDoiGenerator(object):
         :param set(str) avoids: the set of avoids to avoid
         :param ~zipfile.ZipFile module_zip_file: the zip file to put into
         """
-
-        for directory_path, _, files in os.walk(module_path):
-            for directory_name in directory_path.split(os.sep):
-                if directory_name in avoids:
-                    break
-            else:
+        for dirname, _, files in os.walk(module_path):
+            if not any(name in avoids for name in dirname.split(os.sep)):
                 for potential_zip_file in files:
                     # if safe to zip, zip
                     if potential_zip_file not in avoids:
                         module_zip_file.write(
-                            os.path.join(directory_path, potential_zip_file))
+                            os.path.join(dirname, potential_zip_file))
 
     @staticmethod
     def _fill_in_data(doi_title, doi_description, yaml_file):
@@ -339,14 +338,16 @@ class CitationUpdaterAndDoiGenerator(object):
             try:
                 return int(version_month)
             except ValueError:
-                try:
-                    return strptime(version_month, "%B").tm_mon
-                except ValueError:
-                    try:
-                        return strptime(version_month, "%b").tm_mon
-                    except ValueError:  # pragma: no cover
-                        raise Exception("Value {} not recognised as a month"
-                                        .format(version_month))
+                pass
+            try:
+                return strptime(version_month, "%B").tm_mon
+            except ValueError:
+                pass
+            try:
+                return strptime(version_month, "%b").tm_mon
+            except ValueError:  # pragma: no cover
+                raise Exception("Value {} not recognised as a month"
+                                .format(version_month))
         else:  # pragma: no cover
             raise Exception("Value {} not recognised as a month".format(
                 version_month))

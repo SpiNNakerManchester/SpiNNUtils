@@ -20,6 +20,7 @@ import math
 import os
 import random
 import sys
+from spinn_utilities.config_holder import get_config_bool
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.overrides import overrides
 from spinn_utilities import logger_utils
@@ -213,7 +214,10 @@ class ProgressBar(object):
         # pylint: disable=unused-argument
         c = cls
         if _EnhancedProgressBar._ENABLED:
-            c = _EnhancedProgressBar
+            if get_config_bool("Mode", "I_have_a_sense_of_humour"):
+                c = _EnhancedProgressBar
+            else:
+                _EnhancedProgressBar._ENABLED = False
         return super().__new__(c)
 
 
@@ -272,7 +276,6 @@ class _EnhancedProgressBar(ProgressBar):
     def init_once(cls):
         # verify that its either April Fools', Capocaccia or Valentine's Day
         enabled = date.today().strftime("%m%d") in cls._ENABLE_DATES
-
         # read in the songs once for performance reasons
         path = os.path.join(
             os.path.dirname(os.path.realpath(spinn_utilities.__file__)),
@@ -301,7 +304,7 @@ class _EnhancedProgressBar(ProgressBar):
             # reset trackers for start of the first progress bar
             cls._seq_id = random.randint(1, len(cls._step_characters))
         except IOError:
-            enabled = False
+            cls._ENABLED = False
             cls._seq_id = 0
         finally:
             cls._line_no = 0

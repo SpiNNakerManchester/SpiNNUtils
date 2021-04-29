@@ -264,28 +264,20 @@ def check_python_file(py_path):
                 _check_lines(py_path, line, lines, index, get_config_str_list)
 
 
-def find_double_defaults():
-    """
-    A testing function to find options in multiple default cfg files
-
-    :raise Exception: If an option is repeated.
-    """
-    parser = CamelCaseConfigParser()
-    options = set()
-    for default in __default_config_files:
-        with open(default) as reader:
-            for line in reader.readlines():
-                stripped = line.strip()
-                if len(stripped) == 0:
-                    continue
-                if stripped.startswith("#"):
-                    continue
-                if stripped.startswith("["):
-                    continue
-                if "Overwritten in Specific config file" in stripped:
-                    continue
-                option = stripped.split(" ")[0]
-                xform = parser.optionxform(option)
-                if xform in options:
-                    raise Exception(f"cfg:{default} repeats option:{option}")
-                options.add(xform)
+def find_double_defaults(repeaters=None):
+    config1 = CamelCaseConfigParser()
+    for default in __default_config_files[:-1]:
+        config1.read(default)
+    config2 = CamelCaseConfigParser()
+    config2.read(__default_config_files[-1])
+    if repeaters is None:
+        repeaters = []
+    else:
+        repeaters = map(config2.optionxform, repeaters)
+    for section in config2.sections():
+        for option in config2.options(section):
+            if config1.has_option(section, option):
+                if option not in repeaters:
+                    raise Exception(
+                        f"cfg:{__default_config_files[-1]} "
+                        f"repeats [{section}]{option}")

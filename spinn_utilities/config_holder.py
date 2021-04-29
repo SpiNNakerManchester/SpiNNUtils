@@ -67,9 +67,21 @@ def set_cfg_files(configfile, default, validation_cfg=None):
     __validation_cfg = validation_cfg
 
 
-def load_config_cfgs():
+def _pre_load_config():
     """
-    Resets the config to the defaults. Ignoring user configs and setup changes
+    Loads configs due to early access to a config value
+
+    """
+    # Only expected to happen in unittests but just in case
+    logger.warning(
+        "Accessing config before setup is not recommended as setup could"
+        " change some config values. ")
+    load_config()
+
+
+def load_config():
+    """
+    Reads in all the config files, resetting all values.
 
     """
     global __config
@@ -78,10 +90,6 @@ def load_config_cfgs():
             filename=__config_file, defaults=__default_config_files,
             validation_cfg=__validation_cfg)
     else:
-        # Only expected to happen in unittests but just in case
-        logger.warning(
-            "Accessing config before setup is not recommended as setup could"
-            " change some config values. ")
         __config = CamelCaseConfigParser()
         for default in __default_config_files:
             __config.read(default)
@@ -98,7 +106,7 @@ def get_config_str(section, option):
     try:
         return __config.get_str(section, option)
     except AttributeError:
-        load_config_cfgs()
+        _pre_load_config()
         return __config.get_str(section, option)
 
 
@@ -114,7 +122,7 @@ def get_config_str_list(section, option, token=","):
     try:
         return __config.get_str_list(section, option, token)
     except AttributeError:
-        load_config_cfgs()
+        _pre_load_config()
         return __config.get_str_list(section, option, token)
 
 
@@ -129,7 +137,7 @@ def get_config_int(section, option):
     try:
         return __config.get_int(section, option)
     except AttributeError:
-        load_config_cfgs()
+        _pre_load_config()
         return __config.get_int(section, option)
 
 
@@ -144,7 +152,7 @@ def get_config_float(section, option):
     try:
         return __config.get_float(section, option)
     except AttributeError:
-        load_config_cfgs()
+        _pre_load_config()
         return __config.get_float(section, option)
 
 
@@ -159,7 +167,7 @@ def get_config_bool(section, option):
     try:
         return __config.get_bool(section, option)
     except AttributeError:
-        load_config_cfgs()
+        _pre_load_config()
         return __config.get_bool(section, option)
 
 
@@ -186,7 +194,7 @@ def has_config_option(section, option):
     try:
         return __config.has_option(section, option)
     except AttributeError:
-        load_config_cfgs()
+        _pre_load_config()
         return __config.has_option(section, option)
 
 

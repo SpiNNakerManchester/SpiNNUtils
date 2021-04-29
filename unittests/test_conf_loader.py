@@ -211,14 +211,6 @@ def test_two_templates(tmpdir, default_config, not_there):  # @UnusedVariable
             conf_loader.load_config(name, [ONEPATH, TWOPATH])
 
 
-def test_two_templates(tmpdir, default_config, not_there):  # @UnusedVariable
-    name, place = not_there
-    with tmpdir.as_cwd():
-        with pytest.raises(ConfigTemplateException):
-            conf_loader.load_config(name, [ONEPATH, TWOPATH])
-
-
-
 def test_None_machine_spec_file(tmpdir, default_config):
     with tmpdir.as_cwd():
         with LogCapture() as lc:

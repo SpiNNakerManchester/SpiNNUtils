@@ -276,6 +276,8 @@ def find_double_defaults():
                     continue
                 if stripped.startswith("["):
                     continue
+                if "Overwritten in Specific config file" in stripped:
+                    continue
                 option = stripped.split(" ")[0]
                 xform = parser.optionxform(option)
                 if xform in options:

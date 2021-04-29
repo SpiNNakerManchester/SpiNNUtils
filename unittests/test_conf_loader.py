@@ -22,7 +22,7 @@ import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.configs import (
-    UnexpectedConfigException, NoConfigFoundException)
+    ConfigTemplateException, NoConfigFoundException, UnexpectedConfigException)
 from spinn_utilities.testing import log_checker
 
 CFGFILE = "configloader.cfg"
@@ -31,6 +31,10 @@ ONEFILE = "config_one.cfg"
 ONEPATH = os.path.join(os.path.dirname(unittests.__file__), ONEFILE)
 TWOFILE = "config_two.cfg"
 TWOPATH = os.path.join(os.path.dirname(unittests.__file__), TWOFILE)
+THREEFILE = "config_three.cfg"
+THREEPATH = os.path.join(os.path.dirname(unittests.__file__), TWOFILE)
+FOURFILE = "config_four.cfg"
+FOURPATH = os.path.join(os.path.dirname(unittests.__file__), TWOFILE)
 VALIDATION_PATH = os.path.join(os.path.dirname(unittests.__file__),
                                "validation_config.cfg")
 
@@ -186,20 +190,25 @@ def test_use_one_default(tmpdir, not_there):
         assert config.get("sect", "foobob") == "bar"
 
 
-def test_use_two_default(tmpdir, default_config, not_there):  # @UnusedVariable
+def test_no_templates(tmpdir, default_config, not_there):  # @UnusedVariable
     name, place = not_there
     with tmpdir.as_cwd():
-        with pytest.raises(NoConfigFoundException):
+        with pytest.raises(ConfigTemplateException):
+            conf_loader.load_config(name, [THREEPATH, FOURPATH])
+
+
+def test_one_templates(tmpdir, default_config, not_there):  # @UnusedVariable
+    name, place = not_there
+    with tmpdir.as_cwd():
+        with pytest.raises(ConfigTemplateException):
+            conf_loader.load_config(name, [FOURPATH, ONEPATH, THREEPATH])
+
+
+def test_two_templates(tmpdir, default_config, not_there):  # @UnusedVariable
+    name, place = not_there
+    with tmpdir.as_cwd():
+        with pytest.raises(ConfigTemplateException):
             conf_loader.load_config(name, [ONEPATH, TWOPATH])
-        # Load the now created file
-        config = configparser.ConfigParser()
-        config.read(place)
-        assert config is not None
-        assert config.sections() == ["sect", "extra"]
-        assert config.options("sect") == ["foo", "bar"]
-        assert config.get("sect", "foo") == "notbar"
-        assert config.options("extra") == ["bob", "sam"]
-        assert config.get("extra", "sam") == "cat"
 
 
 def test_None_machine_spec_file(tmpdir, default_config):

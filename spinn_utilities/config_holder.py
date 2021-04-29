@@ -256,3 +256,28 @@ def check_python_file(py_path):
                 _check_lines(py_path, line, lines, index, get_config_str)
             if "get_config_str_list(" in line:
                 _check_lines(py_path, line, lines, index, get_config_str_list)
+
+
+def find_double_defaults():
+    """
+    A testing function to find options in multiple default cfg files
+
+    :raise Exception: If an option is repeated.
+    """
+    parser = CamelCaseConfigParser()
+    options = set()
+    for default in __default_config_files:
+        with open(default) as reader:
+            for line in reader.readlines():
+                stripped = line.strip()
+                if len(stripped) == 0:
+                    continue
+                if stripped.startswith("#"):
+                    continue
+                if stripped.startswith("["):
+                    continue
+                option = stripped.split(" ")[0]
+                xform = parser.optionxform(option)
+                if xform in options:
+                    raise Exception(f"cfg:{default} repeats option:{option}")
+                options.add(xform)

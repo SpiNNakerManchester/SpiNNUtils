@@ -106,8 +106,9 @@ def get_config_str(section, option):
     try:
         return __config.get_str(section, option)
     except AttributeError:
-        _pre_load_config()
-        return __config.get_str(section, option)
+        pass
+    _pre_load_config()
+    return __config.get_str(section, option)
 
 
 def get_config_str_list(section, option, token=","):
@@ -122,8 +123,9 @@ def get_config_str_list(section, option, token=","):
     try:
         return __config.get_str_list(section, option, token)
     except AttributeError:
-        _pre_load_config()
-        return __config.get_str_list(section, option, token)
+        pass
+    _pre_load_config()
+    return __config.get_str_list(section, option, token)
 
 
 def get_config_int(section, option):
@@ -137,8 +139,9 @@ def get_config_int(section, option):
     try:
         return __config.get_int(section, option)
     except AttributeError:
-        _pre_load_config()
-        return __config.get_int(section, option)
+        pass
+    _pre_load_config()
+    return __config.get_int(section, option)
 
 
 def get_config_float(section, option):
@@ -152,8 +155,9 @@ def get_config_float(section, option):
     try:
         return __config.get_float(section, option)
     except AttributeError:
-        _pre_load_config()
-        return __config.get_float(section, option)
+        pass
+    _pre_load_config()
+    return __config.get_float(section, option)
 
 
 def get_config_bool(section, option):
@@ -167,8 +171,9 @@ def get_config_bool(section, option):
     try:
         return __config.get_bool(section, option)
     except AttributeError:
-        _pre_load_config()
-        return __config.get_bool(section, option)
+        pass
+    _pre_load_config()
+    return __config.get_bool(section, option)
 
 
 def set_config(section, option, value):
@@ -194,8 +199,9 @@ def has_config_option(section, option):
     try:
         return __config.has_option(section, option)
     except AttributeError:
-        _pre_load_config()
-        return __config.has_option(section, option)
+        pass
+    _pre_load_config()
+    return __config.has_option(section, option)
 
 
 def config_options(section):

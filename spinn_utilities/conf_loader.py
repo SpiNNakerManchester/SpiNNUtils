@@ -49,16 +49,25 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
     """
     home_cfg = os.path.join(os.path.expanduser("~"), ".{}".format(filename))
 
+    found = False
     with open(home_cfg, "w") as dst:
         for source in defaults:
-            with open(source + ".template", "r") as src:
-                dst.write(src.read())
-                dst.write("\n")
+            template = source + ".template"
+            if os.path.isfile(template):
+                if found:
+                    raise Exception (f"Second template found at {template}")
+                with open(source + ".template", "r") as src:
+                    dst.write(src.read())
+                    dst.write("\n")
+                    found = True
+        if not found:
+            raise Exception ("No template file found.")
+
         dst.write("\n# Additional config options can be found in:\n")
         for source in defaults:
             dst.write("# {}\n".format(source))
-        dst.write("\n# Copy any additional settings you want to change here "
-                  "including section headings\n")
+            dst.write("\n# Copy any additional settings you want to change here "
+                      "including section headings\n")
 
     msg = "Unable to find config file in any of the following locations: \n" \
           "{}\n" \

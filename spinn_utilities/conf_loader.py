@@ -21,8 +21,8 @@ import logging
 import os
 from spinn_utilities import log
 from spinn_utilities.configs import (
-    CamelCaseConfigParser, CaseSensitiveParser, NoConfigFoundException,
-    UnexpectedConfigException)
+    CamelCaseConfigParser, CaseSensitiveParser, ConfigTemplateException,
+    NoConfigFoundException, UnexpectedConfigException)
 
 logger = logging.getLogger(__name__)
 
@@ -55,19 +55,20 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
             template = source + ".template"
             if os.path.isfile(template):
                 if found:
-                    raise Exception (f"Second template found at {template}")
+                    raise ConfigTemplateException(
+                        f"Second template found at {template}")
                 with open(source + ".template", "r") as src:
                     dst.write(src.read())
                     dst.write("\n")
                     found = True
         if not found:
-            raise Exception ("No template file found.")
+            raise ConfigTemplateException("No template file found.")
 
         dst.write("\n# Additional config options can be found in:\n")
         for source in defaults:
             dst.write("# {}\n".format(source))
-            dst.write("\n# Copy any additional settings you want to change here "
-                      "including section headings\n")
+            dst.write("\n# Copy any additional settings you want to change"
+                      " here including section headings\n")
 
     msg = "Unable to find config file in any of the following locations: \n" \
           "{}\n" \

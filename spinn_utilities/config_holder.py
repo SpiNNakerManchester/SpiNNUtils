@@ -232,7 +232,8 @@ def _check_lines(py_path, line, lines, index, method):
     try:
         method(section, option)
     except Exception:
-        raise Exception(f"failed in line:{index} of file: {py_path}")
+        raise Exception(f"failed in line:{index} of file: {py_path} with "
+                        f"section:{section} option:{option}")
 
 
 def check_python_file(py_path):

@@ -22,7 +22,6 @@ from spinn_utilities import log
 from spinn_utilities.configs import (
     CamelCaseConfigParser, ConfigTemplateException,
     NoConfigFoundException, UnexpectedConfigException)
-from spinn_utilities.helpful_functions import testing
 logger = logging.getLogger(__name__)
 
 
@@ -62,7 +61,8 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
                     found = True
         if not found:
             if defaults:
-                raise ConfigTemplateException("No template file found.")
+                raise ConfigTemplateException(
+                    f"No template file found for {defaults}")
             else:
                 logger.error(
                     f"No default cfg files found. "

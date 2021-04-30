@@ -111,37 +111,7 @@ def test_new_option(tmpdir, default_config):
         default_config = default_config + "sam=cat\n"
         f.write(default_config)
         with pytest.raises(UnexpectedConfigException):
-            conf_loader.load_config(CFGFILE, [CFGPATH],
-                                    validation_cfg="blank.cfg")
-
-
-def test_new_section_validation(tmpdir, default_config):
-    with tmpdir.as_cwd():
-        f = tmpdir.join(CFGFILE)
-        default_config = default_config + "[Pets]\nsam=cat\n"
-        f.write(default_config)
-        conf_loader.load_config(CFGFILE, [CFGPATH], validation_cfg="blank.cfg")
-
-
-def test_types(tmpdir, default_config):
-    with tmpdir.as_cwd():
-        f = tmpdir.join(CFGFILE)
-        default_config = (
-                default_config +
-                "[machine]\nmachineName=foo\nVersion=5\nsize=4.6\nb1=True\n"
-                "b2=true\nb3=False\nb4=False\nOops=None\n")
-        f.write(default_config)
-        config = conf_loader.load_config(
-            CFGFILE, [CFGPATH], validation_cfg="blank.cfg")
-        assert config.get_int("machine", "version") == 5
-        assert config.get_int("machine", "oops") is None
-        assert config.get_float("machine", "size") == 4.6
-        assert config.get_float("machine", "oops") is None
-        assert config.get_bool("machine", "b1")
-        assert config.get_bool("machine", "b2")
-        assert not config.get_bool("machine", "b3")
-        assert not config.get_bool("machine", "b4")
-        assert config.get_bool("machine", "oops") is None
+            conf_loader.load_config(CFGFILE, [CFGPATH])
 
 
 def test_dead_section(tmpdir, default_config):
@@ -150,30 +120,7 @@ def test_dead_section(tmpdir, default_config):
         default_config = default_config + "[Pets]\nsam=cat\n"
         f.write(default_config)
         with pytest.raises(UnexpectedConfigException):
-            conf_loader.load_config(CFGFILE, [CFGPATH],
-                                    validation_cfg=VALIDATION_PATH)
-
-
-def test_previous_value(tmpdir, default_config):
-    with tmpdir.as_cwd():
-        f = tmpdir.join(CFGFILE)
-        default_config = default_config.replace("bar", "alpha")
-        f.write(default_config)
-        with pytest.raises(UnexpectedConfigException):
-            conf_loader.load_config(CFGFILE, [CFGPATH],
-                                    validation_cfg=VALIDATION_PATH)
-
-
-def test_new_section(tmpdir, default_config):
-    with tmpdir.as_cwd():
-        f = tmpdir.join(CFGFILE)
-        default_config = default_config + "[other]\nsam=cat\n"
-        f.write(default_config)
-        config = conf_loader.load_config(CFGFILE, [CFGPATH])
-        assert config.sections() == ["sect", "other"]
-        assert config.options("sect") == ["foobob"]
-        assert config.get("sect", "foobob") == "bar"
-        assert config.get("other", "sam") == "cat"
+            conf_loader.load_config(CFGFILE, [CFGPATH])
 
 
 def test_use_one_default(tmpdir, not_there):
@@ -264,7 +211,7 @@ def test_str_list(tmpdir):
                 "as_none=None\n"
                 "as_empty=\n"
                 "fluff=more\n")
-        config = conf_loader.load_config(CFGFILE, [CFGPATH])
+        config = conf_loader.load_config(CFGFILE, [])
         assert config.get_str_list("abc", "as_list") == \
                ["bacon", "is", "so", "cool"]
         assert config.get_str_list("abc", "as_none") == []

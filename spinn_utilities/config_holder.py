@@ -24,7 +24,6 @@ __config = None
 
 __default_config_files = []
 __config_file = None
-__validation_cfg = None
 
 
 def add_default_cfg(default):
@@ -38,14 +37,13 @@ def add_default_cfg(default):
 
 
 def clear_cfg_files():
-    global __config, __config_file, __validation_cfg
+    global __config, __config_file
     __config = None
     __default_config_files.clear()
     __config_file = None
-    __validation_cfg = None
 
 
-def set_cfg_files(configfile, default, validation_cfg=None):
+def set_cfg_files(configfile, default):
     """
     Adds the cfg files to be loaded
 
@@ -54,17 +52,11 @@ def set_cfg_files(configfile, default, validation_cfg=None):
         Should not include any path components.
     :param default: Full path to the extra file to get default configurations
         from.
-    :param validation_cfg:
-        The list of files to read a validation configuration from.
-        If None, no such validation is performed.
-    :type validation_cfg: list(str) or None
-
     :param str default: Absolute path to the cfg file
     """
-    global __config_file, __validation_cfg
+    global __config_file
     __config_file = configfile
     add_default_cfg(default)
-    __validation_cfg = validation_cfg
 
 
 def _pre_load_config():
@@ -87,8 +79,7 @@ def load_config():
     global __config
     if __config_file:
         __config = conf_loader.load_config(
-            filename=__config_file, defaults=__default_config_files,
-            validation_cfg=__validation_cfg)
+            filename=__config_file, defaults=__default_config_files)
     else:
         __config = CamelCaseConfigParser()
         for default in __default_config_files:

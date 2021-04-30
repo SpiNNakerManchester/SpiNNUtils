@@ -67,8 +67,8 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
         dst.write("\n# Additional config options can be found in:\n")
         for source in defaults:
             dst.write("# {}\n".format(source))
-            dst.write("\n# Copy any additional settings you want to change"
-                      " here including section headings\n")
+        dst.write("\n# Copy any additional settings you want to change"
+                  " here including section headings\n")
 
     msg = "Unable to find config file in any of the following locations: \n" \
           "{}\n" \

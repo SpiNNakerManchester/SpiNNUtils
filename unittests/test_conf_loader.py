@@ -32,9 +32,9 @@ ONEPATH = os.path.join(os.path.dirname(unittests.__file__), ONEFILE)
 TWOFILE = "config_two.cfg"
 TWOPATH = os.path.join(os.path.dirname(unittests.__file__), TWOFILE)
 THREEFILE = "config_three.cfg"
-THREEPATH = os.path.join(os.path.dirname(unittests.__file__), TWOFILE)
+THREEPATH = os.path.join(os.path.dirname(unittests.__file__), THREEFILE)
 FOURFILE = "config_four.cfg"
-FOURPATH = os.path.join(os.path.dirname(unittests.__file__), TWOFILE)
+FOURPATH = os.path.join(os.path.dirname(unittests.__file__), FOURFILE)
 VALIDATION_PATH = os.path.join(os.path.dirname(unittests.__file__),
                                "validation_config.cfg")
 
@@ -147,7 +147,7 @@ def test_no_templates(tmpdir, default_config, not_there):  # @UnusedVariable
 def test_one_templates(tmpdir, default_config, not_there):  # @UnusedVariable
     name, place = not_there
     with tmpdir.as_cwd():
-        with pytest.raises(ConfigTemplateException):
+        with pytest.raises(NoConfigFoundException):
             conf_loader.load_config(name, [FOURPATH, ONEPATH, THREEPATH])
 
 

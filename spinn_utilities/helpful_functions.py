@@ -102,18 +102,3 @@ def gcd(*numbers):
         except TypeError:
             return numbers[0]
     return reduce(math.gcd, numbers)
-
-
-def testing():
-    """
-    Detect if the system is currently testing.
-    Either in pytest or Jenkins
-
-    :return: True if and only if testing detected
-    :rtype: bool
-    """
-    if os.environ.get('CONTINUOUS_INTEGRATION', 'false').lower() == 'true':
-        return True
-    if "PYTEST_CURRENT_TEST" in os.environ:
-        return True
-    return False

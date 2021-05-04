@@ -68,10 +68,6 @@ def test_lcm():
     assert lcm(c) == 34
 
 
-def test_testing():
-    assert (testing())
-
-
 # Support class for test_get_valid_components
 class a_b(object):  # noqa: N801
     pass

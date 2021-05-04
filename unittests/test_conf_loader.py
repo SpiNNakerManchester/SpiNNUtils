@@ -67,10 +67,11 @@ def mach_spec(tmpdir):
     return str(msf)
 
 
-def test_different_value(tmpdir, default_config):
+def test_different_value(not_there, default_config):
     name, place = not_there
     default_config = default_config.replace("bar", "cat")
-    place.write(default_config)
+    with open(place, "w") as f:
+        f.write(default_config)
     config = conf_loader.load_config(name, [CFGPATH])
     assert config is not None
     assert config.sections() == ["sect"]
@@ -78,22 +79,38 @@ def test_different_value(tmpdir, default_config):
     assert config.get("sect", "foobob") == "cat"
 
 
-def test_new_option(tmpdir, default_config):
+def test_new_option_local(tmpdir, default_config, not_there):
+    name, place = not_there
+    with open(place, "w") as f:
+        f.write(default_config)
     with tmpdir.as_cwd():
-        f = tmpdir.join(CFGFILE)
+        f = tmpdir.join(name)
         default_config = default_config + "sam=cat\n"
         f.write(default_config)
         with pytest.raises(UnexpectedConfigException):
-            conf_loader.load_config(CFGFILE, [CFGPATH])
+            conf_loader.load_config(name, [CFGPATH])
 
 
-def test_dead_section(tmpdir, default_config):
-    with tmpdir.as_cwd():
-        f = tmpdir.join(CFGFILE)
-        default_config = default_config + "[Pets]\nsam=cat\n"
+def test_new_option_home(not_there, default_config):
+    name, place = not_there
+    default_config = default_config + "sam=cat\n"
+    with open(place, "w") as f:
         f.write(default_config)
-        with pytest.raises(UnexpectedConfigException):
-            conf_loader.load_config(CFGFILE, [CFGPATH])
+    with LogCapture() as lc:
+        conf_loader.load_config(name, [CFGPATH])
+        log_checker.assert_logs_warning_contains(
+            lc.records, "Unexpected Option: [sect]sam")
+
+
+def test_dead_section(not_there, default_config):
+    name, place = not_there
+    default_config = default_config + "[Pets]\nsam=cat\n"
+    with open(place, "w") as f:
+        f.write(default_config)
+    with LogCapture() as lc:
+        conf_loader.load_config(name, [CFGPATH])
+        log_checker.assert_logs_warning_contains(
+            lc.records, "Unexpected Section: [Pets]")
 
 
 def test_use_one_default(tmpdir, not_there):
@@ -131,12 +148,14 @@ def test_two_templates(tmpdir, default_config, not_there):  # @UnusedVariable
             conf_loader.load_config(name, [ONEPATH, TWOPATH])
 
 
-def test_None_machine_spec_file(tmpdir, default_config):
+def test_None_machine_spec_file(tmpdir, default_config, not_there):
+    name, place = not_there
+    default_config += "\n[Machine]\nmachine_spec_file=None\n"
+    with open(place, "w") as f:
+        f.write(default_config)
     with tmpdir.as_cwd():
         with LogCapture() as lc:
-            f = tmpdir.join(CFGFILE)
-            f.write(default_config + "\n[Machine]\nmachine_spec_file=None\n")
-            config = conf_loader.load_config(CFGFILE, [])
+            config = conf_loader.load_config(name, [])
             assert config is not None
             assert config.sections() == ["sect", "Machine"]
             assert config.options("sect") == ["foobob"]
@@ -144,13 +163,14 @@ def test_None_machine_spec_file(tmpdir, default_config):
             log_checker.assert_logs_info_not_contains(lc.records, "None")
 
 
-def test_intermediate_use(tmpdir, default_config, mach_spec):
+def test_intermediate_use(tmpdir, default_config, mach_spec, not_there):
+    name, place = not_there
+    default_config += "\n[Machine]\nmachine_spec_file=" + mach_spec + "\n"
+    with open(place, "w") as f:
+        f.write(default_config)
     with tmpdir.as_cwd():
         with LogCapture() as lc:
-            f = tmpdir.join(CFGFILE)
-            f.write(default_config + "\n[Machine]\nmachine_spec_file=" +
-                    mach_spec + "\n")
-            config = conf_loader.load_config(CFGFILE, [])
+            config = conf_loader.load_config(name, [])
             assert config is not None
             assert config.sections() == ["sect", "Machine"]
             assert config.options("sect") == ["foobob"]
@@ -158,33 +178,36 @@ def test_intermediate_use(tmpdir, default_config, mach_spec):
             assert config.options("Machine") == ["machinename", "version"]
             assert config.get("Machine", "MachineName") == "foo"
             assert config.getint("Machine", "VeRsIoN") == 5
-            log_checker.assert_logs_info_contains(lc.records, CFGFILE)
+            log_checker.assert_logs_info_contains(lc.records, name)
 
 
-def test_advanced_use(tmpdir, default_config):
+def test_advanced_use(tmpdir, default_config, not_there):
     def parseAbc(parser):
         f = parser.getfloat("Abc", "def")
         parser.set("Abc", "ghi", f*3)
         parser.remove_option("Abc", "def")
 
+    name, place = not_there
+    default_config += "\n[Abc]\ndef=1.25\n"
+    with open(place, "w") as f:
+        f.write(default_config)
     with tmpdir.as_cwd():
-        f = tmpdir.join(CFGFILE)
-        f.write(default_config + "\n[Abc]\ndef=1.25\n")
-        config = conf_loader.load_config(CFGFILE, [],
-                                         config_parsers=[("Abc", parseAbc)])
+        config = conf_loader.load_config(
+            name, [], config_parsers=[("Abc", parseAbc)])
         assert config.options("Abc") == ["ghi"]
         assert config.getfloat("Abc", "ghi") == 3.75
 
 
-def test_str_list(tmpdir):
-    with tmpdir.as_cwd():
-        f = tmpdir.join(CFGFILE)
+def test_str_list(tmpdir, not_there):
+    name, place = not_there
+    with open(place, "w") as f:
         f.write("[abc]\n"
                 "as_list=bacon, is,so ,cool \n"
                 "as_none=None\n"
                 "as_empty=\n"
                 "fluff=more\n")
-        config = conf_loader.load_config(CFGFILE, [])
+    with tmpdir.as_cwd():
+        config = conf_loader.load_config(name, [])
         assert config.get_str_list("abc", "as_list") == \
                ["bacon", "is", "so", "cool"]
         assert config.get_str_list("abc", "as_none") == []

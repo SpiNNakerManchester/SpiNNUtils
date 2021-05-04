@@ -214,7 +214,11 @@ def load_config(filename, defaults, config_parsers=None):
     # locations to read as well as default later overrides earlier
     config_locations = _config_locations(filename)
     if not any(os.path.isfile(f) for f in config_locations):
-        raise install_cfg_and_IOError(filename, defaults, config_locations)
+        if defaults:
+            raise install_cfg_and_IOError(
+                filename, defaults, config_locations)
+        else:
+            logger.error("No default cfg files provided")
 
     configs.read(defaults)
 

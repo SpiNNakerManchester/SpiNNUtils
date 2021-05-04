@@ -17,7 +17,6 @@ from functools import reduce
 import logging
 import inspect
 import math
-import os
 import re
 from spinn_utilities.log import FormatAdapter
 

@@ -43,7 +43,7 @@ VALIDATION_PATH = os.path.join(os.path.dirname(unittests.__file__),
 def not_there():
     name = "test_config_for_spinnutils_unittests.{}.txt".format(
         random.randint(1, 1000000))
-    place = os.path.join(os.path.expanduser("~"), ".{}".format(name))
+    place = os.path.join(os.path.expanduser("~"), f".{name}")
     if os.path.exists(place):
         # Check existing is a config from previsous test run
         config = configparser.ConfigParser()
@@ -68,15 +68,14 @@ def mach_spec(tmpdir):
 
 
 def test_different_value(tmpdir, default_config):
-    with tmpdir.as_cwd():
-        f = tmpdir.join(CFGFILE)
-        default_config = default_config.replace("bar", "cat")
-        f.write(default_config)
-        config = conf_loader.load_config(CFGFILE, [CFGPATH])
-        assert config is not None
-        assert config.sections() == ["sect"]
-        assert config.options("sect") == ["foobob"]
-        assert config.get("sect", "foobob") == "cat"
+    name, place = not_there
+    default_config = default_config.replace("bar", "cat")
+    place.write(default_config)
+    config = conf_loader.load_config(name, [CFGPATH])
+    assert config is not None
+    assert config.sections() == ["sect"]
+    assert config.options("sect") == ["foobob"]
+    assert config.get("sect", "foobob") == "cat"
 
 
 def test_new_option(tmpdir, default_config):

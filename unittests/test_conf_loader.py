@@ -67,32 +67,6 @@ def mach_spec(tmpdir):
     return str(msf)
 
 
-def test_basic_use(tmpdir, default_config):
-    with tmpdir.as_cwd():
-        f = tmpdir.join(CFGFILE)
-        f.write(default_config)
-        config = conf_loader.load_config(CFGFILE, [])
-        assert config is not None
-        assert config.sections() == ["sect"]
-        assert config.options("sect") == ["foobob"]
-        assert config.get("sect", "foobob") == "bar"
-        assert config.get("sect", "fooBob") == "bar"
-        assert config.get("sect", "foo_bob") == "bar"
-
-
-def test_as_default(tmpdir, default_config):
-    with tmpdir.as_cwd():
-        f = tmpdir.join(CFGFILE)
-        f.write(default_config)
-        config = conf_loader.load_config(CFGFILE, [CFGPATH])
-        assert config is not None
-        assert config.sections() == ["sect"]
-        assert config.options("sect") == ["foobob"]
-        assert config.get("sect", "foobob") == "bar"
-        assert config.get("sect", "fooBob") == "bar"
-        assert config.get("sect", "foo_bob") == "bar"
-
-
 def test_different_value(tmpdir, default_config):
     with tmpdir.as_cwd():
         f = tmpdir.join(CFGFILE)

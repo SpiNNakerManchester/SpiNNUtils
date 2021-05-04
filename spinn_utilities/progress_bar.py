@@ -228,15 +228,8 @@ class _EnhancedProgressBar(ProgressBar):
     _line_no = 0
     _seq_id = 0
     _step_characters = defaultdict(list)
-    _ENABLE_DATES = (
-        "0401", "0214", "0427", "0428", "0429", "0430", "0501", "0502",
-        "0503", "0504", "0505", "0506", "0507", "0508", "0509", "0510")
     _ENABLED = False
     _DATA_FILE = "progress_bar.txt"
-
-    def _print_distance_line(self, first_space, second_space):
-        print(self.__line, end="", file=self._destination)
-        self.__next_line()
 
     def _print_progress_unit(self, chars_to_print):
         song_line = self.__line
@@ -267,15 +260,12 @@ class _EnhancedProgressBar(ProgressBar):
     @classmethod
     def __next_line(cls):
         if cls._line_no + 1 >= len(cls._step_characters[cls._seq_id]):
-            cls._seq_id = random.randint(1, len(cls._step_characters))
             cls._line_no = 0
         else:
             cls._line_no += 1
 
     @classmethod
     def init_once(cls):
-        # verify that its either April Fools', Capocaccia or Valentine's Day
-        enabled = date.today().strftime("%m%d") in cls._ENABLE_DATES
         # read in the songs once for performance reasons
         path = os.path.join(
             os.path.dirname(os.path.realpath(spinn_utilities.__file__)),
@@ -293,7 +283,7 @@ class _EnhancedProgressBar(ProgressBar):
                     # Bad data! Abort!
                     enabled = False
                     break
-                cls._step_characters[int(bits[0])].append(bits[1])
+                cls._step_characters[bits[0]].append(bits[1])
 
             # clean up lines so that spaces are still visible
             for _seq_id in cls._step_characters:
@@ -301,8 +291,10 @@ class _EnhancedProgressBar(ProgressBar):
                 for _line_no in range(len(step)):
                     step[_line_no] = step[_line_no].replace(" ", "_")
 
+            # verify that its either April Fools', Capocaccia or Valentine's Day
+            enabled = date.today().strftime("%m%d") in cls._step_characters
             # reset trackers for start of the first progress bar
-            cls._seq_id = random.randint(1, len(cls._step_characters))
+            cls._seq_id = date.today().strftime("%m%d")
         except IOError:
             cls._ENABLED = False
             cls._seq_id = 0

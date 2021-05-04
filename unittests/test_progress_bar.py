@@ -15,12 +15,16 @@
 
 import pytest
 from testfixtures import LogCapture
+from spinn_utilities.config_setup import reset_configs
 from spinn_utilities.progress_bar import (
     ProgressBar, DummyProgressBar, _EnhancedProgressBar as
     EPB)
 from spinn_utilities.testing import log_checker
 from spinn_utilities import logger_utils
+
 EPB._ENABLED = False
+
+reset_configs()
 
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])

@@ -13,74 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-1:bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon:
-1:mushroom mushroom bacon bacon bacon bacon bacon bacon bacon:
-1:bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon:
-1:mushroom mushroom bacon bacon bacon bacon bacon bacon bacon:
-1:snake snake bacon bacon bacon bacon bacon bacon bacon bacon:
-1:bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon:
-1:mushroom mushroom bacon bacon bacon bacon bacon bacon bacon:
-1:bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon:
-1:mushroom mushroom bacon bacon bacon bacon bacon bacon bacon:
-1:snake snake bacon bacon bacon bacon bacon bacon bacon bacon:
-1:bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon:
-1:mushroom mushroom bacon bacon bacon bacon bacon bacon bacon:
-1:bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon:
-1:mushroom mushroom bacon bacon bacon bacon bacon bacon bacon:
-1:snake snake bacon bacon bacon bacon bacon bacon bacon bacon:
-2:This was a triumph! I'm making a note here Huge Success!!! :
-2:It's hard to overstate my satisfaction. Aperture Science   :
-2:We do what we must because we can For the good of all of us:
-2:Except the ones who are dead. But there's no sense crying  :
-2:over every mistake. You just keep on trying till you run   :
-2:out of cake. And the science gets done. And you make a neat:
-2:gun for the people are still alive. I'm not even angry.....:
-2:I'm being so sincere right now. Even through you broke my  :
-2:heart, and killed me. And tore me to pieces. And threw     :
-2:every piece into a fire. As they burned it hurt because    :
-2:I was so happy for you! Now, these points of data make a   :
-2:beautiful line. And we're out of beta. We're releasing on  :
-2:time! So I'm GLaD I got burned! Think of all the things we :
-2:learned! for the people who are still alive. Go ahead and  :
-2:leave me... I think I'd perfer to stay inside... Maybe you :
-2:will find someone else to help you. Maybe Black Mesa? That :
-2:was a joke. Ha Ha. Fat Chance! Anyway this cake is great!  :
-2:It's so delicious and moist! Look at me  still talking when:
-2:there's science to do! When I look out there, it makes me  :
-2:glad I'm not you. I've experiments to run. There is        :
-2:research to be done. On the people who are still alive. And:
-2:believe me I am still alive. I'm doing science and I'm     :
-2:still alive. I feel fantastic and I'm still alive. While   :
-2:you're dying I'll be still alive. And when you're dead I   :
-2:will be still alive...... Still alive.....Still alive!!!!!!:
-3:There is a flower within my heart, Daisy, Daisy! Planted   :
-3:one day by a glancing dart, Planted by Daisy Bell! Whether :
-3:she loves me or loves me not, Sometimes it's hard to tell; :
-3:Yet I am longing to share the lot Of beautiful Daisy Bell! :
-3:Daisy, Daisy, Give me your answer, do! I'm half crazy, All :
-3:for the love of you! It won't be a stylish marriage, I     :
-3:can't afford a carriage, But you'll look sweet on the seat :
-3:Of a bicycle built for two! We will go "tandem" as man and :
-3:wife, Daisy, Daisy! "Ped'ling" away down the road of life, :
-3:I and my Daisy Bell! When the road's dark we can both      :
-3:despise P'liceman and "lamps" as well; There are "bright   :
-3:lights" in the dazzling eyes Of beautiful Daisy Bell! I    :
-3:will stand by you in "wheel" or woe, Daisy, Daisy! You'll  :
-3:be the bell(e) which I'll ring you know! Sweet little Daisy:
-3:Bell! You'll take the "lead" in each "trip" we take, Then  :
-3:if I don't do well; I will permit you to use the brake, My :
-3:beautiful Daisy Bell!                                      :
-4:On the farm, ev'ry Friday On the farm, it's rabbit pie day :
-4:So ev'ry Friday that ever comes along I get up early and   :
-4:sing this little song Run rabbit, run rabbit, run, run, run:
-4:Run rabbit, run rabbit, run, run, run Bang, bang, bang,    :
-4:bang goes the farmer's gun Run rabbit, run rabbit, run, run:
-4:, run, run Run rabbit, run rabbit, run, run, run Don't give:
-4:the farmer his fun, fun, fun He'll get by without his      :
-4:rabbit pie So run rabbit, run rabbit, run, run, run Run    :
-4:rabbit, run rabbit, run, run, run Run rabbit, run rabbit,  :
-4:run, run, run Bang, bang, bang, bang goes the farmer's gun :
-4:Run rabbit, run rabbit, run, run, run, run Run rabbit, run :
-4:rabbit, run, run, run Don't give the farmer his fun, fun,  :
-4:fun He'll get by without his rabbit pie So run rabbit, run :
-4:rabbit, run, run, run                                      :
+0401:Your_Subscription_to_this_progressbar_as_expired_last_night:
+0401:Please send a bitcoin to spinnaker team to activate the bar:
+0214:She loves me! I love her too! Love makes the world go round:
+0214:The progress back will be back when it comes down to earth :
+0504:May the 4th be with you! May the 4th be with you! Star Wars:
+0504:Calling R2D2! This is C3PO! Answer me!! Are you there R2D2!:
+1225:Noel, Noel, Noel, Noel, The First Noel, the Angels did say :
+1225:The progressbar has taken Christmas day off! You should too:

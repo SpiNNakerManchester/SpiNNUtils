@@ -67,6 +67,7 @@ def test_lcm():
     c = [34]
     assert lcm(c) == 34
 
+
 def test_testing():
     assert (testing())
 

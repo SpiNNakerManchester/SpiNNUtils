@@ -358,6 +358,8 @@ def run_config_checks(directories, *, exceptions=None, repeaters=None):
     config1.read(__default_config_files)
 
     for directory in directories:
+        if not os.path.isdir(directory):
+            raise Exception (f"Unable find {directory}")
         logger.warning(f"Directory is {directory}")
         for root, dirs, files in os.walk(directory):
             for file_name in files:

@@ -78,6 +78,8 @@ def load_config():
 
     """
     global __config
+    if not __default_config_files:
+        raise Exception("No default configs set")
     if __config_file:
         __config = conf_loader.load_config(
             filename=__config_file, defaults=__default_config_files)

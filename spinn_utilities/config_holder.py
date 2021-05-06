@@ -336,7 +336,7 @@ def _check_cfgs(path):
                 _check_cfg_file(config1, cfg_path)
 
 
-def run_config_checks(module, *, exceptions=None, repeaters=None):
+def run_config_checks(directory, *, exceptions=None, repeaters=None):
     """
     Master test
 
@@ -354,10 +354,6 @@ def run_config_checks(module, *, exceptions=None, repeaters=None):
     config1 = CamelCaseConfigParser()
     config1.read(__default_config_files)
 
-    module = __import__(module)
-    path = module.__file__
-    # Go up to levels to include integeration tests
-    directory = os.path.dirname(os.path.dirname(path))
     for root, dirs, files in os.walk(directory):
         for file_name in files:
             if file_name in exceptions:

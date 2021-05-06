@@ -354,6 +354,9 @@ def run_config_checks(directory, *, exceptions=None, repeaters=None):
     config1 = CamelCaseConfigParser()
     config1.read(__default_config_files)
 
+    logger.warning(f"Directory is {directory}")
+    for f in os.listdir(directory):
+        logger.warning(f"   {f}")
     for root, dirs, files in os.walk(directory):
         for file_name in files:
             if file_name in exceptions:

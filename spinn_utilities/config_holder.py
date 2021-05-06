@@ -336,7 +336,7 @@ def _check_cfgs(path):
                 _check_cfg_file(config1, cfg_path)
 
 
-def run_config_checks(directory, *, exceptions=None, repeaters=None):
+def run_config_checks(directories, *, exceptions=None, repeaters=None):
     """
     Master test
 
@@ -344,6 +344,9 @@ def run_config_checks(directory, *, exceptions=None, repeaters=None):
     :param repeaters:
     :return:
     """
+    if isinstance(directories, str):
+        directories = [directories]
+
     if exceptions is None:
         exceptions = []
     elif isinstance(exceptions, str):
@@ -354,19 +357,18 @@ def run_config_checks(directory, *, exceptions=None, repeaters=None):
     config1 = CamelCaseConfigParser()
     config1.read(__default_config_files)
 
-    logger.warning(f"Directory is {directory}")
-    for f in os.listdir(directory):
-        logger.warning(f"   {f}")
-    for root, dirs, files in os.walk(directory):
-        for file_name in files:
-            if file_name in exceptions:
-                pass
-            elif file_name.endswith(".cfg"):
-                cfg_path = os.path.join(root, file_name)
-                if cfg_path in __default_config_files:
-                    continue
-                print(cfg_path)
-                _check_cfg_file(config1, cfg_path)
-            elif file_name.endswith(".py"):
-                py_path = os.path.join(root, file_name)
-                _check_python_file(py_path)
+    for directory in directories:
+        logger.warning(f"Directory is {directory}")
+        for root, dirs, files in os.walk(directory):
+            for file_name in files:
+                if file_name in exceptions:
+                    pass
+                elif file_name.endswith(".cfg"):
+                    cfg_path = os.path.join(root, file_name)
+                    if cfg_path in __default_config_files:
+                        continue
+                    print(cfg_path)
+                    _check_cfg_file(config1, cfg_path)
+                elif file_name.endswith(".py"):
+                    py_path = os.path.join(root, file_name)
+                    _check_python_file(py_path)

@@ -359,8 +359,7 @@ def run_config_checks(directories, *, exceptions=None, repeaters=None):
 
     for directory in directories:
         if not os.path.isdir(directory):
-            raise Exception (f"Unable find {directory}")
-        logger.warning(f"Directory is {directory}")
+            raise Exception(f"Unable find {directory}")
         for root, dirs, files in os.walk(directory):
             for file_name in files:
                 if file_name in exceptions:

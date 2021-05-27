@@ -18,7 +18,6 @@ from datetime import date
 import logging
 import math
 import os
-import random
 import sys
 from spinn_utilities.config_holder import get_config_bool
 from spinn_utilities.log import FormatAdapter
@@ -291,7 +290,7 @@ class _EnhancedProgressBar(ProgressBar):
                 for _line_no in range(len(step)):
                     step[_line_no] = step[_line_no].replace(" ", "_")
 
-            # verify that its either April Fools', Capocaccia or Valentine's Day
+            # verify that its a special day
             enabled = date.today().strftime("%m%d") in cls._step_characters
         except IOError:
             cls._ENABLED = False
@@ -302,6 +301,7 @@ class _EnhancedProgressBar(ProgressBar):
             if enabled:
                 cls._seq_id = date.today().strftime("%m%d")
             else:
+                # To allow testing on a none special day
                 cls._seq_id = "test"
 
 

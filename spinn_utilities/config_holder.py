@@ -24,7 +24,6 @@ __config = None
 
 __default_config_files = []
 __config_file = None
-__validation_cfg = None
 
 
 def add_default_cfg(default):
@@ -38,14 +37,13 @@ def add_default_cfg(default):
 
 
 def clear_cfg_files():
-    global __config, __config_file, __validation_cfg
+    global __config, __config_file
     __config = None
     __default_config_files.clear()
     __config_file = None
-    __validation_cfg = None
 
 
-def set_cfg_files(configfile, default, validation_cfg=None):
+def set_cfg_files(configfile, default):
     """
     Adds the cfg files to be loaded
 
@@ -54,17 +52,11 @@ def set_cfg_files(configfile, default, validation_cfg=None):
         Should not include any path components.
     :param default: Full path to the extra file to get default configurations
         from.
-    :param validation_cfg:
-        The list of files to read a validation configuration from.
-        If None, no such validation is performed.
-    :type validation_cfg: list(str) or None
-
     :param str default: Absolute path to the cfg file
     """
-    global __config_file, __validation_cfg
+    global __config_file
     __config_file = configfile
     add_default_cfg(default)
-    __validation_cfg = validation_cfg
 
 
 def _pre_load_config():
@@ -87,8 +79,7 @@ def load_config():
     global __config
     if __config_file:
         __config = conf_loader.load_config(
-            filename=__config_file, defaults=__default_config_files,
-            validation_cfg=__validation_cfg)
+            filename=__config_file, defaults=__default_config_files)
     else:
         __config = CamelCaseConfigParser()
         for default in __default_config_files:
@@ -106,8 +97,9 @@ def get_config_str(section, option):
     try:
         return __config.get_str(section, option)
     except AttributeError:
-        _pre_load_config()
-        return __config.get_str(section, option)
+        pass
+    _pre_load_config()
+    return __config.get_str(section, option)
 
 
 def get_config_str_list(section, option, token=","):
@@ -122,8 +114,9 @@ def get_config_str_list(section, option, token=","):
     try:
         return __config.get_str_list(section, option, token)
     except AttributeError:
-        _pre_load_config()
-        return __config.get_str_list(section, option, token)
+        pass
+    _pre_load_config()
+    return __config.get_str_list(section, option, token)
 
 
 def get_config_int(section, option):
@@ -137,8 +130,9 @@ def get_config_int(section, option):
     try:
         return __config.get_int(section, option)
     except AttributeError:
-        _pre_load_config()
-        return __config.get_int(section, option)
+        pass
+    _pre_load_config()
+    return __config.get_int(section, option)
 
 
 def get_config_float(section, option):
@@ -152,8 +146,9 @@ def get_config_float(section, option):
     try:
         return __config.get_float(section, option)
     except AttributeError:
-        _pre_load_config()
-        return __config.get_float(section, option)
+        pass
+    _pre_load_config()
+    return __config.get_float(section, option)
 
 
 def get_config_bool(section, option):
@@ -167,8 +162,9 @@ def get_config_bool(section, option):
     try:
         return __config.get_bool(section, option)
     except AttributeError:
-        _pre_load_config()
-        return __config.get_bool(section, option)
+        pass
+    _pre_load_config()
+    return __config.get_bool(section, option)
 
 
 def set_config(section, option, value):
@@ -194,8 +190,9 @@ def has_config_option(section, option):
     try:
         return __config.has_option(section, option)
     except AttributeError:
-        _pre_load_config()
-        return __config.has_option(section, option)
+        pass
+    _pre_load_config()
+    return __config.has_option(section, option)
 
 
 def config_options(section):
@@ -232,7 +229,8 @@ def _check_lines(py_path, line, lines, index, method):
     try:
         method(section, option)
     except Exception:
-        raise Exception(f"failed in line:{index} of file: {py_path}")
+        raise Exception(f"failed in line:{index} of file: {py_path} with "
+                        f"section:{section} option:{option}")
 
 
 def check_python_file(py_path):
@@ -255,3 +253,22 @@ def check_python_file(py_path):
                 _check_lines(py_path, line, lines, index, get_config_str)
             if "get_config_str_list(" in line:
                 _check_lines(py_path, line, lines, index, get_config_str_list)
+
+
+def find_double_defaults(repeaters=None):
+    config1 = CamelCaseConfigParser()
+    for default in __default_config_files[:-1]:
+        config1.read(default)
+    config2 = CamelCaseConfigParser()
+    config2.read(__default_config_files[-1])
+    if repeaters is None:
+        repeaters = []
+    else:
+        repeaters = map(config2.optionxform, repeaters)
+    for section in config2.sections():
+        for option in config2.options(section):
+            if config1.has_option(section, option):
+                if option not in repeaters:
+                    raise Exception(
+                        f"cfg:{__default_config_files[-1]} "
+                        f"repeats [{section}]{option}")

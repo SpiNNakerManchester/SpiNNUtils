@@ -293,14 +293,16 @@ class _EnhancedProgressBar(ProgressBar):
 
             # verify that its either April Fools', Capocaccia or Valentine's Day
             enabled = date.today().strftime("%m%d") in cls._step_characters
-            # reset trackers for start of the first progress bar
-            cls._seq_id = date.today().strftime("%m%d")
         except IOError:
             cls._ENABLED = False
             cls._seq_id = 0
         finally:
             cls._line_no = 0
             cls._ENABLED = enabled
+            if enabled:
+                cls._seq_id = date.today().strftime("%m%d")
+            else:
+                cls._seq_id = "test"
 
 
 # Perform one-time initialisation

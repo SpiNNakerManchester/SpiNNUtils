@@ -213,3 +213,10 @@ def test_str_list(tmpdir, not_there):
         assert config.get_str_list("abc", "as_none") == []
         assert config.get_str_list("abc", "as_empty") == []
         assert config.get_str_list("abc", "fluff") == ["more"]
+
+
+def test_errors(not_there):
+    name, place = not_there
+    with pytest.raises(ConfigTemplateException):
+        conf_loader.install_cfg_and_IOError(
+            filename=name, defaults=[], config_locations=[])

@@ -46,9 +46,6 @@ class CitationAggregator(object):
         dependencies
     """
 
-    def __init__(self):
-        pass
-
     def create_aggregated_citation_file(
             self, module_to_start_at, aggregated_citation_file):
         """ Entrance method for building the aggregated citation file
@@ -56,9 +53,8 @@ class CitationAggregator(object):
         :param module_to_start_at:
             the top level module to figure out its citation file for
         :type module_to_start_at: python module
-        :param aggregated_citation_file: file name of aggregated citation file
-        :type file_path_of_aggregated_citation_file: str
-        :rtype: None
+        :param str aggregated_citation_file:
+            file name of aggregated citation file
         """
 
         # get the top citation file to add references to
@@ -128,9 +124,9 @@ class CitationAggregator(object):
     def _read_pypi_import_map(aggregated_citation_file):
         """ Read the PYPI to import name map
 
-        :param aggregated_citation_file: file path to the PYPI map
+        :param str aggregated_citation_file: path to the PYPI map file
         :return: map between PYPI names and import names
-        :rtype: dict
+        :rtype: dict(str,str)
         """
         pypi_to_import_map = dict()
         with open(aggregated_citation_file) as f:
@@ -141,11 +137,11 @@ class CitationAggregator(object):
 
     def _handle_c_dependency(
             self, top_citation_file, module, modules_seen_so_far):
-        """ Handle a c code dependency
+        """ Handle a C code dependency
 
-        :param top_citation_file: YAML file for the top citation file
+        :param str top_citation_file: YAML file for the top citation file
         :param str module: module to find
-        :type top_citation_file: YAML file
+        :param set(str) modules_seen_so_far:
         """
         cleaned_path = self.locate_path_for_c_dependency(module)
         if cleaned_path is not None:
@@ -163,6 +159,10 @@ class CitationAggregator(object):
 
     @staticmethod
     def locate_path_for_c_dependency(true_software_name):
+        """
+        :param str true_software_name:
+        :rtype: str or None
+        """
         environment_path_variable = os.environ.get('PATH')
         if environment_path_variable is not None:
             software_paths = environment_path_variable.split(":")
@@ -185,9 +185,10 @@ class CitationAggregator(object):
         """ Go though the top level path and tries to locate other cff \
             files that need to be added to the references pile
 
-        :param reference_entry:
+        :param dict(str,list(str)) reference_entry:
             The reference entry to add new dependencies as references for.
-        :param software_path: the path to search in
+        :param str software_path: the path to search in
+        :param set(str) modules_seen_so_far:
         """
         for possible_extra_citation_file in os.listdir(software_path):
             if possible_extra_citation_file.endswith(".cff"):
@@ -206,16 +207,14 @@ class CitationAggregator(object):
             module_name):
         """ Handle a python dependency
 
-        :param top_citation_file: YAML file for the top citation file
-        :type top_citation_file: YAML file
+        :param dict(str,list(str)) top_citation_file:
+            YAML file for the top citation file
         :param imported_module: the actual imported module
         :type imported_module: ModuleType
-        :param modules_seen_so_far:
+        :param set(str) modules_seen_so_far:
             list of names of dependencies already processed
-        :type modules_seen_so_far: list
-        :param module_name: the name of this module to consider as a dependency
-        :type module_name: str
-        :rtype: None
+        :param str module_name:
+            the name of this module to consider as a dependency
         """
         # get modules citation file
         citation_level_dir = os.path.abspath(imported_module.__file__)
@@ -244,11 +243,11 @@ class CitationAggregator(object):
         """ Take a module level and tries to locate and process a citation file
 
         :param str citation_level_dir:
-            the expected level where the CITATION.cff should be
+            the expected level where the ``CITATION.cff`` should be
         :param imported_module: the module after being imported
         :type imported_module: python module
-        :param modules_seen_so_far: list of dependencies already processed
-        :type modules_seen_so_far: list
+        :param set(str) modules_seen_so_far:
+            list of dependencies already processed
         :return: the reference entry in JSON format
         :rtype: dict
         """
@@ -281,7 +280,7 @@ class CitationAggregator(object):
         """ Try to locate a version file or version data to auto-generate \
             minimal citation data.
 
-        :param imported_module:\
+        :param imported_module:
             the module currently trying to find the version of
         :type imported_module: python module
         :return: reference entry for this python module
@@ -312,11 +311,10 @@ class CitationAggregator(object):
 
     @staticmethod
     def _read_and_process_reference_entry(dependency_citation_file_path):
-        """ Read a CITATION.cff and makes it a reference for a higher level \
-            citation file.
+        """ Read a ``CITATION.cff`` and makes it a reference for a higher \
+            level citation file.
 
-        :param dependency_citation_file_path: path to a CITATION.cff file
-        :type dependency_citation_file_path: str
+        :param str dependency_citation_file_path: path to a CITATION.cff file
         :return: reference entry for the higher level citation.cff
         :rtype: dict
         """
@@ -344,14 +342,20 @@ class CitationAggregator(object):
 
 
 def generate_aggregate(arguments=None):
-    """ Generates a single citation.cff from others
+    """ Command-line tool to generate a single ``citation.cff`` from others.
 
-    :param output_path: Where to write the aggregate file
-    :param top_module: the module to start aggregating the citation.cffs from
-    :param doi_title: the title of the DOI
-    :param zenodo_access_token: the access token for Zenodo
-    :param tools_doi: the DOI of the tools
-    :rtype: None
+    :param list(str) arguments: Command line arguments.
+
+        * ``--output_path``: \
+            Where to write the aggregate file
+        * ``--top_module``: \
+            The module to start aggregating the citation.cffs from
+        * ``--doi_title``: \
+            The title of the DOI
+        * ``--zenodo_access_token``: \
+            The access token for Zenodo
+        * ``--tools_doi``: \
+            The DOI of the tools
     """
     parser = argparse.ArgumentParser(description="Aggregate Citations")
     parser.add_argument("output_path", help="The file to store the result in")

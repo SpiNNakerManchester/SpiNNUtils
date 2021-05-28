@@ -83,6 +83,21 @@ def assert_logs_error_contains(log_records, submessage):
     _assert_logs_contains('ERROR', log_records, submessage)
 
 
+def assert_logs_warning_contains(log_records, submessage):
+    """ Checks it the log records contain an WARNING log with this sub-message
+
+    .. note::
+        While this code does not depend on testfixtures,
+        you will need testfixtures to generate the input data
+
+    :param log_records: list of log records returned by testfixtures.LogCapture
+    :param submessage: String which should be part of an WARNING log
+    :rtype: None
+    :raises AssertionError: If the submessage is not present in the log
+    """
+    _assert_logs_contains('WARNING', log_records, submessage)
+
+
 def assert_logs_info_contains(log_records, sub_message):
     """ Checks it the log records contain an INFO log with this sub-message
 

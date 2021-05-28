@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019 The University of Manchester
+# Copyright (c) 2017 The University of Manchester
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,10 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
-from .citation_aggregator import (
-    CitationAggregator, generate_aggregate)
 
-__all__ = [
-    "CitationAggregator", "CitationUpdaterAndDoiGenerator",
-    "generate_aggregate"]
+class ConfigTemplateException(Exception):
+    """
+    Throws when an existing Section has an extra config value
+    """

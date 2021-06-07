@@ -64,7 +64,7 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
                 raise ConfigTemplateException(
                     f"No template file found for {defaults}")
             else:
-                logger.error(
+                raise ConfigTemplateException(
                     f"No default cfg files found. "
                     f"New {home_cfg} will be empty")
 

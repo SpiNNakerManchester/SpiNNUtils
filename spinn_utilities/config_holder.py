@@ -22,9 +22,9 @@ from spinn_utilities.log import FormatAdapter
 logger = FormatAdapter(logging.getLogger(__file__))
 
 __config = None
-
 __default_config_files = []
 __config_file = None
+__unittest_mode = False
 
 
 def add_default_cfg(default):
@@ -37,11 +37,19 @@ def add_default_cfg(default):
         __default_config_files.append(default)
 
 
-def clear_cfg_files():
-    global __config, __config_file
+def clear_cfg_files(unittest_mode):
+    """
+    Clears any previous set configs and config files.
+
+    After this method add_default_cfg and set_cfg_files need to be called
+
+    :param bool unittest_mode: Flag to put the holder into unittests mode
+    """
+    global __config, __config_file, __unittest_mode
     __config = None
     __default_config_files.clear()
     __config_file = None
+    __unittest_mode = None
 
 
 def set_cfg_files(configfile, default):
@@ -66,9 +74,10 @@ def _pre_load_config():
 
     """
     # Only expected to happen in unittests but just in case
-    logger.warning(
-        "Accessing config before setup is not recommended as setup could"
-        " change some config values. ")
+    if not __unittest_mode:
+        logger.warning(
+            "Accessing config before setup is not recommended as setup could"
+            " change some config values. ")
     load_config()
 
 
@@ -173,10 +182,21 @@ def get_config_bool(section, option):
 def set_config(section, option, value):
     """ Sets the value of a config option.
 
+    This method should only be called by the simulator or by unittests
+
     :param str section: What section to set the option in.
     :param str option: What option to set.
     :param object value: Value to set option to
     """
+    if __config is None:
+        if __unittest_mode:
+            load_config()
+        else:
+            # The actual error is that load_config should be called before
+            # set_config but this discourages the use outside of unittests
+            raise Exception(
+                "set_config should only be called by unittests "
+                "which should have called reset_configs")
     __config.set(section, option, value)
     # Intentionally no try here to force tests that set to
     # load_default_configs before AND after

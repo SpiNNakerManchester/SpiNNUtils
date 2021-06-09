@@ -49,7 +49,7 @@ def clear_cfg_files(unittest_mode):
     __config = None
     __default_config_files.clear()
     __config_file = None
-    __unittest_mode = None
+    __unittest_mode = unittest_mode
 
 
 def set_cfg_files(configfile, default):

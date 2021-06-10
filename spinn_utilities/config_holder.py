@@ -73,18 +73,16 @@ def _pre_load_config():
     Loads configs due to early access to a config value
 
     """
-    # Only expected to happen in unittests but just in case
+    # If you getthis error during a unittest then unittest_step was not called
     if not __unittest_mode:
-        logger.warning(
-            "Accessing config before setup is not recommended as setup could"
-            " change some config values. ")
+        raise Exception(
+            "Accessing config values before setup is not supported")
     load_config()
 
 
 def load_config():
     """
     Reads in all the config files, resetting all values.
-
     """
     global __config
     if not __default_config_files:

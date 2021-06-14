@@ -12,9 +12,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .converter import Converter
 from .file_converter import FileConverter
 from .replacer import Replacer
 
-__all__ = [
-    "Converter", "FileConverter", "Replacer"]
+# converter NOT included here double import warning in automatic make
+__all__ = ["FileConverter", "Replacer"]

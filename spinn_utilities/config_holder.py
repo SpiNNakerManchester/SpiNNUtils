@@ -194,7 +194,7 @@ def set_config(section, option, value):
             # set_config but this discourages the use outside of unittests
             raise Exception(
                 "set_config should only be called by unittests "
-                "which should have called reset_configs")
+                "which should have called unittest_setup")
     __config.set(section, option, value)
     # Intentionally no try here to force tests that set to
     # load_default_configs before AND after

@@ -20,15 +20,16 @@ from spinn_utilities.config_holder import (
 BASE_CONFIG_FILE = "spinn_utilities.cfg"
 
 
-def reset_configs():
+def unittest_setup(unittest_mode):
     """
     Resets the configs so only the local default config is included.
 
     .. note::
         This file should only be called from SpiNNUtils/unittests
 
+    :param unittest_mode: Flag to indicate in unittests
     """
-    clear_cfg_files()
+    clear_cfg_files(True)
     add_spinn_utilities_cfg()
 
 

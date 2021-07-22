@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import os
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.log import FormatAdapter
@@ -21,9 +22,9 @@ from spinn_utilities.log import FormatAdapter
 logger = FormatAdapter(logging.getLogger(__file__))
 
 __config = None
-
 __default_config_files = []
 __config_file = None
+__unittest_mode = False
 
 
 def add_default_cfg(default):
@@ -36,11 +37,19 @@ def add_default_cfg(default):
         __default_config_files.append(default)
 
 
-def clear_cfg_files():
-    global __config, __config_file
+def clear_cfg_files(unittest_mode):
+    """
+    Clears any previous set configs and config files.
+
+    After this method add_default_cfg and set_cfg_files need to be called
+
+    :param bool unittest_mode: Flag to put the holder into unittests mode
+    """
+    global __config, __config_file, __unittest_mode
     __config = None
     __default_config_files.clear()
     __config_file = None
+    __unittest_mode = unittest_mode
 
 
 def set_cfg_files(configfile, default):
@@ -64,19 +73,20 @@ def _pre_load_config():
     Loads configs due to early access to a config value
 
     """
-    # Only expected to happen in unittests but just in case
-    logger.warning(
-        "Accessing config before setup is not recommended as setup could"
-        " change some config values. ")
+    # If you getthis error during a unittest then unittest_step was not called
+    if not __unittest_mode:
+        raise Exception(
+            "Accessing config values before setup is not supported")
     load_config()
 
 
 def load_config():
     """
     Reads in all the config files, resetting all values.
-
     """
     global __config
+    if not __default_config_files:
+        raise Exception("No default configs set")
     if __config_file:
         __config = conf_loader.load_config(
             filename=__config_file, defaults=__default_config_files)
@@ -170,10 +180,21 @@ def get_config_bool(section, option):
 def set_config(section, option, value):
     """ Sets the value of a config option.
 
+    This method should only be called by the simulator or by unittests
+
     :param str section: What section to set the option in.
     :param str option: What option to set.
     :param object value: Value to set option to
     """
+    if __config is None:
+        if __unittest_mode:
+            load_config()
+        else:
+            # The actual error is that load_config should be called before
+            # set_config but this discourages the use outside of unittests
+            raise Exception(
+                "set_config should only be called by unittests "
+                "which should have called unittest_setup")
     __config.set(section, option, value)
     # Intentionally no try here to force tests that set to
     # load_default_configs before AND after
@@ -233,7 +254,7 @@ def _check_lines(py_path, line, lines, index, method):
                         f"section:{section} option:{option}")
 
 
-def check_python_file(py_path):
+def _check_python_file(py_path):
     """
     A testing function to check that all the get_config calls work
 
@@ -255,7 +276,22 @@ def check_python_file(py_path):
                 _check_lines(py_path, line, lines, index, get_config_str_list)
 
 
-def find_double_defaults(repeaters=None):
+def _check_python_files(directory):
+    for root, dirs, files in os.walk(directory):
+        for file_name in files:
+            if file_name.endswith(".py"):
+                py_path = os.path.join(root, file_name)
+                _check_python_file(py_path)
+
+
+def _find_double_defaults(repeaters=None):
+    """
+    Testing function to identify any cfg options in multiple default files
+
+    :param repeaters: List of options that are expected to be repeated.
+    :type repeaters: None or list(str)
+    :return:
+    """
     config1 = CamelCaseConfigParser()
     for default in __default_config_files[:-1]:
         config1.read(default)
@@ -272,3 +308,88 @@ def find_double_defaults(repeaters=None):
                     raise Exception(
                         f"cfg:{__default_config_files[-1]} "
                         f"repeats [{section}]{option}")
+
+
+def _check_cfg_file(config1, cfg_path):
+    """
+    Supoort method for check_cfgs
+
+    :param CamelCaseConfigParser config1:
+    :param str cfg_path:
+    :raise Exception: If an unexpected option is found
+    """
+    config2 = CamelCaseConfigParser()
+    config2.read(cfg_path)
+    for section in config2.sections():
+        if not config1.has_section(section):
+            raise Exception(
+                f"cfg:{cfg_path} has unexpected section [{section}]")
+        for option in config2.options(section):
+            if not config1.has_option(section, option):
+                raise Exception(
+                    f"cfg:{cfg_path} "
+                    f"has unexpected options [{section}]{option}")
+
+
+def _check_cfgs(path):
+    """
+    A testng function check local cfg files against the defaults
+
+    It only checks that the option exists in a default.
+    It does not check if the option is used or if the value is the expected
+    type.
+
+    :param str path: Absolute path to the parent directory to search
+    :raise Exception: If an unexpected option is found
+    """
+    config1 = CamelCaseConfigParser()
+    for default in __default_config_files:
+        config1.read(default)
+    directory = os.path.dirname(path)
+    for root, dirs, files in os.walk(directory):
+        for file_name in files:
+            if file_name.endswith(".cfg"):
+                cfg_path = os.path.join(root, file_name)
+                if cfg_path in __default_config_files:
+                    continue
+                print(cfg_path)
+                _check_cfg_file(config1, cfg_path)
+
+
+def run_config_checks(directories, *, exceptions=None, repeaters=None):
+    """
+    Master test
+
+    :param module:
+    :param repeaters:
+    :return:
+    """
+    if isinstance(directories, str):
+        directories = [directories]
+
+    if exceptions is None:
+        exceptions = []
+    elif isinstance(exceptions, str):
+        exceptions = [exceptions]
+
+    _find_double_defaults(repeaters)
+
+    config1 = CamelCaseConfigParser()
+    config1.read(__default_config_files)
+
+    for directory in directories:
+        if not os.path.isdir(directory):
+            raise Exception(f"Unable find {directory}")
+        for root, dirs, files in os.walk(directory):
+            for file_name in files:
+                if file_name in exceptions:
+                    pass
+                elif file_name.endswith(".cfg"):
+                    cfg_path = os.path.join(root, file_name)
+                    if cfg_path in __default_config_files:
+                        continue
+                    print(cfg_path)
+                    _check_cfg_file(config1, cfg_path)
+                elif file_name.endswith(".py"):
+                    py_path = os.path.join(root, file_name)
+                    _check_python_file(py_path)

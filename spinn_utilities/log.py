@@ -128,7 +128,13 @@ class _BraceMessage(object):
         self.kwargs = kwargs
 
     def __str__(self):
-        return str(self.fmt).format(*self.args, **self.kwargs)
+        try:
+            return str(self.fmt).format(*self.args, **self.kwargs)
+        except KeyError:
+            try:
+                return "keyError" + str(self.fmt)
+            except KeyError:
+                return "Double keyError"
 
 
 class LogLevelTooHighException(Exception):

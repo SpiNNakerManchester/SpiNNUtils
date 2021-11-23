@@ -19,6 +19,63 @@ class SpiNNUtilsException(Exception):
     """
 
 
-class FailedToFindBinaryException(SpiNNUtilsException):
+class FailedToFindBinaryException():
     """ Raised when the executable finder cant find the binary
     """
+
+
+class NotSetupException(SpiNNUtilsException):
+    """
+    Raised when trying to get data before simulator has been setup
+    """
+
+    def __init__(self, data):
+        super().__init__(f"Requesting {data} is not valid before setup")
+
+
+class InvalidDirectory(SpiNNUtilsException):
+    """
+    Raise when trying to set an invalid Directory
+    """
+    def __init__(self, name, value):
+        super().__init__(f"Unable to set {name} has {value} is not a dir.")
+
+
+class DataNotYetAvialable(SpiNNUtilsException):
+    """
+    Raised when trying to get data before simulator has created it
+    """
+    def __init__(self, data):
+        super().__init__(f"{data} has not yet been created.")
+
+
+class DataChanged(SpiNNUtilsException):
+    """
+    Raised when trying to get data after some changed
+    """
+    def __init__(self, data):
+        super().__init__(f"{data} has been changed.")
+
+
+class DataNotMocked(DataNotYetAvialable):
+    """
+    Raised when trying to get data before a mocked simulator has created it
+    """
+    def __init__(self, data):
+        super().__init__(f"MOCK {data} has not yet been created.")
+
+
+class IllegalState(DataNotYetAvialable):
+    """
+    Raised when trying to get data before a mocked simulator has created it
+    """
+
+
+class ShutdownException(SpiNNUtilsException):
+    """
+    Raised when trying to get simulator data after it has been shit down
+    """
+    def __init__(self, data):
+        super().__init__(f"Requesting {data} is not valid after end")
+
+

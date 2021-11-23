@@ -108,19 +108,17 @@ class UtilsDataView(object):
     # This allow directories to be created on the fly
     # Remainder in FecDataView
 
-    def _temporary_dir_path(self, data):
+    def _temporary_dir_path(self):
         """
         The path to an existing temp directory
 
         :param str data: Name of the data to be replace with temp
         :raises:  SpiNNUtilsException if not in Mocked state
         """
-        if self.__utils_data._status == Data_Status.MOCKED:
-            if self.__utils_data._temporary_directory is None:
-                self.__utils_data._temporary_directory = \
-                    tempfile.TemporaryDirectory()
-            return self.__utils_data._temporary_directory.name
-        raise self._exception(data)
+        if self.__utils_data._temporary_directory is None:
+            self.__utils_data._temporary_directory = \
+                tempfile.TemporaryDirectory()
+        return self.__utils_data._temporary_directory.name
 
     @property
     def status(self):
@@ -149,4 +147,7 @@ class UtilsDataView(object):
         if self.__utils_data._run_dir_path:
             return self.__utils_data._run_dir_path
 
-        return self._temporary_dir_path("run_dir_path")
+        if self.__utils_data._status == Data_Status.MOCKED:
+            return self._temporary_dir_path()
+
+        raise self._exception("run_dir_path")

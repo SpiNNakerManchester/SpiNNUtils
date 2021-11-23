@@ -27,7 +27,7 @@ EPB._ENABLED = False
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_operation(pbclass):
-    unittest_setup(True)
+    unittest_setup()
     p = pbclass(2, "abc")
     p.update()
     p.update()
@@ -36,7 +36,7 @@ def test_operation(pbclass):
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_two_end(pbclass):
-    unittest_setup(True)
+    unittest_setup()
     p = pbclass(2, "abc2")
     p.update()
     p.update()
@@ -46,7 +46,7 @@ def test_two_end(pbclass):
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_with_operation(pbclass):
-    unittest_setup(True)
+    unittest_setup()
     with pbclass(2, "with_p") as p:
         p.update()
         p.update()
@@ -54,7 +54,7 @@ def test_with_operation(pbclass):
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_check_length_full(pbclass):
-    unittest_setup(True)
+    unittest_setup()
     logger_utils.reset()
     p = pbclass(2, None)
     with LogCapture() as lc:
@@ -66,7 +66,7 @@ def test_check_length_full(pbclass):
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_check_length_addition(pbclass):
-    unittest_setup(True)
+    unittest_setup()
     logger_utils.reset()
     p = pbclass(2, None)
     p.update()
@@ -80,7 +80,7 @@ def test_check_length_addition(pbclass):
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_iteration_style(pbclass):
-    unittest_setup(True)
+    unittest_setup()
     coll = range(5)
     p = pbclass(coll, None)
     total = 0
@@ -92,7 +92,7 @@ def test_iteration_style(pbclass):
 
 @pytest.mark.parametrize("pbmagic", [False, True])
 def test_bacon_enhancement(pbmagic):
-    unittest_setup(True)
+    unittest_setup()
     try:
         EPB._ENABLED = pbmagic
         seq = (1, 2, 3)

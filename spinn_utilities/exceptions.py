@@ -77,5 +77,3 @@ class ShutdownException(SpiNNUtilsException):
     """
     def __init__(self, data):
         super().__init__(f"Requesting {data} is not valid after end")
-
-

@@ -15,7 +15,7 @@
 
 import os.path
 
-from spinn_utilities.exceptions import InvalidDirectory, IllegalState
+from spinn_utilities.exceptions import InvalidDirectory
 from .data_status import Data_Status
 from .utils_data_view import UtilsDataView, _UtilsDataModel
 

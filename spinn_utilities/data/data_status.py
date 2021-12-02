@@ -15,8 +15,7 @@
 
 from enum import Enum
 from spinn_utilities.exceptions import (
-    DataChanged, DataNotMocked, DataNotYetAvialable, NotSetupException,
-    ShutdownException)
+    DataNotMocked, DataNotYetAvialable, NotSetupException, ShutdownException)
 
 
 class Data_Status(Enum):

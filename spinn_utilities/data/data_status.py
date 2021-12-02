@@ -25,7 +25,7 @@ class Data_Status(Enum):
     NOT_SETUP = (0, NotSetupException)
     MOCKED = (1, DataNotMocked)
     SETUP = (2, DataNotYetAvialable)
-    HARD_RESET = (3, DataChanged)
+    # HARD_RESET = (3, DataChanged)
     IN_RUN = (4, DataNotYetAvialable)
     FINISHED = (5, DataNotYetAvialable)
     SHUTDOWN = (6, ShutdownException)

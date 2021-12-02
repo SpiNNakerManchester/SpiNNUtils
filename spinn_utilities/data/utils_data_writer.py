@@ -75,7 +75,7 @@ class UtilsDataWriter(UtilsDataView):
         This resets any data set after sim.setup has finished
         """
         self.__utils_data._hard_reset()
-        self.__utils_data._status = Data_Status.HARD_RESET
+        # self.__utils_data._status = Data_Status.HARD_RESET
 
     def shut_down(self):
         """

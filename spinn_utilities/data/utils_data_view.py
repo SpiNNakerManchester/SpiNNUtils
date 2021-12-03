@@ -61,9 +61,18 @@ class _UtilsDataModel(object):
 
     def _hard_reset(self):
         """
-        Clears out all data
+        Puts all data back into the state expected at graph changed and
+            sim.reset
         """
         self._run_dir_path = None
+
+    def _soft_reset(self):
+        """
+        Puts all data back into the state expected at sim.reset but not
+        graph changed
+
+        """
+        # Holder for any future values
 
 
 class UtilsDataView(object):

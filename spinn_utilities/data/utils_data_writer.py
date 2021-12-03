@@ -77,6 +77,14 @@ class UtilsDataWriter(UtilsDataView):
         self.__utils_data._hard_reset()
         # self.__utils_data._status = Data_Status.HARD_RESET
 
+    def soft_reset(self):
+        """
+        Puts all data back into the state expected at sim.reset but not
+        graph changed
+
+        """
+        self.__utils_data._soft_reset()
+
     def shut_down(self):
         """
         Puts all data into the state expected after sim.end

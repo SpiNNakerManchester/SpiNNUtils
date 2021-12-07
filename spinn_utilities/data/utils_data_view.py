@@ -108,7 +108,7 @@ class UtilsDataView(object):
         The most suitable no data Exception based on the status
 
         :param str data: Name of the data not found
-        :rtype: SpiNNUtilsException
+        :rtype: ~spinn_utilities.exceptions.SpiNNUtilsException
         """
         return self.__utils_data._status.exception(data)
 
@@ -122,7 +122,8 @@ class UtilsDataView(object):
         The path to an existing temp directory
 
         :param str data: Name of the data to be replace with temp
-        :raises:  SpiNNUtilsException if not in Mocked state
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            if not in Mocked state
         """
         if self.__utils_data._temporary_directory is None:
             self.__utils_data._temporary_directory = \
@@ -150,7 +151,7 @@ class UtilsDataView(object):
         shared by all path methods
 
         :rtpye: str
-        :raises SpinnFrontEndException:
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the simulation_time_step is currently unavailable
         """
         if self.__utils_data._run_dir_path:

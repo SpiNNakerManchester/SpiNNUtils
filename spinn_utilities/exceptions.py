@@ -65,6 +65,14 @@ class DataNotMocked(DataNotYetAvialable):
         super().__init__(f"MOCK {data} has not yet been created.")
 
 
+class DataLocked(SpiNNUtilsException):
+    """
+    Raised when trying to access data while in a state it is locked
+    """
+    def __init__(self, data, state):
+        super().__init__(f"Illegal call to get {data} while {state}.")
+
+
 class IllegalState(DataNotYetAvialable):
     """
     Raised when trying to get data before a mocked simulator has created it

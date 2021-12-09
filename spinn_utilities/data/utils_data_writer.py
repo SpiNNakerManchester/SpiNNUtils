@@ -85,6 +85,13 @@ class UtilsDataWriter(UtilsDataView):
         """
         self.__utils_data._soft_reset()
 
+    def stopping(self):
+        """
+        Puts all data into the state expected during stop
+
+        """
+        self.__utils_data._status = Data_Status.STOPPING
+
     def shut_down(self):
         """
         Puts all data into the state expected after sim.end

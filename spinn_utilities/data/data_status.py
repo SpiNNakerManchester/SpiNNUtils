@@ -27,7 +27,8 @@ class Data_Status(Enum):
     # HARD_RESET = (3, DataChanged)
     IN_RUN = (4, DataNotYetAvialable)
     FINISHED = (5, DataNotYetAvialable)
-    SHUTDOWN = (6, ShutdownException)
+    STOPPING = (6, ShutdownException)
+    SHUTDOWN = (7, ShutdownException)
 
     def __new__(cls, value, exception):
         # pylint: disable=protected-access

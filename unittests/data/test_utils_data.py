@@ -42,6 +42,10 @@ class TestUtilsData(unittest.TestCase):
         self.assertEqual(Data_Status.IN_RUN, view.status)
         writer.finish_run()
         self.assertEqual(Data_Status.FINISHED, view.status)
+        writer.stopping()
+        self.assertEqual(Data_Status.STOPPING, view.status)
+        writer.shut_down()
+        self.assertEqual(Data_Status.SHUTDOWN, view.status)
 
     def test_directories_setup(self):
         writer = UtilsDataWriter()

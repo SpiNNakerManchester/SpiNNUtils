@@ -103,14 +103,15 @@ class UtilsDataView(object):
     __data = _UtilsDataModel()
     __slots__ = []
 
-    def _exception(self, data):
+    @classmethod
+    def _exception(cls, data):
         """
         The most suitable no data Exception based on the status
 
         :param str data: Name of the data not found
         :rtype: ~spinn_utilities.exceptions.SpiNNUtilsException
         """
-        return self.__data._status.exception(data)
+        return cls.__data._status.exception(data)
 
     # Report directories
     # There are NO has or get methods for directories

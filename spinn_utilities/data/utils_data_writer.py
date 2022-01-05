@@ -25,7 +25,7 @@ class UtilsDataWriter(UtilsDataView):
     Writer class for the Fec Data
 
     """
-    __utils_data = _UtilsDataModel()
+    __data = _UtilsDataModel()
     __slots__ = []
 
     def mock(self):
@@ -42,30 +42,30 @@ class UtilsDataWriter(UtilsDataView):
         Unittest that depend on a specific value should call mock and then
         set that value.
         """
-        self.__utils_data._clear()
-        self.__utils_data._status = Data_Status.MOCKED
+        self.__data._clear()
+        self.__data._status = Data_Status.MOCKED
 
     def setup(self):
         """
         Puts all data back into the state expected at sim.setup time
 
         """
-        self.__utils_data._clear()
-        self.__utils_data._status = Data_Status.SETUP
+        self.__data._clear()
+        self.__data._status = Data_Status.SETUP
 
     def start_run(self):
         """
         Puts all data into the state expected after do_run_loop started
 
         """
-        self.__utils_data._status = Data_Status.IN_RUN
+        self.__data._status = Data_Status.IN_RUN
 
     def finish_run(self):
         """
         Puts all data into the state expected after sim.run
 
         """
-        self.__utils_data._status = Data_Status.FINISHED
+        self.__data._status = Data_Status.FINISHED
 
     def hard_reset(self):
         """
@@ -74,7 +74,7 @@ class UtilsDataWriter(UtilsDataView):
 
         This resets any data set after sim.setup has finished
         """
-        self.__utils_data._hard_reset()
+        self.__data._hard_reset()
         # self.__utils_data._status = Data_Status.HARD_RESET
 
     def soft_reset(self):
@@ -83,25 +83,30 @@ class UtilsDataWriter(UtilsDataView):
         graph changed
 
         """
-        self.__utils_data._soft_reset()
+        self.__data._soft_reset()
 
     def stopping(self):
         """
         Puts all data into the state expected during stop
 
         """
-        self.__utils_data._status = Data_Status.STOPPING
+        self.__data._status = Data_Status.STOPPING
 
     def shut_down(self):
         """
         Puts all data into the state expected after sim.end
 
         """
-        self.__utils_data._status = Data_Status.SHUTDOWN
+        self.__data._status = Data_Status.SHUTDOWN
 
     def set_run_dir_path(self, run_dir_path):
+        """
+        Checks and sets the run_dir_path
+
+        :param str run_dir_path:
+        """
         if os.path.isdir(run_dir_path):
-            self.__utils_data._run_dir_path = run_dir_path
+            self.__data._run_dir_path = run_dir_path
         else:
-            self.__utils_data._run_dir_path = None
+            self.__data._run_dir_path = None
             raise InvalidDirectory("run_dir_path", run_dir_path)

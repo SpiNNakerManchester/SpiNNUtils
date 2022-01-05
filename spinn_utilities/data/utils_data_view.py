@@ -100,7 +100,7 @@ class UtilsDataView(object):
     without notice, methods in this class can be considered a supported API
     """
 
-    __utils_data = _UtilsDataModel()
+    __data = _UtilsDataModel()
     __slots__ = []
 
     def _exception(self, data):
@@ -110,14 +110,15 @@ class UtilsDataView(object):
         :param str data: Name of the data not found
         :rtype: ~spinn_utilities.exceptions.SpiNNUtilsException
         """
-        return self.__utils_data._status.exception(data)
+        return self.__data._status.exception(data)
 
     # Report directories
     # There are NO has or get methods for directories
     # This allow directories to be created on the fly
     # Remainder in FecDataView
 
-    def _temporary_dir_path(self):
+    @classmethod
+    def _temporary_dir_path(cls):
         """
         The path to an existing temp directory
 
@@ -125,10 +126,9 @@ class UtilsDataView(object):
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             if not in Mocked state
         """
-        if self.__utils_data._temporary_directory is None:
-            self.__utils_data._temporary_directory = \
-                tempfile.TemporaryDirectory()
-        return self.__utils_data._temporary_directory.name
+        if cls.__data._temporary_directory is None:
+            cls.__data._temporary_directory = tempfile.TemporaryDirectory()
+        return cls.__data._temporary_directory.name
 
     @property
     def status(self):
@@ -137,7 +137,16 @@ class UtilsDataView(object):
 
         :rtype: Data_Status
         """
-        return self.__utils_data._status
+        return self.__data._status
+
+    @classmethod
+    def get_status(cls):
+        """
+        Returns the currentl status
+
+        :rtype: Data_Status
+        """
+        return cls.__data._status
 
     @property
     def run_dir_path(self):
@@ -154,10 +163,30 @@ class UtilsDataView(object):
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the simulation_time_step is currently unavailable
         """
-        if self.__utils_data._run_dir_path:
-            return self.__utils_data._run_dir_path
+        if self.__data._run_dir_path:
+            return self.__data._run_dir_path
 
-        if self.__utils_data._status == Data_Status.MOCKED:
+        if self.__data._status == Data_Status.MOCKED:
             return self._temporary_dir_path()
 
         raise self._exception("run_dir_path")
+
+    @classmethod
+    def get_run_dir_path(cls):
+        """
+        Returns the path to the directory that holds all the reports for run
+
+        This will be the path used by the last run call or to be used by
+        the next run if it has not yet been called.
+
+        This call may return None if not yet set.
+
+        ..note: In unittest mode this returns a tempdir
+        shared by all path methods
+
+        :rtpye: str
+        """
+        if cls.__data._status == Data_Status.MOCKED:
+            return cls._temporary_dir_path()
+        else:
+            return cls.__data._run_dir_path

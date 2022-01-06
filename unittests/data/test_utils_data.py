@@ -29,13 +29,12 @@ class TestUtilsData(unittest.TestCase):
         unittest_setup()
 
     def test_status(self):
-        writer = UtilsDataWriter()
         view = UtilsDataView()
         # NOT_SETUP only reachable on first call or via hack
-        writer.mock()
+        writer = UtilsDataWriter(Data_Status.MOCKED)
         self.assertEqual(Data_Status.MOCKED, view.status)
         self.assertEqual(Data_Status.MOCKED, UtilsDataWriter.get_status())
-        writer.setup()
+        writer = UtilsDataWriter(Data_Status.SETUP)
         self.assertEqual(Data_Status.SETUP, view.status)
         self.assertEqual(Data_Status.SETUP, UtilsDataWriter.get_status())
         writer.hard_reset()
@@ -54,21 +53,19 @@ class TestUtilsData(unittest.TestCase):
         self.assertEqual(Data_Status.SHUTDOWN, UtilsDataWriter.get_status())
 
     def test_directories_setup(self):
-        writer = UtilsDataWriter()
-        writer.mock()
-        # setup should clear mocked
+        writer = UtilsDataWriter(Data_Status.MOCKED)
+       # setup should clear mocked
         writer.setup()
         with self.assertRaises(DataNotYetAvialable):
             writer.run_dir_path
         self.assertIsNone(UtilsDataView.get_run_dir_path())
 
     def test_directories_mocked(self):
-        writer = UtilsDataWriter()
-        writer.mock()
+        writer = UtilsDataWriter(Data_Status.MOCKED)
         self.assertTrue(os.path.exists(writer.run_dir_path))
 
     def test_set_run_dir_path(self):
-        writer = UtilsDataWriter()
+        writer = UtilsDataWriter(Data_Status.SETUP)
         writer.setup()
         with self.assertRaises(InvalidDirectory):
             writer.set_run_dir_path("bacon")

@@ -28,7 +28,28 @@ class UtilsDataWriter(UtilsDataView):
     __data = _UtilsDataModel()
     __slots__ = []
 
-    def mock(self):
+    def __init__(self, state):
+        """
+        Creates a new writer clearing all previous data and sets the state
+
+        :param Data_Status state: State writer should be in
+        """
+        if state == Data_Status.MOCKED:
+            self._mock()
+        elif state == Data_Status.SETUP:
+            self._setup()
+        else:
+            raise
+
+    @classmethod
+    def mock(cls):
+        return cls(Data_Status.MOCKED)
+
+    @classmethod
+    def setup(cls):
+        return cls(Data_Status.SETUP)
+
+    def _mock(self):
         """
         Clears out all data and adds mock values where needed.
 
@@ -45,7 +66,7 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._clear()
         self.__data._status = Data_Status.MOCKED
 
-    def setup(self):
+    def _setup(self):
         """
         Puts all data back into the state expected at sim.setup time
 

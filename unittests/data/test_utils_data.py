@@ -52,7 +52,6 @@ class TestUtilsData(unittest.TestCase):
         writer.setup()
         with self.assertRaises(DataNotYetAvialable):
             UtilsDataView.get_run_dir_path()
-        self.assertIsNone(UtilsDataView.get_run_dir_path())
 
     def test_directories_mocked(self):
         writer = UtilsDataWriter(Data_Status.MOCKED)

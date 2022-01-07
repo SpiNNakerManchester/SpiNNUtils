@@ -84,10 +84,9 @@ class UtilsDataView(object):
     check or updates done in the writer(s).
     Objects returned could be changed to immutable versions without notice!
 
-    The get methods will return either the value if known or a None.
-    This is the faster way to access the data but lacks the safety.
+    All methods are class methods so can be accessed dirrectly
 
-    The property methods will either return a valid value or
+    The methods will either return a valid value or
     raise an Exception if the data is currently not available.
     These are typically semantic sugar around the get methods.
 

@@ -29,7 +29,6 @@ class TestUtilsData(unittest.TestCase):
         unittest_setup()
 
     def test_status(self):
-        view = UtilsDataView()
         # NOT_SETUP only reachable on first call or via hack
         writer = UtilsDataWriter(Data_Status.MOCKED)
         self.assertEqual(Data_Status.MOCKED, UtilsDataWriter.get_status())
@@ -48,13 +47,13 @@ class TestUtilsData(unittest.TestCase):
 
     def test_directories_setup(self):
         writer = UtilsDataWriter(Data_Status.MOCKED)
-       # setup should clear mocked
+        # setup should clear mocked
         writer.setup()
         with self.assertRaises(DataNotYetAvialable):
             UtilsDataView.get_run_dir_path()
 
     def test_directories_mocked(self):
-        writer = UtilsDataWriter(Data_Status.MOCKED)
+        UtilsDataWriter(Data_Status.MOCKED)
         self.assertTrue(os.path.exists(UtilsDataView.get_run_dir_path()))
 
     def test_set_run_dir_path(self):

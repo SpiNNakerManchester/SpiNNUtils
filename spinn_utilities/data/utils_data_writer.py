@@ -15,7 +15,8 @@
 
 import os.path
 
-from spinn_utilities.exceptions import InvalidDirectory
+from spinn_utilities.exceptions import (
+    IllegalWriterException, InvalidDirectory)
 from .data_status import Data_Status
 from .utils_data_view import UtilsDataView, _UtilsDataModel
 
@@ -39,7 +40,8 @@ class UtilsDataWriter(UtilsDataView):
         elif state == Data_Status.SETUP:
             self._setup()
         else:
-            raise
+            raise IllegalWriterException(
+                "Writers can only be created by mock or setup")
 
     @classmethod
     def mock(cls):

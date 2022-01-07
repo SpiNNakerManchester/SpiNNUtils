@@ -20,7 +20,7 @@ from spinn_utilities.data.utils_data_writer import UtilsDataWriter
 from spinn_utilities.data.data_status import Data_Status
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.exceptions import (
-    DataNotYetAvialable, InvalidDirectory)
+    DataNotYetAvialable, IllegalWriterException, InvalidDirectory)
 
 
 class TestUtilsData(unittest.TestCase):
@@ -64,3 +64,7 @@ class TestUtilsData(unittest.TestCase):
         writer.set_run_dir_path(os.path.curdir)
         self.assertEqual(os.path.curdir, UtilsDataView.get_run_dir_path())
         self.assertEqual(os.path.curdir, UtilsDataView.get_run_dir_path())
+
+    def test_writer_init_block(self):
+        with self.assertRaises(IllegalWriterException):
+            UtilsDataWriter(Data_Status.IN_RUN)

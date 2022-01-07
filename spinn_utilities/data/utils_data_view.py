@@ -131,15 +131,6 @@ class UtilsDataView(object):
             cls.__data._temporary_directory = tempfile.TemporaryDirectory()
         return cls.__data._temporary_directory.name
 
-    @property
-    def status(self):
-        """
-        Returns the currentl status
-
-        :rtype: Data_Status
-        """
-        return self.__data._status
-
     @classmethod
     def get_status(cls):
         """
@@ -149,8 +140,8 @@ class UtilsDataView(object):
         """
         return cls.__data._status
 
-    @property
-    def run_dir_path(self):
+    @classmethod
+    def get_run_dir_path(cls):
         """
         Returns the path to the directory that holds all the reports for run
 
@@ -164,30 +155,8 @@ class UtilsDataView(object):
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the simulation_time_step is currently unavailable
         """
-        if self.__data._run_dir_path:
-            return self.__data._run_dir_path
-
-        if self.__data._status == Data_Status.MOCKED:
-            return self._temporary_dir_path()
-
-        raise self._exception("run_dir_path")
-
-    @classmethod
-    def get_run_dir_path(cls):
-        """
-        Returns the path to the directory that holds all the reports for run
-
-        This will be the path used by the last run call or to be used by
-        the next run if it has not yet been called.
-
-        This call may return None if not yet set.
-
-        ..note: In unittest mode this returns a tempdir
-        shared by all path methods
-
-        :rtpye: str
-        """
+        if cls.__data._run_dir_path:
+            return cls.__data._run_dir_path
         if cls.__data._status == Data_Status.MOCKED:
             return cls._temporary_dir_path()
-        else:
-            return cls.__data._run_dir_path
+        raise cls._exception("run_dir_path")

@@ -21,7 +21,7 @@ import pytest
 
 def test_create_and_config(tmpdir):
     # clear the finder to create a new one
-    UtilsDataWriter.mock()
+    UtilsDataWriter.mock()._set_executive_finder(None)
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
     ef = UtilsDataView.get_executable_finder()
@@ -35,7 +35,7 @@ def test_create_and_config(tmpdir):
 
 def test_find_in_no_places():
     # clear the finder to create a new one
-    UtilsDataWriter.mock()
+    UtilsDataWriter.mock()._set_executive_finder(None)
     ef = UtilsDataView.get_executable_finder()
     with pytest.raises(KeyError):
         ef.get_executable_path("abc.aplx")
@@ -43,7 +43,7 @@ def test_find_in_no_places():
 
 def test_find_in_one_place(tmpdir):
     # clear the finder to create a new one
-    UtilsDataWriter.mock()
+    UtilsDataWriter.mock()._set_executive_finder(None)
     ef = UtilsDataView.get_executable_finder()
     ef.add_path(str(tmpdir))
     w = tmpdir.join("abc.aplx")
@@ -53,7 +53,7 @@ def test_find_in_one_place(tmpdir):
 
 def test_find_in_two_places(tmpdir):
     # clear the finder to create a new one
-    UtilsDataWriter.mock()
+    UtilsDataWriter.mock()._set_executive_finder(None)
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
     ef = UtilsDataView.get_executable_finder()
@@ -77,7 +77,7 @@ def test_find_in_two_places(tmpdir):
 
 def test_logs(tmpdir):
     # clear the finder to create a new one
-    UtilsDataWriter.mock()
+    UtilsDataWriter.mock()._set_executive_finder(None)
     if "BINARY_LOGS_DIR" not in os.environ:
         os.environ["BINARY_LOGS_DIR"] = tmpdir.strpath
     a = tmpdir.mkdir("a")
@@ -97,7 +97,7 @@ def test_logs(tmpdir):
     ef.get_executable_path("abc.aplx")
     ef.get_executable_path("jkl.aplx")
     # clear the finder to create a new one
-    UtilsDataWriter.mock()
+    UtilsDataWriter.mock()._set_executive_finder(None)
     ef2 = UtilsDataView.get_executable_finder()
     assert ef != ef2
     ef2.check_logs()
@@ -105,7 +105,7 @@ def test_logs(tmpdir):
 
 
 def test_find_no_duplicates(tmpdir):
-    UtilsDataWriter.mock()
+    UtilsDataWriter.mock()._set_executive_finder(None)
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
     ef = UtilsDataView.get_executable_finder()

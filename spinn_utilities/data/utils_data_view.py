@@ -52,13 +52,13 @@ class _UtilsDataModel(object):
         cls.__singleton = obj
         obj._clear()
         obj._status = Data_Status.NOT_SETUP
+        obj._executable_finder = None
         return obj
 
     def _clear(self):
         """
         Clears out all data
         """
-        self._executable_finder = None
         self._temporary_directory = None
         self._hard_reset()
 

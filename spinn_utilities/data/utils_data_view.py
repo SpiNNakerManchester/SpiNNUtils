@@ -15,6 +15,7 @@
 
 import tempfile
 from .data_status import Data_Status
+from spinn_utilities.executable_finder import ExecutableFinder
 
 
 class _UtilsDataModel(object):
@@ -36,6 +37,7 @@ class _UtilsDataModel(object):
 
     __slots__ = [
         # Data values cached
+        "_executable_finder",
         "_run_dir_path",
         "_temporary_directory",
         # Data status mainly to raise best Exception
@@ -56,6 +58,7 @@ class _UtilsDataModel(object):
         """
         Clears out all data
         """
+        self._executable_finder = None
         self._temporary_directory = None
         self._hard_reset()
 
@@ -159,3 +162,15 @@ class UtilsDataView(object):
         if cls.__data._status == Data_Status.MOCKED:
             return cls._temporary_dir_path()
         raise cls._exception("run_dir_path")
+
+    @classmethod
+    def get_executable_finder(cls):
+        """
+        The ExcutableFinder object creating a new one if needed
+
+        :rtype: ExcutableFinder
+        """
+        if cls.__data._executable_finder is None:
+            # Delayed create to avoid creating one very unittest
+            cls.__data._executable_finder = ExecutableFinder()
+        return cls.__data._executable_finder

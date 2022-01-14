@@ -14,14 +14,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from spinn_utilities.executable_finder import ExecutableFinder
+from spinn_utilities.data import UtilsDataView
+from spinn_utilities.data.utils_data_writer import UtilsDataWriter
 import pytest
 
 
 def test_create_and_config(tmpdir):
+    # clear the finder to create a new one
+    UtilsDataWriter.mock()
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
-    ef = ExecutableFinder([str(a), str(b)])
+    ef = UtilsDataView.get_executable_finder()
+    ef.add_path(str(a))
+    ef.add_path(str(b))
     assert ef.binary_paths == "{} : {}".format(a, b)
     c = tmpdir.mkdir("c")
     ef.add_path(str(c))
@@ -29,22 +34,31 @@ def test_create_and_config(tmpdir):
 
 
 def test_find_in_no_places():
-    ef = ExecutableFinder([])
+    # clear the finder to create a new one
+    UtilsDataWriter.mock()
+    ef = UtilsDataView.get_executable_finder()
     with pytest.raises(KeyError):
         ef.get_executable_path("abc.aplx")
 
 
 def test_find_in_one_place(tmpdir):
-    ef = ExecutableFinder([str(tmpdir)])
+    # clear the finder to create a new one
+    UtilsDataWriter.mock()
+    ef = UtilsDataView.get_executable_finder()
+    ef.add_path(str(tmpdir))
     w = tmpdir.join("abc.aplx")
     w.write("any old content")
     assert ef.get_executable_path("abc.aplx") == str(w)
 
 
 def test_find_in_two_places(tmpdir):
+    # clear the finder to create a new one
+    UtilsDataWriter.mock()
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
-    ef = ExecutableFinder([str(a), str(b)])
+    ef = UtilsDataView.get_executable_finder()
+    ef.add_path(str(a))
+    ef.add_path(str(b))
     w1 = tmpdir.join("a/abc.aplx")
     w1.write("any old content")
     w2 = tmpdir.join("b/abc.aplx")
@@ -62,11 +76,15 @@ def test_find_in_two_places(tmpdir):
 
 
 def test_logs(tmpdir):
+    # clear the finder to create a new one
+    UtilsDataWriter.mock()
     if "BINARY_LOGS_DIR" not in os.environ:
         os.environ["BINARY_LOGS_DIR"] = tmpdir.strpath
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
-    ef = ExecutableFinder([str(a), str(b)])
+    ef = UtilsDataView.get_executable_finder()
+    ef.add_path(str(a))
+    ef.add_path(str(b))
     ef.add_path("bad_directory_name")
     w = tmpdir.join("a/abc.aplx")
     w.write("any old content")
@@ -78,15 +96,21 @@ def test_logs(tmpdir):
     w.write("any old content")
     ef.get_executable_path("abc.aplx")
     ef.get_executable_path("jkl.aplx")
-    ef2 = ExecutableFinder([])
+    # clear the finder to create a new one
+    UtilsDataWriter.mock()
+    ef2 = UtilsDataView.get_executable_finder()
+    assert ef != ef2
     ef2.check_logs()
     ef2.clear_logs()
 
 
 def test_find_no_duplicates(tmpdir):
+    UtilsDataWriter.mock()
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
-    ef = ExecutableFinder([str(a), str(b)])
+    ef = UtilsDataView.get_executable_finder()
+    ef.add_path(str(a))
+    ef.add_path(str(b))
     assert ef.binary_paths == "{} : {}".format(a, b)
     ef.add_path(str(a))
     ef.add_path(str(a))

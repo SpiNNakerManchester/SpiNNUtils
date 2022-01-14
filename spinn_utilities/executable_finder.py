@@ -26,11 +26,7 @@ class ExecutableFinder(object):
         "_binary_log",
         "_paths_log"]
 
-    def __init__(self, binary_search_paths):
-        """
-        :param iterable(str) binary_search_paths:
-            The initial set of folders to search for binaries.
-        """
+    def __init__(self):
         binary_logs_path = os.environ.get("BINARY_LOGS_DIR", None)
         if binary_logs_path:
             self._paths_log = os.path.join(
@@ -42,8 +38,6 @@ class ExecutableFinder(object):
             self._binary_log = None
 
         self._binary_search_paths = OrderedSet()
-        for path in binary_search_paths:
-            self.add_path(path)
 
     def add_path(self, path):
         """ Adds a path to the set of folders to be searched.  The path is\

@@ -30,7 +30,7 @@ class TestUtilsData(unittest.TestCase):
 
     def test_status(self):
         # NOT_SETUP only reachable on first call or via hack
-        writer = UtilsDataWriter(Data_Status.MOCKED)
+        UtilsDataWriter(Data_Status.MOCKED)
         self.assertEqual(Data_Status.MOCKED, UtilsDataWriter.get_status())
         writer = UtilsDataWriter(Data_Status.SETUP)
         self.assertEqual(Data_Status.SETUP, UtilsDataWriter.get_status())
@@ -68,3 +68,9 @@ class TestUtilsData(unittest.TestCase):
     def test_writer_init_block(self):
         with self.assertRaises(IllegalWriterException):
             UtilsDataWriter(Data_Status.IN_RUN)
+
+    def test_excutable_finder(self):
+        writer = UtilsDataWriter.setup()
+        ef = UtilsDataView.get_executable_finder()
+        writer.hard_reset()
+        self.assertEqual(ef, UtilsDataView.get_executable_finder())

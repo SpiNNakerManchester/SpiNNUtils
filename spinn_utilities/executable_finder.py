@@ -164,7 +164,7 @@ class ExecutableFinder(object):
 
 
 if __name__ == "__main__":
-    ef = ExecutableFinder([])
+    ef = ExecutableFinder()
     try:
         ef.check_logs()
         ef.clear_logs()

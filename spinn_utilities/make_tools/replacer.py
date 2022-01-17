@@ -39,7 +39,7 @@ class Replacer(object):
         rest, _ = os.path.splitext(dict_pointer)
         dict_path = rest + ".dict"
         if os.path.isfile(dict_path):
-            with open(dict_path) as dict_info:
+            with open(dict_path, encoding="utf-8") as dict_info:
                 for line in dict_info:
                     parts = line.strip().split(",", 2)
                     if len(parts) != 3:

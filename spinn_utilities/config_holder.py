@@ -277,7 +277,7 @@ def _check_python_file(py_path):
 
 
 def _check_python_files(directory):
-    for root, dirs, files in os.walk(directory):
+    for root, _, files in os.walk(directory):
         for file_name in files:
             if file_name.endswith(".py"):
                 py_path = os.path.join(root, file_name)
@@ -346,7 +346,7 @@ def _check_cfgs(path):
     for default in __default_config_files:
         config1.read(default)
     directory = os.path.dirname(path)
-    for root, dirs, files in os.walk(directory):
+    for root, _, files in os.walk(directory):
         for file_name in files:
             if file_name.endswith(".cfg"):
                 cfg_path = os.path.join(root, file_name)
@@ -380,7 +380,7 @@ def run_config_checks(directories, *, exceptions=None, repeaters=None):
     for directory in directories:
         if not os.path.isdir(directory):
             raise Exception(f"Unable find {directory}")
-        for root, dirs, files in os.walk(directory):
+        for root, _, files in os.walk(directory):
             for file_name in files:
                 if file_name in exceptions:
                     pass

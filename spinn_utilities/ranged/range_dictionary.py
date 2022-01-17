@@ -80,7 +80,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         # Key is an int - return single view
         if isinstance(key, int):
             self._check_id_in_range(key)
-            return _SingleView(range_dict=self, id=key)
+            return _SingleView(range_dict=self, the_id=key)
 
         # Key is a slice - return a sliced view
         if isinstance(key, slice):
@@ -93,7 +93,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
             # Slice is really just one item - return a single view
             if slice_start == slice_stop - 1:
-                return _SingleView(range_dict=self, id=slice_start)
+                return _SingleView(range_dict=self, the_id=slice_start)
 
             # Slice is continuous - return a slice view
             elif key.step is None or key.step == 1:
@@ -110,7 +110,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
         # Key is really just a single int - return single view
         if len(key) == 1:
-            return _SingleView(range_dict=self, id=key[0])
+            return _SingleView(range_dict=self, the_id=key[0])
 
         # Key is really just a slice (i.e. one of each key in order without
         # holes) - return a slice view
@@ -150,20 +150,20 @@ class RangeDictionary(AbstractSized, AbstractDict):
             results[a_key] = self._value_lists[a_key].get_single_value_all()
         return results
 
-    def get_values_by_id(self, key, id):  # @ReservedAssignment
+    def get_values_by_id(self, key, the_id):
         """ Same as :py:meth:`get_value` but limited to a single ID.
 
         :param key: as :py:meth:`get_value`
-        :param id: single int ID
+        :param the_id: single int ID
         :return: See :py:meth:`get_value`
         """
         if isinstance(key, str):
-            return self._value_lists[key].get_value_by_id(id)
+            return self._value_lists[key].get_value_by_id(the_id)
         if key is None:
             key = self.keys()
         results = dict()
         for a_key in key:
-            results[a_key] = self._value_lists[a_key].get_value_by_id(id)
+            results[a_key] = self._value_lists[a_key].get_value_by_id(the_id)
         return results
 
     def get_list(self, key):
@@ -182,8 +182,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """ Same as :py:meth:`iter_all_values` \
             but limited to a collection of IDs and update-safe.
         """
-        for id_value in ids:  # @ReservedAssignment
-            yield self.get_values_by_id(key=key, id=id_value)
+        for id_value in ids:
+            yield self.get_values_by_id(key=key, the_id=id_value)
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
     def iter_all_values(self, key=None, update_save=False):
@@ -316,20 +316,21 @@ class RangeDictionary(AbstractSized, AbstractDict):
             ranges[a_key] = self._value_lists[a_key].iter_ranges()
         return self._merge_ranges(ranges)
 
-    def iter_ranges_by_id(self, key=None, id=None):  # @ReservedAssignment
+    def iter_ranges_by_id(self, key=None, the_id=None):
         """ Same as :py:meth:`iter_ranges` but limited to one ID.
 
         :param key: see :py:meth:`iter_ranges` parameter key
-        :param id: single ID which is the actual ID and not an index into IDs
-        :type id: int
+        :param the_id: single ID which is the actual ID and not an index into IDs
+        :type the_id: int
         """
         if isinstance(key, str):
-            return self._value_lists[key].iter_ranges_by_id(id=id)
+            return self._value_lists[key].iter_ranges_by_id(the_id=the_id)
         if key is None:
             key = self.keys()
         ranges = dict()
         for a_key in key:
-            ranges[a_key] = self._value_lists[a_key].iter_ranges_by_id(id=id)
+            ranges[a_key] = self._value_lists[a_key].iter_ranges_by_id(
+                the_id=the_id)
         return self._merge_ranges(ranges)
 
     def iter_ranges_by_slice(self, key, slice_start, slice_stop):

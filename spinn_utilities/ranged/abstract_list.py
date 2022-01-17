@@ -137,11 +137,11 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         return only_range[2]
 
     @abstractmethod
-    def get_value_by_id(self, id):  # @ReservedAssignment
+    def get_value_by_id(self, the_id):
         """ Returns the value for one item in the list
 
-        :param id: One of the IDs of an element in the list
-        :type id: int
+        :param the_id: One of the IDs of an element in the list
+        :type the_id: int
         :return: The value of that element
         """
 
@@ -207,16 +207,16 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         else:
             raise TypeError("Invalid argument type.")
 
-    def iter_by_id(self, id):  # @ReservedAssignment
+    def iter_by_id(self, the_id):
         """ Fast but *not* update-safe iterator by one ID.
 
         While ``next`` can only be called once, this is an iterator so it can
         be mixed in with other iterators.
 
-        :param id: ID
+        :param the_id: ID
         :return: yields the elements
         """
-        yield self.get_value_by_id(id)
+        yield self.get_value_by_id(the_id)
 
     def iter_by_ids(self, ids):
         """ Fast but *not* update-safe iterator by collection of IDs.
@@ -367,7 +367,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :return: yields each range one by one
         """
 
-    def iter_ranges_by_id(self, id):  # @ReservedAssignment
+    def iter_ranges_by_id(self, the_id):
         """ Iterator of the range for this ID
 
         .. note::
@@ -379,10 +379,10 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :return: yields the one range
         """
 
-        self._check_id_in_range(id)
+        self._check_id_in_range(the_id)
         for (_, stop, value) in self.iter_ranges():
-            if id < stop:
-                yield (id, id + 1, value)
+            if the_id < stop:
+                yield (the_id, the_id + 1, value)
                 break
 
     @abstractmethod
@@ -580,8 +580,8 @@ class SingleList(AbstractList, metaclass=AbstractBase):
         return self._a_list.range_based()
 
     @overrides(AbstractList.get_value_by_id)
-    def get_value_by_id(self, id):  # @ReservedAssignment
-        return self._operation(self._a_list.get_value_by_id(id))
+    def get_value_by_id(self, the_id):
+        return self._operation(self._a_list.get_value_by_id(the_id))
 
     @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):
@@ -637,9 +637,9 @@ class DualList(AbstractList, metaclass=AbstractBase):
         return self._left.range_based() and self._right.range_based()
 
     @overrides(AbstractList.get_value_by_id)
-    def get_value_by_id(self, id):  # @ReservedAssignment
+    def get_value_by_id(self, the_id):
         return self._operation(
-            self._left.get_value_by_id(id), self._right.get_value_by_id(id))
+            self._left.get_value_by_id(the_id), self._right.get_value_by_id(the_id))
 
     @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):

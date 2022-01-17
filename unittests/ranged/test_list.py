@@ -206,7 +206,7 @@ def test_iter():
 
 def test_ranges_by_id():
     rl = RangedList(size=10, value="a", key="alpha")
-    assert [(3, 4, "a")] == list(rl.iter_ranges_by_id(3))
+    assert [(3, 4, "a")] == list(rl.iter_ranges_by_index(3))
 
 
 def test_ranges_by_slice():
@@ -221,13 +221,13 @@ def test_ranges_by_slice():
 def test_ranges_by_ids():
     rl = RangedList(size=10, value="a", key="alpha")
     assert [(1, 4, "a"), (7, 8, "a"), (4, 5, "a")] == \
-        list(rl.iter_ranges_by_ids((1, 2, 3, 7, 4)))
+        list(rl.iter_ranges_by_indexes((1, 2, 3, 7, 4)))
     rl[6] = "foo"
     assert [(1, 4, "a"), (7, 8, "a"), (4, 5, "foo")] == \
-        list(rl.iter_ranges_by_ids((1, 2, 3, 7, 4)))
+        list(rl.iter_ranges_by_indexes((1, 2, 3, 7, 4)))
     rl[3] = "foo"
     assert [(1, 3, "a"), (3, 4, "foo"), (7, 8, "a"), (4, 5, "a")] == \
-        list(rl.iter_ranges_by_ids((1, 2, 3, 7, 4)))
+        list(rl.iter_ranges_by_indexes((1, 2, 3, 7, 4)))
 
 
 def test_iter_by_slice():
@@ -248,7 +248,7 @@ def test_iter_by_ids():
     rl[5:10] = "b"
     assert rl[5:10] == ["b", "b", "b", "b", "b"]
     assert rl[0:5] == ["a", "a", "a", "a", "a"]
-    assert list(rl.iter_by_ids([9, 1, 2, 5])) == ["b", "a", "a", "b"]
+    assert list(rl.iter_by_indexes([9, 1, 2, 5])) == ["b", "a", "a", "b"]
 
 
 def test_set_value_by_slice():
@@ -320,7 +320,7 @@ def test_high_id():
     with pytest.raises(IndexError):
         rl[7]
     with pytest.raises(IndexError):
-        rl.get_value_by_id(7)
+        rl.get_value_by_index(7)
 
 
 def test_bad_ids():
@@ -328,11 +328,11 @@ def test_bad_ids():
     with pytest.raises(IndexError):
         rl[4]
     with pytest.raises(IndexError):
-        rl.get_value_by_id(-1)
+        rl.get_value_by_index(-1)
     with pytest.raises(TypeError):
-        rl.get_value_by_id("a")
+        rl.get_value_by_index("a")
     with pytest.raises(TypeError):
-        rl.get_value_by_id(None)
+        rl.get_value_by_index(None)
     with pytest.raises(TypeError):
         rl["a"]
 
@@ -381,7 +381,7 @@ def test_two_many_values_slice():
     with pytest.raises(MultipleValuesException):
         rl.get_single_value_by_slice(1, 3)
     with pytest.raises(MultipleValuesException):
-        rl.get_single_value_by_ids([1, 2])
+        rl.get_single_value_by_indexes([1, 2])
 
 
 def test_iter_by_slice_ranged():

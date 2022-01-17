@@ -51,7 +51,7 @@ def test_get_value():
     divisor = RangedList(5, 4, "divisor")
     div = numerator / divisor
     assert div.get_single_value_by_slice(1, 3) == 3
-    assert div.get_single_value_by_ids([1, 3]) == 3
+    assert div.get_single_value_by_indexes([1, 3]) == 3
     divisor[1:3] = 6
     numerator[2, 4] = 24
     assert div[2] == 4

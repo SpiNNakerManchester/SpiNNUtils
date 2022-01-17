@@ -132,7 +132,7 @@ def test_iter():
 
 def test_ranges_by_id():
     rl = RangedList(10, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    assert [(3, 4, 3)] == list(rl.iter_ranges_by_id(3))
+    assert [(3, 4, 3)] == list(rl.iter_ranges_by_index(3))
 
 
 def test_ranges_by_slice():
@@ -147,13 +147,13 @@ def test_ranges_by_slice():
 def test_ranges_by_ids():
     rl = RangedList(10, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     assert [(1, 2, 1), (2, 3, 2), (3, 4, 3), (7, 8, 7), (4, 5, 4)] == \
-        list(rl.iter_ranges_by_ids((1, 2, 3, 7, 4)))
+        list(rl.iter_ranges_by_indexes((1, 2, 3, 7, 4)))
     rl[6] = "foo"
     assert [(1, 2, 1), (2, 3, 2), (3, 4, 3), (7, 8, 7), (4, 5, 4)] == \
-        list(rl.iter_ranges_by_ids((1, 2, 3, 7, 4)))
+        list(rl.iter_ranges_by_indexes((1, 2, 3, 7, 4)))
     rl[3] = "foo"
     assert [(1, 2, 1), (2, 3, 2), (3, 4, "foo"), (7, 8, 7), (4, 5, 4)] == \
-        list(rl.iter_ranges_by_ids((1, 2, 3, 7, 4)))
+        list(rl.iter_ranges_by_indexes((1, 2, 3, 7, 4)))
 
 
 def test_iter_by_slice():

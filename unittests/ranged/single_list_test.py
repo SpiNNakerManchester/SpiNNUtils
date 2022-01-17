@@ -52,7 +52,7 @@ def test_get_value():
     single = SingleList(a_list=a_list, operation=create_lambda())
     assert single[2] == 0.95122942450071402
     assert single.get_single_value_by_slice(2, 4) == 0.95122942450071402
-    assert single.get_single_value_by_ids([2, 4]) == 0.95122942450071402
+    assert single.get_single_value_by_indexes([2, 4]) == 0.95122942450071402
 
 
 def test_apply_operation():

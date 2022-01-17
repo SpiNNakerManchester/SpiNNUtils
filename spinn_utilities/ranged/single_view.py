@@ -37,12 +37,14 @@ class _SingleView(AbstractView):
 
     @overrides(AbstractDict.get_value)
     def get_value(self, key):
-        return self._range_dict.get_list(key).get_value_by_id(id=self._id)
+        return self._range_dict.get_list(key).get_value_by_index(
+            index=self._id)
 
     @overrides(AbstractDict.iter_all_values)
     def iter_all_values(self, key, update_save=False):
         if isinstance(key, str):
-            yield self._range_dict.get_list(key).get_value_by_id(id=self._id)
+            yield self._range_dict.get_list(key).get_value_by_index(
+                index=self._id)
         else:
             yield self._range_dict.get_values_by_id(key=key, id=self._id)
 

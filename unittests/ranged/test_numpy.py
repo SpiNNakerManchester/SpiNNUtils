@@ -38,7 +38,7 @@ def test_list_of_numpy_list(ranged_list, range_based):
     ranged_list[7:9] = 10
     assert ranged_list[7:9] == [10, 10]
 
-    values_by_id = list(ranged_list.iter_by_ids([5, 7, 1]))
+    values_by_id = list(ranged_list.iter_by_indexes([5, 7, 1]))
     assert len(values_by_id) == 3
     assert values_by_id[0] == 5
     assert values_by_id[1] == 10
@@ -58,7 +58,7 @@ def test_list_of_numpy_list(ranged_list, range_based):
 
     with pytest.raises(Exception):
         ranged_list[3] = range(5)
-    ranged_list.set_value_by_id(3, range(5))
+    ranged_list.set_value_by_index(3, range(5))
     assert numpy.array_equal(ranged_list[3], numpy.arange(5))
 
     ranged_list.set_value_by_slice(
@@ -68,4 +68,4 @@ def test_list_of_numpy_list(ranged_list, range_based):
     assert numpy.array_equal(
         ranged_list.get_single_value_by_slice(0, 5), numpy.arange(10))
     assert numpy.array_equal(
-        ranged_list.get_single_value_by_ids([0, 9]), numpy.arange(10))
+        ranged_list.get_single_value_by_indexes([0, 9]), numpy.arange(10))

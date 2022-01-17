@@ -137,11 +137,11 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         return only_range[2]
 
     @abstractmethod
-    def get_value_by_id(self, id):  # @ReservedAssignment
+    def get_value_by_index(self, index):  # @ReservedAssignment
         """ Returns the value for one item in the list
 
-        :param id: One of the IDs of an element in the list
-        :type id: int
+        :param index: One of the indexes of an element in the list
+        :type index: int
         :return: The value of that element
         """
 
@@ -162,8 +162,8 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         return list(self.iter_by_slice(start, stop))
 
     @abstractmethod
-    def get_single_value_by_ids(self, ids):
-        """ If possible, returns a single value shared by all the IDs.
+    def get_single_value_by_indexes(self, indexes):
+        """ If possible, returns a single value shared by all the indexes.
 
         For multiple values, use ``for x in list``, ``iter(list)``,
         ``list.iter``, or one of the ``iter_ranges`` methods.
@@ -171,8 +171,9 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :return: Value shared by all elements with these IDs
         :raises ~spinn_utilities.ranged.MultipleValuesException:
             If even one elements has a different value.
-            Not thrown if elements outside of the IDs have a different value,
-            even if these elements are between the ones pointed to by IDs
+            Not thrown if elements outside of the indexes have a different
+             value, even if these elements are between the ones pointed
+             to by indexes
         """
 
     def __getitem__(self, selector):
@@ -203,7 +204,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             # Handle negative indices
             if selector < 0:
                 selector += len(self)
-            return self.get_value_by_id(selector)
+            return self.get_value_by_index(selector)
         else:
             raise TypeError("Invalid argument type.")
 
@@ -216,7 +217,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :param id: ID
         :return: yields the elements
         """
-        yield self.get_value_by_id(id)
+        yield self.get_value_by_index(id)
 
     def iter_by_ids(self, ids):
         """ Fast but *not* update-safe iterator by collection of IDs.
@@ -251,7 +252,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :return: yields each element one by one
         """
         for id_value in range(self._size):
-            yield self.get_value_by_id(id_value)
+            yield self.get_value_by_index(id_value)
 
     def __iter__(self):
         """ Fast but *not* update-safe iterator of all elements.
@@ -268,7 +269,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
                         yield value
             else:
                 for id_value in range(self._size):
-                    yield self.get_value_by_id(id_value)
+                    yield self.get_value_by_index(id_value)
         except StopIteration:
             return
 
@@ -289,7 +290,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
                     yield value
         else:
             for id_value in range(slice_start, slice_stop):
-                yield self.get_value_by_id(id_value)
+                yield self.get_value_by_index(id_value)
 
     def iter_by_selector(self, selector=None):
         """ Fast but *not* update-safe iterator of all elements in the slice.
@@ -579,18 +580,18 @@ class SingleList(AbstractList, metaclass=AbstractBase):
     def range_based(self):
         return self._a_list.range_based()
 
-    @overrides(AbstractList.get_value_by_id)
-    def get_value_by_id(self, id):  # @ReservedAssignment
-        return self._operation(self._a_list.get_value_by_id(id))
+    @overrides(AbstractList.get_value_by_index)
+    def get_value_by_index(self, index):  # @ReservedAssignment
+        return self._operation(self._a_list.get_value_by_index(index))
 
     @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):
         return self._operation(self._a_list.get_single_value_by_slice(
             slice_start, slice_stop))
 
-    @overrides(AbstractList.get_single_value_by_ids)
-    def get_single_value_by_ids(self, ids):
-        return self._operation(self._a_list.get_single_value_by_ids(ids))
+    @overrides(AbstractList.get_single_value_by_indexes)
+    def get_single_value_by_indexes(self, indexes):
+        return self._operation(self._a_list.get_single_value_by_indexes(indexes))
 
     @overrides(AbstractList.iter_ranges)
     def iter_ranges(self):
@@ -636,10 +637,10 @@ class DualList(AbstractList, metaclass=AbstractBase):
     def range_based(self):
         return self._left.range_based() and self._right.range_based()
 
-    @overrides(AbstractList.get_value_by_id)
-    def get_value_by_id(self, id):  # @ReservedAssignment
+    @overrides(AbstractList.get_value_by_index)
+    def get_value_by_index(self, index):  # @ReservedAssignment
         return self._operation(
-            self._left.get_value_by_id(id), self._right.get_value_by_id(id))
+            self._left.get_value_by_index(index), self._right.get_value_by_index(index))
 
     @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):
@@ -647,11 +648,11 @@ class DualList(AbstractList, metaclass=AbstractBase):
             self._left.get_single_value_by_slice(slice_start, slice_stop),
             self._right.get_single_value_by_slice(slice_start, slice_stop))
 
-    @overrides(AbstractList.get_single_value_by_ids)
-    def get_single_value_by_ids(self, ids):
+    @overrides(AbstractList.get_single_value_by_indexes)
+    def get_single_value_by_indexes(self, indexes):
         return self._operation(
-            self._left.get_single_value_by_ids(ids),
-            self._right.get_single_value_by_ids(ids))
+            self._left.get_single_value_by_indexes(indexes),
+            self._right.get_single_value_by_indexes(indexes))
 
     @overrides(AbstractList.iter_by_slice)
     def iter_by_slice(self, slice_start, slice_stop):

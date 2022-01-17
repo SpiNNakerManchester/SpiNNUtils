@@ -79,21 +79,21 @@ class RangedList(AbstractList):
     def range_based(self):
         return self._ranged_based
 
-    @overrides(AbstractList.get_value_by_id)
-    def get_value_by_id(self, id):  # @ReservedAssignment
-        self._check_index_in_range(id)
+    @overrides(AbstractList.get_value_by_index)
+    def get_value_by_index(self, index):  # @ReservedAssignment
+        self._check_index_in_range(index)
 
         # If range based, find the range containing the value and return
         if self._ranged_based:
             for (_, stop, value) in self._ranges:
-                if id < stop:
+                if index < stop:
                     return value  # pragma: no cover
 
             # Must never get here because the ID is in range
             raise ValueError  # pragma: no cover
 
         # Non-range-based so just return the value
-        return self._ranges[id]
+        return self._ranges[index]
 
     @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):
@@ -140,13 +140,13 @@ class RangedList(AbstractList):
                 raise MultipleValuesException(self._key, result, _value)
         return result
 
-    @overrides(AbstractList.get_single_value_by_ids)
-    def get_single_value_by_ids(self, ids):
+    @overrides(AbstractList.get_single_value_by_indexes)
+    def get_single_value_by_indexes(self, indexes):
         # Take the first ID, and then simply check all the others are the same
         # This works for both range-based and non-range-based
-        result = self.get_value_by_id(ids[0])
-        for id_value in ids[1:]:
-            value = self.get_value_by_id(id_value)
+        result = self.get_value_by_index(indexes[0])
+        for id_value in indexes[1:]:
+            value = self.get_value_by_index(id_value)
             if not numpy.array_equal(result, value):
                 raise MultipleValuesException(self._key, result, value)
         return result

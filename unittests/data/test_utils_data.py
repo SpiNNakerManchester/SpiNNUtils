@@ -74,3 +74,5 @@ class TestUtilsData(unittest.TestCase):
         ef = UtilsDataView.get_executable_finder()
         writer.hard_reset()
         self.assertEqual(ef, UtilsDataView.get_executable_finder())
+        UtilsDataWriter.setup()
+        self.assertEqual(ef, UtilsDataView.get_executable_finder())

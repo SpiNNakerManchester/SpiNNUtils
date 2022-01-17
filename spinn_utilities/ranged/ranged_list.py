@@ -81,7 +81,7 @@ class RangedList(AbstractList):
 
     @overrides(AbstractList.get_value_by_id)
     def get_value_by_id(self, id):  # @ReservedAssignment
-        self._check_id_in_range(id)
+        self._check_index_in_range(id)
 
         # If range based, find the range containing the value and return
         if self._ranged_based:
@@ -317,7 +317,7 @@ class RangedList(AbstractList):
         :param int id: Single ID
         :param object value: The value to save
         """
-        self._check_id_in_range(id)
+        self._check_index_in_range(id)
 
         # If non-range-based, set the value directly
         if not self._ranged_based:
@@ -484,7 +484,7 @@ class RangedList(AbstractList):
                 self.set_value_by_slice(start, stop, value, use_list_as_value)
                 return
 
-        ids = self.selector_to_ids(selector)
+        ids = self.selector_to_indexes(selector)
         self.set_value_by_ids(
             ids=ids, value=value, use_list_as_value=use_list_as_value)
 

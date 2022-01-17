@@ -317,7 +317,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
                 (slice_start, slice_stop, step) = selector.indices(self._size)
                 return self.iter_by_ids(range(slice_start, slice_stop, step))
 
-        ids = self.selector_to_ids(selector)
+        ids = self.selector_to_indexes(selector)
         return self.iter_by_ids(ids)
 
     def get_values(self, selector=None):
@@ -379,7 +379,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :return: yields the one range
         """
 
-        self._check_id_in_range(id)
+        self._check_index_in_range(id)
         for (_, stop, value) in self.iter_ranges():
             if id < stop:
                 yield (id, id + 1, value)

@@ -22,7 +22,7 @@ logger = logging.getLogger(__file__)
 
 
 class AbstractSized(object):
-    """ Base class for slice and ID checking against size.
+    """ Base class for slice and index(es) checking against size.
     """
 
     __slots__ = [
@@ -42,22 +42,22 @@ class AbstractSized(object):
         return self._size
 
     @staticmethod
-    def _is_id_type(id):  # @ReservedAssignment
-        """ Check if the given ID has a type acceptable for IDs. """
-        return isinstance(id, int)
+    def _is_index_type(index):  # @ReservedAssignment
+        """ Check if the given index has a type acceptable for indexes. """
+        return isinstance(index, int)
 
-    def _check_id_in_range(self, id):  # @ReservedAssignment
-        if id < 0:
-            if self._is_id_type(id):
+    def _check_index_in_range(self, index):  # @ReservedAssignment
+        if index < 0:
+            if self._is_index_type(index):
                 raise IndexError(
-                    "The index {} is out of range.".format(id))
+                    "The index {} is out of range.".format(index))
             # pragma: no cover
-            raise TypeError("Invalid argument type {}.".format(type(id)))
-        if id >= self._size:
-            if self._is_id_type(id):
+            raise TypeError("Invalid argument type {}.".format(type(index)))
+        if index >= self._size:
+            if self._is_index_type(index):
                 raise IndexError(
-                    "The index {0} is out of range.".format(id))
-            raise TypeError("Invalid argument type {}.".format(type(id)))
+                    "The index {0} is out of range.".format(index))
+            raise TypeError("Invalid argument type {}.".format(type(index)))
 
     def _check_slice_in_range(self, slice_start, slice_stop):
         if slice_start is None:
@@ -65,7 +65,7 @@ class AbstractSized(object):
         elif slice_start < 0:
             slice_start = self._size + slice_start
             if slice_start < 0:
-                if not self._is_id_type(slice_start):
+                if not self._is_index_type(slice_start):
                     raise TypeError("Invalid argument type {}.".format(
                         type(slice_start)))
                 logger.warning(
@@ -86,10 +86,10 @@ class AbstractSized(object):
             slice_stop = self._size + slice_stop
 
         if slice_start > slice_stop:
-            if not self._is_id_type(slice_start):
+            if not self._is_index_type(slice_start):
                 raise TypeError("Invalid argument type {}.".format(
                     type(slice_start)))
-            if not self._is_id_type(slice_stop):
+            if not self._is_index_type(slice_stop):
                 raise TypeError("Invalid argument type {}.".format(
                     type(slice_start)))
             logger.warning(
@@ -98,7 +98,7 @@ class AbstractSized(object):
                 slice_start, slice_stop, self._size)
             return (self._size, self._size)
         if slice_stop > len(self):
-            if not self._is_id_type(slice_stop):
+            if not self._is_index_type(slice_stop):
                 raise TypeError("Invalid argument type {}.".format(
                     type(slice_start)))
             logger.warning(
@@ -142,12 +142,12 @@ class AbstractSized(object):
                 "but the length was only %d. All the missing entries will be "
                 "ignored!", self._size, len(selector))
 
-    def selector_to_ids(self, selector, warn=False):
-        """ Gets the list of IDs covered by this selector. \
+    def selector_to_indexes(self, selector, warn=False):
+        """ Gets the list of indexes covered by this selector. \
             The types of selector currently supported are:
 
         None:
-            Returns all IDs.
+            Returns all indexes.
 
         slice: Standard python slice.
             Negative values and values larger than size are handled using\
@@ -158,8 +158,8 @@ class AbstractSized(object):
             Checks if ID is within expected range.
 
         iterator of bools: Used as a mask.
-            If the length of the mask is longer or shorted than number of IDs \
-            the result is the shorter of the two, \
+            If the length of the mask is longer or shorted than number of 
+            indexes the result is the shorter of the two, \
             with the remainder of the longer ignored.
 
         iterator of int (long) but not bool:
@@ -168,7 +168,7 @@ class AbstractSized(object):
             Original order and duplication is respected so result may be\
             unordered and contain duplicates.
 
-        :param selector: Some object that identifies a range of IDs.
+        :param selector: Some object that identifies a range of indexes.
         :param warn: \
             If True, this method will warn about problems with the selector.
         :return: a (possibly sorted) list of IDs
@@ -193,17 +193,17 @@ class AbstractSized(object):
             elif all(isinstance(item, (int, numpy.integer))
                      for item in selector):
                 # list converts any specific numpy types
-                ids = list(selector)
-                for _id in ids:
-                    if _id < 0:
+                indexes = list(selector)
+                for index in indexes:
+                    if index < 0:
                         raise TypeError(
-                            "Selector includes the ID {} which is less than "
-                            "zero".format(_id))
-                    if _id >= self._size:
+                            f"Selector includes the index {index} "
+                            f"which is less than zero")
+                    if index >= self._size:
                         raise TypeError(
-                            "Selector includes the ID {} which not less than "
-                            "the size {}".format(_id, self._size))
-                return ids
+                            f"Selector includes the ID {index} "
+                            f"which not less than the size {self._size}")
+                return indexes
             else:
                 raise TypeError(
                     "An iterable type must be all ints or all bools")
@@ -211,7 +211,7 @@ class AbstractSized(object):
         # OK lets try for None, int and slice after all
         if selector is None:
             if warn:
-                logger.warning("None selector taken as all IDs")
+                logger.warning("None selector taken as all indexes")
             return range(self._size)
 
         if isinstance(selector, slice):

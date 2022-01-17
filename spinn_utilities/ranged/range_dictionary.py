@@ -79,7 +79,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         # Key is an int - return single view
         if isinstance(key, int):
-            self._check_id_in_range(key)
+            self._check_index_in_range(key)
             return _SingleView(range_dict=self, id=key)
 
         # Key is a slice - return a sliced view

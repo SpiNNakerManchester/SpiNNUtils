@@ -80,7 +80,7 @@ class Converter(object):
             ``message_id`` is used multiple times.
         """
         self._mkdir(self._dest)
-        with open(self._dict, 'w') as dict_f:
+        with open(self._dict, 'w', encoding="utf-8") as dict_f:
             dict_f.write(DICTIONARY_HEADER)
         message_id = self._get_id()
         for dir_name, _subdir_list, file_list in os.walk(self._src):
@@ -108,7 +108,7 @@ class Converter(object):
 
         # If the range_file does not exist create it and use range_start
         if not os.path.exists(rangefile):
-            with open(rangefile, 'w') as log_ranges_file:
+            with open(rangefile, 'w', encoding="utf-8") as log_ranges_file:
                 log_ranges_file.write(LOG_FILE_HEADER)
                 log_ranges_file.write("{} {}\n".format(
                     range_start, filename))
@@ -116,7 +116,7 @@ class Converter(object):
 
         # Check if the file is ranged or find highest range so far
         highest_found = range_start
-        with open(rangefile, 'r') as log_ranges_file:
+        with open(rangefile, 'r', encoding="utf-8") as log_ranges_file:
             data_lines = iter(log_ranges_file)
             next(data_lines)  # Ignore do not edit
             for line in data_lines:
@@ -130,7 +130,7 @@ class Converter(object):
         new_start = highest_found + RANGE_PER_DIR
 
         # Append to range file in case rebuilt without clean
-        with open(rangefile, 'a') as log_ranges_file:
+        with open(rangefile, 'a', encoding="utf-8") as log_ranges_file:
             log_ranges_file.write("{} {}\n".format(new_start, filename))
         return new_start
 

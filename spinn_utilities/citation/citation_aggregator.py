@@ -62,7 +62,7 @@ class CitationAggregator(object):
             os.path.abspath(module_to_start_at.__file__))), CITATION_FILE)
         modules_seen_so_far = set()
         modules_seen_so_far.add("")  # Make sure the empty entry is absent
-        with open(top_citation_file_path) as stream:
+        with open(top_citation_file_path, encoding="utf-8") as stream:
             top_citation_file = yaml.safe_load(stream)
         top_citation_file[REFERENCES_YAML_POINTER] = list()
 
@@ -85,7 +85,7 @@ class CitationAggregator(object):
                 pypi_to_import_map_file)
 
         if os.path.isfile(requirements_file_path):
-            with open(requirements_file_path) as r_file:
+            with open(requirements_file_path, encoding="utf-8") as r_file:
                 for line in r_file:
                     module = line.strip()
                     if module.startswith("#"):
@@ -105,7 +105,7 @@ class CitationAggregator(object):
                                   .format(module, str(e)))
 
         if os.path.isfile(c_requirements_file_path):
-            with open(c_requirements_file_path) as r_file:
+            with open(c_requirements_file_path, encoding="utf-8") as r_file:
                 for line in r_file:
                     module = line.strip()
                     if module.startswith("#"):
@@ -129,7 +129,7 @@ class CitationAggregator(object):
         :rtype: dict(str,str)
         """
         pypi_to_import_map = dict()
-        with open(aggregated_citation_file) as f:
+        with open(aggregated_citation_file, encoding="utf-8") as f:
             for line in f:
                 [pypi, import_command] = line.split(":")
                 pypi_to_import_map[pypi] = import_command.split("\n")[0]
@@ -320,7 +320,8 @@ class CitationAggregator(object):
         """
         reference_entry = dict()
 
-        with open(dependency_citation_file_path, 'r') as stream:
+        with open(dependency_citation_file_path, 'r', encoding="utf-8") \
+                as stream:
             dependency_citation_file = yaml.safe_load(stream)
 
             reference_entry[REFERENCES_TYPE_TYPE] = REFERENCES_SOFTWARE_TYPE

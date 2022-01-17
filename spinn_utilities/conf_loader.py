@@ -48,14 +48,14 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
     home_cfg = os.path.join(os.path.expanduser("~"), ".{}".format(filename))
 
     found = False
-    with open(home_cfg, "w") as dst:
+    with open(home_cfg, "w", encoding="utf-8") as dst:
         for source in defaults:
             template = source + ".template"
             if os.path.isfile(template):
                 if found:
                     raise ConfigTemplateException(
                         f"Second template found at {template}")
-                with open(source + ".template", "r") as src:
+                with open(source + ".template", "r", encoding="utf-8") as src:
                     dst.write(src.read())
                     dst.write("\n")
                     found = True

@@ -54,25 +54,25 @@ class AbstractView(AbstractDict):
         """
         if isinstance(key, str):
             raise KeyError("view[key] is not supported Use get_value() ")
-        ids = self.indexes()
+        indexes = self.indexes()
         if isinstance(key, (slice, int)):
-            return self._range_dict.view_factory(ids[key])
+            return self._range_dict.view_factory(indexes[key])
         selected = []
         for i in key:
-            selected.append(ids[i])
+            selected.append(indexes[i])
         return self._range_dict.view_factory(selected)
 
     def __setitem__(self, key, value):
         """ See :py:meth:`AbstractDict.set_value`
 
         .. note::
-            Unlike ``__getitem__``, int based IDs are *not* supported so\
+            Unlike ``__getitem__``, int based indexes are *not* supported so\
             ``view[int] ==`` will raise an exception
         """
         if isinstance(key, str):
             return self.set_value(key=key, value=value)
         if isinstance(key, (slice, int, tuple, list)):
-            raise KeyError("Setting of a slice/IDs not supported")
+            raise KeyError("Setting of a slice/index(es) not supported")
         raise KeyError("Unexpected key type: {}".format(type(key)))
 
     @overrides(AbstractDict.get_default)

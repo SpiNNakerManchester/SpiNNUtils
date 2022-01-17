@@ -52,7 +52,8 @@ class _UtilsDataModel(object):
         cls.__singleton = obj
         obj._clear()
         obj._status = Data_Status.NOT_SETUP
-        obj._executable_finder = None
+        obj._executable_finder = ExecutableFinder()
+
         return obj
 
     def _clear(self):
@@ -166,11 +167,8 @@ class UtilsDataView(object):
     @classmethod
     def get_executable_finder(cls):
         """
-        The ExcutableFinder object creating a new one if needed
+        The ExcutableFinder object created at time code is imported
 
         :rtype: ExcutableFinder
         """
-        if cls.__data._executable_finder is None:
-            # Delayed create to avoid creating one very unittest
-            cls.__data._executable_finder = ExecutableFinder()
         return cls.__data._executable_finder

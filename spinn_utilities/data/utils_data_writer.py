@@ -133,16 +133,3 @@ class UtilsDataWriter(UtilsDataView):
         else:
             self.__data._run_dir_path = None
             raise InvalidDirectory("run_dir_path", run_dir_path)
-
-    def _set_executive_finder(self, executable_finder):
-        """
-        Test method
-
-        use outside of unittests will make things go BOOM
-
-        :param executable_finder:
-        :return:
-        """
-        if self.get_status() != Data_Status.MOCKED:
-            raise NotImplementedError("This is a testing method!")
-        self.__data._executable_finder = executable_finder

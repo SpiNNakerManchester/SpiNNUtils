@@ -41,6 +41,7 @@ class RangedListOfList(RangedList):
                         "Illegal mixing of singleton and iterable")
             # A list of all singletons is a single value not a list here!
             return not singleton
-        except TypeError:
+        except TypeError as original:
             raise TypeError(
-                "Value must be an iterable or iterable of iterables")
+                "Value must be an iterable or iterable of iterables") \
+                from original

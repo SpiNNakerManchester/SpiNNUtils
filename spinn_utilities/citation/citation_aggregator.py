@@ -320,7 +320,8 @@ class CitationAggregator(object):
         """
         reference_entry = dict()
 
-        with open(dependency_citation_file_path, 'r', encoding="utf-8") as stream:
+        with open(dependency_citation_file_path, 'r', encoding="utf-8") \
+                as stream:
             dependency_citation_file = yaml.safe_load(stream)
 
             reference_entry[REFERENCES_TYPE_TYPE] = REFERENCES_SOFTWARE_TYPE

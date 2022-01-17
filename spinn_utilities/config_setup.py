@@ -20,7 +20,7 @@ from spinn_utilities.config_holder import (
 BASE_CONFIG_FILE = "spinn_utilities.cfg"
 
 
-def unittest_setup(unittest_mode):
+def unittest_setup():
     """
     Resets the configs so only the local default config is included.
 

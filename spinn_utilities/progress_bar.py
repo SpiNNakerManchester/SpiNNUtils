@@ -270,7 +270,7 @@ class _EnhancedProgressBar(ProgressBar):
             os.path.dirname(os.path.realpath(spinn_utilities.__file__)),
             cls._DATA_FILE)
         try:
-            with open(path) as reader:
+            with open(path, encoding="utf-8") as reader:
                 lines = reader.readlines()
 
             # turn into array of songs, skipping comments and blanks

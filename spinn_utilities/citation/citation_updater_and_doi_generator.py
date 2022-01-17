@@ -160,7 +160,7 @@ class CitationUpdaterAndDoiGenerator(object):
         deposit_id = None
 
         # read in YAML file
-        with open(citation_file_path, 'r') as stream:
+        with open(citation_file_path, 'r', encoding="utf-8") as stream:
             yaml_file = yaml.safe_load(stream)
 
         # if creating a DOI, go and request one

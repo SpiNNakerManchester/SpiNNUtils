@@ -261,7 +261,7 @@ def _check_python_file(py_path):
     :param str py_path: path to file to be checked
     :raise Exception: If an unexpected or uncovered get_config found
     """
-    with open(py_path, 'r') as py_file:
+    with open(py_path, 'r', encoding="utf-8") as py_file:
         lines = py_file.readlines()
         for index, line in enumerate(lines):
             if "get_config_bool(" in line:

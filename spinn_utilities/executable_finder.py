@@ -55,7 +55,7 @@ class ExecutableFinder(object):
         self._binary_search_paths.add(path)
         if self._paths_log:
             try:
-                with open(self._paths_log, "a") as log_file:
+                with open(self._paths_log, "a", encoding="uft-8") as log_file:
                     log_file.write(path)
                     log_file.write("\n")
             except Exception:  # pylint: disable=broad-except
@@ -88,7 +88,8 @@ class ExecutableFinder(object):
             if os.path.isfile(potential_filename):
                 if self._binary_log:
                     try:
-                        with open(self._binary_log, "a") as log_file:
+                        with open(self._binary_log, "a", encoding="utf-8") \
+                                as log_file:
                             log_file.write(potential_filename)
                             log_file.write("\n")
                     except Exception:  # pylint: disable=broad-except
@@ -129,7 +130,7 @@ class ExecutableFinder(object):
             return
 
         folders = set()
-        with open(self._paths_log, "r") as log_file:
+        with open(self._paths_log, "r", encoding="utf-8") as log_file:
             for line in log_file:
                 folders.add(line.strip())
 
@@ -144,7 +145,7 @@ class ExecutableFinder(object):
                 pass
 
         used_binaries = set()
-        with open(self._binary_log, "r") as log_file:
+        with open(self._binary_log, "r", encoding="utf-8") as log_file:
             for line in log_file:
                 used_binaries.add(line.strip())
 

@@ -127,8 +127,8 @@ class FileConverter(object):
         dest_dir = os.path.dirname(os.path.realpath(self.dest))
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
-        with open(self.src) as src_f:
-            with open(self.dest, 'w') as dest_f:
+        with open(self.src, encoding="utf-8") as src_f:
+            with open(self.dest, 'w', encoding="utf-8") as dest_f:
                 dest_f.write(
                     "// DO NOT EDIT! THIS FILE WAS GENERATED FROM {}\n\n"
                     .format(self.unique_src()))
@@ -481,7 +481,7 @@ class FileConverter(object):
             dest_f.write(self._log_full)
             dest_f.write("*/")
             dest_f.write(end * (self._log_lines - 1))
-        with open(self.dict, 'a') as mess_f:
+        with open(self.dict, 'a', encoding="utf-8") as mess_f:
             # Remove commas from filenames for csv format
             # Remove start and end quotes from original
             mess_f.write("{},{} ({}: {}): ,{}\n".format(

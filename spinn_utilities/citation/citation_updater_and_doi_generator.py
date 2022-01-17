@@ -160,7 +160,7 @@ class CitationUpdaterAndDoiGenerator(object):
         deposit_id = None
 
         # read in YAML file
-        with open(citation_file_path, 'r') as stream:
+        with open(citation_file_path, 'r', encoding="utf-8") as stream:
             yaml_file = yaml.safe_load(stream)
 
         # if creating a DOI, go and request one
@@ -338,7 +338,7 @@ class CitationUpdaterAndDoiGenerator(object):
         elif isinstance(version_month, str):
             try:
                 return int(version_month)
-            except ValueError:
+            except ValueError as original:
                 try:
                     return strptime(version_month, "%B").tm_mon
                 except ValueError:
@@ -346,7 +346,7 @@ class CitationUpdaterAndDoiGenerator(object):
                         return strptime(version_month, "%b").tm_mon
                     except ValueError:  # pragma: no cover
                         raise Exception("Value {} not recognised as a month"
-                                        .format(version_month))
+                                        .format(version_month)) from original
         else:  # pragma: no cover
             raise Exception("Value {} not recognised as a month".format(
                 version_month))

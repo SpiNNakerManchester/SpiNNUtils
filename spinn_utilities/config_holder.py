@@ -249,9 +249,9 @@ def _check_lines(py_path, line, lines, index, method):
         return
     try:
         method(section, option)
-    except Exception:
+    except Exception as original:
         raise Exception(f"failed in line:{index} of file: {py_path} with "
-                        f"section:{section} option:{option}")
+                        f"section:{section} option:{option}") from original
 
 
 def _check_python_file(py_path):
@@ -261,7 +261,7 @@ def _check_python_file(py_path):
     :param str py_path: path to file to be checked
     :raise Exception: If an unexpected or uncovered get_config found
     """
-    with open(py_path, 'r') as py_file:
+    with open(py_path, 'r', encoding="utf-8") as py_file:
         lines = py_file.readlines()
         for index, line in enumerate(lines):
             if "get_config_bool(" in line:
@@ -277,7 +277,7 @@ def _check_python_file(py_path):
 
 
 def _check_python_files(directory):
-    for root, dirs, files in os.walk(directory):
+    for root, _, files in os.walk(directory):
         for file_name in files:
             if file_name.endswith(".py"):
                 py_path = os.path.join(root, file_name)
@@ -346,7 +346,7 @@ def _check_cfgs(path):
     for default in __default_config_files:
         config1.read(default)
     directory = os.path.dirname(path)
-    for root, dirs, files in os.walk(directory):
+    for root, _, files in os.walk(directory):
         for file_name in files:
             if file_name.endswith(".cfg"):
                 cfg_path = os.path.join(root, file_name)
@@ -380,7 +380,7 @@ def run_config_checks(directories, *, exceptions=None, repeaters=None):
     for directory in directories:
         if not os.path.isdir(directory):
             raise Exception(f"Unable find {directory}")
-        for root, dirs, files in os.walk(directory):
+        for root, _, files in os.walk(directory):
             for file_name in files:
                 if file_name in exceptions:
                     pass

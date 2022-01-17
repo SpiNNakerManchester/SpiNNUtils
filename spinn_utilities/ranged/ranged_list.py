@@ -337,7 +337,8 @@ class RangedList(AbstractList):
 
                 # Need a new range after the ID
                 if the_id + 1 < stop:
-                    self._ranges.insert(index + 1, (the_id + 1, stop, old_value))
+                    self._ranges.insert(
+                        index + 1, (the_id + 1, stop, old_value))
 
                 # Need a new range before the ID
                 if the_id > start:

@@ -320,7 +320,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """ Same as :py:meth:`iter_ranges` but limited to one ID.
 
         :param key: see :py:meth:`iter_ranges` parameter key
-        :param the_id: single ID which is the actual ID and not an index into IDs
+        :param the_id:
+            single ID which is the actual ID and not an index into IDs
         :type the_id: int
         """
         if isinstance(key, str):

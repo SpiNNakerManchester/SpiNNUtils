@@ -639,7 +639,8 @@ class DualList(AbstractList, metaclass=AbstractBase):
     @overrides(AbstractList.get_value_by_id)
     def get_value_by_id(self, the_id):
         return self._operation(
-            self._left.get_value_by_id(the_id), self._right.get_value_by_id(the_id))
+            self._left.get_value_by_id(the_id),
+            self._right.get_value_by_id(the_id))
 
     @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):

@@ -32,8 +32,8 @@ class _SliceView(AbstractView):
     def __str__(self):
         return "View with range: {} to {}".format(self._start, self._stop)
 
-    @overrides(AbstractDict.ids)
-    def ids(self):
+    @overrides(AbstractDict.indexes)
+    def indexes(self):
         return range(self._start, self._stop)
 
     @overrides(AbstractDict.get_value)
@@ -43,7 +43,7 @@ class _SliceView(AbstractView):
 
     def update_save_iter_all_values(self, key):
         ranged_list = self._range_dict.get_list(key)
-        for id in self.ids():  # @ReservedAssignment
+        for id in self.indexes():  # @ReservedAssignment
             yield ranged_list.get_value_by_id(id=id)
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)

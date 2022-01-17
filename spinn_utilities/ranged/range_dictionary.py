@@ -260,8 +260,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
         else:
             raise KeyError("Unexpected key type: {}".format(type(key)))
 
-    @overrides(AbstractDict.ids)
-    def ids(self):
+    @overrides(AbstractDict.indexes)
+    def indexes(self):
         """ Returns a list of the IDs in this Range
 
         :return: a list of the IDs in this Range

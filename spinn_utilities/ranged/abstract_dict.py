@@ -66,24 +66,24 @@ class AbstractDict(object, metaclass=AbstractBase):
         """
 
     @abstractmethod
-    def ids(self):
-        """ Returns the IDs in range or view.\
-        If the view is setup with IDs out of numerical order the order used\
+    def indexes(self):
+        """ Returns the indexes in range or view.\
+        If the view is setup with indexes out of numerical order the order used\
         to create the view is maintained.
 
         .. note::
-            If indexing into a view, you are picking the X'th ID.
-            So if the IDs are `[2,3,4,5]` the `view[2]` will be the data for
-            ID `4` and not `2`
+            If indexing into a view, you are picking the X'th index.
+            So if the indexes are `[2,3,4,5]` the `view[2]` will be the
+            data for index `4` and not `2`
 
-        :return: list of IDs
+        :return: list of indexes
         :rtype: list(int)
         """
 
     @abstractmethod
     def iter_all_values(self, key, update_save=False):
-        """ Iterates over the value(s) for all IDs covered by this view. \
-        There will be one yield for each ID even if values are repeated.
+        """ Iterates over the value(s) for all indexes covered by this view. \
+        There will be one yield for each index even if values are repeated.
 
         :param key: The key or keys to get the value of. Use None for all keys
         :type key: str or iterable(str) or None
@@ -97,9 +97,9 @@ class AbstractDict(object, metaclass=AbstractBase):
         """
 
     def get_ranges(self, key=None):
-        """ Lists the ranges(s) for all IDs covered by this view. \
+        """ Lists the ranges(s) for all indexes covered by this view. \
         There will be one yield for each range which may cover one or\
-        more IDs.
+        more indexes.
 
         .. note::
             As the data is created in a single call this is not affected
@@ -108,8 +108,8 @@ class AbstractDict(object, metaclass=AbstractBase):
         :param key: The key or keys to get the value of. Use None for all
         :type key: str or iterable(str) or None
         :return: List of tuples of (`start`, `stop`, `value`).
-            `start` is *inclusive* so is the first ID in the range.
-            `stop` is *exclusive* so is the last ID in the range + 1.
+            `start` is *inclusive* so is the first index in the range.
+            `stop` is *exclusive* so is the last index in the range + 1.
             If `key` is a str, `value` is a single object.
             If `key` is iterable (list, tuple, set, etc) of str (or None)
             `value` is a dictionary object
@@ -118,7 +118,7 @@ class AbstractDict(object, metaclass=AbstractBase):
 
     @abstractmethod
     def iter_ranges(self, key=None):
-        """ Iterates over the ranges(s) for all IDs covered by this view.\
+        """ Iterates over the ranges(s) for all indexes covered by this view.\
         There will be one yield for each range which may cover one or\
         more IDs.
 
@@ -130,8 +130,8 @@ class AbstractDict(object, metaclass=AbstractBase):
         :param key: The key or keys to get the value of. Use None for all
         :type key: str or iterable(str) or None
         :return: yields tuples of (`start`, `stop`, `value`).
-            `start` is *inclusive* so is the first ID in the range.
-            `stop` is *exclusive* so is the last ID in the range + 1.
+            `start` is *inclusive* so is the first index in the range.
+            `stop` is *exclusive* so is the last index in the range + 1.
             If `key` is a str, `value` is a single object.
             If `key` is iterable (list, tuple, set, etc) of str (or None),
             `value` is a dictionary object
@@ -235,7 +235,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         if isinstance(key, str):
             return key in self.keys()
         if isinstance(key, int):
-            return key in self.ids()
+            return key in self.indexes()
         raise KeyError("Unexpected key type: {}".format(type(key)))
 
     def has_key(self, key):

@@ -21,7 +21,7 @@ single = rd[4]
 
 
 def test_ids():
-    assert [4] == single.ids()
+    assert [4] == single.indexes()
 
 
 def test_value():

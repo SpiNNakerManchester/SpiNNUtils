@@ -31,8 +31,8 @@ class _SingleView(AbstractView):
     def __str__(self):
         return "View with ID: {}".format(self._id)
 
-    @overrides(AbstractDict.ids)
-    def ids(self):
+    @overrides(AbstractDict.indexes)
+    def indexes(self):
         return [self._id]
 
     @overrides(AbstractDict.get_value)

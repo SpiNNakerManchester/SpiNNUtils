@@ -54,7 +54,7 @@ class AbstractView(AbstractDict):
         """
         if isinstance(key, str):
             raise KeyError("view[key] is not supported Use get_value() ")
-        ids = self.ids()
+        ids = self.indexes()
         if isinstance(key, (slice, int)):
             return self._range_dict.view_factory(ids[key])
         selected = []

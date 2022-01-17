@@ -31,8 +31,8 @@ class _IdsView(AbstractView):
     def __str__(self):
         return "View with IDs: {}".format(self._ids)
 
-    @overrides(AbstractDict.ids)
-    def ids(self):
+    @overrides(AbstractDict.indexes)
+    def indexes(self):
         return list(self._ids)
 
     @overrides(AbstractDict.get_value)

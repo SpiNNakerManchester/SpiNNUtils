@@ -42,11 +42,11 @@ class AbstractSized(object):
         return self._size
 
     @staticmethod
-    def _is_index_type(index):  # @ReservedAssignment
+    def _is_index_type(index):
         """ Check if the given index has a type acceptable for indexes. """
         return isinstance(index, int)
 
-    def _check_index_in_range(self, index):  # @ReservedAssignment
+    def _check_index_in_range(self, index):
         if index < 0:
             if self._is_index_type(index):
                 raise IndexError(

@@ -44,11 +44,11 @@ class _IdsView(AbstractView):
     def set_value(self, key, value, use_list_as_value=False):
         ranged_list = self._range_dict.get_list(key)
         for _id in self._ids:
-            ranged_list.set_value_by_id(id=_id, value=value)
+            ranged_list.set_value_by_id(the_id=_id, value=value)
 
     def set_value_by_ids(self, key, ids, value):
         for _id in ids:
-            self._range_dict[key].set_value_by_id(id=_id, value=value)
+            self._range_dict[key].set_value_by_id(the_id=_id, value=value)
 
     @overrides(AbstractDict.iter_all_values)
     def iter_all_values(self, key, update_save=False):

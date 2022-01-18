@@ -80,20 +80,20 @@ class RangedList(AbstractList):
         return self._ranged_based
 
     @overrides(AbstractList.get_value_by_id)
-    def get_value_by_id(self, id):  # @ReservedAssignment
-        self._check_id_in_range(id)
+    def get_value_by_id(self, the_id):
+        self._check_id_in_range(the_id)
 
         # If range based, find the range containing the value and return
         if self._ranged_based:
             for (_, stop, value) in self._ranges:
-                if id < stop:
+                if the_id < stop:
                     return value  # pragma: no cover
 
             # Must never get here because the ID is in range
             raise ValueError  # pragma: no cover
 
         # Non-range-based so just return the value
-        return self._ranges[id]
+        return self._ranges[the_id]
 
     @overrides(AbstractList.get_single_value_by_slice)
     def get_single_value_by_slice(self, slice_start, slice_stop):
@@ -306,7 +306,7 @@ class RangedList(AbstractList):
             self._ranges.append((0, self._size, value))
             self._ranged_based = True
 
-    def set_value_by_id(self, id, value):  # @ReservedAssignment
+    def set_value_by_id(self, the_id, value):
         """ Sets the value for a single ID to the new value.
 
         .. note::
@@ -314,34 +314,35 @@ class RangedList(AbstractList):
             Use ``set`` or ``__set__`` for slices, tuples, lists and negative
             indexes.
 
-        :param int id: Single ID
+        :param int the_id: Single ID
         :param object value: The value to save
         """
-        self._check_id_in_range(id)
+        self._check_id_in_range(the_id)
 
         # If non-range-based, set the value directly
         if not self._ranged_based:
-            self._ranges[id] = value
+            self._ranges[the_id] = value
             return
 
         # Find the range in which to set the value
         for index, (start, stop, old_value) in enumerate(self._ranges):
-            if id < stop:
+            if the_id < stop:
 
                 # If already set as needed, do nothing
                 if numpy.array_equal(value, old_value):
                     return
 
                 # Split the ID out of the range
-                self._ranges[index] = (id, id + 1, value)
+                self._ranges[index] = (the_id, the_id + 1, value)
 
                 # Need a new range after the ID
-                if id + 1 < stop:
-                    self._ranges.insert(index + 1, (id + 1, stop, old_value))
+                if the_id + 1 < stop:
+                    self._ranges.insert(
+                        index + 1, (the_id + 1, stop, old_value))
 
                 # Need a new range before the ID
-                if id > start:
-                    self._ranges.insert(index, (start, id, old_value))
+                if the_id > start:
+                    self._ranges.insert(index, (start, the_id, old_value))
 
                 # If not at the last range, update the start and stop value of
                 # the next range

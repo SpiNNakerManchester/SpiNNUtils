@@ -43,8 +43,8 @@ class _SliceView(AbstractView):
 
     def update_save_iter_all_values(self, key):
         ranged_list = self._range_dict.get_list(key)
-        for id in self.ids():  # @ReservedAssignment
-            yield ranged_list.get_value_by_id(id=id)
+        for the_id in self.ids():
+            yield ranged_list.get_value_by_id(the_id=the_id)
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
     def iter_all_values(self, key=None, update_save=False):

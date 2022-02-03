@@ -83,7 +83,7 @@ def test_logger_dict():
     logger = FormatAdapter(log)
     mydict = {1: "one", 2: "two"}
     logger.info(mydict)
-    assert str(log.last_msg) == "1: 'one', 2: 'two'}"
+    assert str(log.last_msg) == "{1: 'one', 2: 'two'}"
 
 
 def test_logger_exception():

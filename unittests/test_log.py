@@ -78,6 +78,14 @@ def test_logger_adapter():
     assert len(logger._repeat_log()) == 4
 
 
+def test_logger_dict():
+    log = MockLog()
+    logger = FormatAdapter(log)
+    mydict = {1: "one", 2: "two"}
+    logger.info(mydict)
+    assert str(log.last_msg) == "{1: 'one', 2: 'two'}"
+
+
 def test_logger_exception():
     log = MockLog()
     logger = FormatAdapter(log)

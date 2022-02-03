@@ -132,9 +132,17 @@ class _BraceMessage(object):
             return str(self.fmt).format(*self.args, **self.kwargs)
         except KeyError:
             try:
-                return "keyError" + str(self.fmt)
+                return "KeyError" + str(self.fmt)
             except KeyError:
-                return "Double keyError"
+                return "Double KeyError"
+        except IndexError:
+            try:
+                if self.args or self.kwargs:
+                    return "IndexError" + str(self.fmt)
+                else:
+                    return str(self.fmt)
+            except IndexError:
+                return "Double IndexError"
 
 
 class LogLevelTooHighException(Exception):

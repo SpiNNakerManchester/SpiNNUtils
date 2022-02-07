@@ -306,7 +306,7 @@ class CitationAggregator(object):
                 imported_module.version
         elif hasattr(imported_module, "_version"):
             reference_entry[REFERENCES_VERSION_TYPE] = \
-                imported_module._version
+                imported_module._version   # pylint: disable=protected-access
         return reference_entry
 
     @staticmethod

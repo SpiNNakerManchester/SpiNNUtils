@@ -31,6 +31,5 @@ def error_once(logger, msg):
 
 
 def reset():
-    global _already_issued
-    # pylint: disable=global-statement
+    global _already_issued     # pylint: disable=global-statement
     _already_issued = set()

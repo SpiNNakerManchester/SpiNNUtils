@@ -234,7 +234,6 @@ class FormatAdapter(logging.LoggerAdapter):
             Return the message and *kwargs* modified (or not) to suit your\
             needs.
         """
-        # pylint: disable=deprecated-method
         return msg, {
             key: kwargs[key]
             for key in getfullargspec(self.do_log).args[1:]

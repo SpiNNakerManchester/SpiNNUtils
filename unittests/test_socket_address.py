@@ -54,12 +54,12 @@ def test_correct_usage():
 
 
 def test_wrong_usage():
-    sa = SocketAddress(None, 1, 1)
-    # Stringified the None...
-    assert sa.notify_host_name == "None"
+    sa = SocketAddress(21, 1, 1)
+    # Stringified the 12...
+    assert sa.notify_host_name == "12"
 
     with pytest.raises(TypeError):
-        SocketAddress("a", None, 1)
+        SocketAddress("a", "b", 1)
     with pytest.raises(ValueError):
         SocketAddress("a", 1, "a")
 
@@ -67,8 +67,8 @@ def test_wrong_usage():
 def test_using_configs():
     unittest_setup()
     set_config("Database", "notify_port", 31)
-    set_config_str("Database", "notify_hostname", "b")
-    set_config_int("Database", "listen_port", 21)
+    set_config("Database", "notify_hostname", "b")
+    set_config("Database", "listen_port", 21)
     sa1 = SocketAddress()
     assert sa1.listen_port == 31
     assert sa1.notify_host_name == "b"

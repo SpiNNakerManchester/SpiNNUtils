@@ -43,12 +43,14 @@ class SocketAddress(object):
             notify_host_name = get_config_str("Database", "notify_hostname")
         elif notify_host_name == "0.0.0.0":
             notify_host_name = "localhost"
+        else:
+            notify_host_name = str(notify_host_name)
         if listen_port is None:
             listen_port = get_config_int("Database", "listen_port")
         else:
             listen_port = int(listen_port)
-        self._notify_host_name = str(notify_host_name)
-        self._notify_port_no = int(notify_port_no)
+        self._notify_host_name = notify_host_name
+        self._notify_port_no = notify_port_no
         self._listen_port = listen_port
         self.__hash = None
 

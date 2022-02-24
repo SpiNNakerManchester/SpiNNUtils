@@ -58,7 +58,7 @@ def test_wrong_usage():
     # Stringified the 12...
     assert sa.notify_host_name == "21"
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         SocketAddress("a", "b", 1)
     with pytest.raises(ValueError):
         SocketAddress("a", 1, "a")

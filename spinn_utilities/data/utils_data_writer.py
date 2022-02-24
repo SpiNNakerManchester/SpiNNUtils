@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2019 The University of Manchester
+# Copyright (c) 2021-2022 The University of Manchester
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -45,10 +45,26 @@ class UtilsDataWriter(UtilsDataView):
 
     @classmethod
     def mock(cls):
+        """
+        Creates a writer in mock mode.
+
+        All previous data will be cleared
+
+        :return: A Data Writer
+        :rtype: UtilsDataWriter
+        """
         return cls(Data_Status.MOCKED)
 
     @classmethod
     def setup(cls):
+        """
+        Creates a writer in normal mode.
+
+        All previous data will be cleared
+
+        :return: A Data Writer
+        :rtype: UtilsDataWriter
+        """
         return cls(Data_Status.SETUP)
 
     def _mock(self):
@@ -127,6 +143,7 @@ class UtilsDataWriter(UtilsDataView):
         Checks and sets the run_dir_path
 
         :param str run_dir_path:
+        :raises InvalidDirectory: if the run_dir_path is not a directory
         """
         if os.path.isdir(run_dir_path):
             self.__data._run_dir_path = run_dir_path

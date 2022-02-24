@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2019 The University of Manchester
+# Copyright (c) 2021-2022 The University of Manchester
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ class UtilsDataView(object):
     @classmethod
     def get_status(cls):
         """
-        Returns the currentl status
+        Returns the current status
 
         :rtype: Data_Status
         """
@@ -156,7 +156,7 @@ class UtilsDataView(object):
 
         :rtpye: str
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
-            If the simulation_time_step is currently unavailable
+            If the run_dir_path is currently unavailable
         """
         if cls.__data._run_dir_path:
             return cls.__data._run_dir_path

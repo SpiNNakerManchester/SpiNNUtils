@@ -15,6 +15,7 @@
 
 from spinn_utilities.config_holder import get_config_int, get_config_str
 
+
 class SocketAddress(object):
     """ Data holder for a socket interface for notification protocol.
     """

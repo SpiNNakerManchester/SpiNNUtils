@@ -73,4 +73,3 @@ def test_using_configs():
     assert sa1.listen_port == 21
     assert sa1.notify_host_name == "b"
     assert sa1.notify_port_no == 31
-

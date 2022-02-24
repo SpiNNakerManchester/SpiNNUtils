@@ -40,6 +40,8 @@ class SocketAddress(object):
         """
         if notify_port_no is None:
             notify_port_no = get_config_int("Database", "notify_port")
+        else:
+            notify_port_no = int(notify_port_no)
         if notify_host_name is None:
             notify_host_name = get_config_str("Database", "notify_hostname")
         elif notify_host_name == "0.0.0.0":

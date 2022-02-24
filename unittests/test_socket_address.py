@@ -70,7 +70,7 @@ def test_using_configs():
     set_config("Database", "notify_hostname", "b")
     set_config("Database", "listen_port", 21)
     sa1 = SocketAddress()
-    assert sa1.listen_port == 31
+    assert sa1.listen_port == 21
     assert sa1.notify_host_name == "b"
-    assert sa1.notify_port_no == 21
+    assert sa1.notify_port_no == 31
 

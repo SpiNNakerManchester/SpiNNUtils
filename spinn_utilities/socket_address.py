@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from spinn_utilities.config_holder import get_config_int, get_config_str
 
 class SocketAddress(object):
     """ Data holder for a socket interface for notification protocol.
@@ -24,9 +25,31 @@ class SocketAddress(object):
         "__hash"]
 
     def __init__(self, notify_host_name, notify_port_no, listen_port):
+        """
+        :param notify_host_name:
+            Host to talk to tell that the database (and application) is ready.
+        :type notify_host_name: str or None
+        :param notify_port_no:
+            Port to talk to tell that the database (and application) is ready.
+        :type notify_port_no: int or None
+        :param listen_port:
+            Port on which to listen for an acknowledgement that the
+            simulation should start.
+        :type listen_port: int or None
+        """
+        if notify_port_no is None:
+            notify_port_no = get_config_int("Database", "notify_port")
+        if notify_host_name is None:
+            notify_host_name = get_config_str("Database", "notify_hostname")
+        elif notify_host_name == "0.0.0.0":
+            notify_host_name = "localhost"
+        if listen_port is None:
+            listen_port = get_config_int("Database", "listen_port")
+        else:
+            listen_port = int(listen_port)
         self._notify_host_name = str(notify_host_name)
         self._notify_port_no = int(notify_port_no)
-        self._listen_port = None if listen_port is None else int(listen_port)
+        self._listen_port = listen_port
         self.__hash = None
 
     @property

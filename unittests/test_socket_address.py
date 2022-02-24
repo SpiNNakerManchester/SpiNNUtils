@@ -14,6 +14,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
+from spinn_utilities.config_setup import unittest_setup
+from spinn_utilities.config_holder import set_config
 from spinn_utilities.socket_address import SocketAddress
 
 
@@ -60,3 +62,15 @@ def test_wrong_usage():
         SocketAddress("a", None, 1)
     with pytest.raises(ValueError):
         SocketAddress("a", 1, "a")
+
+
+def test_using_configs():
+    unittest_setup()
+    set_config("Database", "notify_port", 31)
+    set_config_str("Database", "notify_hostname", "b")
+    set_config_int("Database", "listen_port", 21)
+    sa1 = SocketAddress()
+    assert sa1.listen_port == 31
+    assert sa1.notify_host_name == "b"
+    assert sa1.notify_port_no == 22
+

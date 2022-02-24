@@ -24,7 +24,8 @@ class SocketAddress(object):
         "_notify_port_no",
         "__hash"]
 
-    def __init__(self, notify_host_name, notify_port_no, listen_port):
+    def __init__(self, notify_host_name=None, notify_port_no=None,
+                 listen_port=None):
         """
         :param notify_host_name:
             Host to talk to tell that the database (and application) is ready.

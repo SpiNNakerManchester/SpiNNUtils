@@ -56,7 +56,7 @@ def test_correct_usage():
 def test_wrong_usage():
     sa = SocketAddress(21, 1, 1)
     # Stringified the 12...
-    assert sa.notify_host_name == "12"
+    assert sa.notify_host_name == "21"
 
     with pytest.raises(TypeError):
         SocketAddress("a", "b", 1)
@@ -72,5 +72,5 @@ def test_using_configs():
     sa1 = SocketAddress()
     assert sa1.listen_port == 31
     assert sa1.notify_host_name == "b"
-    assert sa1.notify_port_no == 22
+    assert sa1.notify_port_no == 21
 

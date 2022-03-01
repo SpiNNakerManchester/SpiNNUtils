@@ -62,7 +62,7 @@ class DataNotMocked(DataNotYetAvialable):
     Raised when trying to get data before a mocked simulator has created it
     """
     def __init__(self, data):
-        super().__init__(f"MOCK {data} has not yet been created.")
+        super().__init__(f"MOCK {data}")
 
 
 class DataLocked(SpiNNUtilsException):

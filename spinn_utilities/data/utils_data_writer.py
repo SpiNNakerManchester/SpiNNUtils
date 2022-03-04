@@ -113,7 +113,7 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._run_status = RunStatus.NOT_RUNNING
         self.__data._reset_status = ResetStatus.HAS_RUN
 
-    def hard_reset(self):
+    def _hard_reset(self):
         """
         Puts all data back into the state expected at graph changed and
             sim.reset
@@ -123,8 +123,22 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._hard_reset()
         self.__data._reset_status = ResetStatus.HARD_RESET
 
+    def hard_reset(self):
+        """
+        Puts all data back into the state expected at graph changed and
+            sim.reset
 
-    def soft_reset(self):
+        This resets any data set after sim.setup has finished
+        """
+        # call the protected method at the highest possible level
+        if self.__data._reset_status == ResetStatus.HARD_RESET:
+            # No need to hard reset a second time
+            # Also allows ASB to call hard reset without clearing data
+            # obtained after the last hard reset such as a machine
+            return
+        self._hard_reset()
+
+    def _soft_reset(self):
         """
         Puts all data back into the state expected at sim.reset but not
         graph changed
@@ -132,6 +146,15 @@ class UtilsDataWriter(UtilsDataView):
         """
         self.__data._soft_reset()
         self.__data._reset_status = ResetStatus.SOFT_RESET
+
+    def soft_reset(self):
+        """
+        Puts all data back into the state expected at sim.reset but not
+        graph changed
+
+        """
+        # call the protected method at the highest possible level
+        self._soft_reset()
 
     def stopping(self):
         """

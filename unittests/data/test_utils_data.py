@@ -35,34 +35,97 @@ class TestUtilsData(unittest.TestCase):
         # Most is tests return True if mocked
         UtilsDataView._check_user_write()
         self.assertTrue(UtilsDataView._is_running())
+        self.assertFalse(UtilsDataView.is_hard_reset())
 
         writer = UtilsDataWriter.setup()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView._is_running())
         UtilsDataView._check_user_write()
+        self.assertFalse(UtilsDataView.is_hard_reset())
+
+        # Normal run
+        writer.start_run()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertTrue(UtilsDataView._is_running())
+        with self.assertRaises(DataLocked):
+            UtilsDataView._check_user_write()
+        self.assertFalse(UtilsDataView.is_hard_reset())
+
+        writer.finish_run()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView._is_running())
+        UtilsDataView._check_user_write()
+        self.assertFalse(UtilsDataView.is_hard_reset())
 
         writer.start_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView._is_running())
         with self.assertRaises(DataLocked):
             UtilsDataView._check_user_write()
+        self.assertFalse(UtilsDataView.is_hard_reset())
 
         writer.finish_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView._is_running())
         UtilsDataView._check_user_write()
+        self.assertFalse(UtilsDataView.is_hard_reset())
 
+        # soft reset
+        writer.soft_reset()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView._is_running())
+        UtilsDataView._check_user_write()
+        self.assertFalse(UtilsDataView.is_hard_reset())
+
+        writer.start_run()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertTrue(UtilsDataView._is_running())
+        with self.assertRaises(DataLocked):
+            UtilsDataView._check_user_write()
+        self.assertFalse(UtilsDataView.is_hard_reset())
+
+        writer.finish_run()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView._is_running())
+        UtilsDataView._check_user_write()
+        self.assertFalse(UtilsDataView.is_hard_reset())
+
+        # hard reset
+        writer.hard_reset()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView._is_running())
+        UtilsDataView._check_user_write()
+        self.assertTrue(UtilsDataView.is_hard_reset())
+
+        writer.start_run()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertTrue(UtilsDataView._is_running())
+        with self.assertRaises(DataLocked):
+            UtilsDataView._check_user_write()
+        # while running may still be in hard reset mode
+        self.assertTrue(UtilsDataView.is_hard_reset())
+
+        writer.finish_run()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView._is_running())
+        UtilsDataView._check_user_write()
+        self.assertFalse(UtilsDataView.is_hard_reset())
+
+        # stop
         writer.stopping()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView._is_running())
         with self.assertRaises(DataLocked):
             UtilsDataView._check_user_write()
+        self.assertFalse(UtilsDataView.is_hard_reset())
 
         writer.shut_down()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView._is_running())
         with self.assertRaises(DataLocked):
             UtilsDataView._check_user_write()
+        self.assertFalse(UtilsDataView.is_hard_reset())
+
 
         """"
         self.assertEqual(Data_Status.SETUP, UtilsDataWriter.get_status())

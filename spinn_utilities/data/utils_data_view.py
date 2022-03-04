@@ -145,9 +145,13 @@ class UtilsDataView(object):
     def _is_mocked(cls):
         return cls.__data._data_status == DataStatus.MOCKED
 
+    #@classmethod
+    #def _is_in_run(cls):
+    #    return cls.__data._data_status == DataStatus.MOCKED
+
     @classmethod
-    def _is_in_run(cls):
-        return cls.__data._data_status == DataStatus.MOCKED
+    def is_hard_reset(cls):
+        return cls.__data._reset_status == ResetStatus.HARD_RESET
 
     @classmethod
     def _check_user_write(cls):

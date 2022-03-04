@@ -15,12 +15,16 @@
 
 import os.path
 
+import logging
 from spinn_utilities.exceptions import (
-    IllegalWriterException, InvalidDirectory)
+    IllegalWriterException, InvalidDirectory, UnexpectedStateChange)
+from spinn_utilities.log import FormatAdapter
 from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus
 from .utils_data_view import UtilsDataView, _UtilsDataModel
+
+logger = FormatAdapter(logging.getLogger(__file__))
 
 
 class UtilsDataWriter(UtilsDataView):
@@ -103,6 +107,10 @@ class UtilsDataWriter(UtilsDataView):
         Puts all data into the state expected after do_run_loop started
 
         """
+        if self.__data._run_status != RunStatus.NOT_RUNNING:
+            raise UnexpectedStateChange(
+                f"Unexpected start run when in run state "
+                f"{self.__data._run_status}")
         self.__data._run_status = RunStatus.IN_RUN
 
     def finish_run(self):
@@ -110,6 +118,10 @@ class UtilsDataWriter(UtilsDataView):
         Puts all data into the state expected after sim.run
 
         """
+        if self.__data._run_status != RunStatus.IN_RUN:
+            raise UnexpectedStateChange(
+                f"Unexpected start run when in run state "
+                f"{self.__data._run_status}")
         self.__data._run_status = RunStatus.NOT_RUNNING
         self.__data._reset_status = ResetStatus.HAS_RUN
 
@@ -130,13 +142,15 @@ class UtilsDataWriter(UtilsDataView):
 
         This resets any data set after sim.setup has finished
         """
-        # call the protected method at the highest possible level
-        if self.__data._reset_status == ResetStatus.HARD_RESET:
-            # No need to hard reset a second time
-            # Also allows ASB to call hard reset without clearing data
-            # obtained after the last hard reset such as a machine
+        if self.__data._reset_status in [
+                ResetStatus.SETUP, ResetStatus.HAS_RUN,
+                ResetStatus.SOFT_RESET]:
+            # call the protected method at the highest possible level
+            self._hard_reset()
             return
-        self._hard_reset()
+        raise UnexpectedStateChange(
+            f"Unexpected call to reset while reset status is "
+            f"{self.__data._reset_status}")
 
     def _soft_reset(self):
         """
@@ -153,14 +167,23 @@ class UtilsDataWriter(UtilsDataView):
         graph changed
 
         """
-        # call the protected method at the highest possible level
-        self._soft_reset()
+        if self.__data._reset_status == ResetStatus.HAS_RUN:
+            # call the protected method at the highest possible level
+            self._soft_reset()
+            return
+        raise UnexpectedStateChange(
+            f"Unexpected call to reset while reset status is "
+            f"{self.__data._reset_status}")
 
     def stopping(self):
         """
         Puts all data into the state expected during stop
 
         """
+        if self.__data._run_status != RunStatus.NOT_RUNNING:
+            logger.warning(
+                f"Stop called with unexpected run status "
+                f"{self.__data._run_status}")
         self.__data._run_status = RunStatus.STOPPING
 
     def shut_down(self):
@@ -168,6 +191,10 @@ class UtilsDataWriter(UtilsDataView):
         Puts all data into the state expected after sim.end
 
         """
+        if self.__data._run_status != RunStatus.STOPPING:
+            raise UnexpectedStateChange(
+                f"Unexpected shut down when in run state "
+                f"{self.__data._run_status}")
         self.__data._data_status = DataStatus.SHUTDOWN
         self.__data._run_status = RunStatus.SHUTDOWN
 

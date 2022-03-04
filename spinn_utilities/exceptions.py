@@ -19,8 +19,9 @@ class SpiNNUtilsException(Exception):
     """
 
 
-class FailedToFindBinaryException():
-    """ Raised when the executable finder cant find the binary
+class UnexpectedStateChange(SpiNNUtilsException):
+    """
+    raise when trying to change the state in an unexpected way
     """
 
 

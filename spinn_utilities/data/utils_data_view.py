@@ -143,15 +143,50 @@ class UtilsDataView(object):
 
     @classmethod
     def _is_mocked(cls):
-        return cls.__data._data_status == DataStatus.MOCKED
+        """
+        Checks if the view is in mocked state
 
-    #@classmethod
-    #def _is_in_run(cls):
-    #    return cls.__data._data_status == DataStatus.MOCKED
+        :rtype: bool
+        """
+        return cls.__data._data_status == DataStatus.MOCKED
 
     @classmethod
     def is_hard_reset(cls):
+        """
+        Check if the system has been reset since the last run finished.
+
+        Critically during the first run after reset this continues to return
+        True!
+
+        Returns False after a reset that was considered soft.
+
+        :return:
+        """
         return cls.__data._reset_status == ResetStatus.HARD_RESET
+
+    @classmethod
+    def is_ran_ever(cls):
+        if cls.__data._reset_status == ResetStatus.SETUP:
+            return False
+        if cls.__data._reset_status in [
+                ResetStatus.HAS_RUN, ResetStatus.SOFT_RESET,
+                ResetStatus.HARD_RESET]:
+            return True
+        raise NotImplementedError(
+            f"This call was not expected with reset status "
+            f"{cls.__data._reset_status}")
+
+    @classmethod
+    def is_ran_last(cls):
+        if cls.__data._reset_status == ResetStatus.HAS_RUN:
+            return True
+        if cls.__data._reset_status in [
+                ResetStatus.SETUP, ResetStatus.SOFT_RESET,
+                ResetStatus.HARD_RESET]:
+            return False
+        raise NotImplementedError(
+            f"This call was not expected with reset status "
+            f"{cls.__data._reset_status}")
 
     @classmethod
     def _check_user_write(cls):

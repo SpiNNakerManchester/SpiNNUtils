@@ -36,12 +36,18 @@ class TestUtilsData(unittest.TestCase):
         UtilsDataView._check_user_write()
         self.assertTrue(UtilsDataView._is_running())
         self.assertFalse(UtilsDataView.is_hard_reset())
+        with self.assertRaises(NotImplementedError):
+            UtilsDataView.is_ran_ever()
+        with self.assertRaises(NotImplementedError):
+            UtilsDataView.is_ran_last()
 
         writer = UtilsDataWriter.setup()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView._is_running())
         UtilsDataView._check_user_write()
         self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertFalse(UtilsDataView.is_ran_ever())
+        self.assertFalse(UtilsDataView.is_ran_last())
 
         # Normal run
         writer.start_run()
@@ -50,12 +56,17 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(DataLocked):
             UtilsDataView._check_user_write()
         self.assertFalse(UtilsDataView.is_hard_reset())
+        # Only set at end of the current run
+        self.assertFalse(UtilsDataView.is_ran_ever())
+        self.assertFalse(UtilsDataView.is_ran_last())
 
         writer.finish_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView._is_running())
         UtilsDataView._check_user_write()
         self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertTrue(UtilsDataView.is_ran_last())
 
         writer.start_run()
         self.assertFalse(UtilsDataView._is_mocked())
@@ -63,12 +74,16 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(DataLocked):
             UtilsDataView._check_user_write()
         self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertTrue(UtilsDataView.is_ran_last())
 
         writer.finish_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView._is_running())
         UtilsDataView._check_user_write()
         self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertTrue(UtilsDataView.is_ran_last())
 
         # soft reset
         writer.soft_reset()
@@ -76,6 +91,8 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView._is_running())
         UtilsDataView._check_user_write()
         self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertFalse(UtilsDataView.is_ran_last())
 
         writer.start_run()
         self.assertFalse(UtilsDataView._is_mocked())
@@ -83,12 +100,16 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(DataLocked):
             UtilsDataView._check_user_write()
         self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertFalse(UtilsDataView.is_ran_last())
 
         writer.finish_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView._is_running())
         UtilsDataView._check_user_write()
         self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertTrue(UtilsDataView.is_ran_last())
 
         # hard reset
         writer.hard_reset()
@@ -96,6 +117,8 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView._is_running())
         UtilsDataView._check_user_write()
         self.assertTrue(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertFalse(UtilsDataView.is_ran_last())
 
         writer.start_run()
         self.assertFalse(UtilsDataView._is_mocked())
@@ -104,12 +127,16 @@ class TestUtilsData(unittest.TestCase):
             UtilsDataView._check_user_write()
         # while running may still be in hard reset mode
         self.assertTrue(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertFalse(UtilsDataView.is_ran_last())
 
         writer.finish_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView._is_running())
         UtilsDataView._check_user_write()
         self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertTrue(UtilsDataView.is_ran_last())
 
         # stop
         writer.stopping()
@@ -118,6 +145,8 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(DataLocked):
             UtilsDataView._check_user_write()
         self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertTrue(UtilsDataView.is_ran_last())
 
         writer.shut_down()
         self.assertFalse(UtilsDataView._is_mocked())
@@ -125,6 +154,8 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(DataLocked):
             UtilsDataView._check_user_write()
         self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertTrue(UtilsDataView.is_ran_last())
 
 
         """"

@@ -69,8 +69,8 @@ class DataLocked(SpiNNUtilsException):
     """
     Raised when trying to access data while in a state it is locked
     """
-    def __init__(self, data, state):
-        super().__init__(f"Illegal call to get {data} while {state}.")
+    def __init__(self, state):
+        super().__init__(f"Illegal call to change data  while in {state}.")
 
 
 class IllegalState(DataNotYetAvialable):

@@ -17,7 +17,9 @@ import os.path
 
 from spinn_utilities.exceptions import (
     IllegalWriterException, InvalidDirectory)
-from .data_status import Data_Status
+from .data_status import DataStatus
+from .reset_status import ResetStatus
+from .run_status import RunStatus
 from .utils_data_view import UtilsDataView, _UtilsDataModel
 
 
@@ -35,9 +37,9 @@ class UtilsDataWriter(UtilsDataView):
 
         :param Data_Status state: State writer should be in
         """
-        if state == Data_Status.MOCKED:
+        if state == DataStatus.MOCKED:
             self._mock()
-        elif state == Data_Status.SETUP:
+        elif state == DataStatus.SETUP:
             self._setup()
         else:
             raise IllegalWriterException(
@@ -53,7 +55,7 @@ class UtilsDataWriter(UtilsDataView):
         :return: A Data Writer
         :rtype: UtilsDataWriter
         """
-        return cls(Data_Status.MOCKED)
+        return cls(DataStatus.MOCKED)
 
     @classmethod
     def setup(cls):
@@ -65,7 +67,7 @@ class UtilsDataWriter(UtilsDataView):
         :return: A Data Writer
         :rtype: UtilsDataWriter
         """
-        return cls(Data_Status.SETUP)
+        return cls(DataStatus.SETUP)
 
     def _mock(self):
         """
@@ -82,7 +84,9 @@ class UtilsDataWriter(UtilsDataView):
         set that value.
         """
         self.__data._clear()
-        self.__data._status = Data_Status.MOCKED
+        self.__data._data_status = DataStatus.MOCKED
+        self.__data._reset_status = ResetStatus.MOCKED
+        self.__data._run_status = RunStatus.MOCKED
 
     def _setup(self):
         """
@@ -90,21 +94,24 @@ class UtilsDataWriter(UtilsDataView):
 
         """
         self.__data._clear()
-        self.__data._status = Data_Status.SETUP
+        self.__data._data_status = DataStatus.SETUP
+        self.__data._reset_status = ResetStatus.SETUP
+        self.__data._run_status = RunStatus.NOT_RUNNING
 
     def start_run(self):
         """
         Puts all data into the state expected after do_run_loop started
 
         """
-        self.__data._status = Data_Status.IN_RUN
+        self.__data._run_status = RunStatus.IN_RUN
 
     def finish_run(self):
         """
         Puts all data into the state expected after sim.run
 
         """
-        self.__data._status = Data_Status.FINISHED
+        self.__data._run_status = RunStatus.NOT_RUNNING
+        self.__data._reset_status = ResetStatus.HAS_RUN
 
     def hard_reset(self):
         """
@@ -114,7 +121,8 @@ class UtilsDataWriter(UtilsDataView):
         This resets any data set after sim.setup has finished
         """
         self.__data._hard_reset()
-        # self.__utils_data._status = Data_Status.HARD_RESET
+        self.__data._reset_status = ResetStatus.HARD_RESET
+
 
     def soft_reset(self):
         """
@@ -123,20 +131,22 @@ class UtilsDataWriter(UtilsDataView):
 
         """
         self.__data._soft_reset()
+        self.__data._reset_status = ResetStatus.SOFT_RESET
 
     def stopping(self):
         """
         Puts all data into the state expected during stop
 
         """
-        self.__data._status = Data_Status.STOPPING
+        self.__data._run_status = RunStatus.STOPPING
 
     def shut_down(self):
         """
         Puts all data into the state expected after sim.end
 
         """
-        self.__data._status = Data_Status.SHUTDOWN
+        self.__data._data_status = DataStatus.SHUTDOWN
+        self.__data._run_status = RunStatus.SHUTDOWN
 
     def set_run_dir_path(self, run_dir_path):
         """

@@ -14,7 +14,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import tempfile
-from .data_status import Data_Status
+from .data_status import DataStatus
+from .reset_status import ResetStatus
+from .run_status import RunStatus
+from spinn_utilities.exceptions import DataLocked, DataNotMocked
 from spinn_utilities.executable_finder import ExecutableFinder
 
 
@@ -36,12 +39,12 @@ class _UtilsDataModel(object):
     __singleton = None
 
     __slots__ = [
-        # Data values cached
+        "_data_status",
         "_executable_finder",
+        "_reset_status",
         "_run_dir_path",
+        "_run_status",
         "_temporary_directory",
-        # Data status mainly to raise best Exception
-        "_status"
     ]
 
     def __new__(cls):
@@ -51,8 +54,10 @@ class _UtilsDataModel(object):
         obj = object.__new__(cls)
         cls.__singleton = obj
         obj._clear()
-        obj._status = Data_Status.NOT_SETUP
+        obj._data_status = DataStatus.NOT_SETUP
         obj._executable_finder = ExecutableFinder()
+        obj._reset_status = ResetStatus.NOT_SETUP
+        obj._run_status = RunStatus.NOT_SETUP
 
         return obj
 
@@ -60,6 +65,7 @@ class _UtilsDataModel(object):
         """
         Clears out all data
         """
+        self._run_dir_path = None
         self._temporary_directory = None
         self._hard_reset()
 
@@ -69,6 +75,7 @@ class _UtilsDataModel(object):
             sim.reset
         """
         self._run_dir_path = None
+        self._soft_reset()
 
     def _soft_reset(self):
         """
@@ -114,7 +121,7 @@ class UtilsDataView(object):
         :param str data: Name of the data not found
         :rtype: ~spinn_utilities.exceptions.SpiNNUtilsException
         """
-        return cls.__data._status.exception(data)
+        return cls.__data._data_status.exception(data)
 
     # Report directories
     # There are NO has or get methods for directories
@@ -135,13 +142,50 @@ class UtilsDataView(object):
         return cls.__data._temporary_directory.name
 
     @classmethod
-    def get_status(cls):
-        """
-        Returns the current status
+    def _is_mocked(cls):
+        return cls.__data._data_status == DataStatus.MOCKED
 
-        :rtype: Data_Status
+    @classmethod
+    def _is_in_run(cls):
+        return cls.__data._data_status == DataStatus.MOCKED
+
+    @classmethod
+    def _check_user_write(cls):
         """
-        return cls.__data._status
+        Throws an erro if the status is such that users should not change data
+
+        :raises DataLocked:
+        """
+        if cls.__data._run_status in [RunStatus.MOCKED, RunStatus.NOT_RUNNING]:
+            return
+        raise DataLocked(cls.__data._run_status)
+
+    @classmethod
+    def _is_running(cls):
+        """
+        Dettermines if simulator is currently running.
+
+        This returns True in the Mocked state
+
+        :rtpye: bool
+        :raises NotImplementedError: If the data has not yet been settup or
+            on an unexpected run_status
+        """
+        if cls.__data._run_status in [
+                RunStatus.MOCKED, RunStatus.IN_RUN, RunStatus.STOPPING]:
+            return True
+        if cls.__data._run_status in [
+                RunStatus.NOT_RUNNING, RunStatus.SHUTDOWN]:
+            return False
+        raise NotImplementedError(
+            f"Unexpected with RunStatus {cls.__data._run_status}")
+
+    @classmethod
+    def _has_run(cls):
+        """
+
+        :return:
+        """
 
     @classmethod
     def get_run_dir_path(cls):
@@ -160,7 +204,7 @@ class UtilsDataView(object):
         """
         if cls.__data._run_dir_path:
             return cls.__data._run_dir_path
-        if cls.__data._status == Data_Status.MOCKED:
+        if cls._is_mocked():
             return cls._temporary_dir_path()
         raise cls._exception("run_dir_path")
 

@@ -18,20 +18,18 @@ from spinn_utilities.exceptions import (
     DataNotMocked, DataNotYetAvialable, NotSetupException, ShutdownException)
 
 
-class DataStatus(Enum):
-    """ Different states the Data can be in.
+class RunStatus(Enum):
+    """ Different states the run could be in
     """
-    NOT_SETUP = (0, NotSetupException)
-    MOCKED = (1, DataNotMocked)
-    SETUP = (2, DataNotYetAvialable)
-    SHUTDOWN = (3, ShutdownException)
+    NOT_SETUP = (0)
+    MOCKED = (1)
+    NOT_RUNNING = (2)
+    IN_RUN = (3)
+    STOPPING = (4)
+    SHUTDOWN = (5)
 
-    def __new__(cls, value, exception):
+    def __new__(cls, value):
         # pylint: disable=protected-access
         obj = object.__new__(cls)
         obj._value_ = value
-        obj._exception = exception
         return obj
-
-    def exception(self, data):
-        return self._exception(data)

@@ -17,10 +17,10 @@ import os
 import unittest
 from spinn_utilities.data import UtilsDataView
 from spinn_utilities.data.utils_data_writer import UtilsDataWriter
-from spinn_utilities.data.data_status import Data_Status
+from spinn_utilities.data.data_status import DataStatus
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.exceptions import (
-    DataNotYetAvialable, IllegalWriterException, InvalidDirectory)
+    DataLocked, DataNotYetAvialable, IllegalWriterException, InvalidDirectory)
 
 
 class TestUtilsData(unittest.TestCase):
@@ -30,9 +30,41 @@ class TestUtilsData(unittest.TestCase):
 
     def test_status(self):
         # NOT_SETUP only reachable on first call or via hack
-        UtilsDataWriter(Data_Status.MOCKED)
-        self.assertEqual(Data_Status.MOCKED, UtilsDataWriter.get_status())
-        writer = UtilsDataWriter(Data_Status.SETUP)
+        UtilsDataWriter.mock()
+        self.assertTrue(UtilsDataView._is_mocked())
+        # Most is tests return True if mocked
+        UtilsDataView._check_user_write()
+        self.assertTrue(UtilsDataView._is_running())
+
+        writer = UtilsDataWriter.setup()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView._is_running())
+        UtilsDataView._check_user_write()
+
+        writer.start_run()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertTrue(UtilsDataView._is_running())
+        with self.assertRaises(DataLocked):
+            UtilsDataView._check_user_write()
+
+        writer.finish_run()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView._is_running())
+        UtilsDataView._check_user_write()
+
+        writer.stopping()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertTrue(UtilsDataView._is_running())
+        with self.assertRaises(DataLocked):
+            UtilsDataView._check_user_write()
+
+        writer.shut_down()
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView._is_running())
+        with self.assertRaises(DataLocked):
+            UtilsDataView._check_user_write()
+
+        """"
         self.assertEqual(Data_Status.SETUP, UtilsDataWriter.get_status())
         writer.hard_reset()
         # self.assertEqual(Data_Status.HARD_RESET, view.status)
@@ -44,20 +76,21 @@ class TestUtilsData(unittest.TestCase):
         self.assertEqual(Data_Status.STOPPING, UtilsDataWriter.get_status())
         writer.shut_down()
         self.assertEqual(Data_Status.SHUTDOWN, UtilsDataWriter.get_status())
+        """
 
     def test_directories_setup(self):
-        writer = UtilsDataWriter(Data_Status.MOCKED)
+        writer = UtilsDataWriter.setup()
         # setup should clear mocked
         writer.setup()
         with self.assertRaises(DataNotYetAvialable):
             UtilsDataView.get_run_dir_path()
 
     def test_directories_mocked(self):
-        UtilsDataWriter(Data_Status.MOCKED)
+        UtilsDataWriter.mock()
         self.assertTrue(os.path.exists(UtilsDataView.get_run_dir_path()))
 
     def test_set_run_dir_path(self):
-        writer = UtilsDataWriter(Data_Status.SETUP)
+        writer = UtilsDataWriter.setup()
         writer.setup()
         with self.assertRaises(InvalidDirectory):
             writer.set_run_dir_path("bacon")
@@ -67,7 +100,9 @@ class TestUtilsData(unittest.TestCase):
 
     def test_writer_init_block(self):
         with self.assertRaises(IllegalWriterException):
-            UtilsDataWriter(Data_Status.IN_RUN)
+            UtilsDataWriter(DataStatus.NOT_SETUP)
+        with self.assertRaises(IllegalWriterException):
+            UtilsDataWriter("bacon")
 
     def test_excutable_finder(self):
         writer = UtilsDataWriter.setup()

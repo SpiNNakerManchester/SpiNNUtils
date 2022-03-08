@@ -120,7 +120,7 @@ class UtilsDataWriter(UtilsDataView):
         """
         if self.__data._run_status != RunStatus.IN_RUN:
             raise UnexpectedStateChange(
-                f"Unexpected start run when in run state "
+                f"Unexpected finish run when in run state "
                 f"{self.__data._run_status}")
         self.__data._run_status = RunStatus.NOT_RUNNING
         self.__data._reset_status = ResetStatus.HAS_RUN
@@ -191,7 +191,8 @@ class UtilsDataWriter(UtilsDataView):
         Puts all data into the state expected after sim.end
 
         """
-        if self.__data._run_status != RunStatus.STOPPING:
+        if not self.__data._run_status in [
+                RunStatus.STOPPING, RunStatus.SHUTDOWN]:
             raise UnexpectedStateChange(
                 f"Unexpected shut down when in run state "
                 f"{self.__data._run_status}")

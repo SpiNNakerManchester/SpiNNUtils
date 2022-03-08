@@ -153,7 +153,7 @@ class UtilsDataView(object):
     @classmethod
     def is_hard_reset(cls):
         """
-        Check if the system has been reset since the last run finished.
+        Check if the system has been hard reset since the last run finished.
 
         Critically during the first run after reset this continues to return
         True!
@@ -163,6 +163,21 @@ class UtilsDataView(object):
         :return:
         """
         return cls.__data._reset_status == ResetStatus.HARD_RESET
+
+    @classmethod
+    def is_reset(cls):
+        """
+        Check if the system has been reset since the last run finished.
+
+        Critically during the first run after reset this continues to return
+        True!
+
+        Returns False after a reset that was considered soft.
+
+        :return:
+        """
+        return cls.__data._reset_status in [
+            ResetStatus.SOFT_RESET, ResetStatus.HARD_RESET]
 
     @classmethod
     def is_ran_ever(cls):

@@ -165,9 +165,9 @@ class UtilsDataView(object):
         return cls.__data._reset_status == ResetStatus.HARD_RESET
 
     @classmethod
-    def is_reset(cls):
+    def is_soft_reset(cls):
         """
-        Check if the system has been reset since the last run finished.
+        Check if the system has been soft_reset since the last run finished.
 
         Critically during the first run after reset this continues to return
         True!
@@ -176,8 +176,7 @@ class UtilsDataView(object):
 
         :return:
         """
-        return cls.__data._reset_status in [
-            ResetStatus.SOFT_RESET, ResetStatus.HARD_RESET]
+        return cls.__data._reset_status == ResetStatus.SOFT_RESET
 
     @classmethod
     def is_ran_ever(cls):
@@ -206,7 +205,7 @@ class UtilsDataView(object):
     @classmethod
     def _check_user_write(cls):
         """
-        Throws an erro if the status is such that users should not change data
+        Throws an error if the status is such that users should not change data
 
         :raises DataLocked:
         """
@@ -215,22 +214,23 @@ class UtilsDataView(object):
         raise DataLocked(cls.__data._run_status)
 
     @classmethod
-    def _is_running(cls):
+    def is_user_mode(cls):
         """
-        Dettermines if simulator is currently running.
+        Determines if simulator is currently not running so user is\
+        accessing data
 
-        This returns True in the Mocked state
+        This returns False in the Mocked state
 
         :rtpye: bool
         :raises NotImplementedError: If the data has not yet been settup or
             on an unexpected run_status
         """
         if cls.__data._run_status in [
-                RunStatus.MOCKED, RunStatus.IN_RUN, RunStatus.STOPPING]:
-            return True
+                RunStatus.IN_RUN, RunStatus.STOPPING, RunStatus.MOCKED]:
+            return False
         if cls.__data._run_status in [
                 RunStatus.NOT_RUNNING, RunStatus.SHUTDOWN]:
-            return False
+            return True
         raise NotImplementedError(
             f"Unexpected with RunStatus {cls.__data._run_status}")
 

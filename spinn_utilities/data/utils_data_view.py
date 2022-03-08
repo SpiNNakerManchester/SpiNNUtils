@@ -203,7 +203,7 @@ class UtilsDataView(object):
             f"{cls.__data._reset_status}")
 
     @classmethod
-    def _check_user_write(cls):
+    def check_user_write(cls):
         """
         Throws an error if the status is such that users should not change data
 

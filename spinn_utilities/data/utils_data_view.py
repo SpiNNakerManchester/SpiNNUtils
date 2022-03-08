@@ -203,6 +203,16 @@ class UtilsDataView(object):
             f"{cls.__data._reset_status}")
 
     @classmethod
+    def is_no_stop_requested(cls):
+        if cls.__data._run_status == RunStatus.IN_RUN:
+            return False
+        if cls.__data._run_status == RunStatus.STOP_REQUESTED:
+            return True
+        raise NotImplementedError(
+            f"This call was not expected with run status "
+            f"{cls.__data._run_status}")
+
+    @classmethod
     def check_user_write(cls):
         """
         Throws an error if the status is such that users should not change data
@@ -226,7 +236,8 @@ class UtilsDataView(object):
             on an unexpected run_status
         """
         if cls.__data._run_status in [
-                RunStatus.IN_RUN, RunStatus.STOPPING, RunStatus.MOCKED]:
+                RunStatus.IN_RUN, RunStatus.STOPPING, RunStatus.MOCKED,
+                RunStatus.STOP_REQUESTED]:
             return False
         if cls.__data._run_status in [
                 RunStatus.NOT_RUNNING, RunStatus.SHUTDOWN]:

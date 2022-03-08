@@ -118,7 +118,8 @@ class UtilsDataWriter(UtilsDataView):
         Puts all data into the state expected after sim.run
 
         """
-        if self.__data._run_status != RunStatus.IN_RUN:
+        if self.__data._run_status not in [
+                RunStatus.IN_RUN, RunStatus.STOP_REQUESTED]:
             raise UnexpectedStateChange(
                 f"Unexpected finish run when in run state "
                 f"{self.__data._run_status}")
@@ -174,6 +175,13 @@ class UtilsDataWriter(UtilsDataView):
         raise UnexpectedStateChange(
             f"Unexpected call to reset while reset status is "
             f"{self.__data._reset_status}")
+
+    def request_stop(self):
+        if self.__data._run_status != RunStatus.IN_RUN:
+            raise UnexpectedStateChange(
+                f"Unexpected request run when in run state "
+                f"{self.__data._run_status}")
+        self.__data._run_status = RunStatus.STOP_REQUESTED
 
     def stopping(self):
         """

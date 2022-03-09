@@ -191,6 +191,10 @@ class UtilsDataView(object):
             f"{cls.__data._reset_status}")
 
     @classmethod
+    def is_running(cls):
+        return cls.__data._run_status == RunStatus.IN_RUN
+
+    @classmethod
     def is_ran_last(cls):
         if cls.__data._reset_status == ResetStatus.HAS_RUN:
             return True
@@ -222,6 +226,18 @@ class UtilsDataView(object):
         if cls.__data._run_status in [RunStatus.MOCKED, RunStatus.NOT_RUNNING]:
             return
         raise DataLocked(cls.__data._run_status)
+
+    @classmethod
+    def is_setup(cls):
+        if cls.__data._run_status in [RunStatus.NOT_SETUP, RunStatus.STOPPING]:
+            return False
+        if cls.__data._run_status in [
+                RunStatus.NOT_RUNNING, RunStatus.IN_RUN,
+                RunStatus.STOP_REQUESTED, RunStatus.STOPPING]:
+            return True
+        raise NotImplementedError(
+            f"This call was not expected with run status "
+            f"{cls.__data._run_status}")
 
     @classmethod
     def is_user_mode(cls):

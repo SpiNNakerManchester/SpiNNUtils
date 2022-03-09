@@ -66,14 +66,6 @@ class DataNotMocked(DataNotYetAvialable):
         super().__init__(f"MOCK {data}")
 
 
-class DataLocked(SpiNNUtilsException):
-    """
-    Raised when trying to access data while in a state it is locked
-    """
-    def __init__(self, state):
-        super().__init__(f"Illegal call to change data  while in {state}.")
-
-
 class IllegalState(DataNotYetAvialable):
     """
     Raised when trying to get data before a mocked simulator has created it
@@ -82,7 +74,7 @@ class IllegalState(DataNotYetAvialable):
 
 class ShutdownException(SpiNNUtilsException):
     """
-    Raised when trying to get simulator data after it has been shit down
+    Raised when trying to get simulator data after it has been shut down
     """
     def __init__(self, data):
         super().__init__(f"Requesting {data} is not valid after end")
@@ -91,4 +83,22 @@ class ShutdownException(SpiNNUtilsException):
 class IllegalWriterException(SpiNNUtilsException):
     """
     Raised when trying to create a writer other than setup or Mock
+    """
+
+
+class SimulatorNotSetupException(SpiNNUtilsException):
+    """
+    Raised when trying to get simulator before it has been setup
+    """
+
+
+class SimulatorShutdownException(SpiNNUtilsException):
+    """
+    Raised when trying to get simulator after it has been shit down
+    """
+
+
+class SimulatorRunningException(SpiNNUtilsException):
+    """
+    Raised when trying to running get simulator that should not be running
     """

@@ -17,7 +17,9 @@ import tempfile
 from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus
-from spinn_utilities.exceptions import DataLocked, DataNotMocked
+from spinn_utilities.exceptions import (
+    SimulatorNotSetupException,
+    SimulatorRunningException, SimulatorShutdownException)
 from spinn_utilities.executable_finder import ExecutableFinder
 
 
@@ -141,6 +143,8 @@ class UtilsDataView(object):
             cls.__data._temporary_directory = tempfile.TemporaryDirectory()
         return cls.__data._temporary_directory.name
 
+    # Status checks
+
     @classmethod
     def _is_mocked(cls):
         """
@@ -160,7 +164,7 @@ class UtilsDataView(object):
 
         Returns False after a reset that was considered soft.
 
-        :return:
+        :rtype: bool
         """
         return cls.__data._reset_status == ResetStatus.HARD_RESET
 
@@ -174,12 +178,19 @@ class UtilsDataView(object):
 
         Returns False after a reset that was considered soft.
 
-        :return:
+        :rtype: bool
         """
         return cls.__data._reset_status == ResetStatus.SOFT_RESET
 
     @classmethod
     def is_ran_ever(cls):
+        """
+        Check if the simulation has run at least once, ignoring resets
+
+        :rtype: bool
+        :raises NotImplementedError:
+            If this is called from an unexpected state
+        """
         if cls.__data._reset_status == ResetStatus.SETUP:
             return False
         if cls.__data._reset_status in [
@@ -191,11 +202,12 @@ class UtilsDataView(object):
             f"{cls.__data._reset_status}")
 
     @classmethod
-    def is_running(cls):
-        return cls.__data._run_status == RunStatus.IN_RUN
-
-    @classmethod
     def is_ran_last(cls):
+        """
+        Checks if the simulation has run and not been reset.
+
+        :rytpe: bool
+        """
         if cls.__data._reset_status == ResetStatus.HAS_RUN:
             return True
         if cls.__data._reset_status in [
@@ -208,6 +220,11 @@ class UtilsDataView(object):
 
     @classmethod
     def is_no_stop_requested(cls):
+        """
+        Checks that a stop request has not been sent
+
+        :return:
+        """
         if cls.__data._run_status == RunStatus.IN_RUN:
             return False
         if cls.__data._run_status == RunStatus.STOP_REQUESTED:
@@ -217,18 +234,49 @@ class UtilsDataView(object):
             f"{cls.__data._run_status}")
 
     @classmethod
-    def check_user_write(cls):
+    def is_running(cls):
         """
-        Throws an error if the status is such that users should not change data
+        Checks if there is currently a simulaation running
 
-        :raises DataLocked:
+        That is a call to run has started but not yet stopped,
+
+        :rtype: bool
+        """
+        return cls.__data._run_status == RunStatus.IN_RUN
+
+    @classmethod
+    def check_user_can_act(cls):
+        """
+        Throws an error if the status is such that users be making calls
+
+        :raises SimulatorRunningException: If sim.run is currently running
+        :raises SimulatorNotSetupException: If called before sim.setup
+        :raises SimulatorShutdownException; If called after sim.end
         """
         if cls.__data._run_status in [RunStatus.MOCKED, RunStatus.NOT_RUNNING]:
             return
-        raise DataLocked(cls.__data._run_status)
+        if cls.__data._run_status in [
+                RunStatus.IN_RUN, RunStatus.STOPPING,
+                RunStatus.STOP_REQUESTED]:
+            raise SimulatorRunningException(
+                f"This call is not supported while the simulator is running "
+                f"and in state {cls.__data._run_status}")
+        if cls.__data._run_status == RunStatus.NOT_SETUP:
+            raise SimulatorNotSetupException(
+                "This call is not supported before setup has been called")
+        if cls.__data._run_status == RunStatus.SHUTDOWN:
+            raise SimulatorShutdownException(
+                "This call is not valid after end or stop has been called")
+        raise NotImplementedError(
+            f"Unexpected run state: cls.__data._run_status")
 
     @classmethod
     def is_setup(cls):
+        """
+        Checks to see if there is already a simulator
+
+        :rtype: bool
+        """
         if cls.__data._run_status in [RunStatus.NOT_SETUP, RunStatus.SHUTDOWN]:
             return False
         if cls.__data._run_status in [
@@ -260,13 +308,6 @@ class UtilsDataView(object):
             return True
         raise NotImplementedError(
             f"Unexpected with RunStatus {cls.__data._run_status}")
-
-    @classmethod
-    def _has_run(cls):
-        """
-
-        :return:
-        """
 
     @classmethod
     def get_run_dir_path(cls):

@@ -16,14 +16,15 @@
 import os
 import unittest
 from spinn_utilities.data import UtilsDataView
-from spinn_utilities.data.data_status import DataStatus
 from spinn_utilities.data.reset_status import ResetStatus
 from spinn_utilities.data.run_status import RunStatus
 from spinn_utilities.data.utils_data_writer import UtilsDataWriter
 from spinn_utilities.data.data_status import DataStatus
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.exceptions import (
-    DataLocked, DataNotYetAvialable, IllegalWriterException, InvalidDirectory)
+    DataNotYetAvialable, IllegalWriterException, InvalidDirectory,
+    SimulatorNotSetupException, SimulatorRunningException,
+    SimulatorShutdownException)
 
 
 class TestUtilsData(unittest.TestCase):
@@ -35,7 +36,7 @@ class TestUtilsData(unittest.TestCase):
         UtilsDataWriter.mock()
         self.assertTrue(UtilsDataView._is_mocked())
         # Most is tests return True if mocked
-        UtilsDataView.check_user_write()
+        UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertFalse(UtilsDataView.is_soft_reset())
@@ -57,8 +58,8 @@ class TestUtilsData(unittest.TestCase):
         UtilsDataWriter._UtilsDataWriter__data._run_status = \
             RunStatus.NOT_SETUP
         self.assertFalse(UtilsDataView._is_mocked())
-        with self.assertRaises(DataLocked):
-            UtilsDataView.check_user_write()
+        with self.assertRaises(SimulatorNotSetupException):
+            UtilsDataView.check_user_can_act()
         with self.assertRaises(NotImplementedError):
             self.assertFalse(UtilsDataView.is_user_mode())
         self.assertFalse(UtilsDataView.is_hard_reset())
@@ -75,7 +76,7 @@ class TestUtilsData(unittest.TestCase):
         writer = UtilsDataWriter.setup()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
-        UtilsDataView.check_user_write()
+        UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertFalse(UtilsDataView.is_ran_ever())
@@ -89,8 +90,8 @@ class TestUtilsData(unittest.TestCase):
         writer.start_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
-        with self.assertRaises(DataLocked):
-            UtilsDataView.check_user_write()
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertFalse(UtilsDataView.is_soft_reset())
         # Only set at end of the current run
@@ -103,7 +104,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
-        UtilsDataView.check_user_write()
+        UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
@@ -116,8 +117,8 @@ class TestUtilsData(unittest.TestCase):
         writer.start_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
-        with self.assertRaises(DataLocked):
-            UtilsDataView.check_user_write()
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
@@ -130,8 +131,8 @@ class TestUtilsData(unittest.TestCase):
         writer.hard_reset()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
-        with self.assertRaises(DataLocked):
-            UtilsDataView.check_user_write()
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
@@ -143,7 +144,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
-        UtilsDataView.check_user_write()
+        UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
@@ -157,7 +158,7 @@ class TestUtilsData(unittest.TestCase):
         writer.soft_reset()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
-        UtilsDataView.check_user_write()
+        UtilsDataView.check_user_can_act()
         self.assertTrue(UtilsDataView.is_soft_reset())
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
@@ -170,8 +171,8 @@ class TestUtilsData(unittest.TestCase):
         writer.start_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
-        with self.assertRaises(DataLocked):
-            UtilsDataView.check_user_write()
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.check_user_can_act()
         self.assertTrue(UtilsDataView.is_soft_reset())
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
@@ -183,7 +184,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
-        UtilsDataView.check_user_write()
+        UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
@@ -197,7 +198,7 @@ class TestUtilsData(unittest.TestCase):
         writer.hard_reset()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
-        UtilsDataView.check_user_write()
+        UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
@@ -210,8 +211,8 @@ class TestUtilsData(unittest.TestCase):
         writer.start_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
-        with self.assertRaises(DataLocked):
-            UtilsDataView.check_user_write()
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.check_user_can_act()
         # while running may still be in hard reset mode
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_hard_reset())
@@ -224,8 +225,8 @@ class TestUtilsData(unittest.TestCase):
         writer.request_stop()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
-        with self.assertRaises(DataLocked):
-            UtilsDataView.check_user_write()
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.check_user_can_act()
         # while running may still be in hard reset mode
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_hard_reset())
@@ -238,7 +239,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
-        UtilsDataView.check_user_write()
+        UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
@@ -252,8 +253,8 @@ class TestUtilsData(unittest.TestCase):
         writer.stopping()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
-        with self.assertRaises(DataLocked):
-            UtilsDataView.check_user_write()
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
@@ -266,8 +267,8 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
-        with self.assertRaises(DataLocked):
-            UtilsDataView.check_user_write()
+        with self.assertRaises(SimulatorShutdownException):
+            UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())

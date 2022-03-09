@@ -229,7 +229,7 @@ class UtilsDataView(object):
 
     @classmethod
     def is_setup(cls):
-        if cls.__data._run_status in [RunStatus.NOT_SETUP, RunStatus.STOPPING]:
+        if cls.__data._run_status in [RunStatus.NOT_SETUP, RunStatus.SHUTDOWN]:
             return False
         if cls.__data._run_status in [
                 RunStatus.NOT_RUNNING, RunStatus.IN_RUN,

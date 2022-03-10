@@ -100,5 +100,12 @@ class SimulatorShutdownException(SpiNNUtilsException):
 
 class SimulatorRunningException(SpiNNUtilsException):
     """
-    Raised when trying to running get simulator that should not be running
+    Raised when trying an action that should not happen while the simulator
+    is running
+    """
+
+
+class SimulatorNotRunException(SpiNNUtilsException):
+    """
+    Raised when trying to reset or stop before starting
     """

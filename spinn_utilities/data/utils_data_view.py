@@ -18,7 +18,7 @@ from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus
 from spinn_utilities.exceptions import (
-    SimulatorNotSetupException,
+    SimulatorNotRunException, SimulatorNotSetupException,
     SimulatorRunningException, SimulatorShutdownException)
 from spinn_utilities.executable_finder import ExecutableFinder
 
@@ -226,9 +226,9 @@ class UtilsDataView(object):
         :return:
         """
         if cls.__data._run_status == RunStatus.IN_RUN:
-            return False
-        if cls.__data._run_status == RunStatus.STOP_REQUESTED:
             return True
+        if cls.__data._run_status == RunStatus.STOP_REQUESTED:
+            return False
         raise NotImplementedError(
             f"This call was not expected with run status "
             f"{cls.__data._run_status}")
@@ -245,22 +245,17 @@ class UtilsDataView(object):
         return cls.__data._run_status == RunStatus.IN_RUN
 
     @classmethod
-    def check_user_can_act(cls):
+    def _check_valid_simulator(cls):
         """
-        Throws an error if the status is such that users be making calls
+        Throws an error if there is no simulator
 
-        :raises SimulatorRunningException: If sim.run is currently running
         :raises SimulatorNotSetupException: If called before sim.setup
         :raises SimulatorShutdownException; If called after sim.end
         """
-        if cls.__data._run_status in [RunStatus.MOCKED, RunStatus.NOT_RUNNING]:
-            return
         if cls.__data._run_status in [
-                RunStatus.IN_RUN, RunStatus.STOPPING,
-                RunStatus.STOP_REQUESTED]:
-            raise SimulatorRunningException(
-                f"This call is not supported while the simulator is running "
-                f"and in state {cls.__data._run_status}")
+                RunStatus.NOT_RUNNING, RunStatus.IN_RUN,
+                RunStatus.STOP_REQUESTED, RunStatus.STOPPING]:
+            return
         if cls.__data._run_status == RunStatus.NOT_SETUP:
             raise SimulatorNotSetupException(
                 "This call is not supported before setup has been called")
@@ -268,7 +263,27 @@ class UtilsDataView(object):
             raise SimulatorShutdownException(
                 "This call is not valid after end or stop has been called")
         raise NotImplementedError(
-            f"Unexpected run state: cls.__data._run_status")
+            f"Unexpected run state: {cls.__data._run_status}")
+
+    @classmethod
+    def check_user_can_act(cls):
+        """
+        Checks if the status is such that users can be making calls
+
+        :raises SimulatorRunningException: If sim.run is currently running
+        :raises SimulatorNotSetupException: If called before sim.setup
+        :raises SimulatorShutdownException; If called after sim.end
+        """
+        if cls.__data._run_status in [
+                RunStatus.MOCKED, RunStatus.NOT_RUNNING]:
+            return
+        if cls.__data._run_status in [
+                RunStatus.IN_RUN, RunStatus.STOPPING,
+                RunStatus.STOP_REQUESTED]:
+            raise SimulatorRunningException(
+                f"This call is not supported while the simulator is running "
+                f"and in state {cls.__data._run_status}")
+        cls._check_valid_simulator()
 
     @classmethod
     def is_setup(cls):

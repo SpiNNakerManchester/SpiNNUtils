@@ -17,7 +17,8 @@ import os.path
 
 import logging
 from spinn_utilities.exceptions import (
-    IllegalWriterException, InvalidDirectory, UnexpectedStateChange)
+    IllegalWriterException, InvalidDirectory, SimulatorNotRunException,
+    UnexpectedStateChange)
 from spinn_utilities.log import FormatAdapter
 from .data_status import DataStatus
 from .reset_status import ResetStatus
@@ -108,6 +109,7 @@ class UtilsDataWriter(UtilsDataView):
 
         """
         if self.__data._run_status != RunStatus.NOT_RUNNING:
+            self._check_valid_simulator()
             raise UnexpectedStateChange(
                 f"Unexpected start run when in run state "
                 f"{self.__data._run_status}")
@@ -144,11 +146,15 @@ class UtilsDataWriter(UtilsDataView):
         This resets any data set after sim.setup has finished
         """
         if self.__data._reset_status in [
-                ResetStatus.SETUP, ResetStatus.HAS_RUN,
+                ResetStatus.HAS_RUN,
                 ResetStatus.SOFT_RESET]:
             # call the protected method at the highest possible level
             self._hard_reset()
             return
+        self._check_valid_simulator()
+        if self.__data._reset_status == ResetStatus.SETUP:
+            raise SimulatorNotRunException(
+                "Calling reset before calling run is not supported")
         raise UnexpectedStateChange(
             f"Unexpected call to reset while reset status is "
             f"{self.__data._reset_status}")
@@ -172,14 +178,21 @@ class UtilsDataWriter(UtilsDataView):
             # call the protected method at the highest possible level
             self._soft_reset()
             return
+
+        self._check_valid_simulator()
+        if self.__data._reset_status == ResetStatus.SETUP:
+            raise SimulatorNotRunException(
+                "Calling reset before calling run is not supported")
         raise UnexpectedStateChange(
             f"Unexpected call to reset while reset status is "
             f"{self.__data._reset_status}")
 
+
     def request_stop(self):
         if self.__data._run_status != RunStatus.IN_RUN:
+            self._check_valid_simulator()
             raise UnexpectedStateChange(
-                f"Unexpected request run when in run state "
+                f"Unexpected request stop when in run state "
                 f"{self.__data._run_status}")
         self.__data._run_status = RunStatus.STOP_REQUESTED
 
@@ -187,8 +200,11 @@ class UtilsDataWriter(UtilsDataView):
         """
         Puts all data into the state expected during stop
 
+        :raises SimulatorNotSetupException: If called before sim.setup
+        :raises SimulatorShutdownException: If called after sim.end
         """
         if self.__data._run_status != RunStatus.NOT_RUNNING:
+            self._check_valid_simulator()
             logger.warning(
                 f"Stop called with unexpected run status "
                 f"{self.__data._run_status}")

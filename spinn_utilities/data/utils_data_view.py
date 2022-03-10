@@ -18,8 +18,8 @@ from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus
 from spinn_utilities.exceptions import (
-    SimulatorNotRunException, SimulatorNotSetupException,
-    SimulatorRunningException, SimulatorShutdownException)
+    SimulatorNotSetupException, SimulatorRunningException,
+    SimulatorShutdownException, UnexpectedStateChange)
 from spinn_utilities.executable_finder import ExecutableFinder
 
 
@@ -323,6 +323,30 @@ class UtilsDataView(object):
             return True
         raise NotImplementedError(
             f"Unexpected with RunStatus {cls.__data._run_status}")
+
+    @classmethod
+    def is_stop_already_requested(cls):
+        """
+        Checks if there has already been a request stop
+
+        Also checks the state is such that a stop request makes sense.
+
+        :return: True if the stop has already been requested
+            or if the system is stopping or has already stopped
+            False if the stop request makes sense.
+        raises SpiNNUtilsException:
+            If the stop_run was not expected in the current state.
+        """
+        if cls.__data._run_status == RunStatus.IN_RUN:
+            return False
+        if cls.__data._run_status == RunStatus.STOP_REQUESTED:
+            return True
+        cls._check_valid_simulator()
+        if cls.is_ran_ever():
+            raise UnexpectedStateChange(
+                "Calling stop after run has finished does not make sense")
+        raise UnexpectedStateChange(
+                "Calling stop before run does not make sense")
 
     @classmethod
     def get_run_dir_path(cls):

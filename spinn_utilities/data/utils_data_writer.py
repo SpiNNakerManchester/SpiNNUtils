@@ -145,6 +145,9 @@ class UtilsDataWriter(UtilsDataView):
 
         This resets any data set after sim.setup has finished
         """
+        if not self.__data._run_status in [
+                RunStatus.IN_RUN, RunStatus.STOP_REQUESTED]:
+            self.check_user_can_act()
         if self.__data._reset_status in [
                 ResetStatus.HAS_RUN,
                 ResetStatus.SOFT_RESET]:
@@ -174,12 +177,11 @@ class UtilsDataWriter(UtilsDataView):
         graph changed
 
         """
+        self.check_user_can_act()
         if self.__data._reset_status == ResetStatus.HAS_RUN:
             # call the protected method at the highest possible level
             self._soft_reset()
             return
-
-        self._check_valid_simulator()
         if self.__data._reset_status == ResetStatus.SETUP:
             raise SimulatorNotRunException(
                 "Calling reset before calling run is not supported")

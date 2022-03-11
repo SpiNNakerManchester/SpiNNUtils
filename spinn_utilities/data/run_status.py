@@ -14,8 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from enum import Enum
-from spinn_utilities.exceptions import (
-    DataNotMocked, DataNotYetAvialable, NotSetupException, ShutdownException)
 
 
 class RunStatus(Enum):

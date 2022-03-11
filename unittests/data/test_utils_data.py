@@ -56,7 +56,7 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_ran_last()
         with self.assertRaises(NotImplementedError):
-             UtilsDataView.is_no_stop_requested()
+            UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
         self.assertFalse(UtilsDataView.is_setup())
         # No writer yet so no way to call state change methods
@@ -77,7 +77,7 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_ran_last()
         with self.assertRaises(NotImplementedError):
-             UtilsDataView.is_no_stop_requested()
+            UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
         self.assertFalse(UtilsDataView.is_setup())
 
@@ -139,7 +139,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
         with self.assertRaises(NotImplementedError):
-             UtilsDataView.is_no_stop_requested()
+            UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
         self.assertFalse(UtilsDataView.is_setup())
         self.check_after_shutdown(writer)
@@ -158,7 +158,6 @@ class TestUtilsData(unittest.TestCase):
             writer.soft_reset()
         with self.assertRaises(SimulatorShutdownException):
             writer.request_stop()
-
 
     def test_stopping(self):
         writer = UtilsDataWriter.setup()
@@ -219,7 +218,7 @@ class TestUtilsData(unittest.TestCase):
             writer.start_run()
         # writer.finish_run() test_start_finish
         with self.assertRaises(SimulatorNotRunException):
-             writer.hard_reset()
+            writer.hard_reset()
         with self.assertRaises(SimulatorRunningException):
             writer.soft_reset()
         # writer.request_stop() test_start_request
@@ -250,7 +249,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertTrue(UtilsDataView.is_ran_last())
         with self.assertRaises(NotImplementedError):
-             UtilsDataView.is_no_stop_requested()
+            UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
         self.assertTrue(UtilsDataView.is_setup())
 
@@ -368,7 +367,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
         with self.assertRaises(NotImplementedError):
-             UtilsDataView.is_no_stop_requested()
+            UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
         self.assertFalse(UtilsDataView.is_setup())
 
@@ -394,7 +393,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
         with self.assertRaises(NotImplementedError):
-             UtilsDataView.is_no_stop_requested()
+            UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
         self.assertTrue(UtilsDataView.is_setup())
 
@@ -447,7 +446,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_hard_shut_down(writer)
 
-    def test_start_finish_hard_start_request_stopping(self):
+    def test_start_finish_hard_start_stopping(self):
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -676,7 +675,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
         with self.assertRaises(NotImplementedError):
-             UtilsDataView.is_no_stop_requested()
+            UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
         self.assertFalse(UtilsDataView.is_setup())
 
@@ -702,7 +701,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
         with self.assertRaises(NotImplementedError):
-             UtilsDataView.is_no_stop_requested()
+            UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
         self.assertTrue(UtilsDataView.is_setup())
 

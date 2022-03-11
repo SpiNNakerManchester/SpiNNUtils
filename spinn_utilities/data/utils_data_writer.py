@@ -146,7 +146,7 @@ class UtilsDataWriter(UtilsDataView):
 
         This resets any data set after sim.setup has finished
         """
-        if not self.__data._run_status in [
+        if self.__data._run_status not in [
                 RunStatus.IN_RUN, RunStatus.STOP_REQUESTED]:
             self.check_user_can_act()
         if self.__data._reset_status in [
@@ -191,7 +191,6 @@ class UtilsDataWriter(UtilsDataView):
             f"Unexpected call to reset while reset status is "
             f"{self.__data._reset_status}")
 
-
     def request_stop(self):
         if self.__data._run_status != RunStatus.IN_RUN:
             self._check_valid_simulator()
@@ -215,7 +214,6 @@ class UtilsDataWriter(UtilsDataView):
                 "Unexpected call to stopping while in run_state"
                 f" {self.__data._run_status}")
         self.__data._run_status = RunStatus.STOPPING
-
 
     def shut_down(self):
         """

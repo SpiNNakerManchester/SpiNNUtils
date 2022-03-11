@@ -242,7 +242,8 @@ class UtilsDataView(object):
 
         :rtype: bool
         """
-        return cls.__data._run_status == RunStatus.IN_RUN
+        return cls.__data._run_status in [
+            RunStatus.IN_RUN, RunStatus.STOP_REQUESTED]
 
     @classmethod
     def _check_valid_simulator(cls):
@@ -274,8 +275,9 @@ class UtilsDataView(object):
         :raises SimulatorNotSetupException: If called before sim.setup
         :raises SimulatorShutdownException; If called after sim.end
         """
-        if cls.__data._run_status in [
-                RunStatus.MOCKED, RunStatus.NOT_RUNNING]:
+        if cls.__data._run_status == RunStatus.NOT_RUNNING:
+            return
+        if cls.__data._data_status == DataStatus.MOCKED:
             return
         if cls.__data._run_status in [
                 RunStatus.IN_RUN, RunStatus.STOPPING,
@@ -315,12 +317,14 @@ class UtilsDataView(object):
             on an unexpected run_status
         """
         if cls.__data._run_status in [
-                RunStatus.IN_RUN, RunStatus.STOPPING, RunStatus.MOCKED,
+                RunStatus.IN_RUN, RunStatus.STOPPING,
                 RunStatus.STOP_REQUESTED]:
             return False
         if cls.__data._run_status in [
                 RunStatus.NOT_RUNNING, RunStatus.SHUTDOWN]:
             return True
+        if cls._is_mocked():
+            return False
         raise NotImplementedError(
             f"Unexpected with RunStatus {cls.__data._run_status}")
 

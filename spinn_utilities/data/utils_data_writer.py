@@ -90,8 +90,8 @@ class UtilsDataWriter(UtilsDataView):
         """
         self.__data._clear()
         self.__data._data_status = DataStatus.MOCKED
-        self.__data._reset_status = ResetStatus.MOCKED
-        self.__data._run_status = RunStatus.MOCKED
+        self.__data._reset_status = ResetStatus.NOT_SETUP
+        self.__data._run_status = RunStatus.NOT_SETUP
 
     def _setup(self):
         """
@@ -122,6 +122,7 @@ class UtilsDataWriter(UtilsDataView):
         """
         if self.__data._run_status not in [
                 RunStatus.IN_RUN, RunStatus.STOP_REQUESTED]:
+            self._check_valid_simulator()
             raise UnexpectedStateChange(
                 f"Unexpected finish run when in run state "
                 f"{self.__data._run_status}")
@@ -182,6 +183,7 @@ class UtilsDataWriter(UtilsDataView):
             # call the protected method at the highest possible level
             self._soft_reset()
             return
+        self._check_valid_simulator()
         if self.__data._reset_status == ResetStatus.SETUP:
             raise SimulatorNotRunException(
                 "Calling reset before calling run is not supported")
@@ -205,23 +207,21 @@ class UtilsDataWriter(UtilsDataView):
         :raises SimulatorNotSetupException: If called before sim.setup
         :raises SimulatorShutdownException: If called after sim.end
         """
-        if self.__data._run_status != RunStatus.NOT_RUNNING:
+        if self.__data._run_status not in [
+                RunStatus.NOT_RUNNING, RunStatus.IN_RUN,
+                RunStatus.STOP_REQUESTED]:
             self._check_valid_simulator()
-            logger.warning(
-                f"Stop called with unexpected run status "
-                f"{self.__data._run_status}")
+            raise UnexpectedStateChange(
+                "Unexpected call to stopping while in run_state"
+                f" {self.__data._run_status}")
         self.__data._run_status = RunStatus.STOPPING
+
 
     def shut_down(self):
         """
         Puts all data into the state expected after sim.end
 
         """
-        if not self.__data._run_status in [
-                RunStatus.STOPPING, RunStatus.SHUTDOWN]:
-            raise UnexpectedStateChange(
-                f"Unexpected shut down when in run state "
-                f"{self.__data._run_status}")
         self.__data._data_status = DataStatus.SHUTDOWN
         self.__data._run_status = RunStatus.SHUTDOWN
 

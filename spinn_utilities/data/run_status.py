@@ -22,12 +22,11 @@ class RunStatus(Enum):
     """ Different states the run could be in
     """
     NOT_SETUP = (0)
-    MOCKED = (1)
-    NOT_RUNNING = (2)
-    IN_RUN = (3)
-    STOP_REQUESTED = (4)
-    STOPPING = (5)
-    SHUTDOWN = (6)
+    NOT_RUNNING = (12)
+    IN_RUN = (2)
+    STOP_REQUESTED = (3)
+    STOPPING = (4)
+    SHUTDOWN = (5)
 
     def __new__(cls, value):
         # pylint: disable=protected-access

@@ -22,11 +22,10 @@ class ResetStatus(Enum):
     """ Different states the reset could be in
     """
     NOT_SETUP = (0)
-    MOCKED = (1)
-    SETUP = (2)
-    HAS_RUN = (3)
-    SOFT_RESET = (4)
-    HARD_RESET = (5)
+    SETUP = (1)
+    HAS_RUN = (2)
+    SOFT_RESET = (3)
+    HARD_RESET = (4)
 
     def __new__(cls, value):
         # pylint: disable=protected-access

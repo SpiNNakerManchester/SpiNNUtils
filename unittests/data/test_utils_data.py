@@ -162,9 +162,9 @@ class TestUtilsData(unittest.TestCase):
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
-        self.check_finished_run(writer)
+        self.check_start_finish(writer)
 
-    def check_finished_run(self, writer):
+    def check_start_finish(self, writer):
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(UnexpectedStateChange):
@@ -225,7 +225,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         writer.start_run()
         writer.finish_run()
-        self.check_finished_run(writer)
+        self.check_start_finish(writer)
 
     def test_start_finish_start_hard(self):
         writer = UtilsDataWriter.setup()
@@ -268,7 +268,7 @@ class TestUtilsData(unittest.TestCase):
         writer.start_run()
         writer.hard_reset()
         writer.finish_run()
-        self.check_finished_run(writer)
+        self.check_start_finish(writer)
 
     def test_start_finish_start_hard_request(self):
         writer = UtilsDataWriter.setup()
@@ -314,7 +314,7 @@ class TestUtilsData(unittest.TestCase):
         writer.hard_reset()
         writer.request_stop()
         writer.finish_run()
-        self.check_finished_run(writer)
+        self.check_start_finish(writer)
 
     def test_start_finish_start_hard_request_stopping(self):
         writer = UtilsDataWriter.setup()
@@ -431,7 +431,7 @@ class TestUtilsData(unittest.TestCase):
         writer.start_run()
         writer.request_stop()
         writer.finish_run()
-        self.check_finished_run(writer)
+        self.check_start_finish(writer)
 
     def test_start_finish_start_request_hard(self):
         writer = UtilsDataWriter.setup()
@@ -449,9 +449,9 @@ class TestUtilsData(unittest.TestCase):
         writer.start_run()
         writer.request_stop()
         writer.stopping()
-        self.check_status_stop_after_running_no_reset(writer)
+        self.check_start_finish_stopping(writer)
 
-    def check_status_stop_after_running_no_reset(self, writer):
+    def check_start_finish_stopping(self, writer):
         self.assertFalse(UtilsDataView._is_mocked())
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
@@ -515,7 +515,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         writer.start_run()
         writer.stopping()
-        self.check_status_stop_after_running_no_reset(writer)
+        self.check_start_finish_stopping(writer)
 
     def test_start_finish_hard_reset(self):
         writer = UtilsDataWriter.setup()
@@ -568,104 +568,7 @@ class TestUtilsData(unittest.TestCase):
         writer.stopping()
         self.check_stopping_after_hard(writer)
 
-    def test_status_early_stopping(self):
-        writer = UtilsDataWriter.setup()
-        writer.stopping()
-
-        self.assertFalse(UtilsDataView._is_mocked())
-        self.assertFalse(UtilsDataView.is_user_mode())
-        with self.assertRaises(UnexpectedStateChange):
-            UtilsDataView.is_stop_already_requested()
-        with self.assertRaises(SimulatorRunningException):
-            UtilsDataView.check_user_can_act()
-        #    UtilsDataView.is_hard_reset()
-        #    UtilsDataView.is_soft_reset()
-        # Only set at end of the current run
-        self.assertFalse(UtilsDataView.is_ran_ever())
-        self.assertFalse(UtilsDataView.is_ran_last())
-        with self.assertRaises(NotImplementedError):
-            self.assertTrue(UtilsDataView.is_no_stop_requested())
-        self.assertFalse(UtilsDataView.is_running())
-        self.assertTrue(UtilsDataView.is_setup())
-
-        with self.assertRaises(UnexpectedStateChange):
-            writer.start_run()
-        with self.assertRaises(UnexpectedStateChange):
-            writer.finish_run()
-        with self.assertRaises(SimulatorRunningException):
-            writer.hard_reset()
-        with self.assertRaises(SimulatorRunningException):
-            writer.soft_reset()
-        with self.assertRaises(UnexpectedStateChange):
-            writer.request_stop()
-        # TODO support second stop?
-        writer.stopping()
-        # writer.shut_down()
-
-    def test_status_stop_while_running(self):
-        writer = UtilsDataWriter.setup()
-        writer.start_run()
-        writer.stopping()
-
-        self.assertFalse(UtilsDataView._is_mocked())
-        with self.assertRaises(UnexpectedStateChange):
-            UtilsDataView.is_stop_already_requested()
-        self.assertFalse(UtilsDataView.is_user_mode())
-        with self.assertRaises(SimulatorRunningException):
-            UtilsDataView.check_user_can_act()
-        self.assertFalse(UtilsDataView.is_soft_reset())
-        self.assertFalse(UtilsDataView.is_hard_reset())
-        self.assertFalse(UtilsDataView.is_ran_ever())
-        self.assertFalse(UtilsDataView.is_ran_last())
-        with self.assertRaises(NotImplementedError):
-             UtilsDataView.is_no_stop_requested()
-        self.assertFalse(UtilsDataView.is_running())
-        self.assertTrue(UtilsDataView.is_setup())
-
-        with self.assertRaises(UnexpectedStateChange):
-            writer.start_run()
-        with self.assertRaises(UnexpectedStateChange):
-            writer.finish_run()
-        with self.assertRaises(SimulatorRunningException):
-            writer.hard_reset()
-        with self.assertRaises(SimulatorRunningException):
-            writer.soft_reset()
-        with self.assertRaises(UnexpectedStateChange):
-            writer.request_stop()
-        writer.stopping()
-        writer.shut_down()  # see test_status_shutdown
-
-    def test_status_request_stop_while_running(self):
-        writer = UtilsDataWriter.setup()
-        writer.start_run()
-        writer.request_stop()
-
-        self.assertFalse(UtilsDataView._is_mocked())
-        self.assertFalse(UtilsDataView.is_user_mode())
-        self.assertTrue(UtilsDataView.is_stop_already_requested())
-        with self.assertRaises(SimulatorRunningException):
-            UtilsDataView.check_user_can_act()
-        self.assertFalse(UtilsDataView.is_soft_reset())
-        self.assertFalse(UtilsDataView.is_hard_reset())
-        self.assertFalse(UtilsDataView.is_ran_ever())
-        self.assertFalse(UtilsDataView.is_ran_last())
-        self.assertFalse(UtilsDataView.is_no_stop_requested())
-        self.assertFalse(UtilsDataView.is_running())
-        self.assertTrue(UtilsDataView.is_setup())
-
-        with self.assertRaises(UnexpectedStateChange):
-            writer.start_run()
-        # writer.finish_run() # see test_status_finish_run
-        with self.assertRaises(SimulatorNotRunException):
-            writer.hard_reset()
-        with self.assertRaises(SimulatorRunningException):
-            writer.soft_reset()
-        # writer.request_stop() see test_status_request_stop_while_running
-        # writer.stopping() # See test_status_stop_while_running
-        with self.assertRaises(UnexpectedStateChange):
-            writer.shut_down()
-
-    def test_status_soft_reset_after_run(self):
+    def test_start_finish_soft(self):
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -683,44 +586,137 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
         with self.assertRaises(NotImplementedError):
-             UtilsDataView.is_no_stop_requested()
+            UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
         self.assertTrue(UtilsDataView.is_setup())
 
-        # writer.start_run() see test_status_second_run_soft
+        # writer.start_run()
         with self.assertRaises(UnexpectedStateChange):
             writer.finish_run()
-        # writer.hard_reset() see test_status_both_reset_after_run
+        # writer.hard_reset()
         with self.assertRaises(UnexpectedStateChange):
             writer.soft_reset()
         with self.assertRaises(UnexpectedStateChange):
             writer.request_stop()
-        # writer.stopping() See test_status_stop_after_running_soft
+        # writer.stopping()
         with self.assertRaises(UnexpectedStateChange):
             writer.shut_down()
 
-    def test_status_both_reset_after_run(self):
+    def test_start_finish_soft_start(self):
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
         writer.soft_reset()
+        writer.start_run()
+
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView.is_user_mode())
+        self.assertFalse(UtilsDataView.is_stop_already_requested())
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.check_user_can_act()
+        self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_soft_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertTrue(UtilsDataView.is_no_stop_requested())
+        self.assertTrue(UtilsDataView.is_running())
+        self.assertTrue(UtilsDataView.is_setup())
+
+        with self.assertRaises(UnexpectedStateChange):
+            writer.start_run()
+        # writer.finish_run()
+        # writer.hard_reset()
+        with self.assertRaises(SimulatorRunningException):
+            writer.soft_reset()
+        # writer.request_stop()
+        # writer.stopping()
+        with self.assertRaises(UnexpectedStateChange):
+            writer.shut_down()
+
+    def test_start_finish_soft_start_finish(self):
+        writer = UtilsDataWriter.setup()
+        writer.start_run()
+        writer.finish_run()
+        writer.soft_reset()
+        writer.start_run()
+        writer.finish_run()
+        self.check_start_finish(writer)
+
+    def test_start_finish_soft_start_hard(self):
+        writer = UtilsDataWriter.setup()
+        writer.start_run()
+        writer.finish_run()
+        writer.soft_reset()
+        writer.start_run()
         writer.hard_reset()
-        self.check_status_hard_reset_after_run(writer)
+        self.check_test_status_second_run_hard(writer)
 
-    def test_status_stop_after_running_no_reset(self):
-        writer = UtilsDataWriter.setup()
-        writer.start_run()
-        writer.finish_run()
-        writer.stopping()
-        self.check_status_stop_after_running_no_reset(writer)
-
-
-    def test_status_stop_after_running_soft(self):
+    def test_start_finish_soft_start_request(self):
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
         writer.soft_reset()
+        writer.start_run()
+        writer.request_stop()
+        self.check_start_soft_request(writer)
+
+    def check_start_soft_request(self, writer):
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView.is_user_mode())
+        self.assertTrue(UtilsDataView.is_stop_already_requested())
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.check_user_can_act()
+        self.assertTrue(UtilsDataView.is_soft_reset())
+        self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertTrue(UtilsDataView.is_ran_ever())
+        self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_no_stop_requested())
+        self.assertFalse(UtilsDataView.is_running())
+        self.assertTrue(UtilsDataView.is_setup())
+
+        with self.assertRaises(UnexpectedStateChange):
+            writer.start_run()
+        # writer.finish_run()
+        # writer.hard_reset()
+        with self.assertRaises(SimulatorRunningException):
+            writer.soft_reset()
+        with self.assertRaises(UnexpectedStateChange):
+            writer.request_stop()
+        # writer.stopping()
+        with self.assertRaises(UnexpectedStateChange):
+            writer.shut_down()
+
+    def test_start_finish_soft_start_request_finish(self):
+        writer = UtilsDataWriter.setup()
+        writer.start_run()
+        writer.finish_run()
+        writer.soft_reset()
+        writer.start_run()
+        writer.request_stop()
+        writer.finish_run()
+        self.check_start_finish(writer)
+
+    def test_start_finish_soft_start_request_hard(self):
+        writer = UtilsDataWriter.setup()
+        writer.start_run()
+        writer.finish_run()
+        writer.soft_reset()
+        writer.start_run()
+        writer.request_stop()
+        writer.hard_reset()
+        self.check_start_hard_request(writer)
+
+    def test_start_finish_soft_start_request_stopping(self):
+        writer = UtilsDataWriter.setup()
+        writer.start_run()
+        writer.finish_run()
+        writer.soft_reset()
+        writer.start_run()
+        writer.request_stop()
         writer.stopping()
+        self.check_stop_after_running_soft(writer)
+
+    def check_stop_after_running_soft(self, writer):
         self.assertFalse(UtilsDataView._is_mocked())
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
@@ -778,33 +774,153 @@ class TestUtilsData(unittest.TestCase):
             writer.stopping()
         writer.shut_down()
 
-    def test_status_second_run_soft(self):
+    def test_start_finish_soft_start_stopping(self):
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
         writer.soft_reset()
         writer.start_run()
-        self.assertFalse(UtilsDataView._is_mocked())
-        self.assertFalse(UtilsDataView.is_user_mode())
-        self.assertFalse(UtilsDataView.is_stop_already_requested())
-        with self.assertRaises(SimulatorRunningException):
-            UtilsDataView.check_user_can_act()
-        self.assertFalse(UtilsDataView.is_hard_reset())
-        self.assertTrue(UtilsDataView.is_soft_reset())
-        self.assertTrue(UtilsDataView.is_ran_ever())
-        self.assertFalse(UtilsDataView.is_ran_last())
-        self.assertTrue(UtilsDataView.is_no_stop_requested())
-        self.assertTrue(UtilsDataView.is_running())
-        self.assertTrue(UtilsDataView.is_setup())
+        writer.stopping()
+        self.check_stop_after_running_soft(writer)
 
-    def test_status_hard_reset_after_run2(self):
+    def test_start_finish_soft_hard(self):
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
-        writer.start_run()
-        writer.finish_run()
+        writer.soft_reset()
         writer.hard_reset()
         self.check_status_hard_reset_after_run(writer)
+
+    def test_start_finish_soft_stopping(self):
+        writer = UtilsDataWriter.setup()
+        writer.start_run()
+        writer.finish_run()
+        writer.soft_reset()
+        writer.stopping()
+        self.check_stop_after_running_soft(writer)
+
+    def test_start_finish_stopping(self):
+        writer = UtilsDataWriter.setup()
+        writer.start_run()
+        writer.finish_run()
+        writer.stopping()
+        self.check_start_finish_stopping(writer)
+
+    def test_start_request(self):
+        writer = UtilsDataWriter.setup()
+        writer.start_run()
+        writer.request_stop()
+
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView.is_user_mode())
+        self.assertTrue(UtilsDataView.is_stop_already_requested())
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.check_user_can_act()
+        self.assertFalse(UtilsDataView.is_soft_reset())
+        self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertFalse(UtilsDataView.is_ran_ever())
+        self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_no_stop_requested())
+        self.assertFalse(UtilsDataView.is_running())
+        self.assertTrue(UtilsDataView.is_setup())
+
+        with self.assertRaises(UnexpectedStateChange):
+            writer.start_run()
+        # writer.finish_run() # see test_status_finish_run
+        with self.assertRaises(SimulatorNotRunException):
+            writer.hard_reset()
+        with self.assertRaises(SimulatorRunningException):
+            writer.soft_reset()
+        with self.assertRaises(UnexpectedStateChange):
+            writer.request_stop()
+        # writer.stopping() # See test_status_stop_while_running
+        with self.assertRaises(UnexpectedStateChange):
+            writer.shut_down()
+
+    def test_start_request_finish(self):
+        writer = UtilsDataWriter.setup()
+        writer.start_run()
+        writer.request_stop()
+        writer.finish_run()
+        self.check_start_finish(writer)
+
+    def test_start_request_stopping(self):
+        writer = UtilsDataWriter.setup()
+        writer.start_run()
+        writer.request_stop()
+        writer.stopping()
+        self.check_stopping(writer)
+
+    def check_stopping(self, writer):
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertFalse(UtilsDataView.is_user_mode())
+        with self.assertRaises(UnexpectedStateChange):
+            UtilsDataView.is_stop_already_requested()
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.check_user_can_act()
+        self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertFalse(UtilsDataView.is_soft_reset())
+        # Only set at end of the current run
+        self.assertFalse(UtilsDataView.is_ran_ever())
+        self.assertFalse(UtilsDataView.is_ran_last())
+        with self.assertRaises(NotImplementedError):
+            self.assertTrue(UtilsDataView.is_no_stop_requested())
+        self.assertFalse(UtilsDataView.is_running())
+        self.assertTrue(UtilsDataView.is_setup())
+
+        with self.assertRaises(UnexpectedStateChange):
+            writer.start_run()
+        with self.assertRaises(UnexpectedStateChange):
+            writer.finish_run()
+        with self.assertRaises(SimulatorRunningException):
+            writer.hard_reset()
+        with self.assertRaises(SimulatorRunningException):
+            writer.soft_reset()
+        with self.assertRaises(UnexpectedStateChange):
+            writer.request_stop()
+        # TODO support second stop?
+        writer.stopping()
+        writer.shut_down()
+
+        self.assertFalse(UtilsDataView._is_mocked())
+        self.assertTrue(UtilsDataView.is_user_mode())
+        with self.assertRaises(SimulatorShutdownException):
+            UtilsDataView.is_stop_already_requested()
+        with self.assertRaises(SimulatorShutdownException):
+            UtilsDataView.check_user_can_act()
+        self.assertFalse(UtilsDataView.is_soft_reset())
+        self.assertFalse(UtilsDataView.is_hard_reset())
+        self.assertFalse(UtilsDataView.is_ran_ever())
+        self.assertFalse(UtilsDataView.is_ran_last())
+        with self.assertRaises(NotImplementedError):
+             UtilsDataView.is_no_stop_requested()
+        self.assertFalse(UtilsDataView.is_running())
+        self.assertFalse(UtilsDataView.is_setup())
+
+        with self.assertRaises(SimulatorShutdownException):
+            writer.start_run()
+        with self.assertRaises(UnexpectedStateChange):
+            writer.finish_run()
+        with self.assertRaises(SimulatorShutdownException):
+            writer.hard_reset()
+        with self.assertRaises(SimulatorShutdownException):
+            writer.soft_reset()
+        with self.assertRaises(SimulatorShutdownException):
+            writer.request_stop()
+        with self.assertRaises(SimulatorShutdownException):
+            writer.stopping()
+
+    def test_status_stop_while_running(self):
+        writer = UtilsDataWriter.setup()
+        writer.start_run()
+        writer.stopping()
+        self.check_stopping(writer)
+
+
+    def test_stopping(self):
+        writer = UtilsDataWriter.setup()
+        writer.stopping()
+        self.check_stopping(writer)
 
 
     def todelete(self):

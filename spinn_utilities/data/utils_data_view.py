@@ -338,7 +338,7 @@ class UtilsDataView(object):
         :return: True if the stop has already been requested
             or if the system is stopping or has already stopped
             False if the stop request makes sense.
-        raises SpiNNUtilsException:
+        :raises SpiNNUtilsException:
             If the stop_run was not expected in the current state.
         """
         if cls.__data._run_status == RunStatus.IN_RUN:

@@ -251,7 +251,7 @@ class UtilsDataView(object):
         Throws an error if there is no simulator
 
         :raises SimulatorNotSetupException: If called before sim.setup
-        :raises SimulatorShutdownException; If called after sim.end
+        :raises SimulatorShutdownException: If called after sim.end
         """
         if cls.__data._run_status in [
                 RunStatus.NOT_RUNNING, RunStatus.IN_RUN,
@@ -273,7 +273,7 @@ class UtilsDataView(object):
 
         :raises SimulatorRunningException: If sim.run is currently running
         :raises SimulatorNotSetupException: If called before sim.setup
-        :raises SimulatorShutdownException; If called after sim.end
+        :raises SimulatorShutdownException: If called after sim.end
         """
         if cls.__data._run_status == RunStatus.NOT_RUNNING:
             return

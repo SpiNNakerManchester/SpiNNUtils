@@ -90,14 +90,29 @@ class _UtilsDataModel(object):
 
 class UtilsDataView(object):
     """
-    A read only view of the data available at FEC level
+    A read only view of the data available at each level
+
+    All methods are class methods so can be accessed directly without
+    instantiating a view.
+    There is a stack of subclasses such as MachineDatView, FecDataView,
+    SpynnakerDataView (and more). All inherit all methods.
+    We reserve the right to override methods defined in one View in subclasses.
+
+    There are also Writer classes which override the Views but these are
+    specifically designed to only be usable in unittests and by the simulator
+    (ASB) directly.
+
+    You should use the data view most appropriate to what you are doing i.e.
+    If you are accessing it from a class or function in FEC,
+    use FecDataView but if you are accessing it from Spynnaker,
+    use SpynnakerDataView.
+    This will ensure that any changes to the view local to the code will
+    affect all code in that package
 
     The objects accessed this way should not be changed or added to.
-    Changing or adding to any object accessed if unsupported as bypasses any
+    Changing or adding to any object accessed is unsupported as bypasses any
     check or updates done in the writer(s).
     Objects returned could be changed to immutable versions without notice!
-
-    All methods are class methods so can be accessed directly
 
     The get... methods will either return a valid value or
     raise an Exception if the data is currently not available.
@@ -105,6 +120,11 @@ class UtilsDataView(object):
     to do so.
     As a reasonable effort is made the setters to verify the data types,
     the get methods can be expected to return the correct type.
+
+    There are also several semantic sugar get.. methods.
+    Some are slightly faster but manny are just to make the code more readable.
+    Some semantic sugar methods do not start with get to keep the same name as
+    the existing function on the object has.
 
     The iterate... methods offer a view over the collections within
     mutable data objects, particularly ones changed between runs.
@@ -119,7 +139,7 @@ class UtilsDataView(object):
     They will raise an exception if called while the simulator is running.
 
     The has... methods will return True is the value is known and False if not.
-    Semantically the are the same as checking if the get returns a None.
+    Semantically the are the same as checking if the get raises an exception.
     They may be faster if the object needs to be generated on the fly or
     protected to be made immutable.
     Has methods have been added where needed.
@@ -146,24 +166,6 @@ class UtilsDataView(object):
         :rtype: ~spinn_utilities.exceptions.SpiNNUtilsException
         """
         return cls.__data._data_status.exception(data)
-
-    # Report directories
-    # There are NO has or get methods for directories
-    # This allow directories to be created on the fly
-    # Remainder in FecDataView
-
-    @classmethod
-    def _temporary_dir_path(cls):
-        """
-        The path to an existing temp directory
-
-        :param str data: Name of the data to be replace with temp
-        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
-            if not in Mocked state
-        """
-        if cls.__data._temporary_directory is None:
-            cls.__data._temporary_directory = tempfile.TemporaryDirectory()
-        return cls.__data._temporary_directory.name
 
     # Status checks
 
@@ -373,6 +375,23 @@ class UtilsDataView(object):
                 "Calling stop after run has finished does not make sense")
         raise UnexpectedStateChange(
                 "Calling stop before run does not make sense")
+
+    # Report directories
+
+    # Remainder in FecDataView
+
+    @classmethod
+    def _temporary_dir_path(cls):
+        """
+        The path to an existing temp directory, creating it if needed.
+
+        :param str data: Name of the data to be replace with temp
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            if not in Mocked state
+        """
+        if cls.__data._temporary_directory is None:
+            cls.__data._temporary_directory = tempfile.TemporaryDirectory()
+        return cls.__data._temporary_directory.name
 
     @classmethod
     def get_run_dir_path(cls):

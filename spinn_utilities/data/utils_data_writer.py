@@ -30,7 +30,30 @@ logger = FormatAdapter(logging.getLogger(__file__))
 
 class UtilsDataWriter(UtilsDataView):
     """
-    Writer class for the Fec Data
+    Writer class for the information in UtilsDataView
+
+    This and subclass Writers are specifically designed to be used by the
+    simulators (ASB) and unitests only!
+    Any other usage is not supported.
+
+    The Writers are specifically designed to support only one instant
+    (typically held by ASB as self._data_writer).
+
+    Creating a new instant of the Writer will clear out any data added by the
+    previous instance.
+
+    Unittest can create a writer by doing ...Writer.mock() or Writer.setup()
+    The mock method adds some default data such as directories and
+    a Virtual 8 * 8 Machine, as well as allowing some backdoor methods.
+    ...Writer.mock() is the recommnded one for unittests
+    setup() is more like what ASB does and allows for state changes such as
+    writer.start_running
+
+    ASB init (or it sub classes) will create a new writer
+    so a call to sim.setup will clear all previously held data
+
+    As the Writers are not designed for general usage the methods can change
+    without notice.
 
     """
     __data = _UtilsDataModel()
@@ -57,6 +80,16 @@ class UtilsDataWriter(UtilsDataView):
 
         All previous data will be cleared
 
+        This should set the most likely defaults values.
+        But be aware that what is considered the most likely default could
+        change over time.
+
+        Unittests that depend on any valid value being set should be able to
+        depend on Mock.
+
+        Unittest that depend on a specific value should call mock and then
+        set that value.
+
         :return: A Data Writer
         :rtype: UtilsDataWriter
         """
@@ -76,17 +109,8 @@ class UtilsDataWriter(UtilsDataView):
 
     def _mock(self):
         """
-        Clears out all data and adds mock values where needed.
+        This method should only be called by mock (via init)
 
-        This should set the most likely defaults values.
-        But be aware that what is considered the most likely default could
-        change over time.
-
-        Unittests that depend on any valid value being set should be able to
-        depend on Mock.
-
-        Unittest that depend on a specific value should call mock and then
-        set that value.
         """
         self.__data._clear()
         self.__data._data_status = DataStatus.MOCKED
@@ -95,7 +119,7 @@ class UtilsDataWriter(UtilsDataView):
 
     def _setup(self):
         """
-        Puts all data back into the state expected at sim.setup time
+        This method should only be called by setup (via init)
 
         """
         self.__data._clear()
@@ -117,7 +141,7 @@ class UtilsDataWriter(UtilsDataView):
 
     def finish_run(self):
         """
-        Puts all data into the state expected after sim.run
+        Puts all data into the state expected after sim.run ends
 
         """
         if self.__data._run_status not in [
@@ -131,10 +155,7 @@ class UtilsDataWriter(UtilsDataView):
 
     def _hard_reset(self):
         """
-        Puts all data back into the state expected at graph changed and
-            sim.reset
-
-        This resets any data set after sim.setup has finished
+        This method should only be called by hard_setup.
         """
         self.__data._hard_reset()
         self.__data._reset_status = ResetStatus.HARD_RESET
@@ -165,8 +186,7 @@ class UtilsDataWriter(UtilsDataView):
 
     def _soft_reset(self):
         """
-        Puts all data back into the state expected at sim.reset but not
-        graph changed
+        This method should only be called from soft_setup
 
         """
         self.__data._soft_reset()
@@ -192,6 +212,11 @@ class UtilsDataWriter(UtilsDataView):
             f"{self.__data._reset_status}")
 
     def request_stop(self):
+        """
+        Used to indicate a user has requested a stop.
+
+        This is expected to be called during run from a different thread.
+        """
         if self.__data._run_status != RunStatus.IN_RUN:
             self.check_valid_simulator()
             raise UnexpectedStateChange(
@@ -218,6 +243,11 @@ class UtilsDataWriter(UtilsDataView):
     def shut_down(self):
         """
         Puts all data into the state expected after sim.end
+
+        Most methods that change data, or state will raise an exception after
+        this call.
+
+        Most data however will still be available.
 
         """
         self.__data._data_status = DataStatus.SHUTDOWN

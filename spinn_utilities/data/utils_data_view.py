@@ -106,7 +106,8 @@ class UtilsDataView(object):
     As a reasonable effort is made the setters to verify the data types,
     the get methods can be expected to return the correct type.
 
-    The iterate... methods offer a view over the items in a mutible data object.
+    The iterate... methods offer a view over the collections within
+    mutable data objects, particularly ones changed between runs.
     There is no guarantee if the returned iterator will nor will not reflect
     any changes to the underlying data object,
     nor that how a method behaves in this way does not change over time.

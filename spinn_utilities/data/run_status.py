@@ -17,7 +17,10 @@ from enum import Enum
 
 
 class RunStatus(Enum):
-    """ Different states the run could be in
+    """
+    Different states the run could be in
+
+    This class is design to used internally by UtilsDataView
     """
     NOT_SETUP = (0)
     NOT_RUNNING = (12)

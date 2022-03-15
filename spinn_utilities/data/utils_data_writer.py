@@ -109,7 +109,7 @@ class UtilsDataWriter(UtilsDataView):
 
         """
         if self.__data._run_status != RunStatus.NOT_RUNNING:
-            self._check_valid_simulator()
+            self.check_valid_simulator()
             raise UnexpectedStateChange(
                 f"Unexpected start run when in run state "
                 f"{self.__data._run_status}")
@@ -122,7 +122,7 @@ class UtilsDataWriter(UtilsDataView):
         """
         if self.__data._run_status not in [
                 RunStatus.IN_RUN, RunStatus.STOP_REQUESTED]:
-            self._check_valid_simulator()
+            self.check_valid_simulator()
             raise UnexpectedStateChange(
                 f"Unexpected finish run when in run state "
                 f"{self.__data._run_status}")
@@ -155,7 +155,7 @@ class UtilsDataWriter(UtilsDataView):
             # call the protected method at the highest possible level
             self._hard_reset()
             return
-        self._check_valid_simulator()
+        self.check_valid_simulator()
         if self.__data._reset_status == ResetStatus.SETUP:
             raise SimulatorNotRunException(
                 "Calling reset before calling run is not supported")
@@ -183,7 +183,7 @@ class UtilsDataWriter(UtilsDataView):
             # call the protected method at the highest possible level
             self._soft_reset()
             return
-        self._check_valid_simulator()
+        self.check_valid_simulator()
         if self.__data._reset_status == ResetStatus.SETUP:
             raise SimulatorNotRunException(
                 "Calling reset before calling run is not supported")
@@ -193,7 +193,7 @@ class UtilsDataWriter(UtilsDataView):
 
     def request_stop(self):
         if self.__data._run_status != RunStatus.IN_RUN:
-            self._check_valid_simulator()
+            self.check_valid_simulator()
             raise UnexpectedStateChange(
                 f"Unexpected request stop when in run state "
                 f"{self.__data._run_status}")
@@ -209,7 +209,7 @@ class UtilsDataWriter(UtilsDataView):
         if self.__data._run_status not in [
                 RunStatus.NOT_RUNNING, RunStatus.IN_RUN,
                 RunStatus.STOP_REQUESTED]:
-            self._check_valid_simulator()
+            self.check_valid_simulator()
             raise UnexpectedStateChange(
                 "Unexpected call to stopping while in run_state"
                 f" {self.__data._run_status}")

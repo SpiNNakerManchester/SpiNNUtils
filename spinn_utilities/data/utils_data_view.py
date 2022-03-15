@@ -97,16 +97,37 @@ class UtilsDataView(object):
     check or updates done in the writer(s).
     Objects returned could be changed to immutable versions without notice!
 
-    All methods are class methods so can be accessed dirrectly
+    All methods are class methods so can be accessed directly
 
-    The methods will either return a valid value or
+    The get_ methods will either return a valid value or
     raise an Exception if the data is currently not available.
-    These are typically semantic sugar around the get methods.
+    The get methods will will not return None unless specifically documented
+    to do so.
+    As a reasonable effort is made the setters to verify the data types,
+    the get methods can be expected to return the correct type.
 
-    The has methods will return True is the value is known and False if not.
+    The iterate_ methods offer a view over the items in a mutible data object.
+    There is no guarantee if the returned iterator will nor will not reflect
+    any changes to the underlying data object,
+    nor that how a method behaves in this way does not change over time.
+    So the methods should be called for every iteration.
+
+    add_ methods allow for the scripts directly or indirectly to add extra
+    values.
+    They allow the view to add extra safetly such as type checking.
+    They will raise an exception if called while the simulator is running.
+
+    The has_ methods will return True is the value is known and False if not.
     Semantically the are the same as checking if the get returns a None.
     They may be faster if the object needs to be generated on the fly or
     protected to be made immutable.
+    Has methods have been added where needed.
+    More can easily be added if required.
+
+    The is_ methods will return a bool value to say teh simulator is in
+    the expected state.
+    They may throw an exception if called at an unexpected time.
+    For example if called before sim.setup or after sim.end
 
     While how and where the underpinning DataModel(s) store data can change
     without notice, methods in this class can be considered a supported API
@@ -246,7 +267,7 @@ class UtilsDataView(object):
             RunStatus.IN_RUN, RunStatus.STOP_REQUESTED]
 
     @classmethod
-    def _check_valid_simulator(cls):
+    def check_valid_simulator(cls):
         """
         Throws an error if there is no simulator
 
@@ -285,7 +306,7 @@ class UtilsDataView(object):
             raise SimulatorRunningException(
                 f"This call is not supported while the simulator is running "
                 f"and in state {cls.__data._run_status}")
-        cls._check_valid_simulator()
+        cls.check_valid_simulator()
 
     @classmethod
     def is_setup(cls):
@@ -345,7 +366,7 @@ class UtilsDataView(object):
             return False
         if cls.__data._run_status == RunStatus.STOP_REQUESTED:
             return True
-        cls._check_valid_simulator()
+        cls.check_valid_simulator()
         if cls.is_ran_ever():
             raise UnexpectedStateChange(
                 "Calling stop after run has finished does not make sense")

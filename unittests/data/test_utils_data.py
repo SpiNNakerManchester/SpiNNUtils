@@ -44,6 +44,8 @@ class TestUtilsData(unittest.TestCase):
 
         self.assertFalse(UtilsDataView._is_mocked())
         with self.assertRaises(SimulatorNotSetupException):
+            UtilsDataView.check_valid_simulator()
+        with self.assertRaises(SimulatorNotSetupException):
             UtilsDataView.check_user_can_act()
         with self.assertRaises(NotImplementedError):
             self.assertFalse(UtilsDataView.is_user_mode())
@@ -67,6 +69,8 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView._is_mocked())
         # Most is tests return True if mocked
         UtilsDataView.check_user_can_act()
+        with self.assertRaises(SimulatorNotSetupException):
+            UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorNotSetupException):
             UtilsDataView.is_stop_already_requested()
         self.assertFalse(UtilsDataView.is_user_mode())
@@ -105,6 +109,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
+        UtilsDataView.check_valid_simulator()
         UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertFalse(UtilsDataView.is_soft_reset())
@@ -132,6 +137,8 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(SimulatorShutdownException):
             UtilsDataView.is_stop_already_requested()
+        with self.assertRaises(SimulatorShutdownException):
+            UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorShutdownException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
@@ -169,6 +176,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_user_mode())
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())
@@ -203,6 +211,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertFalse(UtilsDataView.is_stop_already_requested())
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())
@@ -243,6 +252,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
+        UtilsDataView.check_valid_simulator()
         UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertFalse(UtilsDataView.is_soft_reset())
@@ -270,6 +280,8 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(SimulatorShutdownException):
             UtilsDataView.is_stop_already_requested()
         with self.assertRaises(SimulatorShutdownException):
+            UtilsDataView.check_valid_simulator()
+        with self.assertRaises(SimulatorShutdownException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertFalse(UtilsDataView.is_hard_reset())
@@ -294,6 +306,7 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
         self.assertFalse(UtilsDataView.is_user_mode())
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
@@ -332,6 +345,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
+        UtilsDataView.check_valid_simulator()
         UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_hard_reset())
@@ -361,6 +375,8 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(SimulatorShutdownException):
             UtilsDataView.is_stop_already_requested()
         with self.assertRaises(SimulatorShutdownException):
+            UtilsDataView.check_valid_simulator()
+        with self.assertRaises(SimulatorShutdownException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_hard_reset())
@@ -386,6 +402,7 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
         self.assertFalse(UtilsDataView.is_user_mode())
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
@@ -424,6 +441,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertFalse(UtilsDataView.is_stop_already_requested())
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertTrue(UtilsDataView.is_hard_reset())
@@ -477,6 +495,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertTrue(UtilsDataView.is_stop_already_requested())
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
@@ -528,6 +547,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertFalse(UtilsDataView.is_stop_already_requested())
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())
@@ -583,6 +603,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertTrue(UtilsDataView.is_stop_already_requested())
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_soft_reset())
@@ -641,6 +662,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
+        UtilsDataView.check_valid_simulator()
         UtilsDataView.check_user_can_act()
         self.assertTrue(UtilsDataView.is_soft_reset())
         self.assertFalse(UtilsDataView.is_hard_reset())
@@ -668,6 +690,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(SimulatorShutdownException):
             UtilsDataView.is_stop_already_requested()
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorShutdownException):
             UtilsDataView.check_user_can_act()
         self.assertTrue(UtilsDataView.is_soft_reset())
@@ -694,6 +717,7 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
         self.assertFalse(UtilsDataView.is_user_mode())
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertTrue(UtilsDataView.is_soft_reset())
@@ -738,6 +762,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertFalse(UtilsDataView.is_stop_already_requested())
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())
@@ -796,6 +821,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertTrue(UtilsDataView.is_stop_already_requested())
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertTrue(UtilsDataView.is_soft_reset())
@@ -856,6 +882,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertTrue(UtilsDataView.is_stop_already_requested())
+        UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorRunningException):
             UtilsDataView.check_user_can_act()
         self.assertFalse(UtilsDataView.is_hard_reset())

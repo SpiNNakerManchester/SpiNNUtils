@@ -19,7 +19,10 @@ from spinn_utilities.exceptions import (
 
 
 class DataStatus(Enum):
-    """ Different states the Data can be in.
+    """
+    Different states the Data can be in.
+
+    This class is design to used internally by UtilsDataView
     """
     NOT_SETUP = (0, NotSetupException)
     MOCKED = (1, DataNotMocked)
@@ -34,4 +37,10 @@ class DataStatus(Enum):
         return obj
 
     def exception(self, data):
+        """
+        Returns the most suitable data not available exception
+
+        :param data:
+        :rtype: ~pinn_utilities.exceptions.SpiNNUtilsException
+        """
         return self._exception(data)

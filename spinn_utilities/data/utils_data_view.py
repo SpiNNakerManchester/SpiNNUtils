@@ -113,7 +113,7 @@ class UtilsDataView(object):
     nor that how a method behaves in this way does not change over time.
     So the methods should be called for every iteration.
 
-    add_ methods allow for the scripts directly or indirectly to add extra
+    add... methods allow for the scripts directly or indirectly to add extra
     values.
     They allow the view to add extra safetly such as type checking.
     They will raise an exception if called while the simulator is running.

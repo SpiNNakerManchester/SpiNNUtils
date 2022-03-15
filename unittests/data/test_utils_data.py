@@ -690,7 +690,8 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(SimulatorShutdownException):
             UtilsDataView.is_stop_already_requested()
-        UtilsDataView.check_valid_simulator()
+        with self.assertRaises(SimulatorShutdownException):
+            UtilsDataView.check_valid_simulator()
         with self.assertRaises(SimulatorShutdownException):
             UtilsDataView.check_user_can_act()
         self.assertTrue(UtilsDataView.is_soft_reset())

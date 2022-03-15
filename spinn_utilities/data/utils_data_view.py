@@ -99,14 +99,14 @@ class UtilsDataView(object):
 
     All methods are class methods so can be accessed directly
 
-    The get_ methods will either return a valid value or
+    The get... methods will either return a valid value or
     raise an Exception if the data is currently not available.
     The get methods will will not return None unless specifically documented
     to do so.
     As a reasonable effort is made the setters to verify the data types,
     the get methods can be expected to return the correct type.
 
-    The iterate_ methods offer a view over the items in a mutible data object.
+    The iterate... methods offer a view over the items in a mutible data object.
     There is no guarantee if the returned iterator will nor will not reflect
     any changes to the underlying data object,
     nor that how a method behaves in this way does not change over time.
@@ -117,20 +117,20 @@ class UtilsDataView(object):
     They allow the view to add extra safetly such as type checking.
     They will raise an exception if called while the simulator is running.
 
-    The has_ methods will return True is the value is known and False if not.
+    The has... methods will return True is the value is known and False if not.
     Semantically the are the same as checking if the get returns a None.
     They may be faster if the object needs to be generated on the fly or
     protected to be made immutable.
     Has methods have been added where needed.
     More can easily be added if required.
 
-    The is_ methods will return a bool value to say teh simulator is in
+    The is... methods will return a bool value to say teh simulator is in
     the expected state.
     They may throw an exception if called at an unexpected time.
     For example if called before sim.setup or after sim.end
 
     While how and where the underpinning DataModel(s) store data can change
-    without notice, methods in this class can be considered a supported API
+    without notice, methods in View classes can be considered a supported API
     """
 
     __data = _UtilsDataModel()

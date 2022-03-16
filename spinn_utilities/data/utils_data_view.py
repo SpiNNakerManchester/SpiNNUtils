@@ -133,6 +133,10 @@ class UtilsDataView(object):
     nor that how a method behaves in this way does not change over time.
     So the methods should be called for every iteration.
 
+    Each iterate.. method will have a corresponding get_n.. which you need to
+    do instead of len(iterate..) as we reserve the right to make any iterate
+    method return an iterable which does not support len without notice.
+
     add... methods allow for the scripts directly or indirectly to add extra
     values.
     They allow the view to add extra safetly such as type checking.

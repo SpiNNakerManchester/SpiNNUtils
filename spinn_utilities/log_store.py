@@ -20,8 +20,8 @@ class LogStore(object):
 
     @abstractmethod
     def store_log(self, level, message):
-        """
-        Writes the log message or later retreival
+        """ Writes the log message for later retreival
+
         :param int level:
         :param str message:
         """

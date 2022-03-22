@@ -171,7 +171,7 @@ def test_log_store():
     logger.warning("This is a warning")
     logger2.error("And an Error")
     logger.info("This is an info")
-    info = store.retreive_log_messages(20)
+    info = store.retreive_log_messages(logging.WARNING)
     assert(2 == len(info))
     try:
         logger.critical("Now go boom")

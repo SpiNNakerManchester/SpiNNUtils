@@ -18,6 +18,7 @@ import logging
 import re
 import sys
 from inspect import getfullargspec
+from .log_store import LogStore
 from .overrides import overrides
 
 _LEVELS = {
@@ -165,7 +166,7 @@ class FormatAdapter(logging.LoggerAdapter):
     __repeat_at_end = logging.WARNING
     __repeat_messages = []
     __write_normal = True
-    __report_file = None
+    __log_store = None
 
     @classmethod
     def set_kill_level(cls, level=None):
@@ -184,19 +185,10 @@ class FormatAdapter(logging.LoggerAdapter):
             cls.__kill_level = level
 
     @classmethod
-    def set_report_File(cls, report_file):
-        """
-
-        :param report_file:
-        :param write_normal:
-        :return:
-        """
-        cls.__report_file = report_file
-        level = logging.getLevelName(cls.__repeat_at_end)
-        with open(report_file, "a", encoding="utf-8") as report_file:
-            report_file.write(
-                "This is a record of all logged messages at level {} or "
-                "above\n".format(level))
+    def set_log_store(cls, log_store):
+        if not isinstance(log_store, LogStore):
+            raise TypeError("log_store must be a LogStore")
+        cls.__log_store = log_store
 
     def __init__(self, logger, extra=None):
         if extra is None:
@@ -213,13 +205,19 @@ class FormatAdapter(logging.LoggerAdapter):
         if level >= FormatAdapter.__kill_level:
             raise LogLevelTooHighException(_BraceMessage(msg, args, kwargs))
         message = _BraceMessage(msg, args, kwargs)
-        if level >= FormatAdapter.__repeat_at_end:
-            FormatAdapter.__repeat_messages.append((message))
-            if self.__report_file:
-                with open(self.__report_file, "a", encoding="utf-8")\
-                        as report_file:
-                    report_file.write(message.fmt)
-                    report_file.write("\n")
+        if self.__log_store:
+            try:
+                FormatAdapter.__log_store.store_log(level, message.fmt)
+            except Exception as ex:
+                # Avoid an endless loop of log store errors being logged
+                FormatAdapter.__repeat_messages.append(
+                    f"Unable to store log messages in database due "
+                    f"to {ex}")
+                FormatAdapter.__log_store = None
+                raise
+        else:
+            if level >= FormatAdapter.__repeat_at_end:
+                FormatAdapter.__repeat_messages.append(message)
         if self.isEnabledFor(level):
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
@@ -242,21 +240,23 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def _atexit_handler(cls):
-        messages = cls._repeat_log()
-        if messages:
-            level = logging.getLevelName(cls.__repeat_at_end)
-            if cls.__report_file:
-                print("\nWARNING: {} log messages were generated at "
-                      "level {} or above.".format(len(messages), level),
-                      file=sys.stderr)
+        if cls.__log_store:
+            messages = cls.__log_store.retreive_log_messages(
+                cls.__repeat_at_end)
+            if messages:
+                level = logging.getLevelName(cls.__repeat_at_end)
+                print(f"\nWARNING: {len(messages)} log messages were "
+                      f"generated at level {level} or above.", file=sys.stderr)
                 print("This may mean that the results are invalid.",
                       file=sys.stderr)
-                print("You are advised to check the details of these here: {}"
-                      "".format(cls.__report_file),
-                      file=sys.stderr)
-            else:
-                print("\nThese log messages where generated at level {} or "
-                      "above".format(level), file=sys.stderr)
+                print(f"You are advised to check the details of these here: "
+                      f"{cls.__log_store.get_location()}", file=sys.stderr)
+        else:
+            messages = cls._repeat_log()
+            if messages:
+                level = logging.getLevelName(cls.__repeat_at_end)
+                print(f"\nThese log messages where generated at level {level} "
+                      f"or above", file=sys.stderr)
                 for message in messages:
                     print(message, file=sys.stderr)
 

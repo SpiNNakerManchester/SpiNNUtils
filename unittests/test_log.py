@@ -14,9 +14,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import tempfile
 from spinn_utilities.log import (ConfiguredFilter, ConfiguredFormatter)
 from spinn_utilities.log import FormatAdapter, LogLevelTooHighException
+from spinn_utilities.log_store import LogStore
+from spinn_utilities.overrides import overrides
 
 
 class MockLog(object):
@@ -45,6 +46,30 @@ class MockLog(object):
     @property
     def disable(self):
         return logging.DEBUG
+
+
+class MockLogStore(LogStore):
+
+    def __init__(self):
+        self.data = []
+
+    @overrides(LogStore.store_log)
+    def store_log(self, level, message):
+        self.data.append((level, message))
+        if level == logging.CRITICAL:
+            1/0
+
+    @overrides(LogStore.retreive_log_messages)
+    def retreive_log_messages(self, min_level=0):
+        result = []
+        for (level, message) in self.data:
+            if level >= min_level:
+                result.append((level, message))
+        return result
+
+    @overrides(LogStore.get_location)
+    def get_location(self):
+        return "MOCK"
 
 
 def test_logger_adapter():
@@ -138,16 +163,27 @@ def test_weird_config2():
     ConfiguredFilter(MockConfig2())
 
 
-def test_waning_file():
-    log = MockLog()
-    logger = FormatAdapter(log)
-    log2 = MockLog()
-    logger2 = FormatAdapter(log2)
-    report_file = tempfile.mktemp()
-    logger2.set_report_File(report_file)
+def test_log_store():
+    logger = FormatAdapter(logging.getLogger(__name__))
+    logger2 = FormatAdapter(logging.getLogger(__name__))
+    store = MockLogStore()
+    logger2.set_log_store(store)
     logger.warning("This is a warning")
     logger2.error("And an Error")
-    with open(report_file, "r") as myfile:
-        data = myfile.readlines()
-    assert ("This is a warning\n" in data)
-    assert ("And an Error\n" in data)
+    logger.info("This is an info")
+    info = store.retreive_log_messages(20)
+    assert(2 == len(info))
+    try:
+        logger.critical("Now go boom")
+    except ZeroDivisionError:
+        pass
+    logger.warning("This is a warning")
+
+
+def test_bad_log_store():
+    logger = FormatAdapter(logging.getLogger(__name__))
+    try:
+        logger.set_log_store("bacon")
+        raise Exception("bad call accepted")
+    except TypeError:
+        pass

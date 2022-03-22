@@ -186,7 +186,7 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def set_log_store(cls, log_store):
-        if not isinstance(log_store, LogStore):
+        if not isinstance(log_store, (type(None), LogStore)):
             raise TypeError("log_store must be a LogStore")
         cls.__log_store = log_store
 

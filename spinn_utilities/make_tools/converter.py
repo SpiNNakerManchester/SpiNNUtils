@@ -37,12 +37,9 @@ class Converter(object):
     def __init__(self, src, dest, new_dict):
         """ Converts a whole directory including sub directories
 
-        :param src: Full source directory
-        :type src: str
-        :param dest: Full destination directory
-        :type dest: str
-        :param new_dict: says if we should generate a new dict
-        :type new_dict: bool
+        :param str src: Full source directory
+        :param str dest: Full destination directory
+        :param bool new_dict: says if we should generate a new dict
         """
         self._src = os.path.abspath(src)
         if not os.path.exists(self._src):
@@ -63,13 +60,13 @@ class Converter(object):
                 sql.clear()
 
     def run(self):
-        """ Runs the file converter on a whole directory including sub \
-            directories
+        """ Runs the file converter on a whole directory including \
+            sub-directories.
 
-        WARNING. This code is absolutely not thread safe.
-        Interwoven calls even on different FileConverter objects is dangerous!
-
-        :return:
+        .. warning::
+            This code is absolutely not thread safe.
+            Interwoven calls even on different FileConverter objects is
+            dangerous!
         """
         self._mkdir(self._dest)
         for dir_name, _subdir_list, file_list in os.walk(self._src):
@@ -101,6 +98,8 @@ class Converter(object):
 
     @staticmethod
     def convert(src, dest, new_dict):
+        """ Wrapper function around this class.
+        """
         converter = Converter(src, dest, new_dict)
         converter.run()
 

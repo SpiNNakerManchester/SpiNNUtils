@@ -139,4 +139,19 @@ def test_peek():
     o.add(2)
     o.add(3)
     p1 = o.peek()
+    p2 = o.pop()
     assert p1 == 3
+    assert p1 == p2
+    p3 = o.peek(last=False)
+    assert p3 == 1
+    p4 = o.pop(last=False)
+    assert p4 == p3
+
+
+def test_reverse():
+    o = OrderedSet()
+    o.add(1)
+    o.add(2)
+    o.add(3)
+    a = list(reversed(o))
+    assert a == [3, 2, 1]

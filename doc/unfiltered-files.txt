@@ -1,0 +1,43 @@
+# Copyright (c) 2017-2021 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Files are listed here if they are NOT imported into their directory/module's
+# __init__.py and reexported with __all__.
+
+spinn_utilities/abstract_base.py
+spinn_utilities/abstract_context_manager.py
+spinn_utilities/bytestring_utils.py
+spinn_utilities/classproperty.py
+spinn_utilities/conf_loader.py
+spinn_utilities/default_ordered_dict.py
+spinn_utilities/exceptions.py
+spinn_utilities/executable_finder.py
+spinn_utilities/find_max_success.py
+spinn_utilities/helpful_functions.py
+spinn_utilities/index_is_value.py
+spinn_utilities/log.py
+spinn_utilities/logger_utils.py
+spinn_utilities/ordered_set.py
+spinn_utilities/overrides.py
+spinn_utilities/package_loader.py
+spinn_utilities/ping.py
+spinn_utilities/progress_bar.py
+spinn_utilities/require_subclass.py
+spinn_utilities/safe_eval.py
+spinn_utilities/see.py
+spinn_utilities/socket_address.py
+spinn_utilities/timer.py
+spinn_utilities/make_tools/replacer.py
+spinn_utilities/testing/log_checker.py

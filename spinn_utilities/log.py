@@ -128,7 +128,21 @@ class _BraceMessage(object):
         self.kwargs = kwargs
 
     def __str__(self):
-        return str(self.fmt).format(*self.args, **self.kwargs)
+        try:
+            return str(self.fmt).format(*self.args, **self.kwargs)
+        except KeyError:
+            try:
+                return "KeyError" + str(self.fmt)
+            except KeyError:
+                return "Double KeyError"
+        except IndexError:
+            try:
+                if self.args or self.kwargs:
+                    return "IndexError" + str(self.fmt)
+                else:
+                    return str(self.fmt)
+            except IndexError:
+                return "Double IndexError"
 
 
 class LogLevelTooHighException(Exception):
@@ -179,7 +193,7 @@ class FormatAdapter(logging.LoggerAdapter):
         """
         cls.__report_file = report_file
         level = logging.getLevelName(cls.__repeat_at_end)
-        with open(report_file, "a") as report_file:
+        with open(report_file, "a", encoding="utf-8") as report_file:
             report_file.write(
                 "This is a record of all logged messages at level {} or "
                 "above\n".format(level))
@@ -202,7 +216,8 @@ class FormatAdapter(logging.LoggerAdapter):
         if level >= FormatAdapter.__repeat_at_end:
             FormatAdapter.__repeat_messages.append((message))
             if self.__report_file:
-                with open(self.__report_file, "a") as report_file:
+                with open(self.__report_file, "a", encoding="utf-8")\
+                        as report_file:
                     report_file.write(message.fmt)
                     report_file.write("\n")
         if self.isEnabledFor(level):

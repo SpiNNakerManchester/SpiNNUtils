@@ -42,22 +42,22 @@ class AbstractSized(object):
         return self._size
 
     @staticmethod
-    def _is_id_type(id):  # @ReservedAssignment
+    def _is_id_type(the_id):
         """ Check if the given ID has a type acceptable for IDs. """
-        return isinstance(id, int)
+        return isinstance(the_id, int)
 
-    def _check_id_in_range(self, id):  # @ReservedAssignment
-        if id < 0:
-            if self._is_id_type(id):
+    def _check_id_in_range(self, the_id):
+        if the_id < 0:
+            if self._is_id_type(the_id):
                 raise IndexError(
-                    "The index {} is out of range.".format(id))
+                    "The index {} is out of range.".format(the_id))
             # pragma: no cover
-            raise TypeError("Invalid argument type {}.".format(type(id)))
-        if id >= self._size:
-            if self._is_id_type(id):
+            raise TypeError("Invalid argument type {}.".format(type(the_id)))
+        if the_id >= self._size:
+            if self._is_id_type(the_id):
                 raise IndexError(
-                    "The index {0} is out of range.".format(id))
-            raise TypeError("Invalid argument type {}.".format(type(id)))
+                    "The index {0} is out of range.".format(the_id))
+            raise TypeError("Invalid argument type {}.".format(type(the_id)))
 
     def _check_slice_in_range(self, slice_start, slice_stop):
         if slice_start is None:

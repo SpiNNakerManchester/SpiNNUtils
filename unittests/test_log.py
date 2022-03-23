@@ -15,6 +15,7 @@
 
 import logging
 import tempfile
+from spinn_utilities.log import (ConfiguredFilter, ConfiguredFormatter)
 from spinn_utilities.log import FormatAdapter, LogLevelTooHighException
 
 
@@ -77,6 +78,14 @@ def test_logger_adapter():
     assert len(logger._repeat_log()) == 4
 
 
+def test_logger_dict():
+    log = MockLog()
+    logger = FormatAdapter(log)
+    mydict = {1: "one", 2: "two"}
+    logger.info(mydict)
+    assert str(log.last_msg) == "{1: 'one', 2: 'two'}"
+
+
 def test_logger_exception():
     log = MockLog()
     logger = FormatAdapter(log)
@@ -96,6 +105,37 @@ def test_logger_exception():
     assert "exc_info" in log.last_kwargs
     assert log.last_level == logging.ERROR
     assert len(logger._repeat_log()) == 1
+
+
+class MockConfig1(object):
+
+    def get(self, section, option):
+        return "debug"
+
+    def has_section(self, section):
+        return False
+
+
+def test_weird_config1():
+    ConfiguredFormatter(MockConfig1())
+    ConfiguredFilter(MockConfig1())
+
+
+class MockConfig2(object):
+
+    def get(self, section, option):
+        return "critical"
+
+    def has_section(self, section):
+        return True
+
+    def has_option(self, section, option):
+        return option == 'warning'
+
+
+def test_weird_config2():
+    ConfiguredFormatter(MockConfig2())
+    ConfiguredFilter(MockConfig2())
 
 
 def test_waning_file():

@@ -43,6 +43,10 @@ class TestConverter(unittest.TestCase):
         with LogSqlLiteDatabase() as sql:
             with self.assertRaises(Exception):
                 sql.check_original("this is bad")
+            sql.check_original("%08x [%3d: (w: %5u (=")
+            sql.check_original("test -three %f")
+            sql.check_original("test double %F")
+            sql.check_original("test slash // %f")
             sql.check_original("this is ok")
             sql.check_original("this is fine on two lines")
             sql.check_original("before comment after comment")
@@ -61,3 +65,39 @@ class TestConverter(unittest.TestCase):
             sql.check_original("then a backslash comment on a middle line")
             sql.check_original("then a standard comment on a middle line")
             sql.check_original("comment before")
+
+    def test_exceptions(self):
+        file_name = "weird,file.c"
+        src = os.path.join("mock_src", file_name)
+        dest = os.path.join("modified_src", file_name)
+        with LogSqlLiteDatabase() as log_database:
+            converter = FileConverter(src, dest, log_database)
+            try:
+                converter.split_by_comma_plus(None, 12)
+                assert False
+            except Exception as ex1:
+                assert "Unexpected line" in str(ex1)
+            try:
+                converter._short_log(12)
+                assert False
+            except Exception as ex2:
+                assert "Unexpected line" in str(ex2)
+            try:
+                converter._log_full = '"test %f", -3.0f, 12);'
+                converter._log = 'log_info('
+                converter._short_log(12)
+                assert False
+            except Exception as ex2:
+                assert "Too many" in str(ex2)
+            try:
+                converter._log_full = '"test %f %i", -3.0f);'
+                converter._short_log(12)
+                assert False
+            except Exception as ex2:
+                assert "Too few" in str(ex2)
+            try:
+                converter._log_full = '"test %1", -3.0f);'
+                converter._short_log(12)
+                assert False
+            except Exception as ex2:
+                assert "Unexpected formatString" in str(ex2)

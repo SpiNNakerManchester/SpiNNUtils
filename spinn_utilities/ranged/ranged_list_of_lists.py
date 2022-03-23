@@ -36,11 +36,12 @@ class RangedListOfList(RangedList):
             # All or No values must be singletons
             singleton = is_singleton(value[0])
             for i in range(1, len(value)):
-                if singleton != is_singleton(value[1]):
+                if singleton != is_singleton(value[i]):
                     raise ValueError(
                         "Illegal mixing of singleton and iterable")
             # A list of all singletons is a single value not a list here!
             return not singleton
-        except TypeError:
+        except TypeError as original:
             raise TypeError(
-                "Value must be an iterable or iterable of iterables")
+                "Value must be an iterable or iterable of iterables") \
+                from original

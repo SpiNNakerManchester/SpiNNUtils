@@ -24,6 +24,8 @@ logger = FormatAdapter(logging.getLogger(__name__))
 
 
 class Replacer(LogSqlLiteDatabase):
+    """ Performs replacements.
+    """
 
     def __enter__(self):
         return self
@@ -32,7 +34,17 @@ class Replacer(LogSqlLiteDatabase):
         # nothing yet
         pass
 
+    _INT_FMT = struct.Struct("!I")
+    _FLT_FMT = struct.Struct("!f")
+    _DBL_FMT = struct.Struct("!d")
+
     def replace(self, short):
+        """ Apply the replacements to a short message.
+
+        :param str short: The short message to apply the transform to.
+        :return: The expanded message.
+        :rtype: str
+        """
         parts = short.split(TOKEN)
         if not parts[0].isdigit():
             return short
@@ -52,9 +64,9 @@ class Replacer(LogSqlLiteDatabase):
                 for match in matches:
                     i += 1
                     if match.endswith("f"):
-                        replacement = str(self.hex_to_float(parts[i]))
+                        replacement = str(self._hex_to_float(parts[i]))
                     elif match.endswith("F"):
-                        replacement = str(self.hexes_to_double(
+                        replacement = str(self._hexes_to_double(
                             parts[i], parts[i+1]))
                         i += 1
                     else:
@@ -65,13 +77,11 @@ class Replacer(LogSqlLiteDatabase):
 
         return preface + replaced
 
-    @staticmethod
-    def hex_to_float(hex_str):
-        return struct.unpack('!f', struct.pack("!I", int(hex_str, 16)))[0]
+    def _hex_to_float(self, hex_str):
+        return self._FLT_FMT.unpack(
+            self._INT_FMT.pack(int(hex_str, 16)))[0]
 
-    @staticmethod
-    def hexes_to_double(upper, lower):
-        return struct.unpack(
-            '!d',
-            struct.pack("!I", int(upper, 16)) +
-            struct.pack("!I", int(lower, 16)))[0]
+    def _hexes_to_double(self, upper, lower):
+        return self._DBL_FMT.unpack(
+            self._INT_FMT.pack(int(upper, 16)) +
+            self._INT_FMT.pack(int(lower, 16)))[0]

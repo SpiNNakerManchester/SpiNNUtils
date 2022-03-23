@@ -51,7 +51,7 @@ setup(
     url="https://github.com/SpiNNakerManchester/SpiNNUtilities",
     license="GNU GPLv3.0",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
 
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
@@ -65,9 +65,10 @@ setup(
         "Operating System :: MacOS",
 
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
     packages=packages,
     package_data=package_data,

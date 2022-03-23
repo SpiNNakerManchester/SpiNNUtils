@@ -18,8 +18,8 @@ from datetime import date
 import logging
 import math
 import os
-import random
 import sys
+from spinn_utilities.config_holder import get_config_bool
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.overrides import overrides
 from spinn_utilities import logger_utils
@@ -213,7 +213,10 @@ class ProgressBar(object):
         # pylint: disable=unused-argument
         c = cls
         if _EnhancedProgressBar._ENABLED:
-            c = _EnhancedProgressBar
+            if get_config_bool("Mode", "I_have_a_sense_of_humour"):
+                c = _EnhancedProgressBar
+            else:
+                _EnhancedProgressBar._ENABLED = False
         return super().__new__(c)
 
 
@@ -224,15 +227,8 @@ class _EnhancedProgressBar(ProgressBar):
     _line_no = 0
     _seq_id = 0
     _step_characters = defaultdict(list)
-    _ENABLE_DATES = (
-        "0401", "0214", "0427", "0428", "0429", "0430", "0501", "0502",
-        "0503", "0504", "0505", "0506", "0507", "0508", "0509", "0510")
     _ENABLED = False
     _DATA_FILE = "progress_bar.txt"
-
-    def _print_distance_line(self, first_space, second_space):
-        print(self.__line, end="", file=self._destination)
-        self.__next_line()
 
     def _print_progress_unit(self, chars_to_print):
         song_line = self.__line
@@ -263,22 +259,18 @@ class _EnhancedProgressBar(ProgressBar):
     @classmethod
     def __next_line(cls):
         if cls._line_no + 1 >= len(cls._step_characters[cls._seq_id]):
-            cls._seq_id = random.randint(1, len(cls._step_characters))
             cls._line_no = 0
         else:
             cls._line_no += 1
 
     @classmethod
     def init_once(cls):
-        # verify that its either April Fools', Capocaccia or Valentine's Day
-        enabled = date.today().strftime("%m%d") in cls._ENABLE_DATES
-
         # read in the songs once for performance reasons
         path = os.path.join(
             os.path.dirname(os.path.realpath(spinn_utilities.__file__)),
             cls._DATA_FILE)
         try:
-            with open(path) as reader:
+            with open(path, encoding="utf-8") as reader:
                 lines = reader.readlines()
 
             # turn into array of songs, skipping comments and blanks
@@ -290,7 +282,7 @@ class _EnhancedProgressBar(ProgressBar):
                     # Bad data! Abort!
                     enabled = False
                     break
-                cls._step_characters[int(bits[0])].append(bits[1])
+                cls._step_characters[bits[0]].append(bits[1])
 
             # clean up lines so that spaces are still visible
             for _seq_id in cls._step_characters:
@@ -298,14 +290,19 @@ class _EnhancedProgressBar(ProgressBar):
                 for _line_no in range(len(step)):
                     step[_line_no] = step[_line_no].replace(" ", "_")
 
-            # reset trackers for start of the first progress bar
-            cls._seq_id = random.randint(1, len(cls._step_characters))
+            # verify that its a special day
+            enabled = date.today().strftime("%m%d") in cls._step_characters
         except IOError:
-            enabled = False
+            cls._ENABLED = False
             cls._seq_id = 0
         finally:
             cls._line_no = 0
             cls._ENABLED = enabled
+            if enabled:
+                cls._seq_id = date.today().strftime("%m%d")
+            else:
+                # To allow testing on a none special day
+                cls._seq_id = "test"
 
 
 # Perform one-time initialisation

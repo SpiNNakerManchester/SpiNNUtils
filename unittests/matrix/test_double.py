@@ -50,3 +50,39 @@ def test_singleSet_inverted():
     double[1] = new_data
     assert double["foo"][1] == "One"
     assert double[1]["bar"] == "Two"
+
+
+def test_errors():
+    matrix = DemoMatrix()
+    double = DoubleDict(xtype=str, ytype=int, matrix=matrix)
+    new_data = {"foo": "One", "bar": "Two"}
+    double[1] = new_data
+    try:
+        double[1.1]
+        assert False
+    except KeyError as ex:
+        assert "unexpected type" in str(ex)
+    try:
+        double["Bar"] = "Opps"
+    except ValueError as ex:
+        assert "Value must of type dict" in str(ex)
+    try:
+        double["Bar"] = [2, "Opps"]
+        assert False
+    except ValueError as ex:
+        assert "Value must of type dict" in str(ex)
+    try:
+        double["Bar"] = {2.1: "Opps"}
+        assert False
+    except ValueError as ex:
+        assert "All keys in the value" in str(ex)
+    try:
+        double[2] = {1: "Opps"}
+        assert False
+    except ValueError as ex:
+        assert "All keys in the value" in str(ex)
+    try:
+        double[2.1] = {1: "Opps"}
+        assert False
+    except KeyError as ex:
+        assert "unexpected type" in str(ex)

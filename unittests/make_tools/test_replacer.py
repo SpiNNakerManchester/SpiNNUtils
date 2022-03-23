@@ -13,6 +13,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+These test depend on unittests/make_tools/replacer_dict/logs.sqlite3
+
+The logs.sqlite3 file in this directory is created by
+unittests/make_tools/test_file_convert.py method test_convert
+as unittests/make_tools/logs.sqlite3
+
+It is manually copied and pasted into this directory
+so that the unittests are not order dependant
+
+Note: if weird,file.c changes you may have to manually fix the tests
+especially the log_id abnd row numbers
+"""
+
 import math
 import unittest
 import os
@@ -27,8 +41,8 @@ class TestReplacer(unittest.TestCase):
     def test_replacer(self):
         os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
         with Replacer() as replacer:
-            new = replacer.replace("3")
-        assert ("[INFO] (weird;file.c: 33): this is ok" == new)
+            new = replacer.replace("5")
+        assert ("[INFO] (weird;file.c: 37): this is ok" == new)
 
     def test_not_there(self):
         # Point SPINN_DIRS to a directory with no logs.dict
@@ -39,9 +53,32 @@ class TestReplacer(unittest.TestCase):
     def test_tab(self):
         os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
         with Replacer() as replacer:
-            new = replacer.replace("9" + TOKEN + "10" + TOKEN + "20")
-        message = "[INFO] (weird;file.c: 53): \t back off = 10, time between"\
+            new = replacer.replace("11" + TOKEN + "10" + TOKEN + "20")
+        message = "[INFO] (weird;file.c: 57): \t back off = 10, time between"\
                   " spikes 20"
+        assert (message == new)
+
+    def test_float(self):
+        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        replacer = Replacer()
+        new = replacer.replace("2" + TOKEN + "0xc0400000")
+        message = "[INFO] (weird;file.c: 31): test -three -3.0"
+        assert (message == new)
+
+    def test_double(self):
+        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        replacer = Replacer()
+        new = replacer.replace(
+            "3" + TOKEN + "40379999" + TOKEN + "9999999a")
+        message = "[INFO] (weird;file.c: 33): test double 23.6"
+        assert (message == new)
+
+    def test_bad(self):
+        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        replacer = Replacer()
+        new = replacer.replace("1007" + TOKEN + "10")
+        # An exception so just output the input
+        message = "1007" + TOKEN + "10"
         assert (message == new)
 
     def near_equals(self, a, b):
@@ -59,24 +96,27 @@ class TestReplacer(unittest.TestCase):
         os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
         with Replacer() as replacer:
             assert self.near_equals(
-                -345443332234.13432143, replacer.hex_to_float("d2a0dc0e"))
+                -345443332234.13432143, replacer._hex_to_float("d2a0dc0e"))
             assert self.near_equals(
-                -2000, replacer.hex_to_float("c4fa0000"))
+                -2000, replacer._hex_to_float("c4fa0000"))
             assert self.near_equals(
-                -1, replacer.hex_to_float("bf800000"))
+                -1, replacer._hex_to_float("bf800000"))
             assert self.near_equals(
-                0, replacer.hex_to_float("0"))
+                0, replacer._hex_to_float("0"))
             assert self.near_equals(
-                0.00014, replacer.hex_to_float("3912ccf7"))
+                0.00014, replacer._hex_to_float("3912ccf7"))
             assert self.near_equals(
-                1, replacer.hex_to_float("3f800000"))
+                1, replacer._hex_to_float("3f800000"))
             assert self.near_equals(
-                200, replacer.hex_to_float("43480000"))
+                200, replacer._hex_to_float("43480000"))
             assert self.near_equals(
-                455424364531.3463460, replacer.hex_to_float("52d412d1"))
-            assert float("Inf") == replacer.hex_to_float("7f800000")
-            assert 0-float("Inf") == replacer.hex_to_float("ff800000")
-            assert math.isnan(replacer.hex_to_float("7fc00000"))
+                455424364531.3463460, replacer._hex_to_float("52d412d1"))
+            assert float("Inf") == replacer._hex_to_float("7f800000")
+            assert 0-float("Inf") == replacer._hex_to_float("ff800000")
+            assert math.isnan(replacer._hex_to_float("7fc00000"))
+            assert self.near_equals(
+                -3, replacer._hex_to_float("0xc0400000"))
+
 
     def test_hexes_to_double(self):
         """
@@ -86,18 +126,19 @@ class TestReplacer(unittest.TestCase):
         os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
         with Replacer() as replacer:
             assert self.near_equals(
-                0, replacer.hexes_to_double("0", "0"))
+                0, replacer._hexes_to_double("0", "0"))
             assert self.near_equals(
                 455424364531.3463460,
-                replacer.hexes_to_double("425a825a", "13fcd62b"))
+                replacer._hexes_to_double("425a825a", "13fcd62b"))
             assert self.near_equals(
                 -455424364531.3463460,
-                replacer.hexes_to_double("c25a825a", "13fcd62b"))
+                replacer._hexes_to_double("c25a825a", "13fcd62b"))
             assert self.near_equals(
-                23.60, replacer.hexes_to_double("40379999", "9999999a"))
+                23.60, replacer._hexes_to_double("40379999", "9999999a"))
             assert self.near_equals(
-                -1, replacer.hexes_to_double("bff00000", "0"))
+                -1, replacer._hexes_to_double("bff00000", "0"))
             assert self.near_equals(
-                1, replacer.hexes_to_double("3ff00000", "0"))
+                1, replacer._hexes_to_double("3ff00000", "0"))
             assert self.near_equals(
-                0.0000000004, replacer.hexes_to_double("3dfb7cdf", "d9d7bdbb"))
+                0.0000000004,
+                replacer._hexes_to_double("3dfb7cdf", "d9d7bdbb"))

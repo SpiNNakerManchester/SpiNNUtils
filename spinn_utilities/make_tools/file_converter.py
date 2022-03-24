@@ -392,10 +392,6 @@ class FileConverter(object):
                 self._log_full, line_num, self._src)) from e
         parts = self.split_by_comma_plus(main, line_num)
         original = parts[0]
-        a = LEVELS
-        b = LEVELS[self._log]
-        c = os.path.basename(self._src).replace(",", ";")
-        d= line_num + 1
         preface = "{} ({}: {}): ".format(
             LEVELS[self._log], os.path.basename(self._src).replace(",", ";"),
             line_num + 1)

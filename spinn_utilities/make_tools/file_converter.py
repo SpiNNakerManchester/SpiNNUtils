@@ -48,12 +48,11 @@ class State(enum.Enum):
 
 
 class FileConverter(object):
+
     __slots__ = [
         "_dest",
         "_log_database",
         "_log_file_id",
-        # original c log method found
-        # variable created each time a log method found
         "_log",
         "_log_full",
         "_log_lines",
@@ -66,6 +65,7 @@ class FileConverter(object):
 
     def __init__(self, src, dest, log_database):
         """ Creates the file_convertor to convert one file
+
         :param str src: Source file
         :param str dest: Destination file
         :param log_databasee:
@@ -89,23 +89,36 @@ class FileConverter(object):
         #: :type: int
         self._log_file_id = log_database.get_file_id(src, dest)
         #: Current status of state machine
+        #:
+        #: :type: State
         self._status = None
         #: Number of extra lines written to modified not yet recovered
         #: Extra lines are caused by the header and possibly log comment
         #: Extra lines are recovered by omitting blank lines
+        #:
+        #: :type: int
         self._too_many_lines = None
-
-        # Variables created each time a log method found
+        #: Variables created each time a log method found
         #: original c log method found
+        #:
+        #: :type: str
         self._log = None
         #: Log methods found so far
+        #:
+        #: :type: str
         self._log_full = None
         #: Number of c lines the log method takes
+        #:
+        #: :type: int
         self._log_lines = None
         #: Any other stuff found before the log method but on same line
+        #:
+        #: :type: str
         self._log_start = None
         # variable created when a comment found
         #: The previous state
+        #:
+        #: :type: State
         self._previous_status = None
 
     def _run(self):

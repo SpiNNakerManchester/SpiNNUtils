@@ -49,6 +49,8 @@ class LogSqlLiteDatabase(object):
         """
         """
         global database_file
+        # Set a None so close does not throw AttributeError on a exception
+        self._db = None
         spin_dirs = os.environ.get('SPINN_DIRS', None)
         if spin_dirs is None:
             raise Exception("Environment variable SPINN_DIRS MUST be set")

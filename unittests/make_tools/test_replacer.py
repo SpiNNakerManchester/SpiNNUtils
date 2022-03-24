@@ -117,7 +117,6 @@ class TestReplacer(unittest.TestCase):
             assert self.near_equals(
                 -3, replacer._hex_to_float("0xc0400000"))
 
-
     def test_hexes_to_double(self):
         """
         Test the converter against hexes values returned from Spinnaker

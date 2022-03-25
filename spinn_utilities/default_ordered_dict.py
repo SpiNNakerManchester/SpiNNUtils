@@ -19,8 +19,7 @@ from collections.abc import Callable
 
 class DefaultOrderedDict(OrderedDict):
     # Source: https://stackoverflow.com/questions/6190331
-    def __init__(self, default_factory=None, *args, **kwargs):
-        # pylint: disable=keyword-arg-before-vararg
+    def __init__(self, default_factory, *args, **kwargs):
         if (default_factory is not None and
                 not isinstance(default_factory, Callable)):
             raise TypeError('first argument must be callable')

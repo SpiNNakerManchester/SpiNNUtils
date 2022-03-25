@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import configparser
-import distutils.util as _du  # pylint: disable=import-error, no-name-in-module
+import distutils.util as _du
 
 
 class CamelCaseConfigParser(configparser.RawConfigParser):
@@ -32,7 +32,6 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         self._none_marker = none_marker
         self._read_files = list()
 
-    # pylint: disable=arguments-differ
     def read(self, filenames, encoding=None):
         """ Read and parse a filename or a list of filenames.
         """

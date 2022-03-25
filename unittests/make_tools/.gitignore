@@ -2,5 +2,7 @@ test_ranges.txt
 /modified_src/
 /log.ranges
 foo
-*.sqlite3
+logs.sqlite3
+convert.sqlite3
+temp.sqlite33
 

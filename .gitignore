@@ -11,3 +11,4 @@ __pycache__
 /doc/build
 /.settings
 .DS_Store
+.idea/

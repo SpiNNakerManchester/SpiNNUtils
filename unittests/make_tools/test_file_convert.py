@@ -33,7 +33,7 @@ class TestConverter(unittest.TestCase):
         dest = os.path.join("modified_src", file_name)
         # clear the database and create a new one
         LogSqlLiteDatabase(True)
-        FileConverter.convert(src, dest)
+        FileConverter.convert("mock_src", "modified_src", file_name)
         src_lines = sum(1 for line in open(src))
         modified_lines = sum(1 for line in open(dest))
         self.assertEqual(src_lines, modified_lines)

@@ -23,84 +23,49 @@ SKIPPABLE_FILES = ["common.mk", "Makefile.common",
                    "neural_build.mk", "Makefile.neural_build"]
 
 
-class Converter(object):
-    __slots__ = [
-        # Full destination directory
-        "_dest",
-        # Part of destination directory to replace in when converting paths
-        "_dest_basename",
-        # Full source directory
-        "_src",
-        # Part of source directory to take out when converting paths
-        "_src_basename"]
+def convert(src, dest, new_dict):
+    """ Converts a whole directory including sub directories
 
-    def __init__(self, src, dest, new_dict):
-        """ Converts a whole directory including sub directories
+    :param str src: Full source directory
+    :param str dest: Full destination directory
+    :param bool new_dict: says if we should generate a new dict
+    """
+    if new_dict:
+        LogSqlLiteDatabase(new_dict)
 
-        :param str src: Full source directory
-        :param str dest: Full destination directory
-        :param bool new_dict: says if we should generate a new dict
-        """
-        self._src = os.path.abspath(src)
-        if not os.path.exists(self._src):
-            raise Exception(
-                "Unable to locate source directory {}".format(self._src))
-        self._dest = os.path.abspath(dest)
-        src_root, src_basename = os.path.split(
-            os.path.normpath(self._src))
-        dest_root, dest_basename = os.path.split(
-            os.path.normpath(self._dest))
-        if src_root != dest_root:
-            # They must be siblings due to text manipulation in makefiles
-            raise Exception("src and destination must be siblings")
-        self._src_basename = src_basename
-        self._dest_basename = dest_basename
-        if new_dict:
-            LogSqlLiteDatabase(new_dict)
+    src_path = os.path.abspath(src)
+    if not os.path.exists(src_path):
+        raise Exception(f"Unable to locate source directory {src_path}")
+    dest_path = os.path.abspath(dest)
+    __convert_dir(src_path, dest_path)
 
-    def run(self):
-        """ Runs the file converter on a whole directory including \
-            sub-directories.
 
-        .. warning::
-            This code is absolutely not thread safe.
-            Interwoven calls even on different FileConverter objects is
-            dangerous!
-        """
-        self._mkdir(self._dest)
-        for dir_name, _subdir_list, file_list in os.walk(self._src):
-            self._mkdir(dir_name)
-            for file_name in file_list:
-                _, extension = os.path.splitext(file_name)
-                source = os.path.join(dir_name, file_name)
-                if extension in [".c", ".cpp", ".h"]:
-                    destination = self._any_destination(source)
-                    FileConverter.convert(source, destination)
-                elif file_name in SKIPPABLE_FILES:
-                    pass
-                else:
-                    print("Unexpected file {}".format(source))
+def __convert_dir(src_path, dest_path):
+    """ Converts a whole directory including sub directories
 
-    def _any_destination(self, path):
-        # Here we need the local separator
-        src_bit = os.path.sep + self._src_basename + os.path.sep
-        dest_bit = os.path.sep + self._dest_basename + os.path.sep
-        li = path.rsplit(src_bit, 1)
-        return dest_bit.join(li)
+    :param str src_path: Full source directory
+    :param str dest_path: Full destination directory
+    """
+#    __mkdir(dest_path)
+    for src_dir, _, file_list in os.walk(src_path):
+        dest_dir = os.path.join(dest_path, os.path.relpath(src_dir, src_path))
+#        __mkdir(dest_dir)
+        for file_name in file_list:
+            _, extension = os.path.splitext(file_name)
+            if extension in [".c", ".cpp", ".h"]:
+                FileConverter.convert(src_dir, dest_dir, file_name)
+            elif file_name in SKIPPABLE_FILES:
+                pass
+            else:
+                source = os.path.join(src_dir, file_name)
+                print("Unexpected file {}".format(source))
 
-    @staticmethod
-    def _mkdir(destination):
-        if not os.path.exists(destination):
-            os.mkdir(destination)
-        if not os.path.exists(destination):
-            raise Exception("mkdir failed {}".format(destination))
 
-    @staticmethod
-    def convert(src, dest, new_dict):
-        """ Wrapper function around this class.
-        """
-        converter = Converter(src, dest, new_dict)
-        converter.run()
+def __mkdir(destination):
+    if not os.path.exists(destination):
+        os.mkdir(destination)
+    if not os.path.exists(destination):
+        raise Exception("mkdir failed {}".format(destination))
 
 
 if __name__ == '__main__':
@@ -110,4 +75,4 @@ if __name__ == '__main__':
         _new_dict = bool(sys.argv[3])
     else:
         _new_dict = False
-    Converter.convert(_src, _dest, _new_dict)
+    convert(_src, _dest, _new_dict)

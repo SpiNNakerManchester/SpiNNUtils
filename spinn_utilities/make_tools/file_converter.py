@@ -636,14 +636,16 @@ class FileConverter(object):
         return self._src[last_sep:]
 
     @staticmethod
-    def convert(src, dest):
+    def convert(src_dir, dest_dir, file_name):
         """ Static method to create Object and do the conversion
 
         :param str src: Source file
         :param str dest: Destination file
         """
+        destination = os.path.join(dest_dir, file_name)
+        source = os.path.join(src_dir, file_name)
         with LogSqlLiteDatabase() as log_database:
-            converter = FileConverter(src, dest, log_database)
+            converter = FileConverter(source, destination, log_database)
             converter._run()  # pylint: disable=protected-access
 
 

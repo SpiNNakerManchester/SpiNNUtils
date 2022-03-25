@@ -18,7 +18,7 @@ import shutil
 import sys
 import unittest
 
-from spinn_utilities.make_tools.converter import Converter
+from spinn_utilities.make_tools.converter import convert
 from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 
 
@@ -38,41 +38,27 @@ class TestConverter(unittest.TestCase):
         formats = os.path.join(src, "formats.c")
         # make sure the first formats is there
         shutil.copyfile("formats.c1", formats)
-        Converter.convert(src, dest, True)
+        convert(src, dest, True)
         with LogSqlLiteDatabase() as sql:
             single = sql.get_max_log_id()
         # Unchanged file a second time should give same ids
-        Converter.convert(src, dest, False)
+        convert(src, dest, False)
         with LogSqlLiteDatabase() as sql:
             self.assertEquals(single, sql.get_max_log_id())
         # Now use the second formats which as one extra log and moves 1 down
         shutil.copyfile("formats.c2", formats)
-        Converter.convert(src, dest, False)
+        convert(src, dest, False)
         with LogSqlLiteDatabase() as sql:
             # Need two more ids for the new log and then changed line number
             self.assertEquals(single + 2, sql.get_max_log_id())
 
-    def test_replace(self):
-        src = "mock_src"
-        dest = "modified_src"
-        c = Converter(src, dest, True)
-        path = "/home/me/mock_src/FEC/c_common/fec/mock_src/"
-        path = path.replace("/", os.path.sep)
-        new_path = "/home/me/mock_src/FEC/c_common/fec/modified_src/"
-        new_path = new_path.replace("/", os.path.sep)
-        self.assertEqual(new_path, c._any_destination(path))
-
     def test_double_level(self):
-        cwd = os.getcwd()
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        weird_dir = os.path.join(dir_path, "foo", "bar")
-        os.chdir(weird_dir)
-        src = "foo/"
-        dest = "bar/"
-        c = Converter(src, dest, True)
-        c.run()
-        weird_dir = os.path.join(dir_path, "foo", "bar", "gamma")
-        os.chdir(weird_dir)
-        c = Converter(src, dest, True)
-        c.run()
-        os.chdir(cwd)
+        src = os.path.join(dir_path, "foo", "bar")
+        dest = os.path.join(dir_path, "alpha", "beta")
+        e1 = os.path.join(dest, "delta", "empty1.c")
+        shutil.rmtree(os.path.join(dir_path, "alpha"), ignore_errors=True)
+        self.assertFalse(os.path.exists(e1))
+        convert(src, dest, True)
+        self.assertTrue(os.path.exists(e1))
+        convert(src, dest, True)

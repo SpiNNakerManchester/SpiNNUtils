@@ -15,11 +15,10 @@
 import sys
 import time
 from datetime import timedelta
-# pylint: disable=no-name-in-module
 
 if sys.version_info >= (3, 7):
     # acquire the most accurate measurement available (perf_counter_ns)
-    _now = time.perf_counter_ns  # pylint: disable=no-member
+    _now = time.perf_counter_ns
     # conversion factor
     _NANO_TO_MICRO = 1000.0
 
@@ -33,7 +32,7 @@ if sys.version_info >= (3, 7):
 
 else:
     # acquire the most accurate measurement available (perf_counter)
-    _now = time.perf_counter  # pylint: disable=no-member
+    _now = time.perf_counter
 
     def _convert_to_timedelta(time_diff):
         """ Have to convert to a timedelta for rest of code to read.

@@ -19,6 +19,7 @@ import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.log import FormatAdapter
 
+# pylint: disable=global-statement
 logger = FormatAdapter(logging.getLogger(__file__))
 
 __config = None

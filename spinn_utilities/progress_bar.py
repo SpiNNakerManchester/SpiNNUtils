@@ -212,11 +212,11 @@ class ProgressBar(object):
     def __new__(cls, *args, **kwargs):  # @UnusedVariable
         # pylint: disable=unused-argument
         c = cls
-        if _EnhancedProgressBar._ENABLED:
+        if _EnhancedProgressBar._enabled:
             if get_config_bool("Mode", "I_have_a_sense_of_humour"):
                 c = _EnhancedProgressBar
             else:
-                _EnhancedProgressBar._ENABLED = False
+                _EnhancedProgressBar._enabled = False
         return super().__new__(c)
 
 
@@ -227,7 +227,7 @@ class _EnhancedProgressBar(ProgressBar):
     _line_no = 0
     _seq_id = 0
     _step_characters = defaultdict(list)
-    _ENABLED = False
+    _enabled = False
     _DATA_FILE = "progress_bar.txt"
 
     def _print_progress_unit(self, chars_to_print):
@@ -265,6 +265,7 @@ class _EnhancedProgressBar(ProgressBar):
 
     @classmethod
     def init_once(cls):
+        cls._enabled = False
         # read in the songs once for performance reasons
         path = os.path.join(
             os.path.dirname(os.path.realpath(spinn_utilities.__file__)),
@@ -280,7 +281,6 @@ class _EnhancedProgressBar(ProgressBar):
                 bits = line.split(":")
                 if len(bits) != 3:
                     # Bad data! Abort!
-                    enabled = False
                     break
                 cls._step_characters[bits[0]].append(bits[1])
 
@@ -291,14 +291,13 @@ class _EnhancedProgressBar(ProgressBar):
                     step[_line_no] = step[_line_no].replace(" ", "_")
 
             # verify that its a special day
-            enabled = date.today().strftime("%m%d") in cls._step_characters
+            cls._enabled = (
+                    date.today().strftime("%m%d") in cls._step_characters)
         except IOError:
-            cls._ENABLED = False
             cls._seq_id = 0
         finally:
             cls._line_no = 0
-            cls._ENABLED = enabled
-            if enabled:
+            if cls._enabled:
                 cls._seq_id = date.today().strftime("%m%d")
             else:
                 # To allow testing on a none special day

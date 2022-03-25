@@ -15,6 +15,7 @@
 
 import os
 import sqlite3
+import sys
 import time
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
@@ -45,22 +46,49 @@ class LogSqlLiteDatabase(object):
         "_db",
     ]
 
-    def __init__(self):
+    def __init__(self, new_dict=False):
         """
-        """
-        global database_file
-        # Set a None so close does not throw AttributeError on a exception
-        self._db = None
-        spin_dirs = os.environ.get('SPINN_DIRS', None)
-        if spin_dirs is None:
-            raise Exception("Environment variable SPINN_DIRS MUST be set")
-        if not os.path.exists(spin_dirs):
-            raise Exception("Unable to locate spin_dirs directory {}"
-                            "".format(spin_dirs))
-        database_file = os.path.join(spin_dirs, DB_FILE_NAME)
+        Connects to a log dict.
 
-        self._db = sqlite3.connect(database_file)
-        self.__init_db()
+        :param bool new_dict: Flag to say if this is a new dict or not
+            if True clears and previous values.
+            If False makes sure the dict exists.
+
+        """
+        # To Avoid an Attribute error on close after an exception
+        self._db = None
+        database_file = os.environ.get('C_LOGS_DICT', None)
+        if database_file is None:
+            script = sys.modules[self.__module__].__file__
+            dir = os.path.dirname(script)
+            database_file = os.path.join(dir, DB_FILE_NAME)
+
+        if not new_dict and not os.path.exists(database_file):
+            message = f"Unable to locate c_logs_dict at {database_file}. "
+            if 'C_LOGS_DICT' in os.environ:
+                message += "This came from the environment variable "
+                message += "'C_LOGS_DICT "
+            message += "Please rebuild the c code."
+            raise Exception(message)
+
+        try:
+            self._db = sqlite3.connect(database_file)
+            self.__init_db()
+            if new_dict:
+                self.__clear_db()
+        except Exception as ex:
+            message = f"Error accessing c_logs_dict at {database_file}. "
+            if 'C_LOGS_DICT' in os.environ:
+                message += "This came from the environment variable " \
+                           "'C_LOGS_DICT' "
+            else:
+                message += "This is the default location. Set environment " \
+                           "variable 'C_LOGS_DICT' to use somewhere else."
+            if new_dict:
+                message += "Check this is a location with write access. "
+            else:
+                message += "Please rebuild the c code."
+            raise Exception(message) from ex
 
     def __del__(self):
         self.close()
@@ -83,9 +111,12 @@ class LogSqlLiteDatabase(object):
     def close(self):
         """ Finalises and closes the database.
         """
-        if self._db is not None:
-            self._db.close()
-            self._db = None
+        try:
+            if self._db is not None:
+                self._db.close()
+        except Exception:  # pylint: disable=broad-except
+            pass
+        self._db = None
 
     def __init_db(self):
         """ Set up the database if required.
@@ -97,7 +128,7 @@ class LogSqlLiteDatabase(object):
             sql = f.read()
         self._db.executescript(sql)
 
-    def clear(self):
+    def __clear_db(self):
         with self._db:
             cursor = self._db.cursor()
             cursor.execute("DELETE FROM log")
@@ -184,10 +215,3 @@ class LogSqlLiteDatabase(object):
                     FROM log
                      """):
                 return row["max_id"]
-
-
-def set_alternative_log_path(new_path):
-    global database_file
-    new_logs = os.path.join(new_path, DB_FILE_NAME)
-    if os.path.exists(new_logs):
-        database_file = new_logs

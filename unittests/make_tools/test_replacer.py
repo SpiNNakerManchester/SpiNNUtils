@@ -16,15 +16,15 @@
 """
 These test depend on unittests/make_tools/replacer_dict/logs.sqlite3
 
-The logs.sqlite3 file in this directory is created by
+The replacer.sqlite3 file in this directory is created by
 unittests/make_tools/test_file_convert.py method test_convert
-as unittests/make_tools/logs.sqlite3
+as unittests/make_tools/convert.sqlite3
 
 It is manually copied and pasted into this directory
 so that the unittests are not order dependant
 
 Note: if weird,file.c changes you may have to manually fix the tests
-especially the log_id abnd row numbers
+    especially the log_id and row numbers
 """
 
 import math
@@ -39,19 +39,33 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 class TestReplacer(unittest.TestCase):
 
     def test_replacer(self):
-        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             new = replacer.replace("5")
         assert ("[INFO] (weird;file.c: 37): this is ok" == new)
 
-    def test_not_there(self):
-        # Point SPINN_DIRS to a directory with no logs.dict
-        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "foo"))
-        with Replacer() as replacer:
-            assert ("1001" == replacer.replace("1001"))
+    def test_not_there_existing(self):
+        # Point C_LOGS_DICT to somewhere that does not exist
+        os.environ["C_LOGS_DICT"] = str(
+            os.path.join(PATH, "foo", "not_there.sqlite3"))
+        try:
+            Replacer()
+            raise Exception("Should not work!")
+        except Exception as ex:
+            assert ("Unable to locate c_logs_dict" in str(ex))
+
+    def test_not_there_new(self):
+        # Point C_LOGS_DICT to somewhere that does not exist
+        os.environ["C_LOGS_DICT"] = str(
+            os.path.join(PATH, "foo", "not_there", "bad.sqlite3"))
+        try:
+            Replacer(True)
+            raise Exception("Should not work!")
+        except Exception as ex:
+            assert ("Error accessing c_logs_dict" in str(ex))
 
     def test_tab(self):
-        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             new = replacer.replace("11" + TOKEN + "10" + TOKEN + "20")
         message = "[INFO] (weird;file.c: 57): \t back off = 10, time between"\
@@ -59,14 +73,14 @@ class TestReplacer(unittest.TestCase):
         assert (message == new)
 
     def test_float(self):
-        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace("2" + TOKEN + "0xc0400000")
         message = "[INFO] (weird;file.c: 31): test -three -3.0"
         assert (message == new)
 
     def test_double(self):
-        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace(
             "3" + TOKEN + "40379999" + TOKEN + "9999999a")
@@ -74,7 +88,7 @@ class TestReplacer(unittest.TestCase):
         assert (message == new)
 
     def test_bad(self):
-        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace("1007" + TOKEN + "10")
         # An exception so just output the input
@@ -93,7 +107,7 @@ class TestReplacer(unittest.TestCase):
         Test the converter against hex values returned from Spinnaker
 
         """
-        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             assert self.near_equals(
                 -345443332234.13432143, replacer._hex_to_float("d2a0dc0e"))
@@ -122,7 +136,7 @@ class TestReplacer(unittest.TestCase):
         Test the converter against hexes values returned from Spinnaker
 
         """
-        os.environ["SPINN_DIRS"] = str(os.path.join(PATH, "replacer_dict"))
+        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             assert self.near_equals(
                 0, replacer._hexes_to_double("0", "0"))

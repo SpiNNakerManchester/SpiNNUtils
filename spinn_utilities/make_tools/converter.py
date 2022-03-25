@@ -56,8 +56,7 @@ class Converter(object):
         self._src_basename = src_basename
         self._dest_basename = dest_basename
         if new_dict:
-            with LogSqlLiteDatabase() as sql:
-                sql.clear()
+            LogSqlLiteDatabase(new_dict)
 
     def run(self):
         """ Runs the file converter on a whole directory including \

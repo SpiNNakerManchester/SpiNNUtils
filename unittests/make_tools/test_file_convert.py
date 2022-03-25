@@ -24,18 +24,15 @@ ranged_file = "local_ranges.txt"
 
 class TestConverter(unittest.TestCase):
 
-    def setUp(self):
+    def test_convert(self):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
-        os.chdir(path)
-        os.environ["SPINN_DIRS"] = str(path)
-        with LogSqlLiteDatabase() as sql:
-            sql.clear()
-
-    def test_convert(self):
+        os.environ["C_LOGS_DICT"] = str(os.path.join(path, "convert.sqlite3"))
         file_name = "weird,file.c"
         src = os.path.join("mock_src", file_name)
         dest = os.path.join("modified_src", file_name)
+        # clear the database and create a new one
+        LogSqlLiteDatabase(True)
         FileConverter.convert(src, dest)
         src_lines = sum(1 for line in open(src))
         modified_lines = sum(1 for line in open(dest))
@@ -67,6 +64,9 @@ class TestConverter(unittest.TestCase):
             sql.check_original("comment before")
 
     def test_exceptions(self):
+        class_file = sys.modules[self.__module__].__file__
+        path = os.path.dirname(os.path.abspath(class_file))
+        os.environ["C_LOGS_DICT"] = str(os.path.join(path, "temp.sqlite3"))
         file_name = "weird,file.c"
         src = os.path.join("mock_src", file_name)
         dest = os.path.join("modified_src", file_name)

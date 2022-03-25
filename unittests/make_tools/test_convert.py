@@ -28,11 +28,11 @@ class TestConverter(unittest.TestCase):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
-        os.environ["SPINN_DIRS"] = str(path)
+        os.environ["C_LOGS_DICT"] = str(os.path.join(path, "temp.sqlite3"))
 
     def test_convert(self):
-        with LogSqlLiteDatabase() as sql:
-            sql.clear()
+        # Clear the database
+        LogSqlLiteDatabase(True)
         src = "mock_src"
         dest = "modified_src"
         formats = os.path.join(src, "formats.c")
@@ -41,7 +41,7 @@ class TestConverter(unittest.TestCase):
         Converter.convert(src, dest, True)
         with LogSqlLiteDatabase() as sql:
             single = sql.get_max_log_id()
-        # Unchanged file a secomnd time should give same ids
+        # Unchanged file a second time should give same ids
         Converter.convert(src, dest, False)
         with LogSqlLiteDatabase() as sql:
             self.assertEquals(single, sql.get_max_log_id())
@@ -69,8 +69,6 @@ class TestConverter(unittest.TestCase):
         os.chdir(weird_dir)
         src = "foo/"
         dest = "bar/"
-        with LogSqlLiteDatabase() as sql:
-            sql.clear()
         c = Converter(src, dest, True)
         c.run()
         weird_dir = os.path.join(dir_path, "foo", "bar", "gamma")

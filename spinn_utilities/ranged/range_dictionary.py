@@ -414,7 +414,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
                     self._value_lists[key] = value.copy()
             else:
                 self._value_lists[key] = RangedList(
-                    value._size, key=key)
+                    len(value), key=key)
                 self._value_lists[key].copy_into(value)
 
     def copy(self):

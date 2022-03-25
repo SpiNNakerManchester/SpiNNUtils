@@ -232,14 +232,13 @@ class FormatAdapter(logging.LoggerAdapter):
             Return the message and *kwargs* modified (or not) to suit your\
             needs.
         """
-        # pylint: disable=deprecated-method
         return msg, {
             key: kwargs[key]
             for key in getfullargspec(self.do_log).args[1:]
             if key in kwargs}
 
     @classmethod
-    def _atexit_handler(cls):
+    def atexit_handler(cls):
         if cls.__log_store:
             messages = cls.__log_store.retreive_log_messages(
                 cls.__repeat_at_end)
@@ -274,4 +273,4 @@ class FormatAdapter(logging.LoggerAdapter):
             cls.__repeat_messages = []
 
 
-atexit.register(FormatAdapter._atexit_handler)
+atexit.register(FormatAdapter.atexit_handler)

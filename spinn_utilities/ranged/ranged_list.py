@@ -73,6 +73,7 @@ class RangedList(AbstractList):
             self._default = value
         else:
             self._default = None
+        self._ranged_based = None
         self.set_value(value, use_list_as_value)
 
     @overrides(AbstractList.range_based)

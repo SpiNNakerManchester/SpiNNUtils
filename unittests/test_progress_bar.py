@@ -22,7 +22,7 @@ from spinn_utilities.progress_bar import (
 from spinn_utilities.testing import log_checker
 from spinn_utilities import logger_utils
 
-EPB._ENABLED = False
+EPB._enabled = False
 
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
@@ -94,8 +94,8 @@ def test_iteration_style(pbclass):
 def test_bacon_enhancement(pbmagic):
     unittest_setup()
     try:
-        EPB._ENABLED = pbmagic
+        EPB._enabled = pbmagic
         seq = (1, 2, 3)
         assert sum(ProgressBar(seq, "foo").over(seq)) == 6
     finally:
-        EPB._ENABLED = False
+        EPB._enabled = False

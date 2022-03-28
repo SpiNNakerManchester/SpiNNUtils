@@ -15,6 +15,7 @@
 
 import logging
 import struct
+import sys
 from spinn_utilities.log import FormatAdapter
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
@@ -43,7 +44,7 @@ class Replacer(LogSqlLiteDatabase):
     _FLT_FMT = struct.Struct("!f")
     _DBL_FMT = struct.Struct("!d")
 
-    def replace(self, short):
+    def _replace(self, short):
         """ Apply the replacements to a short message.
 
         :param str short: The short message to apply the transform to.
@@ -52,12 +53,11 @@ class Replacer(LogSqlLiteDatabase):
         """
         parts = short.split(TOKEN)
         if not parts[0].isdigit():
-            return short
+            return None
         data = self.get_log_info(parts[0])
         if data is None:
-            return short
+            return None
         (log_level, file_name, line_num, original) = data
-        preface = f"{LEVELS[log_level]} ({file_name}: {line_num}): "
 
         replaced = original.encode("latin-1").decode("unicode_escape")
         if len(parts) > 1:
@@ -79,9 +79,15 @@ class Replacer(LogSqlLiteDatabase):
                         replacement = parts[i]
                     replaced = replaced.replace(match, replacement, 1)
             except Exception:  # pylint: disable=broad-except
-                return short
+                return None
+        return (log_level, file_name, line_num, replaced)
 
-        return preface + replaced
+    def replace(self, short):
+        data = self._replace(short)
+        if data is None:
+            return short
+        (log_level, file_name, line_num, replaced) = data
+        return f"{LEVELS[log_level]} ({file_name}: {line_num}): {replaced}"
 
     def _hex_to_float(self, hex_str):
         return self._FLT_FMT.unpack(
@@ -91,3 +97,10 @@ class Replacer(LogSqlLiteDatabase):
         return self._DBL_FMT.unpack(
             self._INT_FMT.pack(int(upper, 16)) +
             self._INT_FMT.pack(int(lower, 16)))[0]
+
+
+if __name__ == '__main__':
+    original = sys.argv[1]
+    short = "".join([ c if c.isalnum() else TOKEN for c in original])
+    with Replacer() as replacer:
+        print(replacer.replace(short))

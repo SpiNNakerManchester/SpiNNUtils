@@ -136,7 +136,7 @@ class TestConverter(unittest.TestCase):
             assert False
         except Exception as ex1:
             assert str(ex1) == ('Too few parameters in line "test %f %i", '
-                                '-1.0f); at 19 in mistakes/too_few.cc')
+                                '-1.0f); at 19 in mistakes/too_few.c')
 
     def test_too_many(self):
         class_file = sys.modules[self.__module__].__file__

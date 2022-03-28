@@ -145,12 +145,12 @@ class LogSqlLiteDatabase(object):
             cursor = self._db.cursor()
             # reuse the existing if it exists
             for row in self._db.execute(
-                """
-                SELECT directory_id
-                FROM directory
-                WHERE src_path = ? AND dest_path = ?
-                LIMIT 1
-                """, [src_path, dest_path]):
+                    """
+                    SELECT directory_id
+                    FROM directory
+                    WHERE src_path = ? AND dest_path = ?
+                    LIMIT 1
+                    """, [src_path, dest_path]):
                 return row["directory_id"]
 
             # create a new number
@@ -204,7 +204,7 @@ class LogSqlLiteDatabase(object):
                         """
                         SELECT log_id
                         FROM log
-                        WHERE log_level = ? AND line_num = ? 
+                        WHERE log_level = ? AND line_num = ?
                             AND original = ? AND file_id = ?
                         LIMIT 1
                         """, (log_level, line_num, original, file_id)):

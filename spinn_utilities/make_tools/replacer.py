@@ -101,6 +101,6 @@ class Replacer(LogSqlLiteDatabase):
 
 if __name__ == '__main__':
     original = sys.argv[1]
-    short = "".join([ c if c.isalnum() else TOKEN for c in original])
+    short = "".join([c if c.isalnum() else TOKEN for c in original])
     with Replacer() as replacer:
         print(replacer.replace(short))

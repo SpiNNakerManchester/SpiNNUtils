@@ -624,4 +624,3 @@ class FileConverter(object):
             directory_id = log_database.get_directory_id(src_dir, dest_dir)
             file_id = log_database.get_file_id(directory_id, file_name)
             FileConverter()(source, destination, file_id, log_database)
-

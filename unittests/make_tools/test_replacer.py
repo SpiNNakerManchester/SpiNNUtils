@@ -42,7 +42,7 @@ class TestReplacer(unittest.TestCase):
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             new = replacer.replace("5")
-        assert ("[INFO] (weird;file.c: 37): this is ok" == new)
+        assert ("[INFO] (weird,file.c: 37): this is ok" == new)
 
     def test_not_there_existing(self):
         # Point C_LOGS_DICT to somewhere that does not exist
@@ -68,7 +68,7 @@ class TestReplacer(unittest.TestCase):
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             new = replacer.replace("11" + TOKEN + "10" + TOKEN + "20")
-        message = "[INFO] (weird;file.c: 57): \t back off = 10, time between"\
+        message = "[INFO] (weird,file.c: 57): \t back off = 10, time between"\
                   " spikes 20"
         assert (message == new)
 
@@ -76,7 +76,7 @@ class TestReplacer(unittest.TestCase):
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace("2" + TOKEN + "0xc0400000")
-        message = "[INFO] (weird;file.c: 31): test -three -3.0"
+        message = "[INFO] (weird,file.c: 31): test -three -3.0"
         assert (message == new)
 
     def test_double(self):
@@ -84,7 +84,7 @@ class TestReplacer(unittest.TestCase):
         replacer = Replacer()
         new = replacer.replace(
             "3" + TOKEN + "40379999" + TOKEN + "9999999a")
-        message = "[INFO] (weird;file.c: 33): test double 23.6"
+        message = "[INFO] (weird,file.c: 33): test double 23.6"
         assert (message == new)
 
     def test_bad(self):

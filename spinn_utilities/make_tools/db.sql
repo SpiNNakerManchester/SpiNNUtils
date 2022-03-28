@@ -20,7 +20,8 @@ PRAGMA main.synchronous = OFF;
 -- A table holding each log message
 CREATE TABLE IF NOT EXISTS log(
     log_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	preface STRING NOT NULL,
+    log_level INTEGER NOT NULL,
+    line_num INTEGER NOT NUll,
 	original STRING NOT NULL,
     file_id  STRING NOT NULL REFERENCES file(file_id) ON DELETE RESTRICT
 	);
@@ -29,19 +30,27 @@ CREATE TABLE IF NOT EXISTS log(
 -- A table holding data on the converted file
 CREATE TABLE IF NOT EXISTS file(
     file_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	src_path STRING NOT NULL,
-	dest_path STRING NOT NULL,
+    directory_id INTEGER NOT NULL REFERENCES directory(directory_id) ON DELETE RESTRICT,
+	file_name STRING NOT NULL,
     convert_time INTEGER,
     last_build INTEGER
 	);
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+-- A table holding data on the converted file
+CREATE TABLE IF NOT EXISTS directory(
+    directory_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	src_path STRING NOT NULL,
+	dest_path STRING NOT NULL
+	);
+
+-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Glue the bits together to show the information that people think is here
 CREATE VIEW IF NOT EXISTS current_file_view AS
-    SELECT log_id, preface, original, file_id, src_path, dest_path, convert_time
-    FROM log NATURAL JOIN file
+    SELECT log_id, log_level, file_name, line_num , original, file_id, src_path, dest_path, convert_time
+    FROM log NATURAL JOIN file NATURAL JOIN directory
     WHERE last_build = 1;
 
 CREATE VIEW IF NOT EXISTS all_file_view AS
-    SELECT log_id, preface, original, file_id, src_path, dest_path, convert_time
+    SELECT log_id, log_level, file_name, line_num , original, file_id, src_path, dest_path, convert_time
     FROM log NATURAL JOIN file;

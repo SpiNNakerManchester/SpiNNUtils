@@ -22,6 +22,11 @@ from .log_sqllite_database import LogSqlLiteDatabase
 
 logger = FormatAdapter(logging.getLogger(__name__))
 
+LEVELS = {10: "[DEBUG]",
+          20: "[INFO]",
+          30: "[WARN]",
+          40: "[ERROR]"}
+
 
 class Replacer(LogSqlLiteDatabase):
     """ Performs replacements.
@@ -51,7 +56,8 @@ class Replacer(LogSqlLiteDatabase):
         data = self.get_log_info(parts[0])
         if data is None:
             return short
-        (preface, original) = data
+        (log_level, file_name, line_num, original) = data
+        preface = f"{LEVELS[log_level]} ({file_name}: {line_num}): "
 
         replaced = original.encode("latin-1").decode("unicode_escape")
         if len(parts) > 1:

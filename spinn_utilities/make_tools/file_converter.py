@@ -15,7 +15,6 @@
 import enum
 import os
 import re
-import sys
 from .log_sqllite_database import LogSqlLiteDatabase
 
 TOKEN = chr(30)  # Record Separator
@@ -28,10 +27,10 @@ END_COMMENT_REGEX = re.compile(r"/*/")
 LOG_START_REGEX = re.compile(
     r"log_((info)|(error)|(debug)|(warning))(\s)*\(")
 DOUBLE_HEX = ", double_to_upper({0}), double_to_lower({0})"
-LEVELS = {"log_info(": "[INFO]",
-          "log_error(": "[ERROR]",
-          "log_debug(": "[DEBUG]",
-          "log_warning(": "[WARNING]"}
+LEVELS = {"log_info(": 20,
+          "log_error(": 40,
+          "log_debug(": 10,
+          "log_warning(": 30}
 
 MINIS = {"log_info(": "log_mini_info(",
          "log_error(": "log_mini_error(",
@@ -50,7 +49,6 @@ class State(enum.Enum):
 class FileConverter(object):
 
     __slots__ = [
-        "_dest",
         "_log_database",
         "_log_file_id",
         "_log",
@@ -63,7 +61,7 @@ class FileConverter(object):
         "_too_many_lines"
     ]
 
-    def __init__(self, src, dest, log_database):
+    def __call__(self, src, dest, log_file_id, log_database):
         """ Creates the file_convertor to convert one file
 
         :param str src: Source file
@@ -72,14 +70,10 @@ class FileConverter(object):
         :type log_database:
             :py:class:`.log_sqllite_database.LogSqlLiteDatabase`
         """
-        #: Full source file name
+        #: Absolute path to source file
         #:
         #: :type: str
-        self._src = os.path.abspath(src)
-        #: Full destination file name
-        #:
-        #: :type: str
-        self._dest = os.path.abspath(dest)
+        self._src = src
         #: Database which handles the mapping of id to log messages
         #:
         #: :type: .log_sqllite_database.LogSqlLiteDatabase
@@ -87,7 +81,7 @@ class FileConverter(object):
         #: Id in the database for this file
         #:
         #: :type: int
-        self._log_file_id = log_database.get_file_id(src, dest)
+        self._log_file_id = log_file_id
         #: Current status of state machine
         #:
         #: :type: State
@@ -121,24 +115,11 @@ class FileConverter(object):
         #: :type: State
         self._previous_status = None
 
-    def _run(self):
-        """ Runs the file converter
-
-        .. warning::
-            This code is absolutely not thread safe.
-            Interwoven calls even on different FileConverter objects is
-            dangerous!
-        """
-        if not os.path.exists(self._src):
-            raise Exception("Unable to locate source {}".format(self._src))
-        dest_dir = os.path.dirname(os.path.realpath(self._dest))
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-        with open(self._src, encoding="utf-8") as src_f:
-            with open(self._dest, 'w', encoding="utf-8") as dest_f:
+        with open(src, encoding="utf-8") as src_f:
+            with open(dest, 'w', encoding="utf-8") as dest_f:
                 dest_f.write(
-                    "// DO NOT EDIT! THIS FILE WAS GENERATED FROM {}\n\n"
-                    .format(self.unique_src()))
+                    f"// DO NOT EDIT! THIS FILE WAS GENERATED FROM "
+                    f"{os.path.relpath(src, dest)}\n\n")
                 self._too_many_lines = 2
                 self._status = State.NORMAL_CODE
                 for line_num, text in enumerate(src_f):
@@ -152,7 +133,6 @@ class FileConverter(object):
                     if not self._process_line(dest_f, line_num, text):
                         self._status = previous_status
                         self._process_chars(dest_f, line_num, text)
-        # print (self._dest)
 
     def _process_line(self, dest_f, line_num, text):
         """ Process a single line
@@ -405,12 +385,9 @@ class FileConverter(object):
                 self._log_full, line_num, self._src)) from e
         parts = self.split_by_comma_plus(main, line_num)
         original = parts[0]
-        preface = "{} ({}: {}): ".format(
-            LEVELS[self._log], os.path.basename(self._src).replace(",", ";"),
-            line_num + 1)
 
         message_id = self._log_database.set_log_info(
-            preface, original, self._log_file_id)
+            LEVELS[self._log], line_num + 1, original, self._log_file_id)
         count = original.count("%") - original.count("%%") * 2
 
         if count == 0:
@@ -614,27 +591,6 @@ class FileConverter(object):
         else:
             dest_f.write(text[write_flag:])
 
-    def unique_src(self):
-        """ Returns the suffix of the source and destination paths which is\
-            the same.
-
-        For example, assuming sources of
-        ``/spinnaker/sPyNNaker/neural_modelling/src/common/in_spikes.h``
-        ``/spinnaker/sPyNNaker/neural_modelling/modified_src/common/in_spikes.h``
-        this returns ``src/common/in_spikes.h``
-
-        :return: A pointer to the source relative to the destination
-        :rtype: str
-        """
-        pos = 0
-        last_sep = 0
-        while pos < len(self._src) and pos < len(self._dest) \
-                and self._src[pos] == self._dest[pos]:
-            if self._src[pos] == os.path.sep:
-                last_sep = pos + 1
-            pos += 1
-        return self._src[last_sep:]
-
     @staticmethod
     def convert(src_dir, dest_dir, file_name):
         """ Static method to create Object and do the conversion
@@ -642,14 +598,14 @@ class FileConverter(object):
         :param str src: Source file
         :param str dest: Destination file
         """
-        destination = os.path.join(dest_dir, file_name)
         source = os.path.join(src_dir, file_name)
+        if not os.path.exists(source):
+            raise Exception(F"Unable to locate source {source}")
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+        destination = os.path.join(dest_dir, file_name)
         with LogSqlLiteDatabase() as log_database:
-            converter = FileConverter(source, destination, log_database)
-            converter._run()  # pylint: disable=protected-access
+            directory_id = log_database.get_directory_id(src_dir, dest_dir)
+            file_id = log_database.get_file_id(directory_id, file_name)
+            FileConverter()(source, destination, file_id, log_database)
 
-
-if __name__ == '__main__':
-    _src = sys.argv[1]
-    _dest = sys.argv[2]
-    FileConverter.convert(_src, _dest)

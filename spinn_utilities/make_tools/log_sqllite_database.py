@@ -136,8 +136,32 @@ class LogSqlLiteDatabase(object):
             cursor.execute("DELETE FROM file")
             cursor.execute(
                 "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='file'")
+            cursor.execute("DELETE FROM directory")
+            cursor.execute(
+                "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='directory'")
 
-    def get_file_id(self, src_path, dest_path):
+    def get_directory_id(self, src_path, dest_path):
+        with self._db:
+            cursor = self._db.cursor()
+            # reuse the existing if it exists
+            for row in self._db.execute(
+                """
+                SELECT directory_id
+                FROM directory
+                WHERE src_path = ? AND dest_path = ?
+                LIMIT 1
+                """, [src_path, dest_path]):
+                return row["directory_id"]
+
+            # create a new number
+            cursor.execute(
+                """
+                INSERT INTO directory(src_path, dest_path)
+                VALUES(?, ?)
+                """, (src_path, dest_path))
+            return cursor.lastrowid
+
+    def get_file_id(self, directory_id, file_name):
         with self._db:
             # Make previous one as not last
             with self._db:
@@ -145,18 +169,18 @@ class LogSqlLiteDatabase(object):
                 cursor.execute(
                     """
                     UPDATE file SET last_build = 0
-                    WHERE dest_path = ?
-                    """, [dest_path])
+                    WHERE directory_id = ? AND file_name = ?
+                    """, [directory_id, file_name])
                 # always create new one to distinguish new from old logs
                 cursor.execute(
                     """
                     INSERT INTO file(
-                        src_path, dest_path, convert_time, last_build)
+                        directory_id, file_name, convert_time, last_build)
                     VALUES(?, ?, ?, 1)
-                    """, (src_path, dest_path, _timestamp()))
+                    """, (directory_id, file_name, _timestamp()))
                 return cursor.lastrowid
 
-    def set_log_info(self, preface, original, file_id):
+    def set_log_info(self, log_level, line_num, original, file_id):
         with self._db:
             cursor = self._db.cursor()
             # reuse the existing number if nothing has changed
@@ -164,37 +188,39 @@ class LogSqlLiteDatabase(object):
                 """
                 UPDATE log SET
                     file_id = ?
-                WHERE preface = ? AND original = ?
-                """, (file_id, preface, original))
+                WHERE log_level = ? AND line_num = ? AND original = ?
+                """, (file_id, log_level, line_num, original))
 
             if cursor.rowcount == 0:
                 # create a new number if anything has changed
                 cursor.execute(
                     """
-                    INSERT INTO log(preface, original, file_id)
-                    VALUES(?, ?, ?)
-                    """, (preface, original, file_id))
+                    INSERT INTO log(log_level, line_num, original, file_id)
+                    VALUES(?, ?, ?, ?)
+                    """, (log_level, line_num, original, file_id))
                 return cursor.lastrowid
             else:
                 for row in self._db.execute(
                         """
                         SELECT log_id
                         FROM log
-                        WHERE preface = ? AND original = ? AND file_id = ?
+                        WHERE log_level = ? AND line_num = ? 
+                            AND original = ? AND file_id = ?
                         LIMIT 1
-                        """, (preface, original, file_id)):
+                        """, (log_level, line_num, original, file_id)):
                     return row["log_id"]
 
     def get_log_info(self, log_id):
         with self._db:
             for row in self._db.execute(
                     """
-                    SELECT preface, original
-                    FROM log
+                    SELECT log_level, file_name, line_num , original
+                    FROM current_file_view
                     WHERE log_id = ?
                     LIMIT 1
                     """, [log_id]):
-                return row["preface"], row["original"]
+                return (row["log_level"], row["file_name"], row["line_num"],
+                        row["original"])
 
     def check_original(self, original):
         with self._db:

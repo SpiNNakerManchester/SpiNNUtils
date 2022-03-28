@@ -133,6 +133,22 @@ class FileConverter(object):
                     if not self._process_line(dest_f, line_num, text):
                         self._status = previous_status
                         self._process_chars(dest_f, line_num, text)
+        self._check_end_status()
+
+    def _check_end_status(self):
+        if self._status == State.NORMAL_CODE:
+            return
+        if self._status == State.IN_LOG:
+            raise Exception(
+                f"Unclosed {self._log}{self._log_full} in {self._src}")
+        if self._status == State.IN_LOG_CLOSE_BRACKET:
+            raise Exception(
+                f"Semicolumn missing: "
+                f"{self._log}{self._log_full} in {self._src}")
+        if self._status == State.COMMENT:
+            raise Exception(
+                f"Unclosed block comment in {self._src}")
+        raise NotImplementedError(f"Unexpected status {self._status}")
 
     def _process_line(self, dest_f, line_num, text):
         """ Process a single line

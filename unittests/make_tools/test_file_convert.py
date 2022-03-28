@@ -29,13 +29,15 @@ class TestConverter(unittest.TestCase):
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = str(os.path.join(path, "convert.sqlite3"))
         file_name = "weird,file.c"
-        src = os.path.join("mock_src", file_name)
-        dest = os.path.join("modified_src", file_name)
+        src = os.path.join(path, "mock_src")
+        dest = os.path.join(path, "modified_src")
         # clear the database and create a new one
         LogSqlLiteDatabase(True)
-        FileConverter.convert("mock_src", "modified_src", file_name)
-        src_lines = sum(1 for line in open(src))
-        modified_lines = sum(1 for line in open(dest))
+        FileConverter.convert(src, dest, file_name)
+        src_f = os.path.join(src, file_name)
+        dest_f = os.path.join(dest, file_name)
+        src_lines = sum(1 for line in open(src_f))
+        modified_lines = sum(1 for line in open(dest_f))
         self.assertEqual(src_lines, modified_lines)
         with LogSqlLiteDatabase() as sql:
             with self.assertRaises(Exception):
@@ -67,29 +69,36 @@ class TestConverter(unittest.TestCase):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = str(os.path.join(path, "temp.sqlite3"))
+        src = os.path.join(path, "mistakes")
+        dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert("mistakes", "modified_src", "not_there.c")
+            FileConverter.convert(src, dest, "not_there.c")
             assert False
         except Exception as ex1:
-            assert str(ex1) == "Unable to locate source mistakes/not_there.c"
+            self.assertIn("Unable to locate source", str(ex1))
+            self.assertIn("mistakes/not_there.c", str(ex1))
 
     def test_split_fail(self):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = str(os.path.join(path, "temp.sqlite3"))
+        src = os.path.join(path, "mistakes")
+        dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert("mistakes", "modified_src", "bad_comma.c")
+            FileConverter.convert(src, dest, "bad_comma.c")
             assert False
         except Exception as ex1:
-            assert str(ex1) == (
-                'Unexpected line "); at 19 in mistakes/bad_comma.c')
+            self.assertIn('Unexpected line "); at 19 in', str(ex1))
+            self.assertIn("mistakes/bad_comma.c", str(ex1))
 
     def test_format_fail(self):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = str(os.path.join(path, "temp.sqlite3"))
+        src = os.path.join(path, "mistakes")
+        dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert("mistakes", "modified_src", "bad_format.c")
+            FileConverter.convert(src, dest, "bad_format.c")
             assert False
         except Exception as ex1:
             assert str(ex1) == "Unexpected formatString in %!"
@@ -98,53 +107,66 @@ class TestConverter(unittest.TestCase):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = str(os.path.join(path, "temp.sqlite3"))
+        src = os.path.join(path, "mistakes")
+        dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert("mistakes", "modified_src", "unclosed.c")
+            FileConverter.convert(src, dest, "unclosed.c")
             assert False
         except Exception as ex1:
-            assert str(ex1) == (
-                'Unclosed log_info("test %f", -3.0f in mistakes/unclosed.c')
+            self.assertIn('Unclosed log_info("test %f", -3.0f in ', str(ex1))
+            self.assertIn("mistakes/unclosed.c", str(ex1))
 
     def test_semi(self):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = str(os.path.join(path, "temp.sqlite3"))
+        src = os.path.join(path, "mistakes")
+        dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert("mistakes", "modified_src", "semi.c")
+            FileConverter.convert(src, dest, "semi.c")
             assert False
         except Exception as ex1:
-            assert str(ex1) == (
-                'Semicolumn missing: '
-                'log_info("test %f", -3.0f) in mistakes/semi.c')
+            self.assertIn('Semicolumn missing: log_info("test %f", -3.0f)',
+                          str(ex1))
+            self.assertIn("mistakes/semi.c", str(ex1))
 
     def test_open(self):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = str(os.path.join(path, "temp.sqlite3"))
+        src = os.path.join(path, "mistakes")
+        dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert("mistakes", "modified_src", "open.c")
+            FileConverter.convert(src, dest, "open.c")
             assert False
         except Exception as ex1:
-            assert str(ex1) == "Unclosed block comment in mistakes/open.c"
+            self.assertIn('Unclosed block comment in ', str(ex1))
+            self.assertIn("mistakes/open.c", str(ex1))
 
     def test_too_few(self):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = str(os.path.join(path, "temp.sqlite3"))
+        src = os.path.join(path, "mistakes")
+        dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert("mistakes", "modified_src", "too_few.c")
+            FileConverter.convert(src, dest, "too_few.c")
             assert False
         except Exception as ex1:
-            assert str(ex1) == ('Too few parameters in line "test %f %i", '
-                                '-1.0f); at 19 in mistakes/too_few.c')
+            self.assertIn('Too few parameters in line "test %f %i", -1.0f); ',
+                          str(ex1))
+            self.assertIn("mistakes/too_few.c", str(ex1))
 
     def test_too_many(self):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = str(os.path.join(path, "temp.sqlite3"))
+        src = os.path.join(path, "mistakes")
+        dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert("mistakes", "modified_src", "too_many.c")
+            FileConverter.convert(src, dest, "too_many.c")
             assert False
         except Exception as ex1:
-            assert str(ex1) == ('Too many parameters in line "test %f", -1.0f,'
-                                ' 2); at 19 in mistakes/too_many.c')
+            self.assertIn('Too many parameters in line "test %f", -1.0f, 2);',
+                          str(ex1))
+            self.assertIn("mistakes/too_many.c", str(ex1))

@@ -16,6 +16,7 @@
 import os
 import shutil
 import sys
+import tempfile
 import unittest
 
 from spinn_utilities.make_tools.converter import convert
@@ -24,13 +25,11 @@ from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 
 class TestConverter(unittest.TestCase):
 
-    def setUp(self):
+    def test_convert(self):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
-        os.environ["C_LOGS_DICT"] = str(os.path.join(path, "temp.sqlite3"))
-
-    def test_convert(self):
+        os.environ["C_LOGS_DICT"] = str(os.path.join(path, "convert.sqlite3"))
         # Clear the database
         LogSqlLiteDatabase(True)
         src = "mock_src"
@@ -53,6 +52,10 @@ class TestConverter(unittest.TestCase):
             self.assertEquals(single + 2, sql.get_max_log_id())
 
     def test_double_level(self):
+        class_file = sys.modules[self.__module__].__file__
+        path = os.path.dirname(os.path.abspath(class_file))
+        os.chdir(path)
+        os.environ["C_LOGS_DICT"] = tempfile.mktemp()
         dir_path = os.path.dirname(os.path.realpath(__file__))
         src = os.path.join(dir_path, "foo", "bar")
         dest = os.path.join(dir_path, "alpha", "beta")

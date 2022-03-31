@@ -15,7 +15,7 @@
 import enum
 import os
 import re
-import sys
+from .log_sqllite_database import LogSqlLiteDatabase
 
 TOKEN = chr(30)  # Record Separator
 
@@ -27,18 +27,15 @@ END_COMMENT_REGEX = re.compile(r"/*/")
 LOG_START_REGEX = re.compile(
     r"log_((info)|(error)|(debug)|(warning))(\s)*\(")
 DOUBLE_HEX = ", double_to_upper({0}), double_to_lower({0})"
+LEVELS = {"log_info(": 20,
+          "log_error(": 40,
+          "log_debug(": 10,
+          "log_warning(": 30}
 
 MINIS = {"log_info(": "log_mini_info(",
          "log_error(": "log_mini_error(",
          "log_debug(": "log_mini_debug(",
          "log_warning(": "log_mini_warning("}
-
-LEVELS = {"log_info(": "[INFO]",
-          "log_error(": "[ERROR]",
-          "log_debug(": "[DEBUG]",
-          "log_warning(": "[WARNING]"}
-
-MAX_LOG_PER_FILE = 100
 
 
 class State(enum.Enum):
@@ -50,88 +47,79 @@ class State(enum.Enum):
 
 
 class FileConverter(object):
+
     __slots__ = [
-        "dest",
-        "dict",
+        "_log_database",
+        "_log_file_id",
         "_log",
         "_log_full",
         "_log_lines",
         "_log_start",
-        "_message_id",
         "_previous_status",
-        "src",
+        "_src",
         "_status",
         "_too_many_lines"
     ]
 
-    def __init__(self, src, dest, dict_file):
+    def __call__(self, src, dest, log_file_id, log_database):
         """ Creates the file_convertor to convert one file
 
         :param str src: Source file
         :param str dest: Destination file
-        :param str dict_file: File to hold dictionary mappings
+        :param log_databasee:
+        :type log_database:
+            :py:class:`.log_sqllite_database.LogSqlLiteDatabase`
         """
-        #: Full source file name
+        #: Absolute path to source file
         #:
         #: :type: str
-        self.src = os.path.abspath(src)
-        #: Full destination file name
+        self._src = src
+        #: Database which handles the mapping of id to log messages
         #:
-        #: :type: str
-        self.dest = os.path.abspath(dest)
-        #: File to hold dictionary mappings
+        #: :type: .log_sqllite_database.LogSqlLiteDatabase
+        self._log_database = log_database
+        #: Id in the database for this file
         #:
-        #: :type: str
-        self.dict = dict_file
-        #: Id for next message
-        self._message_id = None
+        #: :type: int
+        self._log_file_id = log_file_id
         #: Current status of state machine
+        #:
+        #: :type: State
         self._status = None
         #: Number of extra lines written to modified not yet recovered
         #: Extra lines are caused by the header and possibly log comment
         #: Extra lines are recovered by omitting blank lines
+        #:
+        #: :type: int
         self._too_many_lines = None
-
-        # Variables created each time a log method found
+        #: Variables created each time a log method found
         #: original c log method found
+        #:
+        #: :type: str
         self._log = None
         #: Log methods found so far
+        #:
+        #: :type: str
         self._log_full = None
         #: Number of c lines the log method takes
+        #:
+        #: :type: int
         self._log_lines = None
         #: Any other stuff found before the log method but on same line
+        #:
+        #: :type: str
         self._log_start = None
-
         # variable created when a comment found
         #: The previous state
+        #:
+        #: :type: State
         self._previous_status = None
 
-    def _run(self, range_start):
-        """ Runs the file converter
-
-        .. warning::
-            This code is absolutely not thread safe.
-            Interwoven calls even on different FileConverter objects is
-            dangerous if the dict files are the same!
-            It is highly likely that dict files become corrupted and the same
-            ``message_id`` is used multiple times.
-
-        :param int range_start: id of last dictionary key used
-        :return: The last message id use which can in turn be passed into
-            the next FileConverter
-        :rtype: int
-        """
-        self._message_id = range_start
-        if not os.path.exists(self.src):
-            raise Exception("Unable to locate source {}".format(self.src))
-        dest_dir = os.path.dirname(os.path.realpath(self.dest))
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-        with open(self.src, encoding="utf-8") as src_f:
-            with open(self.dest, 'w', encoding="utf-8") as dest_f:
+        with open(src, encoding="utf-8") as src_f:
+            with open(dest, 'w', encoding="utf-8") as dest_f:
                 dest_f.write(
-                    "// DO NOT EDIT! THIS FILE WAS GENERATED FROM {}\n\n"
-                    .format(self.unique_src()))
+                    f"// DO NOT EDIT! THIS FILE WAS GENERATED FROM "
+                    f"{os.path.relpath(src, dest)}\n\n")
                 self._too_many_lines = 2
                 self._status = State.NORMAL_CODE
                 for line_num, text in enumerate(src_f):
@@ -145,8 +133,22 @@ class FileConverter(object):
                     if not self._process_line(dest_f, line_num, text):
                         self._status = previous_status
                         self._process_chars(dest_f, line_num, text)
-        # print (self._dest)
-        return self._message_id
+        self._check_end_status()
+
+    def _check_end_status(self):
+        if self._status == State.NORMAL_CODE:
+            return
+        if self._status == State.IN_LOG:
+            raise Exception(
+                f"Unclosed {self._log}{self._log_full} in {self._src}")
+        if self._status == State.IN_LOG_CLOSE_BRACKET:
+            raise Exception(
+                f"Semicolumn missing: "
+                f"{self._log}{self._log_full} in {self._src}")
+        if self._status == State.COMMENT:
+            raise Exception(
+                f"Unclosed block comment in {self._src}")
+        raise NotImplementedError(f"Unexpected status {self._status}")
 
     def _process_line(self, dest_f, line_num, text):
         """ Process a single line
@@ -382,28 +384,30 @@ class FileConverter(object):
 
         except Exception as e:
             raise Exception("Unexpected line {} at {} in {}".format(
-                self._log_full, line_num, self.src)) from e
+                self._log_full, line_num, self._src)) from e
 
     def _short_log(self, line_num):
         """ shortens the log string message and adds the id
 
-        Assumes that ``self._message_id`` has already been updated
-
         :param int line_num: Current line number
-        :return: new log message parts
-        :rtype: tuple(str,str)
+        :return: shorten form
+        :rtype: str
         """
         try:
             match = LOG_END_REGEX.search(self._log_full)
             main = self._log_full[:-len(match.group(0))]
         except Exception as e:
             raise Exception("Unexpected line {} at {} in {}".format(
-                self._log_full, line_num, self.src)) from e
+                self._log_full, line_num, self._src)) from e
         parts = self.split_by_comma_plus(main, line_num)
         original = parts[0]
+
+        message_id = self._log_database.set_log_info(
+            LEVELS[self._log], line_num + 1, original, self._log_file_id)
         count = original.count("%") - original.count("%%") * 2
+
         if count == 0:
-            return original, '"%u", {});'.format(self._message_id)
+            return '"%u", {});'.format(message_id)
 
         front = '"%u'
         back = ""
@@ -415,11 +419,11 @@ class FileConverter(object):
         if len(parts) < count + 1:
             raise Exception(
                 "Too few parameters in line {} at {} in {}".format(
-                    self._log_full, line_num, self.src))
+                    self._log_full, line_num, self._src))
         if len(parts) > count + 1:
             raise Exception(
                 "Too many parameters in line {} at {} in {}".format(
-                    self._log_full, line_num, self.src))
+                    self._log_full, line_num, self._src))
         for i, match in enumerate(matches):
             front += TOKEN
             if match.endswith("f"):
@@ -429,11 +433,12 @@ class FileConverter(object):
                 front += "%x" + TOKEN + "%x"
                 back += DOUBLE_HEX.format(parts[i + 1])
             else:
-                front += match
                 back += ", {}".format(parts[i + 1])
-        front += '", {}'.format(self._message_id)
+                front += match
+
+        front += '", {}'.format(message_id)
         back += ");"
-        return original, front + back
+        return front + back
 
     def _write_log_method(self, dest_f, line_num, tail=""):
         """ Writes the log message and the dict value
@@ -444,20 +449,12 @@ class FileConverter(object):
         - Parameters kept as is
         - Old log message with full text added as comment
 
-        Adds the data to the dict file including
-        - key/id
-        - log level
-        - file name
-        - line number
-        - original message
-
         :param dest_f: Open file like Object to write modified source to
         :param int line_num: Line number in the source c file
         :param str text: Text of that line including whitespace
         """
-        self._message_id += 1
         self._log_full = self._log_full.replace('""', '')
-        original, short_log = self._short_log(line_num)
+        short_log = self._short_log(line_num)
 
         dest_f.write(" " * self._log_start)
         dest_f.write(MINIS[self._log])
@@ -481,14 +478,6 @@ class FileConverter(object):
             dest_f.write(self._log_full)
             dest_f.write("*/")
             dest_f.write(end * (self._log_lines - 1))
-        with open(self.dict, 'a', encoding="utf-8") as mess_f:
-            # Remove commas from filenames for csv format
-            # Remove start and end quotes from original
-            mess_f.write("{},{} ({}: {}): ,{}\n".format(
-                self._message_id, LEVELS[self._log],
-                os.path.basename(self.src).replace(",", ";"),
-                line_num + 1,
-                original))
 
     def _process_chars(self, dest_f, line_num, text):
         """ Deals with complex lines that can not be handled in one go
@@ -538,12 +527,12 @@ class FileConverter(object):
                     if text[str_pos] == "\n":
                         raise Exception(
                             "Unclosed string literal in {} at line: {}".
-                            format(self.src, line_num))
+                            format(self._src, line_num))
                     elif text[str_pos] == "\\":
                         if text[str_pos+1] == "\n":
                             raise Exception(
                                 "Unclosed string literal in {} at line: {}".
-                                format(self.src, line_num))
+                                format(self._src, line_num))
 
                         else:
                             str_pos += 2  # ignore next char which may be a "
@@ -618,47 +607,20 @@ class FileConverter(object):
         else:
             dest_f.write(text[write_flag:])
 
-    def unique_src(self):
-        """ Returns the suffix of the source and destination paths which is\
-            the same.
-
-        For example, assuming sources of
-        ``/spinnaker/sPyNNaker/neural_modelling/src/common/in_spikes.h``
-        ``/spinnaker/sPyNNaker/neural_modelling/modified_src/common/in_spikes.h``
-        this returns ``src/common/in_spikes.h``
-
-        :return: A pointer to the source relative to the destination
-        :rtype: str
-        """
-        pos = 0
-        last_sep = 0
-        while pos < len(self.src) and pos < len(self.dest) \
-                and self.src[pos] == self.dest[pos]:
-            if self.src[pos] == os.path.sep:
-                last_sep = pos + 1
-            pos += 1
-        return self.src[last_sep:]
-
     @staticmethod
-    def convert(src, dest, dict_file, range_start=1):
+    def convert(src_dir, dest_dir, file_name):
         """ Static method to create Object and do the conversion
 
         :param str src: Source file
         :param str dest: Destination file
-        :param str dict_file: File to hold dictionary mappings
-        :param int range_start: id of last dictionary key used
-        :return: The last message id use which can in turn be passed into this
-            method again (``range_start``) to get contiguous non-overlapping
-            IDs across many files.
-        :rtype: int
         """
-        converter = FileConverter(src, dest, dict_file)
-        return converter._run(range_start)  # pylint: disable=protected-access
-
-
-if __name__ == '__main__':
-    _src = sys.argv[1]
-    _dest = sys.argv[2]
-    _dict_file = sys.argv[3]
-    _range_start = int(sys.argv[4])
-    FileConverter.convert(_src, _dest, _dict_file, _range_start)
+        source = os.path.join(src_dir, file_name)
+        if not os.path.exists(source):
+            raise Exception(F"Unable to locate source {source}")
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+        destination = os.path.join(dest_dir, file_name)
+        with LogSqlLiteDatabase() as log_database:
+            directory_id = log_database.get_directory_id(src_dir, dest_dir)
+            file_id = log_database.get_file_id(directory_id, file_name)
+            FileConverter()(source, destination, file_id, log_database)

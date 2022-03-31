@@ -447,7 +447,7 @@ class RangedList(AbstractList):
 
         # merge with next if same value
         if index < len(self._ranges) - 1 and numpy.array_equal(
-                self._ranges[index+1][2],  value):
+                self._ranges[index+1][2], value):
             self._ranges[index] = (self._ranges[index][0],
                                    self._ranges[index + 1][1], value)
             self._ranges.pop(index + 1)

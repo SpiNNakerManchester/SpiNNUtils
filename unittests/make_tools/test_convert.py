@@ -14,59 +14,54 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import shutil
 import sys
+import tempfile
 import unittest
 
-from spinn_utilities.make_tools.converter import Converter
-import spinn_utilities.make_tools.converter as converter
+from spinn_utilities.make_tools.converter import convert
+from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 
 
 class TestConverter(unittest.TestCase):
 
-    def setUp(self):
+    def test_convert(self):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
-        converter.RANGE_DIR = ""
-
-    def test_convert(self):
+        os.environ["C_LOGS_DICT"] = str(os.path.join(path, "convert.sqlite3"))
+        # Clear the database
+        LogSqlLiteDatabase(True)
         src = "mock_src"
         dest = "modified_src"
-        dict = os.path.join("modified_src", "test.dict")
-        Converter.convert(src, dest, dict)
-
-    def test_convert_ranged(self):
-        src = "mock_src"
-        dest = "modified_src"
-        dict = os.path.join("modified_src", "test.dict")
-        Converter.convert(src, dest, dict)
-        dict = os.path.join("modified_src", "test2.dict")
-        Converter.convert(src, dest, dict)
-
-    def test_replace(self):
-        src = "mock_src"
-        dest = "modified_src"
-        dict = os.path.join("modified_src", "test.dict")
-        c = Converter(src, dest, dict)
-        path = "/home/me/mock_src/FEC/c_common/fec/mock_src/"
-        path = path.replace("/", os.path.sep)
-        new_path = "/home/me/mock_src/FEC/c_common/fec/modified_src/"
-        new_path = new_path.replace("/", os.path.sep)
-        self.assertEqual(new_path, c._any_destination(path))
+        formats = os.path.join(src, "formats.c")
+        # make sure the first formats is there
+        shutil.copyfile("formats.c1", formats)
+        convert(src, dest, True)
+        with LogSqlLiteDatabase() as sql:
+            single = sql.get_max_log_id()
+        # Unchanged file a second time should give same ids
+        convert(src, dest, False)
+        with LogSqlLiteDatabase() as sql:
+            self.assertEquals(single, sql.get_max_log_id())
+        # Now use the second formats which as one extra log and moves 1 down
+        shutil.copyfile("formats.c2", formats)
+        convert(src, dest, False)
+        with LogSqlLiteDatabase() as sql:
+            # Need two more ids for the new log and then changed line number
+            self.assertEquals(single + 2, sql.get_max_log_id())
 
     def test_double_level(self):
-        cwd = os.getcwd()
+        class_file = sys.modules[self.__module__].__file__
+        path = os.path.dirname(os.path.abspath(class_file))
+        os.chdir(path)
+        os.environ["C_LOGS_DICT"] = tempfile.mktemp()
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        weird_dir = os.path.join(dir_path, "foo", "bar")
-        os.chdir(weird_dir)
-        src = "foo/"
-        dest = "bar/"
-        dict = os.path.join("bar", "test.dict")
-        c = Converter(src, dest, dict)
-        c.run()
-        weird_dir = os.path.join(dir_path, "foo", "bar", "gamma")
-        os.chdir(weird_dir)
-        dict = os.path.join("bar", "test.dict")
-        c = Converter(src, dest, dict)
-        c.run()
-        os.chdir(cwd)
+        src = os.path.join(dir_path, "foo", "bar")
+        dest = os.path.join(dir_path, "alpha", "beta")
+        e1 = os.path.join(dest, "delta", "empty1.c")
+        shutil.rmtree(os.path.join(dir_path, "alpha"), ignore_errors=True)
+        self.assertFalse(os.path.exists(e1))
+        convert(src, dest, True)
+        self.assertTrue(os.path.exists(e1))
+        convert(src, dest, True)

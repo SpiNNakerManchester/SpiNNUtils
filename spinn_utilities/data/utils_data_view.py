@@ -235,6 +235,8 @@ class UtilsDataView(object):
         Checks if the simulation has run and not been reset.
 
         :rytpe: bool
+        :raises NotImplementedError:
+            If this is called from an unexpected state
         """
         if cls.__data._reset_status == ResetStatus.HAS_RUN:
             return True
@@ -251,7 +253,9 @@ class UtilsDataView(object):
         """
         Checks that a stop request has not been sent
 
-        :return:
+        :rtype: bool
+        :raises NotImplementedError:
+            If this is called from an unexpected state
         """
         if cls.__data._run_status == RunStatus.IN_RUN:
             return True
@@ -321,6 +325,8 @@ class UtilsDataView(object):
         Checks to see if there is already a simulator
 
         :rtype: bool
+        :raises NotImplementedError:
+            If this is called from an unexpected state
         """
         if cls.__data._run_status in [RunStatus.NOT_SETUP, RunStatus.SHUTDOWN]:
             return False
@@ -366,6 +372,9 @@ class UtilsDataView(object):
         :return: True if the stop has already been requested
             or if the system is stopping or has already stopped
             False if the stop request makes sense.
+        :rtype: bool
+        :raises NotImplementedError:
+            If this is called from an unexpected state
         :raises SpiNNUtilsException:
             If the stop_run was not expected in the current state.
         """
@@ -381,7 +390,6 @@ class UtilsDataView(object):
                 "Calling stop before run does not make sense")
 
     # Report directories
-
     # Remainder in FecDataView
 
     @classmethod

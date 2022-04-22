@@ -434,3 +434,50 @@ class UtilsDataView(object):
         :rtype: ExcutableFinder
         """
         return cls.__data._executable_finder
+
+    @classmethod
+    def register_binary_search_path(cls, search_path):
+        """ Register an additional binary search path for executables.
+
+        semantic sugar for executable_finder.add_path
+
+        :param str search_path: absolute search path for binaries
+        """
+        cls.__data._executable_finder.add_path(search_path)
+
+    @classmethod
+    def get_executable_path(cls, executable_name):
+        """ Finds an executable within the set of folders. The set of folders\
+            is searched sequentially and the first match is returned.
+
+        Semantic sugar for get_executable_finder().get_executable_path
+
+        :param str executable_name: The name of the executable to find
+        :return: The full path of the discovered executable
+        :rtype: str
+        :raises KeyError: If no executable was found in the set of folders
+        """
+        return cls.__data._executable_finder.get_executable_path(
+            executable_name)
+
+    @classmethod
+    def get_executable_paths(cls, executable_names):
+        """ Finds each executables within the set of folders.
+
+        The names are assumed to be comma separated
+        The set of folders is searched sequentially
+        and the first match for each name is returned.
+
+        Names not found are ignored and not added to the list.
+
+        Semantic sugar for get_executable_finder().get_executable_paths
+
+        :param str executable_names: The name of the executable to find.
+            Assumed to be comma separated.
+        :return:
+            The full path of the discovered executable, or ``None`` if no
+            executable was found in the set of folders
+        :rtype: list(str)
+        """
+        return cls.__data._executable_finder.get_executable_paths(
+            executable_names)

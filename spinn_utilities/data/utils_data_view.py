@@ -303,6 +303,8 @@ class UtilsDataView(object):
         """
         Checks if the status is such that users can be making calls
 
+        This does NOT error in the Mocked state
+
         :raises SimulatorRunningException: If sim.run is currently running
         :raises SimulatorNotSetupException: If called before sim.setup
         :raises SimulatorShutdownException: If called after sim.end

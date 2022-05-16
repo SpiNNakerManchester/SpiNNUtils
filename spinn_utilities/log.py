@@ -212,16 +212,15 @@ class FormatAdapter(logging.LoggerAdapter):
         """
         if level >= FormatAdapter.__kill_level:
             raise LogLevelTooHighException(_BraceMessage(msg, args, kwargs))
-        if level >= FormatAdapter.__repeat_at_end:
+        if self.isEnabledFor(level) or level >= FormatAdapter.__repeat_at_end:
             message = _BraceMessage(msg, args, kwargs)
-            FormatAdapter.__repeat_messages.append((message))
-            if self.__report_file:
-                with open(self.__report_file, "a", encoding="utf-8")\
-                        as report_file:
-                    report_file.write(message.fmt)
-                    report_file.write("\n")
-        if self.isEnabledFor(level):
-            message = _BraceMessage(msg, args, kwargs)
+            if level >= FormatAdapter.__repeat_at_end:
+                FormatAdapter.__repeat_messages.append((message))
+                if self.__report_file:
+                    with open(self.__report_file, "a", encoding="utf-8")\
+                            as report_file:
+                        report_file.write(message.fmt)
+                        report_file.write("\n")
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
                 log_kwargs["exc_info"] = kwargs["exc_info"]

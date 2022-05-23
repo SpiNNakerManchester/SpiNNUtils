@@ -100,7 +100,7 @@ class Replacer(LogSqlLiteDatabase):
 
 
 if __name__ == '__main__':
-    original = sys.argv[1]
-    short = "".join([c if c.isalnum() else TOKEN for c in original])
+    encoded = sys.argv[1]
+    line = "".join([c if c.isalnum() else TOKEN for c in encoded])
     with Replacer() as replacer:
-        print(replacer.replace(short))
+        print(replacer.replace(line))

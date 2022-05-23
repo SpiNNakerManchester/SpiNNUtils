@@ -26,7 +26,7 @@ from .run_status import RunStatus
 from .utils_data_view import UtilsDataView, _UtilsDataModel
 
 logger = FormatAdapter(logging.getLogger(__file__))
-
+# pylint: disable=protected-access
 
 class UtilsDataWriter(UtilsDataView):
     """

@@ -21,7 +21,7 @@ from spinn_utilities.exceptions import (
     SimulatorNotSetupException, SimulatorRunningException,
     SimulatorShutdownException, UnexpectedStateChange)
 from spinn_utilities.executable_finder import ExecutableFinder
-
+# pylint: disable=protected-access
 
 class _UtilsDataModel(object):
     """

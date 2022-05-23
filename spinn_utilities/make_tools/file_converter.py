@@ -36,6 +36,7 @@ MINIS = {"log_info(": "log_mini_info(",
          "log_error(": "log_mini_error(",
          "log_debug(": "log_mini_debug(",
          "log_warning(": "log_mini_warning("}
+#  pylint: defining-attr-methods=__call__
 
 
 class State(enum.Enum):

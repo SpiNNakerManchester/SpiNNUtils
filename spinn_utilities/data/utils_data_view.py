@@ -23,6 +23,7 @@ from spinn_utilities.exceptions import (
 from spinn_utilities.executable_finder import ExecutableFinder
 # pylint: disable=protected-access
 
+
 class _UtilsDataModel(object):
     """
     Singleton data model
@@ -52,7 +53,6 @@ class _UtilsDataModel(object):
     def __new__(cls):
         if cls.__singleton:
             return cls.__singleton
-        # pylint: disable=protected-access
         obj = object.__new__(cls)
         cls.__singleton = obj
         obj._clear()

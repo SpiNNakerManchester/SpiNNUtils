@@ -28,6 +28,7 @@ from .utils_data_view import UtilsDataView, _UtilsDataModel
 logger = FormatAdapter(logging.getLogger(__file__))
 # pylint: disable=protected-access
 
+
 class UtilsDataWriter(UtilsDataView):
     """
     Writer class for the information in UtilsDataView

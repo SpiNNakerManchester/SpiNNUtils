@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import numpy
 from spinn_utilities.ranged import RangedList, SingleList
 
 
@@ -34,7 +35,6 @@ def test_muliple():
 
 
 def create_lambda():
-    import numpy
     machine_time_step = 1000
     return lambda x: numpy.exp(float(-machine_time_step) / (1000.0 * x))
 
@@ -42,9 +42,10 @@ def create_lambda():
 def test_complex():
     a_list = RangedList(5, [2, 1, 2, 3, 4], "many")
     single = SingleList(a_list=a_list, operation=create_lambda())
-    assert single == [0.60653065971263342, 0.36787944117144233,
-                      0.60653065971263342, 0.716531310573789272,
-                      0.77880078307140488]
+    assert numpy.allclose(
+        single,
+        [0.60653065971263342, 0.36787944117144233, 0.60653065971263342,
+         0.716531310573789272, 0.77880078307140488])
 
 
 def test_get_value():

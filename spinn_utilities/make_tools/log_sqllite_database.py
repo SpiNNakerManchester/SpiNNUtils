@@ -22,8 +22,6 @@ _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
 _SECONDS_TO_MICRO_SECONDS_CONVERSION = 1000
 DB_FILE_NAME = "logs.sqlite3"
 
-database_file = None
-
 
 def _timestamp():
     return int(time.time() * _SECONDS_TO_MICRO_SECONDS_CONVERSION)
@@ -60,8 +58,8 @@ class LogSqlLiteDatabase(object):
         database_file = os.environ.get('C_LOGS_DICT', None)
         if database_file is None:
             script = sys.modules[self.__module__].__file__
-            dir = os.path.dirname(script)
-            database_file = os.path.join(dir, DB_FILE_NAME)
+            directory = os.path.dirname(script)
+            database_file = os.path.join(directory, DB_FILE_NAME)
 
         if not new_dict and not os.path.exists(database_file):
             message = f"Unable to locate c_logs_dict at {database_file}. "
@@ -124,7 +122,7 @@ class LogSqlLiteDatabase(object):
         self._db.row_factory = sqlite3.Row
         # Don't use memoryview / buffer as hard to deal with difference
         self._db.text_factory = str
-        with open(_DDL_FILE) as f:
+        with open(_DDL_FILE, encoding="utf-8") as f:
             sql = f.read()
         self._db.executescript(sql)
 

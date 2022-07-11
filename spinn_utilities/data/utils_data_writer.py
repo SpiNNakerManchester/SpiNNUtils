@@ -266,3 +266,14 @@ class UtilsDataWriter(UtilsDataView):
         else:
             self.__data._run_dir_path = None
             raise InvalidDirectory("run_dir_path", run_dir_path)
+
+    def _set_executable_finder(self, executable_finder):
+        """
+        Only usable by unittests!
+
+        :param executable_finder:
+        :return:
+        """
+        if not self._is_mocked():
+            raise NotImplementedError("Only valid in Mocked state!")
+        self.__data._executable_finder = executable_finder

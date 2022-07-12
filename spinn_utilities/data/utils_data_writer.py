@@ -267,6 +267,19 @@ class UtilsDataWriter(UtilsDataView):
             self.__data._run_dir_path = None
             raise InvalidDirectory("run_dir_path", run_dir_path)
 
+    def set_reports_dir_path(self, reports_dir_path):
+        """
+        Checks and sets the reoprts_dir_path
+
+        :param str reprots_dir_path:
+        :raises InvalidDirectory: if the reports_dir_path is not a directory
+        """
+        if os.path.isdir(reports_dir_path):
+            self.__data._reports_dir_path = reports_dir_path
+        else:
+            self.__data._run_dir_path = None
+            raise InvalidDirectory("run_dir_path", reports_dir_path)
+
     def _set_executable_finder(self, executable_finder):
         """
         Only usable by unittests!

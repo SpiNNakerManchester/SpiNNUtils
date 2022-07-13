@@ -442,8 +442,8 @@ class UtilsDataView(object):
         :raises SpiNNUtilsException:
             If the simulation_time_step is currently unavailable
         """
-        if cls.__fec_data._report_dir_path:
-            return cls.__fec_data._report_dir_path
+        if cls.__data._report_dir_path:
+            return cls.__data._report_dir_path
         if cls._is_mocked():
             return cls._temporary_dir_path()
         raise cls._exception("report_dir_path")

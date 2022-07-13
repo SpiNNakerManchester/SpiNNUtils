@@ -277,7 +277,7 @@ class UtilsDataWriter(UtilsDataView):
         if os.path.isdir(reports_dir_path):
             self.__data._report_dir_path = reports_dir_path
         else:
-            self.__report_dir_path = None
+            self.__data._report_dir_path = None
             raise InvalidDirectory("run_dir_path", reports_dir_path)
 
     def _set_executable_finder(self, executable_finder):

@@ -940,7 +940,14 @@ class TestUtilsData(unittest.TestCase):
             writer.set_run_dir_path("bacon")
         writer.set_run_dir_path(os.path.curdir)
         self.assertEqual(os.path.curdir, UtilsDataView.get_run_dir_path())
-        self.assertEqual(os.path.curdir, UtilsDataView.get_run_dir_path())
+
+    def test_set_report_dir_path(self):
+        writer = UtilsDataWriter.setup()
+        writer.setup()
+        with self.assertRaises(InvalidDirectory):
+            writer.set_report_dir_path("bacon")
+        writer.set_report_dir_path(os.path.curdir)
+        self.assertEqual(os.path.curdir, UtilsDataView.get_report_dir_path())
 
     def test_writer_init_block(self):
         with self.assertRaises(IllegalWriterException):

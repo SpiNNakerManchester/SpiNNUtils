@@ -20,6 +20,12 @@ class RunStatus(Enum):
     """
     Different states the run could be in
 
+    This is from the prespective of the users script.
+    It says nothing about if there is c code running.
+    Ie Has a sim.run (or similar) call started but not yet returned.
+
+    This is combined with the ResetStatus to get the needed status
+
     This class is design to used internally by UtilsDataView
     """
     NOT_SETUP = (0)

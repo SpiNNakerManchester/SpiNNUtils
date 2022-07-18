@@ -22,7 +22,7 @@ class DataStatus(Enum):
     """
     Different states the Data can be in.
 
-    This class is design to used internally by UtilsDataView
+    This class is designed to used internally by UtilsDataView
     """
     NOT_SETUP = (0, NotSetupException)
     MOCKED = (1, DataNotMocked)

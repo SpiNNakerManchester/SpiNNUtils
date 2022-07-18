@@ -144,7 +144,7 @@ class UtilsDataView(object):
     They will raise an exception if called while the simulator is running.
 
     The has... methods will return True if the value is known and False if not.
-    Semantically the are the same as checking if the get raises an exception.
+    Semantically they are the same as checking if the get raises an exception.
     They may be faster if the object needs to be generated on the fly or
     protected to be made immutable.
     Has methods have been added where needed.

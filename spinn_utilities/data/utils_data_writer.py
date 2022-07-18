@@ -187,7 +187,7 @@ class UtilsDataWriter(UtilsDataView):
 
     def _soft_reset(self):
         """
-        This method should only be called from soft_setup
+        This method should only be called from soft_reset
 
         """
         self.__data._soft_reset()

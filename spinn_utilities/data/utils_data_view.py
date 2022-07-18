@@ -123,13 +123,13 @@ class UtilsDataView(object):
     the get methods can be expected to return the correct type.
 
     There are also several semantic sugar get.. methods.
-    Some are slightly faster but manny are just to make the code more readable.
+    Some are slightly faster but many are just to make the code more readable.
     Some semantic sugar methods do not start with get to keep the same name as
     the existing function on the object has.
 
     The iterate... methods offer a view over the collections within
     mutable data objects, particularly ones changed between runs.
-    There is no guarantee if the returned iterator will nor will not reflect
+    There is no guarantee if the returned iterator will or will not reflect
     any changes to the underlying data object,
     nor that how a method behaves in this way does not change over time.
     So the methods should be called for every iteration.
@@ -143,7 +143,7 @@ class UtilsDataView(object):
     They allow the view to add extra safetly such as type checking.
     They will raise an exception if called while the simulator is running.
 
-    The has... methods will return True is the value is known and False if not.
+    The has... methods will return True if the value is known and False if not.
     Semantically the are the same as checking if the get raises an exception.
     They may be faster if the object needs to be generated on the fly or
     protected to be made immutable.
@@ -269,7 +269,7 @@ class UtilsDataView(object):
     @classmethod
     def is_running(cls):
         """
-        Checks if there is currently a simulaation running
+        Checks if there is currently a simulation running
 
         That is a call to run has started but not yet stopped,
 

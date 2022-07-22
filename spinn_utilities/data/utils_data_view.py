@@ -290,6 +290,8 @@ class UtilsDataView(object):
                 RunStatus.NOT_RUNNING, RunStatus.IN_RUN,
                 RunStatus.STOP_REQUESTED, RunStatus.STOPPING]:
             return
+        if cls.__data._data_status == DataStatus.MOCKED:
+            return
         if cls.__data._run_status == RunStatus.NOT_SETUP:
             raise SimulatorNotSetupException(
                 "This call is not supported before setup has been called")

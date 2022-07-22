@@ -270,10 +270,13 @@ class UtilsDataView(object):
                 ResetStatus.SOFT_RESET, ResetStatus.HARD_RESET]:
             if cls.__data._run_status == RunStatus.NOT_RUNNING:
                 return True
-            if cls.__data._run_status in [
-                    RunStatus.IN_RUN, RunStatus.STOP_REQUESTED,
-                    RunStatus.STOPPING, RunStatus.SHUTDOWN]:
+            if cls.__data._run_status == RunStatus.IN_RUN:
                 return False
+        if cls.__data._run_status in [
+            RunStatus.STOP_REQUESTED, RunStatus.STOPPING, RunStatus.SHUTDOWN]:
+            raise SimulatorShutdownException(
+                "This call is not supported after sim.stop/end or "
+                "sim.end has been called")
         raise NotImplementedError(
             f"This call was not expected with reset status "
             f"{cls.__data._reset_status} and run status "

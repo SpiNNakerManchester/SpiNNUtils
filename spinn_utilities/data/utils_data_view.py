@@ -250,6 +250,24 @@ class UtilsDataView(object):
             f"{cls.__data._reset_status}")
 
     @classmethod
+    def is_reset_last(cls):
+        if cls.__data._reset_status in [
+                ResetStatus.SETUP, ResetStatus.HAS_RUN]:
+            return False
+        if cls.__data._reset_status in [
+                ResetStatus.SOFT_RESET, ResetStatus.HARD_RESET]:
+            if cls.__data._run_status == RunStatus.NOT_RUNNING:
+                return True
+            if cls.__data._run_status in [
+                    RunStatus.IN_RUN, RunStatus.STOP_REQUESTED,
+                    RunStatus.STOPPING, RunStatus.SHUTDOWN]:
+                return False
+        raise NotImplementedError(
+            f"This call was not expected with reset status "
+            f"{cls.__data._reset_status} and run status "
+            f"{cls.__data._run_status}")
+
+    @classmethod
     def is_no_stop_requested(cls):
         """
         Checks that a stop request has not been sent

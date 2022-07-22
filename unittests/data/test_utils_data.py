@@ -58,6 +58,8 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_ran_last()
         with self.assertRaises(NotImplementedError):
+            UtilsDataView.is_reset_last()
+        with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
         self.assertFalse(UtilsDataView.is_setup())
@@ -80,6 +82,8 @@ class TestUtilsData(unittest.TestCase):
             UtilsDataView.is_ran_ever()
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_ran_last()
+        with self.assertRaises(NotImplementedError):
+            UtilsDataView.is_reset_last()
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -115,6 +119,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertFalse(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -145,6 +150,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertFalse(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -184,6 +190,7 @@ class TestUtilsData(unittest.TestCase):
         # Only set at end of the current run
         self.assertFalse(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             self.assertTrue(UtilsDataView.is_no_stop_requested())
         self.assertFalse(UtilsDataView.is_running())
@@ -219,6 +226,7 @@ class TestUtilsData(unittest.TestCase):
         # Only set at end of the current run
         self.assertFalse(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         self.assertTrue(UtilsDataView.is_no_stop_requested())
         self.assertTrue(UtilsDataView.is_running())
         self.assertTrue(UtilsDataView.is_setup())
@@ -258,6 +266,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertTrue(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -287,6 +296,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertTrue(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -313,6 +323,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertTrue(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -351,6 +362,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertTrue(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -382,6 +394,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -409,6 +422,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -448,6 +462,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         self.assertTrue(UtilsDataView.is_no_stop_requested())
         self.assertTrue(UtilsDataView.is_running())
         self.assertTrue(UtilsDataView.is_setup())
@@ -502,6 +517,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         self.assertFalse(UtilsDataView.is_no_stop_requested())
         self.assertTrue(UtilsDataView.is_running())
         self.assertTrue(UtilsDataView.is_setup())
@@ -554,6 +570,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertTrue(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         self.assertTrue(UtilsDataView.is_no_stop_requested())
         self.assertTrue(UtilsDataView.is_running())
         self.assertTrue(UtilsDataView.is_setup())
@@ -610,6 +627,8 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertTrue(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         self.assertFalse(UtilsDataView.is_no_stop_requested())
         self.assertTrue(UtilsDataView.is_running())
         self.assertTrue(UtilsDataView.is_setup())
@@ -668,6 +687,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertTrue(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -698,6 +718,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -725,6 +746,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         with self.assertRaises(NotImplementedError):
             UtilsDataView.is_no_stop_requested()
         self.assertFalse(UtilsDataView.is_running())
@@ -770,6 +792,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView.is_soft_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         self.assertTrue(UtilsDataView.is_no_stop_requested())
         self.assertTrue(UtilsDataView.is_running())
         self.assertTrue(UtilsDataView.is_setup())
@@ -829,6 +852,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_hard_reset())
         self.assertTrue(UtilsDataView.is_ran_ever())
         self.assertFalse(UtilsDataView.is_ran_last())
+        self.assertFalse(UtilsDataView.is_reset_last())
         self.assertFalse(UtilsDataView.is_no_stop_requested())
         self.assertTrue(UtilsDataView.is_running())
         self.assertTrue(UtilsDataView.is_setup())

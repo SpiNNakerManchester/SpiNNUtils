@@ -69,9 +69,8 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(UtilsDataView._is_mocked())
         # Most is tests return True if mocked
         UtilsDataView.check_user_can_act()
-        with self.assertRaises(SimulatorNotSetupException):
-            UtilsDataView.check_valid_simulator()
-        with self.assertRaises(SimulatorNotSetupException):
+        UtilsDataView.check_valid_simulator()
+        with self.assertRaises(NotImplementedError):
             UtilsDataView.is_stop_already_requested()
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertFalse(UtilsDataView.is_hard_reset())
@@ -86,18 +85,18 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_setup())
 
         # No state change out of Mocked allowed except for setup of course
-        with self.assertRaises(SimulatorNotSetupException):
+        with self.assertRaises(UnexpectedStateChange):
             writer.start_run()
-        with self.assertRaises(SimulatorNotSetupException):
+        with self.assertRaises(UnexpectedStateChange):
             writer.finish_run()
-        with self.assertRaises(SimulatorNotSetupException):
+        with self.assertRaises(UnexpectedStateChange):
             # Should not be able to call
             writer.hard_reset()
-        with self.assertRaises(SimulatorNotSetupException):
+        with self.assertRaises(UnexpectedStateChange):
             writer.soft_reset()
-        with self.assertRaises(SimulatorNotSetupException):
+        with self.assertRaises(UnexpectedStateChange):
             writer.request_stop()
-        with self.assertRaises(SimulatorNotSetupException):
+        with self.assertRaises(UnexpectedStateChange):
             writer.stopping()
         # TODO do we need to block this?
         writer.shut_down()

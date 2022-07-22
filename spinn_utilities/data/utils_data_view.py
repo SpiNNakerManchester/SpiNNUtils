@@ -205,7 +205,7 @@ class UtilsDataView(object):
         Critically during the first run after reset this continues to return
         True!
 
-        Returns False after a reset that was considered soft.
+        Returns False after a reset that was considered hard.
 
         :rtype: bool
         """
@@ -251,6 +251,18 @@ class UtilsDataView(object):
 
     @classmethod
     def is_reset_last(cls):
+        """
+        Reports if sim.reset called since the last sim.run
+
+        Unlike is_soft_reset and is_hard_reset this method return False during
+        any sim.run
+
+        It also returns False after a sim.stop or sim.end call starts
+
+        :rytpe: bool
+        :raises NotImplementedError:
+            If this is called from an unexpected state
+        """
         if cls.__data._reset_status in [
                 ResetStatus.SETUP, ResetStatus.HAS_RUN]:
             return False

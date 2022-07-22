@@ -273,7 +273,8 @@ class UtilsDataView(object):
             if cls.__data._run_status == RunStatus.IN_RUN:
                 return False
         if cls.__data._run_status in [
-            RunStatus.STOP_REQUESTED, RunStatus.STOPPING, RunStatus.SHUTDOWN]:
+                RunStatus.STOP_REQUESTED, RunStatus.STOPPING,
+                RunStatus.SHUTDOWN]:
             raise SimulatorShutdownException(
                 "This call is not supported after sim.stop/end or "
                 "sim.end has been called")

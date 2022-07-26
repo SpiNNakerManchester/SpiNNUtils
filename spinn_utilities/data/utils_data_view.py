@@ -547,7 +547,7 @@ class UtilsDataView(object):
         Reports if data generation is required
 
         Set to True at the start and by any change that could require
-        data generation and execution to be called
+        data generation or mapping
         Remains True during the first run after a data change
         Only set to False at the END of the first run
 
@@ -572,7 +572,7 @@ class UtilsDataView(object):
 
         Set to True at the start and by any change that could require
         any mapping stage to be called
-        Remains True during the first run after a data change
+        Remains True during the first run after a requires mapping.
         Only set to False at the END of the first run
 
         :rtype: bool
@@ -582,9 +582,10 @@ class UtilsDataView(object):
     @classmethod
     def set_requires_mapping(cls):
         """
-        Sets requires_mapping to True
+        Sets requires_mapping and requires_data_generation to True
 
         Only the end of a run can set it to False
         """
         cls.check_user_can_act()
         cls.__data._requires_mapping = True
+        cls.__data._requires_data_generation = True

@@ -1016,10 +1016,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(writer.get_requires_data_generation())
         self.assertFalse(writer.get_requires_mapping())
 
-        writer.set_requires_data_generation()
-        self.assertTrue(writer.get_requires_data_generation())
-        self.assertFalse(writer.get_requires_mapping())
-
+        # Setting requires mapping sets both to True
         writer.set_requires_mapping()
         self.assertTrue(writer.get_requires_data_generation())
         self.assertTrue(writer.get_requires_mapping())
@@ -1027,6 +1024,11 @@ class TestUtilsData(unittest.TestCase):
         writer.start_run()
         writer.finish_run()
 
+        # Setting data only sets data
+        writer.set_requires_data_generation()
+        self.assertTrue(writer.get_requires_data_generation())
+        self.assertFalse(writer.get_requires_mapping())
+
         writer.set_requires_mapping()
-        # self.assertTrue(writer.get_requires_data_generation())
+        self.assertTrue(writer.get_requires_data_generation())
         self.assertTrue(writer.get_requires_mapping())

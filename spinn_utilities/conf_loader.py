@@ -17,12 +17,12 @@ import appdirs
 import configparser
 import logging
 import os
-from spinn_utilities.log import FormatAdapter
 from spinn_utilities import log
 from spinn_utilities.configs import (
     CamelCaseConfigParser, ConfigTemplateException,
     NoConfigFoundException, UnexpectedConfigException)
-logger = FormatAdapter(logging.getLogger(__name__))
+# Do not use FormatAdapter as then log level is warning
+logger = logging.getLogger(__name__)
 
 
 def install_cfg_and_IOError(filename, defaults, config_locations):

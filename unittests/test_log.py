@@ -187,4 +187,3 @@ def test_brace_message():
     assert str(bm) == "IndexError: This is a {1}"
     bm = _BraceMessage(DoIndexError(), ["test"], {})
     assert str(bm) == "Double IndexError"
-

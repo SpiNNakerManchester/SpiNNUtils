@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import os
 import pytest
 import random
@@ -23,6 +24,7 @@ import spinn_utilities.conf_loader as conf_loader
 import spinn_utilities.config_holder as config_holder
 from spinn_utilities.configs import (
     ConfigTemplateException, NoConfigFoundException, UnexpectedConfigException)
+from spinn_utilities.log import FormatAdapter
 from spinn_utilities.testing import log_checker
 
 
@@ -40,6 +42,8 @@ TYPESFILE = "config_types.cfg"
 TYPESPATH = os.path.join(os.path.dirname(unittests.__file__), TYPESFILE)
 VALIDATION_PATH = os.path.join(os.path.dirname(unittests.__file__),
                                "validation_config.cfg")
+
+logger = FormatAdapter(logging.getLogger(__name__))
 
 
 @pytest.fixture
@@ -218,6 +222,25 @@ def test_str_list(tmpdir, not_there):
         assert config.get_str_list("abc", "fluff") == ["more"]
 
 
+def test_logging(tmpdir, not_there):
+    # tests the ConfiguredFilter
+    name, place = not_there
+    with open(place, "w") as f:
+        f.write("[Logging]\n"
+                "instantiate = True\n"
+                "default = info\n"
+                "debug =\n"
+                "info =\n"
+                "warning =\n"
+                "error =\n"
+                "critical =\n")
+    with tmpdir.as_cwd():
+        conf_loader.load_config(name, [])
+
+    logger = FormatAdapter(logging.getLogger(__name__))
+    logger.warning("trigger filter")
+
+
 def test_errors(not_there):
     name, place = not_there
     with pytest.raises(ConfigTemplateException):
@@ -278,6 +301,7 @@ def test_preload_str_list():
     config_holder.set_cfg_files(None, TYPESPATH)
     assert ["foo", "bar"] == config_holder.get_config_str_list(
         "sect", "string_list")
+
 
 def test_preload_int():
     config_holder.clear_cfg_files(True)

@@ -12,34 +12,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import sys
 import time
 from datetime import timedelta
 
-if sys.version_info >= (3, 7):
-    # acquire the most accurate measurement available (perf_counter_ns)
-    _now = time.perf_counter_ns
-    # conversion factor
-    _NANO_TO_MICRO = 1000.0
-
-    def _convert_to_timedelta(time_diff):
-        """ Have to convert to a timedelta for rest of code to read.
-
-        As perf_counter_ns is nano seconds, and time delta lowest is micro,
-        need to convert.
-        """
-        return timedelta(microseconds=time_diff / _NANO_TO_MICRO)
-
-else:
-    # acquire the most accurate measurement available (perf_counter)
-    _now = time.perf_counter
-
-    def _convert_to_timedelta(time_diff):
-        """ Have to convert to a timedelta for rest of code to read.
-
-        As perf_counter is fractional seconds, put into correct time delta.
-        """
-        return timedelta(seconds=time_diff)
+# acquire the most accurate measurement available (perf_counter_ns)
+_now = time.perf_counter_ns
+# conversion factor
+_NANO_TO_MICRO = 1000.0
 
 
 class Timer(object):
@@ -88,7 +67,8 @@ class Timer(object):
         """
         time_now = _now()
         diff = time_now - self._start_time
-        return _convert_to_timedelta(diff)
+        return timedelta(diff / _NANO_TO_MICRO)
+
 
     def __enter__(self):
         self.start_timing()

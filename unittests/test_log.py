@@ -15,8 +15,9 @@
 
 import logging
 import tempfile
-from spinn_utilities.log import (ConfiguredFilter, ConfiguredFormatter)
-from spinn_utilities.log import FormatAdapter, LogLevelTooHighException
+from spinn_utilities.log import (
+    _BraceMessage, ConfiguredFilter, ConfiguredFormatter, FormatAdapter,
+    LogLevelTooHighException)
 
 
 class MockLog(object):
@@ -75,7 +76,9 @@ def test_logger_adapter():
         pass
     logger.set_kill_level()
     logger.critical("Should be ok now")
-    assert len(logger._repeat_log()) == 4
+    assert len(FormatAdapter._FormatAdapter__repeat_messages) == 4
+    FormatAdapter.atexit_handler()
+    assert len(FormatAdapter._FormatAdapter__repeat_messages) == 0
 
 
 def test_logger_dict():
@@ -118,7 +121,8 @@ class MockConfig1(object):
 
 def test_weird_config1():
     ConfiguredFormatter(MockConfig1())
-    ConfiguredFilter(MockConfig1())
+    fi = ConfiguredFilter(MockConfig1())
+    #fi.filter()
 
 
 class MockConfig2(object):
@@ -151,3 +155,36 @@ def test_waning_file():
         data = myfile.readlines()
     assert ("This is a warning\n" in data)
     assert ("And an Error\n" in data)
+
+
+class DoKeyError(object):
+
+    def __str__(self):
+        raise KeyError("Boom!")
+
+
+class DoIndexError(object):
+
+    def __str__(self):
+        raise IndexError("Boom!")
+
+
+def test_brace_message():
+    bm = _BraceMessage("This is a {name_one}", [], {"name_one" : "test"})
+    assert str(bm) == "This is a test"
+    bm = _BraceMessage("This is a {name_one}", [], {})
+    assert str(bm) == "This is a {name_one}"
+    bm = _BraceMessage("This is a {name_one}", [], {"name_two" : "not me"})
+    assert str(bm) == "KeyError: This is a {name_one}"
+    bm = _BraceMessage(DoKeyError(), ["test"], {})
+    assert str(bm) == "Double KeyError"
+
+    bm = _BraceMessage("This is a {0}", ["test"], {})
+    assert str(bm) == "This is a test"
+    bm = _BraceMessage("This is a {0}", [], {})
+    assert str(bm) == "This is a {0}"
+    bm = _BraceMessage("This is a {1}", ["Zero"], {})
+    assert str(bm) == "IndexError: This is a {1}"
+    bm = _BraceMessage(DoIndexError(), ["test"], {})
+    assert str(bm) == "Double IndexError"
+

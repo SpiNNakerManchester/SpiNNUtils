@@ -20,9 +20,11 @@ import configparser
 import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture
 import spinn_utilities.conf_loader as conf_loader
+import spinn_utilities.config_holder as config_holder
 from spinn_utilities.configs import (
     ConfigTemplateException, NoConfigFoundException, UnexpectedConfigException)
 from spinn_utilities.testing import log_checker
+
 
 CFGFILE = "configloader.cfg"
 CFGPATH = os.path.join(os.path.dirname(unittests.__file__), CFGFILE)
@@ -34,6 +36,8 @@ THREEFILE = "config_three.cfg"
 THREEPATH = os.path.join(os.path.dirname(unittests.__file__), THREEFILE)
 FOURFILE = "config_four.cfg"
 FOURPATH = os.path.join(os.path.dirname(unittests.__file__), FOURFILE)
+TYPESFILE = "config_types.cfg"
+TYPESPATH = os.path.join(os.path.dirname(unittests.__file__), TYPESFILE)
 VALIDATION_PATH = os.path.join(os.path.dirname(unittests.__file__),
                                "validation_config.cfg")
 
@@ -219,3 +223,75 @@ def test_errors(not_there):
     with pytest.raises(ConfigTemplateException):
         conf_loader.install_cfg_and_IOError(
             filename=name, defaults=[], config_locations=[])
+
+
+def test_config_holder(not_there):
+    config_holder.clear_cfg_files(False)
+    name, place = not_there
+    config_holder.set_cfg_files(name, TYPESPATH)
+    # first time creates file and errors
+    try:
+        config_holder.load_config()
+        raise Exception("Why am I here")
+    except NoConfigFoundException as ex:
+        assert name in str(ex)
+    # Should work the second time
+    config_holder.load_config()
+    # Note these values come from the template file not the default!
+    assert "from template" == config_holder.get_config_str("sect", "a_string")
+    assert ["alpha", "beta", "gamma"] == config_holder.get_config_str_list(
+        "sect", "string_list")
+    assert 123 == config_holder.get_config_int("sect", "a_int")
+    assert 44.56 == config_holder.get_config_float("sect", "a_float")
+    assert config_holder.get_config_bool("sect", "a_bool")
+
+
+def test_no_default():
+    config_holder.clear_cfg_files(False)
+    try:
+        config_holder.load_config()
+        raise Exception("Why am I here")
+    except Exception as ex:
+        assert "No default configs set" in str(ex)
+
+
+def test_preload_not_unittest():
+    config_holder.clear_cfg_files(False)
+    config_holder.set_cfg_files(None, TYPESPATH)
+    try:
+        assert "from default" == config_holder.get_config_str(
+            "sect", "a_string")
+        raise Exception("Why am I here")
+    except Exception as ex:
+        assert ("Accessing config values before setup is not supported"
+                in str(ex))
+
+
+def test_preload_str():
+    config_holder.clear_cfg_files(True)
+    config_holder.set_cfg_files(None, TYPESPATH)
+    assert "from default" == config_holder.get_config_str("sect", "a_string")
+
+
+def test_preload_str_list():
+    config_holder.clear_cfg_files(True)
+    config_holder.set_cfg_files(None, TYPESPATH)
+    assert ["foo", "bar"] == config_holder.get_config_str_list(
+        "sect", "string_list")
+
+def test_preload_int():
+    config_holder.clear_cfg_files(True)
+    config_holder.set_cfg_files(None, TYPESPATH)
+    assert 321 == config_holder.get_config_int("sect", "a_int")
+
+
+def test_preload_float():
+    config_holder.clear_cfg_files(True)
+    config_holder.set_cfg_files(None, TYPESPATH)
+    assert 56.44 == config_holder.get_config_float("sect", "a_float")
+
+
+def test_preload_bool():
+    config_holder.clear_cfg_files(True)
+    config_holder.set_cfg_files(None, TYPESPATH)
+    assert not config_holder.get_config_bool("sect", "a_bool")

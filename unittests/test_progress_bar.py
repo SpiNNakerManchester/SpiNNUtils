@@ -79,6 +79,12 @@ def test_check_length_addition(pbclass):
 
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
+def test_repr(pbclass):
+    p = pbclass(2, "repr test")
+    assert "repr test" in repr(p)
+
+
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
 def test_iteration_style(pbclass):
     unittest_setup()
     coll = range(5)

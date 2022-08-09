@@ -123,6 +123,7 @@ def test_weird_config1():
     ConfiguredFormatter(MockConfig1())
     ConfiguredFilter(MockConfig1())
 
+
 class MockConfig2(object):
 
     def get(self, section, option):

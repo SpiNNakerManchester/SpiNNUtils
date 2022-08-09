@@ -69,7 +69,6 @@ class Timer(object):
         diff = time_now - self._start_time
         return timedelta(diff / _NANO_TO_MICRO)
 
-
     def __enter__(self):
         self.start_timing()
         return self

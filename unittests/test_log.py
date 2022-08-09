@@ -121,9 +121,7 @@ class MockConfig1(object):
 
 def test_weird_config1():
     ConfiguredFormatter(MockConfig1())
-    fi = ConfiguredFilter(MockConfig1())
-    #fi.filter()
-
+    ConfiguredFilter(MockConfig1())
 
 class MockConfig2(object):
 
@@ -170,11 +168,11 @@ class DoIndexError(object):
 
 
 def test_brace_message():
-    bm = _BraceMessage("This is a {name_one}", [], {"name_one" : "test"})
+    bm = _BraceMessage("This is a {name_one}", [], {"name_one": "test"})
     assert str(bm) == "This is a test"
     bm = _BraceMessage("This is a {name_one}", [], {})
     assert str(bm) == "This is a {name_one}"
-    bm = _BraceMessage("This is a {name_one}", [], {"name_two" : "not me"})
+    bm = _BraceMessage("This is a {name_one}", [], {"name_two": "not me"})
     assert str(bm) == "KeyError: This is a {name_one}"
     bm = _BraceMessage(DoKeyError(), ["test"], {})
     assert str(bm) == "Double KeyError"

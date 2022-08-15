@@ -47,7 +47,7 @@ class RangedList(AbstractList):
         that all have the same value.
     """
     __slots__ = [
-        "_default", "_key", "_ranged_based", "_ranges"]
+        "_default", "_ranged_based", "_ranges"]
 
     def __init__(
             self, size=None, value=None, key=None, use_list_as_value=False):

@@ -21,7 +21,7 @@ from spinn_utilities import log
 from spinn_utilities.configs import (
     CamelCaseConfigParser, ConfigTemplateException,
     NoConfigFoundException, UnexpectedConfigException)
-logger = logging.getLogger(__name__)
+logger = log.FormatAdapter(logging.getLogger(__name__))
 
 
 def install_cfg_and_IOError(filename, defaults, config_locations):

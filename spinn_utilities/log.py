@@ -164,8 +164,7 @@ class FormatAdapter(logging.LoggerAdapter):
     """
     __kill_level = logging.CRITICAL + 1
     __repeat_at_end = logging.WARNING
-    __repeat_messages = []
-    __write_normal = True
+    __not_logged_messages = []
     __log_store = None
 
     @classmethod
@@ -189,6 +188,8 @@ class FormatAdapter(logging.LoggerAdapter):
         if not isinstance(log_store, (type(None), LogStore)):
             raise TypeError("log_store must be a LogStore")
         cls.__log_store = log_store
+        for level, message in cls._pop_not_logged_messages():
+            cls.__log_store.store_log(level, message)
 
     def __init__(self, logger, extra=None):
         if extra is None:
@@ -210,14 +211,16 @@ class FormatAdapter(logging.LoggerAdapter):
                 FormatAdapter.__log_store.store_log(level, message.fmt)
             except Exception as ex:
                 # Avoid an endless loop of log store errors being logged
-                FormatAdapter.__repeat_messages.append(
-                    f"Unable to store log messages in database due "
-                    f"to {ex}")
+                self.__not_logged_messages.append((
+                    level,
+                    f"Unable to store log messages in database due to {ex}"))
+                self.__not_logged_messages.append((level, str(message)))
                 FormatAdapter.__log_store = None
                 raise
         else:
-            if level >= FormatAdapter.__repeat_at_end:
-                FormatAdapter.__repeat_messages.append(message)
+            a = str(message)
+            self.__not_logged_messages.append((level, message))
+            b = message.fmt
         if self.isEnabledFor(level):
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
@@ -239,38 +242,41 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def atexit_handler(cls):
+
         if cls.__log_store:
             messages = cls.__log_store.retreive_log_messages(
                 cls.__repeat_at_end)
-            if messages:
-                level = logging.getLevelName(cls.__repeat_at_end)
-                print(f"\nWARNING: {len(messages)} log messages were "
-                      f"generated at level {level} or above.", file=sys.stderr)
-                print("This may mean that the results are invalid.",
-                      file=sys.stderr)
+        else:
+            messages = []
+        messages.append(cls._pop_not_logged_messages(cls.__repeat_at_end))
+        if messages:
+            level = logging.getLevelName(cls.__repeat_at_end)
+            print(f"\nWARNING: {len(messages)} log messages were "
+                  f"generated at level {level} or above.", file=sys.stderr)
+            print("This may mean that the results are invalid.",
+                  file=sys.stderr)
+            if cls.__log_store:
                 print(f"You are advised to check the details of these here: "
                       f"{cls.__log_store.get_location()}", file=sys.stderr)
-        else:
-            messages = cls._repeat_log()
-            if messages:
-                level = logging.getLevelName(cls.__repeat_at_end)
-                print(f"\nThese log messages where generated at level {level} "
-                      f"or above", file=sys.stderr)
-                for message in messages:
-                    print(message, file=sys.stderr)
 
     @classmethod
-    def _repeat_log(cls):
+    def _pop_not_logged_messages(cls,  min_level=0):
         """ Returns the log of messages to print on exit and \
         *clears that log*.
 
         .. note::
             Should only be called externally from test code!
         """
+        result = []
         try:
-            return cls.__repeat_messages
+            for level, message in cls.__not_logged_messages:
+                if level >= min_level:
+                    result.append((level, message))
+            return result
+        except Exception:
+            return result
         finally:
-            cls.__repeat_messages = []
+            cls.__not_logged_messages = []
 
 
 atexit.register(FormatAdapter.atexit_handler)

@@ -55,9 +55,9 @@ class MockLogStore(LogStore):
 
     @overrides(LogStore.store_log)
     def store_log(self, level, message):
-        self.data.append((level, message))
         if level == logging.CRITICAL:
             1/0
+        self.data.append((level, message))
 
     @overrides(LogStore.retreive_log_messages)
     def retreive_log_messages(self, min_level=0):
@@ -75,7 +75,7 @@ class MockLogStore(LogStore):
 def test_logger_adapter():
     log = MockLog()
     logger = FormatAdapter(log)
-    logger._repeat_log()  # clear the log
+    logger._pop_not_logged_messages()  # clear the log
     logger.debug("Debug {}", "debug")
     assert log.last_level is None
     logger.info("Info {}", "info")
@@ -100,7 +100,7 @@ def test_logger_adapter():
         pass
     logger.set_kill_level()
     logger.critical("Should be ok now")
-    assert len(logger._repeat_log()) == 4
+    assert len(logger._pop_not_logged_messages())
 
 
 def test_logger_dict():
@@ -114,7 +114,7 @@ def test_logger_dict():
 def test_logger_exception():
     log = MockLog()
     logger = FormatAdapter(log)
-    logger._repeat_log()  # clear the log
+    logger._pop_not_logged_messages()  # clear the log
 
     class Exn(Exception):
         pass
@@ -129,7 +129,7 @@ def test_logger_exception():
     assert str(log.last_msg) == "ho"
     assert "exc_info" in log.last_kwargs
     assert log.last_level == logging.ERROR
-    assert len(logger._repeat_log()) == 1
+    assert len(logger._pop_not_logged_messages()) == 1
 
 
 class MockConfig1(object):
@@ -166,18 +166,30 @@ def test_weird_config2():
 def test_log_store():
     logger = FormatAdapter(logging.getLogger(__name__))
     logger2 = FormatAdapter(logging.getLogger(__name__))
+    logger2.warning("This is early")
+    logger2.info("Pre info")
     store = MockLogStore()
     logger2.set_log_store(store)
+    assert(0 == len(FormatAdapter._pop_not_logged_messages()))
     logger.warning("This is a warning")
     logger2.error("And an Error")
     logger.info("This is an info")
     info = store.retreive_log_messages(logging.WARNING)
-    assert(2 == len(info))
+    assert(3 == len(info))
     try:
         logger.critical("Now go boom")
+        raise Exception("Should not get here")
     except ZeroDivisionError:
         pass
     logger.warning("This is a warning")
+    info = store.retreive_log_messages(logging.WARNING)
+    # an error disables the logstore for safety
+    # includes the ones before setting the log
+    assert(5 == len(store.retreive_log_messages()))
+    assert(3 == len(store.retreive_log_messages(logging.WARNING)))
+    # Only the ones from after the log store turned off
+    # the error, the critical and the last warning
+    assert(3 == len(FormatAdapter._pop_not_logged_messages()))
 
 
 def test_bad_log_store():

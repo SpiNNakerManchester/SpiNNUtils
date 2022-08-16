@@ -100,8 +100,8 @@ def logging_parser(config):
     """
     try:
         if config.getboolean("Logging", "instantiate"):
-            logging.basicConfig(level=0)
-
+            level = config.get("Logging", "default").upper()
+            logging.basicConfig(level=level)
         for handler in logging.root.handlers:
             handler.addFilter(log.ConfiguredFilter(config))
             handler.setFormatter(log.ConfiguredFormatter(config))

@@ -240,6 +240,6 @@ def load_config(filename, defaults, config_parsers=None):
 
     # Log which configs files we read
     print(configs.read_files)
-    logger.info("Read configs files: %s", ", ".join(configs.read_files))
+    logger.info("Read configs files: {}", ", ".join(configs.read_files))
 
     return configs

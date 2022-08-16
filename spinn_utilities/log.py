@@ -208,7 +208,7 @@ class FormatAdapter(logging.LoggerAdapter):
         message = _BraceMessage(msg, args, kwargs)
         if self.__log_store:
             try:
-                FormatAdapter.__log_store.store_log(level, message.fmt)
+                FormatAdapter.__log_store.store_log(level, str(message))
             except Exception as ex:
                 # Avoid an endless loop of log store errors being logged
                 self.__not_logged_messages.append((
@@ -218,9 +218,7 @@ class FormatAdapter(logging.LoggerAdapter):
                 FormatAdapter.__log_store = None
                 raise
         else:
-            a = str(message)
-            self.__not_logged_messages.append((level, message))
-            b = message.fmt
+            self.__not_logged_messages.append((level, str(message)))
         if self.isEnabledFor(level):
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:

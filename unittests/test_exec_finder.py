@@ -14,14 +14,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from spinn_utilities.executable_finder import ExecutableFinder
 import pytest
+from spinn_utilities.executable_finder import ExecutableFinder
 
 
 def test_create_and_config(tmpdir):
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
-    ef = ExecutableFinder([str(a), str(b)])
+    ef = ExecutableFinder()
+    ef.add_path(str(a))
+    ef.add_path(str(b))
     assert ef.binary_paths == "{} : {}".format(a, b)
     c = tmpdir.mkdir("c")
     ef.add_path(str(c))
@@ -29,13 +31,14 @@ def test_create_and_config(tmpdir):
 
 
 def test_find_in_no_places():
-    ef = ExecutableFinder([])
+    ef = ExecutableFinder()
     with pytest.raises(KeyError):
         ef.get_executable_path("abc.aplx")
 
 
 def test_find_in_one_place(tmpdir):
-    ef = ExecutableFinder([str(tmpdir)])
+    ef = ExecutableFinder()
+    ef.add_path(str(tmpdir))
     w = tmpdir.join("abc.aplx")
     w.write("any old content")
     assert ef.get_executable_path("abc.aplx") == str(w)
@@ -44,7 +47,9 @@ def test_find_in_one_place(tmpdir):
 def test_find_in_two_places(tmpdir):
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
-    ef = ExecutableFinder([str(a), str(b)])
+    ef = ExecutableFinder()
+    ef.add_path(str(a))
+    ef.add_path(str(b))
     w1 = tmpdir.join("a/abc.aplx")
     w1.write("any old content")
     w2 = tmpdir.join("b/abc.aplx")
@@ -66,7 +71,9 @@ def test_logs(tmpdir):
         os.environ["BINARY_LOGS_DIR"] = tmpdir.strpath
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
-    ef = ExecutableFinder([str(a), str(b)])
+    ef = ExecutableFinder()
+    ef.add_path(str(a))
+    ef.add_path(str(b))
     ef.add_path("bad_directory_name")
     w = tmpdir.join("a/abc.aplx")
     w.write("any old content")
@@ -78,15 +85,17 @@ def test_logs(tmpdir):
     w.write("any old content")
     ef.get_executable_path("abc.aplx")
     ef.get_executable_path("jkl.aplx")
-    ef2 = ExecutableFinder([])
+    ef2 = ExecutableFinder()
     ef2.check_logs()
     ef2.clear_logs()
 
 
 def test_find_no_duplicates(tmpdir):
+    ef = ExecutableFinder()
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
-    ef = ExecutableFinder([str(a), str(b)])
+    ef.add_path(str(a))
+    ef.add_path(str(b))
     assert ef.binary_paths == "{} : {}".format(a, b)
     ef.add_path(str(a))
     ef.add_path(str(a))

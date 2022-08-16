@@ -79,7 +79,8 @@ class TestConverter(unittest.TestCase):
             assert False
         except Exception as ex1:
             self.assertIn("Unable to locate source", str(ex1))
-            self.assertIn("mistakes/not_there.c", str(ex1))
+            self.assertIn("mistakes", str(ex1))
+            self.assertIn("not_there.c", str(ex1))
 
     def test_split_fail(self):
         class_file = sys.modules[self.__module__].__file__
@@ -94,7 +95,8 @@ class TestConverter(unittest.TestCase):
             assert False
         except Exception as ex1:
             self.assertIn('Unexpected line "); at 19 in', str(ex1))
-            self.assertIn("mistakes/bad_comma.c", str(ex1))
+            self.assertIn("mistakes", str(ex1))
+            self.assertIn("bad_comma.c", str(ex1))
 
     def test_format_fail(self):
         class_file = sys.modules[self.__module__].__file__
@@ -139,7 +141,8 @@ class TestConverter(unittest.TestCase):
         except Exception as ex1:
             self.assertIn('Semicolumn missing: log_info("test %f", -3.0f)',
                           str(ex1))
-            self.assertIn("mistakes/semi.c", str(ex1))
+            self.assertIn("semi.c", str(ex1))
+            self.assertIn("mistakes", str(ex1))
 
     def test_open(self):
         class_file = sys.modules[self.__module__].__file__
@@ -154,7 +157,8 @@ class TestConverter(unittest.TestCase):
             assert False
         except Exception as ex1:
             self.assertIn('Unclosed block comment in ', str(ex1))
-            self.assertIn("mistakes/open.c", str(ex1))
+            self.assertIn("open.c", str(ex1))
+            self.assertIn("mistakes", str(ex1))
 
     def test_too_few(self):
         class_file = sys.modules[self.__module__].__file__
@@ -170,7 +174,8 @@ class TestConverter(unittest.TestCase):
         except Exception as ex1:
             self.assertIn('Too few parameters in line "test %f %i", -1.0f); ',
                           str(ex1))
-            self.assertIn("mistakes/too_few.c", str(ex1))
+            self.assertIn("mistakes", str(ex1))
+            self.assertIn("too_few.c", str(ex1))
 
     def test_too_many(self):
         class_file = sys.modules[self.__module__].__file__
@@ -186,4 +191,5 @@ class TestConverter(unittest.TestCase):
         except Exception as ex1:
             self.assertIn('Too many parameters in line "test %f", -1.0f, 2);',
                           str(ex1))
-            self.assertIn("mistakes/too_many.c", str(ex1))
+            self.assertIn("mistakes", str(ex1))
+            self.assertIn("too_many.c", str(ex1))

@@ -21,7 +21,6 @@ from spinn_utilities import log
 from spinn_utilities.configs import (
     CamelCaseConfigParser, ConfigTemplateException,
     NoConfigFoundException, UnexpectedConfigException)
-# Do not use FormatAdapter as then log level is warning
 logger = logging.getLogger(__name__)
 
 

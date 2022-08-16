@@ -19,11 +19,12 @@ from .abstract_base import abstractmethod
 class LogStore(object):
 
     @abstractmethod
-    def store_log(self, level, message):
+    def store_log(self, level, message, timestamp=None):
         """ Writes the log message for later retreival
 
         :param int level:
         :param str message:
+        :type timestamp: datatime or None
         """
 
     @abstractmethod

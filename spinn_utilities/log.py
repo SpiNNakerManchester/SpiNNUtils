@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import atexit
+from datetime import datetime
 import logging
 import re
 import sys
@@ -188,8 +189,8 @@ class FormatAdapter(logging.LoggerAdapter):
         if not isinstance(log_store, (type(None), LogStore)):
             raise TypeError("log_store must be a LogStore")
         cls.__log_store = log_store
-        for level, message in cls._pop_not_logged_messages():
-            cls.__log_store.store_log(level, message)
+        for timestamp, level, message in cls._pop_not_logged_messages():
+            cls.__log_store.store_log(level, message, timestamp)
 
     def __init__(self, logger, extra=None):
         if extra is None:
@@ -213,14 +214,17 @@ class FormatAdapter(logging.LoggerAdapter):
                 except Exception as ex:
                     # Avoid an endless loop of log store errors being logged
                     self.__not_logged_messages.append((
+                        datetime.now(),
                         level,
                         f"Unable to store log messages in database due to"
                         f" {ex}"))
-                    self.__not_logged_messages.append((level, str(message)))
+                    self.__not_logged_messages.append(
+                        (datetime.now(), level, str(message)))
                     FormatAdapter.__log_store = None
                     raise
             else:
-                self.__not_logged_messages.append((level, str(message)))
+                self.__not_logged_messages.append(
+                    (datetime.now(), level, str(message)))
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
                 log_kwargs["exc_info"] = kwargs["exc_info"]
@@ -255,7 +259,8 @@ class FormatAdapter(logging.LoggerAdapter):
             print("This may mean that the results are invalid.",
                   file=sys.stderr)
             if cls.__log_store:
-                print(f"You are advised to check the details of these here: "
+                print(f"You are advised to check the details of these in "
+                      f"the p_log_view of : "
                       f"{cls.__log_store.get_location()}", file=sys.stderr)
 
     @classmethod
@@ -268,9 +273,9 @@ class FormatAdapter(logging.LoggerAdapter):
         """
         result = []
         try:
-            for level, message in cls.__not_logged_messages:
+            for timestamp, level, message in cls.__not_logged_messages:
                 if level >= min_level:
-                    result.append((level, message))
+                    result.append((timestamp, level, message))
             return result
         except Exception:
             return result

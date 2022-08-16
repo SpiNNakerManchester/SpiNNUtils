@@ -14,8 +14,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from spinn_utilities.log import (ConfiguredFilter, ConfiguredFormatter)
-from spinn_utilities.log import FormatAdapter, LogLevelTooHighException
+from spinn_utilities.log import (
+    ConfiguredFilter, ConfiguredFormatter, FormatAdapter,
+    LogLevelTooHighException)
 from spinn_utilities.log_store import LogStore
 from spinn_utilities.overrides import overrides
 
@@ -164,8 +165,8 @@ def test_weird_config2():
 
 
 def test_log_store():
-    logger = FormatAdapter(logging.getLogger(__name__))
-    logger2 = FormatAdapter(logging.getLogger(__name__))
+    logger = FormatAdapter(MockLog())
+    logger2 = FormatAdapter(MockLog())
     logger2.warning("This is early")
     logger2.info("Pre {}", "info")
     store = MockLogStore()

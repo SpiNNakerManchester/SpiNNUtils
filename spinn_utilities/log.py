@@ -205,21 +205,22 @@ class FormatAdapter(logging.LoggerAdapter):
         """
         if level >= FormatAdapter.__kill_level:
             raise LogLevelTooHighException(_BraceMessage(msg, args, kwargs))
-        message = _BraceMessage(msg, args, kwargs)
-        if self.__log_store:
-            try:
-                FormatAdapter.__log_store.store_log(level, str(message))
-            except Exception as ex:
-                # Avoid an endless loop of log store errors being logged
-                self.__not_logged_messages.append((
-                    level,
-                    f"Unable to store log messages in database due to {ex}"))
-                self.__not_logged_messages.append((level, str(message)))
-                FormatAdapter.__log_store = None
-                raise
-        else:
-            self.__not_logged_messages.append((level, str(message)))
         if self.isEnabledFor(level):
+            message = _BraceMessage(msg, args, kwargs)
+            if self.__log_store:
+                try:
+                    FormatAdapter.__log_store.store_log(level, str(message))
+                except Exception as ex:
+                    # Avoid an endless loop of log store errors being logged
+                    self.__not_logged_messages.append((
+                        level,
+                        f"Unable to store log messages in database due to"
+                        f" {ex}"))
+                    self.__not_logged_messages.append((level, str(message)))
+                    FormatAdapter.__log_store = None
+                    raise
+            else:
+                self.__not_logged_messages.append((level, str(message)))
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
                 log_kwargs["exc_info"] = kwargs["exc_info"]

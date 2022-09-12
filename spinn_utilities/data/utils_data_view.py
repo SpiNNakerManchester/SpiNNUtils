@@ -428,6 +428,17 @@ class UtilsDataView(object):
         raise UnexpectedStateChange(
                 "Calling stop before run does not make sense")
 
+    @classmethod
+    def is_shutdown(cls):
+        """
+        Determines if simulator has already been shutdown
+
+        This returns False in the Mocked state
+
+        :rtpye: bool
+        """
+        return cls.__data._run_status == RunStatus.SHUTDOWN
+
     # Report directories
     # Remainder in FecDataView
 

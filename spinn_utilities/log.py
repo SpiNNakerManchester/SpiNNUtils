@@ -165,7 +165,7 @@ class FormatAdapter(logging.LoggerAdapter):
     """
     __kill_level = logging.CRITICAL + 1
     __repeat_at_end = logging.WARNING
-    __not_logged_messages = []
+    __not_stored_messages = []
     __log_store = None
 
     @classmethod
@@ -189,7 +189,7 @@ class FormatAdapter(logging.LoggerAdapter):
         if not isinstance(log_store, (type(None), LogStore)):
             raise TypeError("log_store must be a LogStore")
         cls.__log_store = log_store
-        for timestamp, level, message in cls._pop_not_logged_messages():
+        for timestamp, level, message in cls._pop_not_stored_messages():
             cls.__log_store.store_log(level, message, timestamp)
 
     def __init__(self, logger, extra=None):
@@ -213,17 +213,17 @@ class FormatAdapter(logging.LoggerAdapter):
                     FormatAdapter.__log_store.store_log(level, str(message))
                 except Exception as ex:
                     # Avoid an endless loop of log store errors being logged
-                    self.__not_logged_messages.append((
+                    self.__not_stored_messages.append((
                         datetime.now(),
                         level,
                         f"Unable to store log messages in database due to"
                         f" {ex}"))
-                    self.__not_logged_messages.append(
+                    self.__not_stored_messages.append(
                         (datetime.now(), level, str(message)))
                     FormatAdapter.__log_store = None
                     raise
             else:
-                self.__not_logged_messages.append(
+                self.__not_stored_messages.append(
                     (datetime.now(), level, str(message)))
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
@@ -251,7 +251,7 @@ class FormatAdapter(logging.LoggerAdapter):
                 cls.__repeat_at_end)
         else:
             messages = []
-        messages.append(cls._pop_not_logged_messages(cls.__repeat_at_end))
+        messages.append(cls._pop_not_stored_messages(cls.__repeat_at_end))
         if messages:
             level = logging.getLevelName(cls.__repeat_at_end)
             print(f"\nWARNING: {len(messages)} log messages were "
@@ -264,7 +264,7 @@ class FormatAdapter(logging.LoggerAdapter):
                       f"{cls.__log_store.get_location()}", file=sys.stderr)
 
     @classmethod
-    def _pop_not_logged_messages(cls,  min_level=0):
+    def _pop_not_stored_messages(cls, min_level=0):
         """ Returns the log of messages to print on exit and \
         *clears that log*.
 
@@ -273,14 +273,14 @@ class FormatAdapter(logging.LoggerAdapter):
         """
         result = []
         try:
-            for timestamp, level, message in cls.__not_logged_messages:
+            for timestamp, level, message in cls.__not_stored_messages:
                 if level >= min_level:
                     result.append((timestamp, level, message))
             return result
         except Exception:
             return result
         finally:
-            cls.__not_logged_messages = []
+            cls.__not_stored_messages = []
 
 
 atexit.register(FormatAdapter.atexit_handler)

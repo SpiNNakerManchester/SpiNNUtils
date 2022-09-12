@@ -76,7 +76,7 @@ class MockLogStore(LogStore):
 def test_logger_adapter():
     log = MockLog()
     logger = FormatAdapter(log)
-    logger._pop_not_logged_messages()  # clear the log
+    logger._pop_not_stored_messages()  # clear the log
     logger.debug("Debug {}", "debug")
     assert log.last_level is None
     logger.info("Info {}", "info")
@@ -101,7 +101,7 @@ def test_logger_adapter():
         pass
     logger.set_kill_level()
     logger.critical("Should be ok now")
-    assert len(logger._pop_not_logged_messages())
+    assert len(logger._pop_not_stored_messages())
 
 
 def test_logger_dict():
@@ -115,7 +115,7 @@ def test_logger_dict():
 def test_logger_exception():
     log = MockLog()
     logger = FormatAdapter(log)
-    logger._pop_not_logged_messages()  # clear the log
+    logger._pop_not_stored_messages()  # clear the log
 
     class Exn(Exception):
         pass
@@ -130,7 +130,7 @@ def test_logger_exception():
     assert str(log.last_msg) == "ho"
     assert "exc_info" in log.last_kwargs
     assert log.last_level == logging.ERROR
-    assert len(logger._pop_not_logged_messages()) == 1
+    assert len(logger._pop_not_stored_messages()) == 1
 
 
 class MockConfig1(object):
@@ -171,7 +171,7 @@ def test_log_store():
     logger2.info("Pre {}", "info")
     store = MockLogStore()
     logger2.set_log_store(store)
-    assert 0 == len(FormatAdapter._pop_not_logged_messages())
+    assert 0 == len(FormatAdapter._pop_not_stored_messages())
     logger.warning("This is a warning")
     logger2.error("And an Error")
     logger.info("This is an {}", "info")
@@ -194,7 +194,7 @@ def test_log_store():
     assert 3 == len(store.retreive_log_messages(logging.WARNING))
     # Only the ones from after the log store turned off
     # the error, the critical and the last warning
-    assert 3 == len(FormatAdapter._pop_not_logged_messages())
+    assert 3 == len(FormatAdapter._pop_not_stored_messages())
 
 
 def test_bad_log_store():

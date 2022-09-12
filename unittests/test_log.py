@@ -55,7 +55,7 @@ class MockLogStore(LogStore):
         self.data = []
 
     @overrides(LogStore.store_log)
-    def store_log(self, level, message):
+    def store_log(self, level, message, timestamp=None):
         if level == logging.CRITICAL:
             1/0
         self.data.append((level, message))

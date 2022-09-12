@@ -251,10 +251,10 @@ class FormatAdapter(logging.LoggerAdapter):
                 cls.__repeat_at_end)
         else:
             messages = []
-        messages.append(cls._pop_not_stored_messages(cls.__repeat_at_end))
+        messages.extend(cls._pop_not_stored_messages(cls.__repeat_at_end))
         if messages:
             level = logging.getLevelName(cls.__repeat_at_end)
-            print(f"\nWARNING: {len(messages)} log messages were "
+            print(f"\n!WARNING: {len(messages)} log messages were "
                   f"generated at level {level} or above.", file=sys.stderr)
             print("This may mean that the results are invalid.",
                   file=sys.stderr)
@@ -262,6 +262,12 @@ class FormatAdapter(logging.LoggerAdapter):
                 print(f"You are advised to check the details of these in "
                       f"the p_log_view of : "
                       f"{cls.__log_store.get_location()}", file=sys.stderr)
+            if len(messages) < 10:
+                print("These are:", file=sys.stderr)
+            else:
+                print("The first 10 are:", file=sys.stderr)
+            for message in messages[0:10]:
+                print(message, file=sys.stderr)
 
     @classmethod
     def _pop_not_stored_messages(cls, min_level=0):

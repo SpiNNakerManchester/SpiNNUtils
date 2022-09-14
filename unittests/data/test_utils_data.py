@@ -1018,3 +1018,41 @@ class TestUtilsData(unittest.TestCase):
         self.assertEqual(ef, UtilsDataView.get_executable_finder())
         UtilsDataWriter.setup()
         self.assertEqual(ef, UtilsDataView.get_executable_finder())
+
+    def test_requires(self):
+        writer = UtilsDataWriter.setup()
+        # True before run
+        self.assertTrue(writer.get_requires_data_generation())
+        self.assertTrue(writer.get_requires_mapping())
+
+        writer.start_run()
+        # True during first run
+        self.assertTrue(writer.get_requires_data_generation())
+        self.assertTrue(writer.get_requires_mapping())
+        # Can not be changed during run
+        with self.assertRaises(SimulatorRunningException):
+            writer.set_requires_data_generation()
+        with self.assertRaises(SimulatorRunningException):
+            writer.set_requires_mapping()
+        writer.finish_run()
+
+        # False after run
+        self.assertFalse(writer.get_requires_data_generation())
+        self.assertFalse(writer.get_requires_mapping())
+
+        # Setting requires mapping sets both to True
+        writer.set_requires_mapping()
+        self.assertTrue(writer.get_requires_data_generation())
+        self.assertTrue(writer.get_requires_mapping())
+
+        writer.start_run()
+        writer.finish_run()
+
+        # Setting data only sets data
+        writer.set_requires_data_generation()
+        self.assertTrue(writer.get_requires_data_generation())
+        self.assertFalse(writer.get_requires_mapping())
+
+        writer.set_requires_mapping()
+        self.assertTrue(writer.get_requires_data_generation())
+        self.assertTrue(writer.get_requires_mapping())

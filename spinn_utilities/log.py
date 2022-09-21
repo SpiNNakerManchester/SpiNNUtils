@@ -14,10 +14,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import atexit
+from datetime import datetime
 import logging
 import re
 import sys
 from inspect import getfullargspec
+from .log_store import LogStore
 from .overrides import overrides
 
 _LEVELS = {
@@ -163,9 +165,8 @@ class FormatAdapter(logging.LoggerAdapter):
     """
     __kill_level = logging.CRITICAL + 1
     __repeat_at_end = logging.WARNING
-    __repeat_messages = []
-    __write_normal = True
-    __report_file = None
+    __not_stored_messages = []
+    __log_store = None
 
     @classmethod
     def set_kill_level(cls, level=None):
@@ -184,19 +185,12 @@ class FormatAdapter(logging.LoggerAdapter):
             cls.__kill_level = level
 
     @classmethod
-    def set_report_File(cls, report_file):
-        """
-
-        :param report_file:
-        :param write_normal:
-        :return:
-        """
-        cls.__report_file = report_file
-        level = logging.getLevelName(cls.__repeat_at_end)
-        with open(report_file, "a", encoding="utf-8") as report_file:
-            report_file.write(
-                "This is a record of all logged messages at level {} or "
-                "above\n".format(level))
+    def set_log_store(cls, log_store):
+        if not isinstance(log_store, (type(None), LogStore)):
+            raise TypeError("log_store must be a LogStore")
+        cls.__log_store = log_store
+        for timestamp, level, message in cls._pop_not_stored_messages():
+            cls.__log_store.store_log(level, message, timestamp)
 
     def __init__(self, logger, extra=None):
         if extra is None:
@@ -212,15 +206,25 @@ class FormatAdapter(logging.LoggerAdapter):
         """
         if level >= FormatAdapter.__kill_level:
             raise LogLevelTooHighException(_BraceMessage(msg, args, kwargs))
-        message = _BraceMessage(msg, args, kwargs)
-        if level >= FormatAdapter.__repeat_at_end:
-            FormatAdapter.__repeat_messages.append((message))
-            if self.__report_file:
-                with open(self.__report_file, "a", encoding="utf-8")\
-                        as report_file:
-                    report_file.write(message.fmt)
-                    report_file.write("\n")
         if self.isEnabledFor(level):
+            message = _BraceMessage(msg, args, kwargs)
+            if self.__log_store:
+                try:
+                    FormatAdapter.__log_store.store_log(level, str(message))
+                except Exception as ex:
+                    # Avoid an endless loop of log store errors being logged
+                    self.__not_stored_messages.append((
+                        datetime.now(),
+                        level,
+                        f"Unable to store log messages in database due to"
+                        f" {ex}"))
+                    self.__not_stored_messages.append(
+                        (datetime.now(), level, str(message)))
+                    FormatAdapter.__log_store = None
+                    raise
+            else:
+                self.__not_stored_messages.append(
+                    (datetime.now(), level, str(message)))
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
                 log_kwargs["exc_info"] = kwargs["exc_info"]
@@ -241,36 +245,48 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def atexit_handler(cls):
-        messages = cls._repeat_log()
+
+        if cls.__log_store:
+            messages = cls.__log_store.retreive_log_messages(
+                cls.__repeat_at_end)
+        else:
+            messages = []
+        messages.extend(cls._pop_not_stored_messages(cls.__repeat_at_end))
         if messages:
             level = logging.getLevelName(cls.__repeat_at_end)
-            if cls.__report_file:
-                print("\nWARNING: {} log messages were generated at "
-                      "level {} or above.".format(len(messages), level),
-                      file=sys.stderr)
-                print("This may mean that the results are invalid.",
-                      file=sys.stderr)
-                print("You are advised to check the details of these here: {}"
-                      "".format(cls.__report_file),
-                      file=sys.stderr)
+            print(f"\n!WARNING: {len(messages)} log messages were "
+                  f"generated at level {level} or above.", file=sys.stderr)
+            print("This may mean that the results are invalid.",
+                  file=sys.stderr)
+            if cls.__log_store:
+                print(f"You are advised to check the details of these in "
+                      f"the p_log_view of : "
+                      f"{cls.__log_store.get_location()}", file=sys.stderr)
+            if len(messages) < 10:
+                print("These are:", file=sys.stderr)
             else:
-                print("\nThese log messages where generated at level {} or "
-                      "above".format(level), file=sys.stderr)
-                for message in messages:
-                    print(message, file=sys.stderr)
+                print("The first 10 are:", file=sys.stderr)
+            for message in messages[0:10]:
+                print(message, file=sys.stderr)
 
     @classmethod
-    def _repeat_log(cls):
+    def _pop_not_stored_messages(cls, min_level=0):
         """ Returns the log of messages to print on exit and \
         *clears that log*.
 
         .. note::
             Should only be called externally from test code!
         """
+        result = []
         try:
-            return cls.__repeat_messages
+            for timestamp, level, message in cls.__not_stored_messages:
+                if level >= min_level:
+                    result.append((timestamp, level, message))
+            return result
+        except Exception:
+            return result
         finally:
-            cls.__repeat_messages = []
+            cls.__not_stored_messages = []
 
 
 atexit.register(FormatAdapter.atexit_handler)

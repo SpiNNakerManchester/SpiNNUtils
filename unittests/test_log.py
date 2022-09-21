@@ -15,7 +15,7 @@
 
 import logging
 from spinn_utilities.log import (
-    ConfiguredFilter, ConfiguredFormatter, FormatAdapter,
+    _BraceMessage, ConfiguredFilter, ConfiguredFormatter, FormatAdapter,
     LogLevelTooHighException)
 from spinn_utilities.log_store import LogStore
 from spinn_utilities.overrides import overrides
@@ -204,3 +204,35 @@ def test_bad_log_store():
         raise Exception("bad call accepted")
     except TypeError:
         pass
+
+
+class DoKeyError(object):
+
+    def __str__(self):
+        raise KeyError("Boom!")
+
+
+class DoIndexError(object):
+
+    def __str__(self):
+        raise IndexError("Boom!")
+
+
+def test_brace_message():
+    bm = _BraceMessage("This is a {name_one}", [], {"name_one": "test"})
+    assert str(bm) == "This is a test"
+    bm = _BraceMessage("This is a {name_one}", [], {})
+    assert str(bm) == "This is a {name_one}"
+    bm = _BraceMessage("This is a {name_one}", [], {"name_two": "not me"})
+    assert str(bm) == "KeyError: This is a {name_one}"
+    bm = _BraceMessage(DoKeyError(), ["test"], {})
+    assert str(bm) == "Double KeyError"
+
+    bm = _BraceMessage("This is a {0}", ["test"], {})
+    assert str(bm) == "This is a test"
+    bm = _BraceMessage("This is a {0}", [], {})
+    assert str(bm) == "This is a {0}"
+    bm = _BraceMessage("This is a {1}", ["Zero"], {})
+    assert str(bm) == "IndexError: This is a {1}"
+    bm = _BraceMessage(DoIndexError(), ["test"], {})
+    assert str(bm) == "Double IndexError"

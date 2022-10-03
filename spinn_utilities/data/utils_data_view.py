@@ -44,6 +44,7 @@ class _UtilsDataModel(object):
     __slots__ = [
         "_data_status",
         "_executable_finder",
+        "_mapping_dir_path",
         "_report_dir_path",
         "_requires_data_generation",
         "_requires_mapping",
@@ -77,6 +78,7 @@ class _UtilsDataModel(object):
         Puts all data back into the state expected at graph changed and
             sim.reset
         """
+        self._mapping_dir_path = None
         self._run_dir_path = None
         self._report_dir_path = None
         self._requires_data_generation = True
@@ -462,10 +464,18 @@ class UtilsDataView(object):
     @classmethod
     def get_run_dir_path(cls):
         """
-        Returns the path to the directory that holds all the reports for run
+        Returns the path to the directory that holds reports for a run.
 
-        This will be the path used by the last run call or to be used by
-        the next run if it has not yet been called.
+        After a soft reset the run_dir_path changes while the
+        mapping_dir_path does not.
+        So this directory will not hold mapping files and reports
+
+        During run this hold the path for this run.
+
+        Before the first run and after a reset this hold the
+        directory for the next run.
+
+        After a run (not reset) this holds the path from the last run.
 
         ..note: In unittest mode this returns a tempdir
         shared by all path methods
@@ -479,6 +489,34 @@ class UtilsDataView(object):
         if cls._is_mocked():
             return cls._temporary_dir_path()
         raise cls._exception("run_dir_path")
+
+    @classmethod
+    def get_mapping_dir_path(cls):
+        """
+        Returns the path to the directory that holds reports for mapping
+
+        After a soft reset the run_dir_path changes while the
+        mapping_dir_path does not.
+
+        During run this hold the path for this run.
+
+        Before the first run and after a hard reset this hold the
+        directory for the next run.
+
+        After a run (not reset) this holds the path from the last run.
+
+        ..note: In unittest mode this returns a tempdir
+        shared by all path methods
+
+        :rtpye: str
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            If the run_dir_path is currently unavailable
+        """
+        if cls.__data._mapping_dir_path:
+            return cls.__data._mapping_dir_path
+        if cls._is_mocked():
+            return cls._temporary_dir_path()
+        raise cls._exception("_mapping_dir_path")
 
     @classmethod
     def get_report_dir_path(cls):

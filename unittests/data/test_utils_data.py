@@ -984,22 +984,40 @@ class TestUtilsData(unittest.TestCase):
 
     def test_directories_mocked(self):
         UtilsDataWriter.mock()
-        self.assertTrue(os.path.exists(UtilsDataView.get_run_dir_path))
+        self.assertTrue(os.path.exists(UtilsDataView.get_run_dir_path()))
         self.assertTrue(os.path.exists(UtilsDataView.get_mapping_dir_path()))
+
+    def test_set_dsg_dir_path(self):
+        writer = UtilsDataWriter.setup()
+        writer.setup()
+        with self.assertRaises(DataNotYetAvialable):
+            UtilsDataView.get_dsg_dir_path()
+        writer.set_run_dir_path(os.path.curdir)
+        with self.assertRaises(DataNotYetAvialable):
+            UtilsDataView.get_dsg_dir_path()
+        writer.update_dsg_dir_path()
+        self.assertEqual(os.path.curdir, UtilsDataView.get_dsg_dir_path())
+
+    def test_set_mapping_dir_path(self):
+        writer = UtilsDataWriter.setup()
+        writer.setup()
+        with self.assertRaises(DataNotYetAvialable):
+            UtilsDataView.get_mapping_dir_path()
+        writer.set_run_dir_path(os.path.curdir)
+        with self.assertRaises(DataNotYetAvialable):
+            UtilsDataView.get_mapping_dir_path()
+        writer.update_mapping_dir_path()
+        self.assertEqual(os.path.curdir, UtilsDataView.get_mapping_dir_path())
 
     def test_set_run_dir_path(self):
         writer = UtilsDataWriter.setup()
         writer.setup()
+        with self.assertRaises(DataNotYetAvialable):
+            UtilsDataView.get_run_dir_path()
         with self.assertRaises(InvalidDirectory):
-            writer.set_run_dir_path("bacon", True)
-        writer.set_run_dir_path(os.path.curdir, True)
+            writer.set_run_dir_path("bacon")
+        writer.set_run_dir_path(os.path.curdir)
         self.assertEqual(os.path.curdir, UtilsDataView.get_run_dir_path())
-        self.assertEqual(UtilsDataView.get_run_dir_path(),
-                         UtilsDataView.get_mapping_dir_path())
-        writer.set_run_dir_path(os.path.pardir, False)
-        self.assertEqual(os.path.pardir, UtilsDataView.get_run_dir_path())
-        self.assertNotEqual(UtilsDataView.get_run_dir_path(),
-                            UtilsDataView.get_mapping_dir_path())
 
     def test_set_report_dir_path(self):
         writer = UtilsDataWriter.setup()

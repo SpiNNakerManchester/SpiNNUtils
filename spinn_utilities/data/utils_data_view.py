@@ -43,6 +43,7 @@ class _UtilsDataModel(object):
 
     __slots__ = [
         "_data_status",
+        "_dsg_dir_path",
         "_executable_finder",
         "_mapping_dir_path",
         "_report_dir_path",
@@ -78,6 +79,7 @@ class _UtilsDataModel(object):
         Puts all data back into the state expected at graph changed and
             sim.reset
         """
+        self._dsg_dir_path = None
         self._mapping_dir_path = None
         self._run_dir_path = None
         self._report_dir_path = None
@@ -464,7 +466,7 @@ class UtilsDataView(object):
     @classmethod
     def get_run_dir_path(cls):
         """
-        Returns the path to the directory that holds reports for a run.
+        Returns the path to the directory that holds data for a specific run.
 
         After a soft reset the run_dir_path changes while the
         mapping_dir_path does not.
@@ -493,7 +495,7 @@ class UtilsDataView(object):
     @classmethod
     def get_mapping_dir_path(cls):
         """
-        Returns the path to the directory that holds reports for mapping
+        Returns the path to the directory that holds mapping data
 
         After a soft reset the run_dir_path changes while the
         mapping_dir_path does not.
@@ -517,6 +519,34 @@ class UtilsDataView(object):
         if cls._is_mocked():
             return cls._temporary_dir_path()
         raise cls._exception("_mapping_dir_path")
+
+    @classmethod
+    def get_dsg_dir_path(cls):
+        """
+        Returns the path to the directory that dsg holds
+
+        After a soft reset the run_dir_path changes while the
+        mapping_dir_path does not.
+
+        During run this hold the path for this run.
+
+        Before the first run and after a hard reset this hold the
+        directory for the next run.
+
+        After a run (not reset) this holds the path from the last run.
+
+        ..note: In unittest mode this returns a tempdir
+        shared by all path methods
+
+        :rtpye: str
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            If the run_dir_path is currently unavailable
+        """
+        if cls.__data._dsg_dir_path:
+            return cls.__data._dsg_dir_path
+        if cls._is_mocked():
+            return cls._temporary_dir_path()
+        raise cls._exception("_dsg_dir_path")
 
     @classmethod
     def get_report_dir_path(cls):

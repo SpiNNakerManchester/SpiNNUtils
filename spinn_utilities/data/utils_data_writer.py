@@ -256,22 +256,31 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._data_status = DataStatus.SHUTDOWN
         self.__data._run_status = RunStatus.SHUTDOWN
 
-    def set_run_dir_path(self, run_dir_path, mapping_to):
+    def update_dsg_dir_path(self):
         """
-        Checks and sets the run_dir_path and if applicable
-        the mapping_dir_path too
+        Sets the dsg_dir_path to the run_dir_path
+
+        """
+        self.__data._dsg_dir_path = self.__data._run_dir_path
+
+    def update_mapping_dir_path(self):
+        """
+        Sets the mapping_dir_path to the run_dir_path
+
+        """
+        self.__data._mapping_dir_path = self.__data._run_dir_path
+
+    def set_run_dir_path(self, run_dir_path):
+        """
+        Checks and sets the run_dir_path
 
         :param str run_dir_path:
-        :param bool mapping_to: Falg to say if the mapping dir should change
         :raises InvalidDirectory: if the run_dir_path is not a directory
         """
         if os.path.isdir(run_dir_path):
             self.__data._run_dir_path = run_dir_path
-            if mapping_to:
-                self.__data._mapping_dir_path = run_dir_path
         else:
             self.__data._run_dir_path = None
-            self.__data._mapping_dir_path = None
             raise InvalidDirectory("run_dir_path", run_dir_path)
 
     def set_report_dir_path(self, reports_dir_path):

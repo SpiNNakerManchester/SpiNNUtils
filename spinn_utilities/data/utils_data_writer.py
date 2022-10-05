@@ -270,6 +270,21 @@ class UtilsDataWriter(UtilsDataView):
         """
         self.__data._mapping_dir_path = self.__data._run_dir_path
 
+    def get_report_dir_path(self):
+        """
+        Returns path to existing reports directory
+
+        ..note: In unittest mode this returns a tempdir
+        shared by all path methods
+
+        :rtpye: str
+        :raises SpiNNUtilsException:
+            If the simulation_time_step is currently unavailable
+        """
+        if self.__data._report_dir_path:
+            return self.__data._report_dir_path
+        raise self._exception("report_dir_path")
+
     def set_run_dir_path(self, run_dir_path):
         """
         Checks and sets the run_dir_path

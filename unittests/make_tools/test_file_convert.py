@@ -125,7 +125,7 @@ class TestConverter(unittest.TestCase):
             assert False
         except Exception as ex1:
             self.assertIn('Unclosed log_info("test %f", -3.0f in ', str(ex1))
-            self.assertIn("mistakes/unclosed.c", str(ex1))
+            self.assertIn("unclosed.c", str(ex1))
 
     def test_semi(self):
         class_file = sys.modules[self.__module__].__file__

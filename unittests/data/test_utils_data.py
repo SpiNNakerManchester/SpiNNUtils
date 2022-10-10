@@ -1013,8 +1013,6 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         writer.hard_reset()
         self.assertEqual(ef, UtilsDataView.get_executable_finder())
-        UtilsDataWriter.setup()
-        self.assertEqual(ef, UtilsDataView.get_executable_finder())
 
     def test_requires(self):
         writer = UtilsDataWriter.setup()

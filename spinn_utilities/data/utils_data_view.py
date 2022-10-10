@@ -60,7 +60,6 @@ class _UtilsDataModel(object):
         cls.__singleton = obj
         obj._clear()
         obj._data_status = DataStatus.NOT_SETUP
-        obj._executable_finder = ExecutableFinder()
         obj._reset_status = ResetStatus.NOT_SETUP
         obj._run_status = RunStatus.NOT_SETUP
 
@@ -70,6 +69,7 @@ class _UtilsDataModel(object):
         """
         Clears out all data
         """
+        self._executable_finder = ExecutableFinder()
         self._hard_reset()
 
     def _hard_reset(self):

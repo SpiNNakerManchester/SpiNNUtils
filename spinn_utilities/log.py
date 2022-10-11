@@ -246,11 +246,14 @@ class FormatAdapter(logging.LoggerAdapter):
     @classmethod
     def atexit_handler(cls):
 
+        messages = []
         if cls.__log_store:
-            messages = cls.__log_store.retreive_log_messages(
-                cls.__repeat_at_end)
-        else:
-            messages = []
+            try:
+                messages = cls.__log_store.retreive_log_messages(
+                    cls.__repeat_at_end)
+            except Exception:  # pylint: disable=broad-except
+                pass
+
         messages.extend(cls._pop_not_stored_messages(cls.__repeat_at_end))
         if messages:
             level = logging.getLevelName(cls.__repeat_at_end)

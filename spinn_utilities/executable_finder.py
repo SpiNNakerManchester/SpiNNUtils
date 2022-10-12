@@ -49,7 +49,7 @@ class ExecutableFinder(object):
         self._binary_search_paths.add(path)
         if self._paths_log:
             try:
-                with open(self._paths_log, "a", encoding="uft-8") as log_file:
+                with open(self._paths_log, "a", encoding="utf-8") as log_file:
                     log_file.write(path)
                     log_file.write("\n")
             except Exception:  # pylint: disable=broad-except

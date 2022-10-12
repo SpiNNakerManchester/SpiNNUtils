@@ -39,9 +39,13 @@ def test_find_in_no_places():
 def test_find_in_one_place(tmpdir):
     ef = ExecutableFinder()
     ef.add_path(str(tmpdir))
-    w = tmpdir.join("abc.aplx")
-    w.write("any old content")
-    assert ef.get_executable_path("abc.aplx") == str(w)
+    wa = tmpdir.join("abc.aplx")
+    wa.write("any old content")
+    wb = tmpdir.join("bca.aplx")
+    wb.write("any old content")
+    assert ef.get_executable_path("abc.aplx") == str(wa)
+    p = ef.get_executable_paths("abc.aplx,bca.aplx,cab.aplx")
+    assert p == [wa, wb]
 
 
 def test_find_in_two_places(tmpdir):
@@ -68,10 +72,27 @@ def test_find_in_two_places(tmpdir):
 
 def test_logs(tmpdir):
     if "BINARY_LOGS_DIR" not in os.environ:
+
+        # test with not logging
+        efn = ExecutableFinder()
+        efn.check_logs()
+        efn.check_logs()
+
+        # test the logging if bad does not block
+        os.environ["BINARY_LOGS_DIR"] = "A bad dir that does not exist"
+        efx = ExecutableFinder()
+        x = tmpdir.mkdir("x")
+        w = tmpdir.join("x/abc.aplx")
+        w.write("any old content")
+        efx.add_path(str(x))
+        efx.get_executable_path("abc.aplx")
+
+        # Now use one that does
         os.environ["BINARY_LOGS_DIR"] = tmpdir.strpath
+
+    ef = ExecutableFinder()
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
-    ef = ExecutableFinder()
     ef.add_path(str(a))
     ef.add_path(str(b))
     ef.add_path("bad_directory_name")

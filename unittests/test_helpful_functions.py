@@ -13,9 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import unittests
-from spinn_utilities.helpful_functions import (
-    get_valid_components, is_singleton, gcd, lcm)
+from spinn_utilities.helpful_functions import (is_singleton, gcd, lcm)
 
 
 def test_is_singleton():
@@ -31,15 +29,6 @@ def test_is_singleton():
     assert not is_singleton((43876,))
     assert is_singleton(object())
     assert is_singleton(lambda x: x * 2 + 1)
-
-
-def test_get_valid_components():
-    # WTF is this function doing?!
-    d = get_valid_components(unittests.test_helpful_functions, "_c")
-    assert len(d) == 3
-    assert d['a'] == a_c
-    assert d['a_b'] == a_b
-    assert d['b'] == b_c
 
 
 def test_gcd():
@@ -66,18 +55,3 @@ def test_lcm():
     assert lcm(b) == 3000
     c = [34]
     assert lcm(c) == 34
-
-
-# Support class for test_get_valid_components
-class a_b(object):  # noqa: N801
-    pass
-
-
-# Support class for test_get_valid_components
-class b_c(object):  # noqa: N801
-    pass
-
-
-# Support class for test_get_valid_components
-class a_c(object):  # noqa: N801
-    pass

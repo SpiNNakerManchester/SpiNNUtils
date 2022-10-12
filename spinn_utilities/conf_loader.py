@@ -21,7 +21,7 @@ from spinn_utilities import log
 from spinn_utilities.configs import (
     CamelCaseConfigParser, ConfigTemplateException,
     NoConfigFoundException, UnexpectedConfigException)
-logger = logging.getLogger(__name__)
+logger = log.FormatAdapter(logging.getLogger(__name__))
 
 
 def install_cfg_and_IOError(filename, defaults, config_locations):
@@ -100,8 +100,8 @@ def logging_parser(config):
     """
     try:
         if config.getboolean("Logging", "instantiate"):
-            logging.basicConfig(level=0)
-
+            level = config.get("Logging", "default").upper()
+            logging.basicConfig(level=level)
         for handler in logging.root.handlers:
             handler.addFilter(log.ConfiguredFilter(config))
             handler.setFormatter(log.ConfiguredFormatter(config))
@@ -240,6 +240,6 @@ def load_config(filename, defaults, config_parsers=None):
 
     # Log which configs files we read
     print(configs.read_files)
-    logger.info("Read configs files: %s", ", ".join(configs.read_files))
+    logger.info("Read configs files: {}", ", ".join(configs.read_files))
 
     return configs

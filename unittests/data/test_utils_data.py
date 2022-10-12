@@ -23,6 +23,7 @@ from spinn_utilities.data.data_status import DataStatus
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.exceptions import (
     DataNotYetAvialable, IllegalWriterException, InvalidDirectory,
+    NotSetupException,
     SimulatorNotRunException, SimulatorNotSetupException,
     SimulatorRunningException, SimulatorShutdownException,
     UnexpectedStateChange)
@@ -41,6 +42,8 @@ class TestUtilsData(unittest.TestCase):
             ResetStatus.NOT_SETUP
         UtilsDataWriter._UtilsDataWriter__data._run_status = \
             RunStatus.NOT_SETUP
+        with self.assertRaises(NotSetupException):
+            UtilsDataView.get_run_dir_path()
 
         self.assertFalse(UtilsDataView._is_mocked())
         with self.assertRaises(SimulatorNotSetupException):

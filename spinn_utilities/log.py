@@ -134,14 +134,19 @@ class _BraceMessage(object):
             return str(self.fmt).format(*self.args, **self.kwargs)
         except KeyError:
             try:
-                return "KeyError" + str(self.fmt)
+                if (not self.args and not self.kwargs and
+                        isinstance(self.fmt, str)):
+                    # nothing to format with so assume brackets not formatting
+                    return self.fmt
+                return "KeyError: " + str(self.fmt)
             except KeyError:
                 return "Double KeyError"
         except IndexError:
             try:
                 if self.args or self.kwargs:
-                    return "IndexError" + str(self.fmt)
+                    return "IndexError: " + str(self.fmt)
                 else:
+                    # nothing to format with so assume brackets not formatting
                     return str(self.fmt)
             except IndexError:
                 return "Double IndexError"
@@ -246,11 +251,14 @@ class FormatAdapter(logging.LoggerAdapter):
     @classmethod
     def atexit_handler(cls):
 
+        messages = []
         if cls.__log_store:
-            messages = cls.__log_store.retreive_log_messages(
-                cls.__repeat_at_end)
-        else:
-            messages = []
+            try:
+                messages = cls.__log_store.retreive_log_messages(
+                    cls.__repeat_at_end)
+            except Exception:  # pylint: disable=broad-except
+                pass
+
         messages.extend(cls._pop_not_stored_messages(cls.__repeat_at_end))
         if messages:
             level = logging.getLevelName(cls.__repeat_at_end)

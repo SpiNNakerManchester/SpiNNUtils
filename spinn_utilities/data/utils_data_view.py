@@ -70,6 +70,7 @@ class _UtilsDataModel(object):
         """
         Clears out all data
         """
+        self._report_dir_path = None
         self._hard_reset()
 
     def _hard_reset(self):
@@ -78,7 +79,6 @@ class _UtilsDataModel(object):
             sim.reset
         """
         self._run_dir_path = None
-        self._report_dir_path = None
         self._requires_data_generation = True
         self._requires_mapping = True
         self._temporary_directory = None

@@ -1001,7 +1001,7 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(InvalidDirectory):
             writer.set_report_dir_path("bacon")
         writer.set_report_dir_path(os.path.curdir)
-        self.assertEqual(os.path.curdir, UtilsDataView.get_report_dir_path())
+        self.assertEqual(os.path.curdir, writer.get_report_dir_path())
 
     def test_writer_init_block(self):
         with self.assertRaises(IllegalWriterException):

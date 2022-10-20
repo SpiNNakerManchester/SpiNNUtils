@@ -256,6 +256,24 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._data_status = DataStatus.SHUTDOWN
         self.__data._run_status = RunStatus.SHUTDOWN
 
+    def get_report_dir_path(self):
+        """
+        Returns path to existing reports directory
+
+        This is the high level directory which in which timestamp directories
+        and then run directories are placed.
+
+        As it is only accessed to create timestamp directories and
+        remove old reports this is not a view method.
+
+        :rtpye: str
+        :raises SpiNNUtilsException:
+            If the simulation_time_step is currently unavailable
+        """
+        if self.__data._report_dir_path:
+            return self.__data._report_dir_path
+        raise self._exception("report_dir_path")
+
     def set_run_dir_path(self, run_dir_path):
         """
         Checks and sets the run_dir_path

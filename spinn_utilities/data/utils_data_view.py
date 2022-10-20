@@ -481,24 +481,6 @@ class UtilsDataView(object):
         raise cls._exception("run_dir_path")
 
     @classmethod
-    def get_report_dir_path(cls):
-        """
-        Returns path to existing reports directory
-
-        ..note: In unittest mode this returns a tempdir
-        shared by all path methods
-
-        :rtpye: str
-        :raises SpiNNUtilsException:
-            If the simulation_time_step is currently unavailable
-        """
-        if cls.__data._report_dir_path:
-            return cls.__data._report_dir_path
-        if cls._is_mocked():
-            return cls._temporary_dir_path()
-        raise cls._exception("report_dir_path")
-
-    @classmethod
     def get_executable_finder(cls):
         """
         The ExcutableFinder object created at time code is imported

@@ -277,6 +277,12 @@ class UtilsDataWriter(UtilsDataView):
         ..note: In unittest mode this returns a tempdir
         shared by all path methods
 
+        This is the high level directory which in which timestamp directories
+        and then run directories are placed.
+
+        As it is only accessed to create timestamp directories and
+        remove old reports this is not a view method.
+
         :rtpye: str
         :raises SpiNNUtilsException:
             If the simulation_time_step is currently unavailable

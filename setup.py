@@ -75,7 +75,7 @@ setup(
     install_requires=[
         "appdirs",
         "numpy > 1.13, < 1.21; python_version == '3.7'",
-        "numpy; python_version >= '3.8'",
+        "numpy < 1.24; python_version >= '3.8'",
         "pyyaml",
         "requests",
     ],

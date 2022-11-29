@@ -43,13 +43,13 @@ class TestConverter(unittest.TestCase):
         # Unchanged file a second time should give same ids
         convert(src, dest, False)
         with LogSqlLiteDatabase() as sql:
-            self.assertEquals(single, sql.get_max_log_id())
+            self.assertEqual(single, sql.get_max_log_id())
         # Now use the second formats which as one extra log and moves 1 down
         shutil.copyfile("formats.c2", formats)
         convert(src, dest, False)
         with LogSqlLiteDatabase() as sql:
             # Need two more ids for the new log and then changed line number
-            self.assertEquals(single + 2, sql.get_max_log_id())
+            self.assertEqual(single + 2, sql.get_max_log_id())
 
     def test_double_level(self):
         class_file = sys.modules[self.__module__].__file__

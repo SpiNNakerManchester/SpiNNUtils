@@ -584,3 +584,17 @@ class UtilsDataView(object):
         cls.check_user_can_act()
         cls.__data._requires_mapping = True
         cls.__data._requires_data_generation = True
+
+    @classmethod
+    def _mock_has_run(cls):
+        """
+        Mock the status as if run has been called and finished!
+
+        ONLY FOR USE IN UNITTESTS
+
+        Any use outside of unittests is NOT supported and will cause errors!
+        """
+        cls.__data._run_status = RunStatus.NOT_RUNNING
+        cls.__data._reset_status = ResetStatus.HAS_RUN
+        cls.__data._requires_data_generation = False
+        cls.__data._requires_mapping = False

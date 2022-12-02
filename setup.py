@@ -48,7 +48,7 @@ setup(
     name="SpiNNUtilities",
     version=__version__,
     description="Utility classes and functions for SpiNNaker projects",
-    url="https://github.com/SpiNNakerManchester/SpiNNUtilities",
+    url="https://github.com/SpiNNakerManchester/SpiNNUtils",
     license="GNU GPLv3.0",
     classifiers=[
         "Development Status :: 5 - Production/Stable",

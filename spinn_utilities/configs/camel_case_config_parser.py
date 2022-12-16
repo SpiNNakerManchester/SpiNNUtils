@@ -91,7 +91,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: int
         """
         value = self.get(section, option)
-        if value.lower() in NONES:
+        if str(value).lower() in NONES:
             return None
         return int(value)
 
@@ -106,7 +106,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: float
         """
         value = self.get(section, option)
-        if value.lower in NONES:
+        if str(value).lower() in NONES:
             return None
         return float(value)
 
@@ -121,7 +121,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: bool
         """
         value = self.get(section, option)
-        lower = value.lower()
+        lower = str(value).lower()
         if lower in TRUES:
             return True
         if lower in FALSES:

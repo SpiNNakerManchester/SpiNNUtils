@@ -16,8 +16,13 @@
 import configparser
 
 
+NONES = ("none", )
+TRUES = ('y', 'yes', 't', 'true', 'on', '1')
+FALSES = ('n', 'no', 'f', 'false', 'off', '0')
+
+
 class CamelCaseConfigParser(configparser.RawConfigParser):
-    __slots__ = ["_none_marker", "_read_files"]
+    __slots__ = ["_read_files"]
 
     def optionxform(self, optionstr):
         """ Transforms the name of an option to lower case and strips\
@@ -26,9 +31,8 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         lower = optionstr.lower()
         return lower.replace("_", "")
 
-    def __init__(self, defaults=None, none_marker="None"):
+    def __init__(self, defaults=None):
         super().__init__(defaults)
-        self._none_marker = none_marker
         self._read_files = list()
 
     def read(self, filenames, encoding=None):
@@ -55,7 +59,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: str or None
         """
         value = self.get(section, option)
-        if value == self._none_marker:
+        if value.lower() in NONES:
             return None
         return value
 
@@ -69,7 +73,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: list(str)
         """
         value = self.get(section, option)
-        if value == self._none_marker:
+        if value.lower() in NONES:
             return []
         if len(value.strip()) == 0:
             return []
@@ -87,7 +91,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: int
         """
         value = self.get(section, option)
-        if value == self._none_marker:
+        if value.lower() in NONES:
             return None
         return int(value)
 
@@ -102,25 +106,9 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: float
         """
         value = self.get(section, option)
-        if value == self._none_marker:
+        if value.lower in NONES:
             return None
         return float(value)
-
-    @staticmethod
-    def strtobool(val):
-        """Convert a string representation of truth to true (1) or false (0).
-
-        True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
-        are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
-        'val' is anything else.
-        """
-        val = str(val).lower()
-        if val in ('y', 'yes', 't', 'true', 'on', '1'):
-            return 1
-        elif val in ('n', 'no', 'f', 'false', 'off', '0'):
-            return 0
-        else:
-            raise ValueError("invalid truth value %r" % (val,))
 
     def get_bool(self, section, option):
         """ Get the boolean value of an option.
@@ -133,9 +121,11 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: bool
         """
         value = self.get(section, option)
-        if value == self._none_marker:
+        lower = value.lower()
+        if lower in TRUES:
+            return True
+        if lower in FALSES:
+            return False
+        if lower in NONES:
             return None
-        try:
-            return bool(self.strtobool(value))
-        except ValueError:
-            return bool(value)
+        raise ValueError(f"invalid truth value {value}")

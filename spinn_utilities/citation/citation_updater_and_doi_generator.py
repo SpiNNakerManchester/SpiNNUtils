@@ -92,7 +92,7 @@ class _Zenodo(object):
 
     def get_verify(self, related):
         r = requests.get(
-            self._DEPOSIT_GET_URL,
+            self._DEPOSIT_GET_URL, timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
                     self._RELATED_IDENTIFIERS: related},
             json={}, headers={self._CONTENT_TYPE: self._JSON})
@@ -103,7 +103,7 @@ class _Zenodo(object):
 
     def post_create(self, related):
         r = requests.post(
-            self._DEPOSIT_GET_URL,
+            self._DEPOSIT_GET_URL, timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
                     self._RELATED_IDENTIFIERS: related},
             json={}, headers={self._CONTENT_TYPE: self._JSON})
@@ -114,7 +114,7 @@ class _Zenodo(object):
 
     def post_upload(self, deposit_id, data, files):
         r = requests.post(
-            self._DEPOSIT_PUT_URL.format(deposit_id),
+            self._DEPOSIT_PUT_URL.format(deposit_id), timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token},
             data=data, files=files)
         if r.status_code != self._VALID_STATUS_REQUEST_POST:
@@ -125,7 +125,7 @@ class _Zenodo(object):
 
     def post_publish(self, deposit_id):
         r = requests.post(
-            self._PUBLISH_URL.format(deposit_id),
+            self._PUBLISH_URL.format(deposit_id), timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token})
         if r.status_code != self._VALID_STATUS_REQUEST_PUBLISH:
             raise _ZenodoException(

@@ -14,11 +14,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import configparser
-import distutils.util as _du
+
+
+NONES = ("none", )
+TRUES = ('y', 'yes', 't', 'true', 'on', '1')
+FALSES = ('n', 'no', 'f', 'false', 'off', '0')
 
 
 class CamelCaseConfigParser(configparser.RawConfigParser):
-    __slots__ = ["_none_marker", "_read_files"]
+    __slots__ = ["_read_files"]
 
     def optionxform(self, optionstr):
         """ Transforms the name of an option to lower case and strips\
@@ -27,9 +31,8 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         lower = optionstr.lower()
         return lower.replace("_", "")
 
-    def __init__(self, defaults=None, none_marker="None"):
+    def __init__(self, defaults=None):
         super().__init__(defaults)
-        self._none_marker = none_marker
         self._read_files = list()
 
     def read(self, filenames, encoding=None):
@@ -56,7 +59,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: str or None
         """
         value = self.get(section, option)
-        if value == self._none_marker:
+        if value.lower() in NONES:
             return None
         return value
 
@@ -70,7 +73,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: list(str)
         """
         value = self.get(section, option)
-        if value == self._none_marker:
+        if value.lower() in NONES:
             return []
         if len(value.strip()) == 0:
             return []
@@ -88,7 +91,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: int
         """
         value = self.get(section, option)
-        if value == self._none_marker:
+        if str(value).lower() in NONES:
             return None
         return int(value)
 
@@ -103,7 +106,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: float
         """
         value = self.get(section, option)
-        if value == self._none_marker:
+        if str(value).lower() in NONES:
             return None
         return float(value)
 
@@ -118,9 +121,11 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         :rtype: bool
         """
         value = self.get(section, option)
-        if value == self._none_marker:
+        lower = str(value).lower()
+        if lower in TRUES:
+            return True
+        if lower in FALSES:
+            return False
+        if lower in NONES:
             return None
-        try:
-            return bool(_du.strtobool(str(value)))
-        except ValueError:
-            return bool(value)
+        raise ValueError(f"invalid truth value {value}")

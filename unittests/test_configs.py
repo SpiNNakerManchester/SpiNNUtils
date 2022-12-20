@@ -24,8 +24,7 @@ def test_configs_None():
     set_config("Mode", "Foo", "None")
     set_config("Mode", "Bar", "none")
     assert get_config_str("Mode", "Foo") is None
-    # Don't know if this is desirable but currently None is case sensitive.
-    assert get_config_str("Mode", "bar") == "none"
+    assert get_config_str("Mode", "bar") is None
     assert get_config_int("Mode", "Foo") is None
     assert get_config_float("Mode", "Foo") is None
     assert get_config_bool("Mode", "Foo") is None

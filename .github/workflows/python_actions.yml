@@ -60,6 +60,8 @@ jobs:
       uses: ./support/actions/pylint
       with: 
         package: ${{ env.ROOT_PKG }}
+        # exitcheck 35 is without warnings 39 also fails on warnings
+        exitcheck: 39
     - name: Run rat copyright enforcement
       if: matrix.python-version == 3.8
       uses: ./support/actions/check-copyrights

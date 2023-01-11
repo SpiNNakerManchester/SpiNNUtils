@@ -291,7 +291,7 @@ class FormatAdapter(logging.LoggerAdapter):
                 if level >= min_level:
                     result.append((timestamp, level, message))
             return result
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             return result
         finally:
             cls.__not_stored_messages = []

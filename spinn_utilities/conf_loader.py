@@ -102,7 +102,7 @@ def logging_parser(config):
     try:
         if config.getboolean("Logging", "instantiate"):
             level = config.get("Logging", "default").upper()
-            logging.basicConfig(stream=sys.stderr, level=level)
+            logging.basicConfig(stream=sys.stdout, level=level)
         for handler in logging.root.handlers:
             handler.addFilter(log.ConfiguredFilter(config))
             handler.setFormatter(log.ConfiguredFormatter(config))

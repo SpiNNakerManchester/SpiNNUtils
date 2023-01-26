@@ -17,6 +17,7 @@ import appdirs
 import configparser
 import logging
 import os
+import sys
 from spinn_utilities import log
 from spinn_utilities.configs import (
     CamelCaseConfigParser, ConfigTemplateException,
@@ -101,7 +102,7 @@ def logging_parser(config):
     try:
         if config.getboolean("Logging", "instantiate"):
             level = config.get("Logging", "default").upper()
-            logging.basicConfig(level=level)
+            logging.basicConfig(stream=sys.stderr, level=level)
         for handler in logging.root.handlers:
             handler.addFilter(log.ConfiguredFilter(config))
             handler.setFormatter(log.ConfiguredFormatter(config))

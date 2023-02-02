@@ -15,6 +15,7 @@
 import enum
 import os
 import re
+from spinn_utilities.exceptions import UnexpectedCException
 from .log_sqllite_database import LogSqlLiteDatabase
 
 TOKEN = chr(30)  # Record Separator
@@ -139,14 +140,14 @@ class FileConverter(object):
         if self._status == State.NORMAL_CODE:
             return
         if self._status == State.IN_LOG:
-            raise Exception(
+            raise UnexpectedCException(
                 f"Unclosed {self._log}{self._log_full} in {self._src}")
         if self._status == State.IN_LOG_CLOSE_BRACKET:
-            raise Exception(
+            raise UnexpectedCException(
                 f"Semicolumn missing: "
                 f"{self._log}{self._log_full} in {self._src}")
         if self._status == State.COMMENT:
-            raise Exception(
+            raise UnexpectedCException(
                 f"Unclosed block comment in {self._src}")
         raise NotImplementedError(f"Unexpected status {self._status}")
 
@@ -342,6 +343,7 @@ class FileConverter(object):
         :param str main:
         :param int line_num:
         :rtype: list(str)
+        :raises UnexpectedCException:
         """
         try:
             parts = main.split(",")
@@ -383,8 +385,8 @@ class FileConverter(object):
             return parts
 
         except Exception as e:
-            raise Exception("Unexpected line {} at {} in {}".format(
-                self._log_full, line_num, self._src)) from e
+            raise UnexpectedCException(f"Unexpected line {self._log_full} "
+                                       f"at {line_num} in {self._src}") from e
 
     def _short_log(self, line_num):
         """ shortens the log string message and adds the id
@@ -397,8 +399,9 @@ class FileConverter(object):
             match = LOG_END_REGEX.search(self._log_full)
             main = self._log_full[:-len(match.group(0))]
         except Exception as e:
-            raise Exception("Unexpected line {} at {} in {}".format(
-                self._log_full, line_num, self._src)) from e
+            raise UnexpectedCException(
+                f"Unexpected line {self._log_full} at "
+                f"{line_num} in {self._src}") from e
         parts = self.split_by_comma_plus(main, line_num)
         original = parts[0]
 
@@ -414,16 +417,16 @@ class FileConverter(object):
         matches = [x for x in FORMAT_EXP.findall(original)
                    if not x.startswith("%%")]
         if len(matches) != count:
-            raise Exception(
-                "Unexpected formatString in {}".format(original))
+            raise UnexpectedCException(
+                f"Unexpected formatString in {original}")
         if len(parts) < count + 1:
-            raise Exception(
-                "Too few parameters in line {} at {} in {}".format(
-                    self._log_full, line_num, self._src))
+            raise UnexpectedCException(
+                f"Too few parameters in line {self._log_full} "
+                f"at {line_num} in {self._src}")
         if len(parts) > count + 1:
-            raise Exception(
-                "Too many parameters in line {} at {} in {}".format(
-                    self._log_full, line_num, self._src))
+            raise UnexpectedCException(
+                f"Too many parameters in line {self._log_full} "
+                f"at {line_num} in {self._src}")
         for i, match in enumerate(matches):
             front += TOKEN
             if match.endswith("f"):
@@ -485,6 +488,7 @@ class FileConverter(object):
         :param dest_f: Open file like Object to write modified source to
         :param int line_num: Line number in the source c file
         :param str text: Text of that line including whitespace
+        :raises UnexpectedCException:
         """
         pos = 0
         write_flag = 0
@@ -525,15 +529,14 @@ class FileConverter(object):
                 str_pos = pos + 1
                 while text[str_pos] != '"':
                     if text[str_pos] == "\n":
-                        raise Exception(
-                            "Unclosed string literal in {} at line: {}".
-                            format(self._src, line_num))
+                        raise UnexpectedCException(
+                            f"Unclosed string literal in {self._src} "
+                            f"at line: {line_num}")
                     elif text[str_pos] == "\\":
                         if text[str_pos+1] == "\n":
-                            raise Exception(
-                                "Unclosed string literal in {} at line: {}".
-                                format(self._src, line_num))
-
+                            raise UnexpectedCException(
+                                f"Unclosed string literal in {self._src} "
+                                f"at line: {line_num}")
                         else:
                             str_pos += 2  # ignore next char which may be a "
                     else:
@@ -616,7 +619,7 @@ class FileConverter(object):
         """
         source = os.path.join(src_dir, file_name)
         if not os.path.exists(source):
-            raise Exception(F"Unable to locate source {source}")
+            raise UnexpectedCException(f"Unable to locate source {source}")
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
         destination = os.path.join(dest_dir, file_name)

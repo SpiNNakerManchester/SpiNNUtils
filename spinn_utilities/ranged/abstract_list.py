@@ -451,13 +451,14 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :type other: AbstractList
         :return: new list
         :rtype: AbstractList
+        :raises TypeError:
         """
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x + y)
         if isinstance(other, numbers.Number):
             return SingleList(a_list=self, operation=lambda x: x + other)
-        raise Exception("__add__ operation only supported for other "
+        raise TypeError("__add__ operation only supported for other "
                         "RangedLists and numerical Values")
 
     def __sub__(self, other):
@@ -471,13 +472,14 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :type other: AbstractList
         :return: new list
         :rtype: AbstractList
+        :raises TypeError:
         """
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x - y)
         if isinstance(other, numbers.Number):
             return SingleList(a_list=self, operation=lambda x: x - other)
-        raise Exception("__sub__ operation only supported for other "
+        raise TypeError("__sub__ operation only supported for other "
                         "RangedLists and numerical Values")
 
     def __mul__(self, other):
@@ -491,13 +493,14 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :type other: AbstractList
         :return: new list
         :rtype: AbstractList
+        :raises TypeError:
         """
         if isinstance(other, AbstractList):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x * y)
         if isinstance(other, numbers.Number):
             return SingleList(a_list=self, operation=lambda x: x * other)
-        raise Exception("__mul__ operation only supported for other "
+        raise TypeError("__mul__ operation only supported for other "
                         "RangedLists and numerical Values")
 
     def __truediv__(self, other):
@@ -512,6 +515,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :type other: AbstractList
         :return: new list
         :rtype: AbstractList
+        :raises TypeError:
         """
         if isinstance(other, AbstractList):
             return DualList(
@@ -520,7 +524,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             if numpy.isin(0, other):
                 raise ZeroDivisionError()
             return SingleList(a_list=self, operation=lambda x: x / other)
-        raise Exception("__truediv__ operation only supported for other "
+        raise TypeError("__truediv__ operation only supported for other "
                         "RangedLists and numerical Values")
 
     def __floordiv__(self, other):
@@ -531,6 +535,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :type other: AbstractList
         :return: new list
         :rtype: AbstractList
+        :raises TypeError:
         """
         if isinstance(other, AbstractList):
             return DualList(
@@ -539,7 +544,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             if numpy.isin(0, other):
                 raise ZeroDivisionError()
             return SingleList(a_list=self, operation=lambda x: x // other)
-        raise Exception("__floordiv__ operation only supported for other "
+        raise TypeError("__floordiv__ operation only supported for other "
                         "RangedLists and numerical Values")
 
     def apply_operation(self, operation):
@@ -624,9 +629,10 @@ class DualList(AbstractList, metaclass=AbstractBase):
         :param key:
             The dict key this list covers.
             This is used only for better Exception messages
+        :raises ValueError: If list are not the same size
         """
         if len(left) != len(right):
-            raise Exception("Two list must have the same size")
+            raise ValueError("Two list must have the same size")
         super().__init__(size=len(left), key=key)
         self._left = left
         self._right = right

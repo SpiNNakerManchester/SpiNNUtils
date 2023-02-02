@@ -67,7 +67,7 @@ class LogSqlLiteDatabase(object):
                 message += "This came from the environment variable "
                 message += "'C_LOGS_DICT "
             message += "Please rebuild the c code."
-            raise Exception(message)
+            raise FileNotFoundError(message)
 
         try:
             self._db = sqlite3.connect(database_file)
@@ -86,7 +86,7 @@ class LogSqlLiteDatabase(object):
                 message += "Check this is a location with write access. "
             else:
                 message += "Please rebuild the c code."
-            raise Exception(message) from ex
+            raise FileNotFoundError(message) from ex
 
     def __del__(self):
         self.close()
@@ -229,7 +229,7 @@ class LogSqlLiteDatabase(object):
                     WHERE original = ?
                     """, ([original])):
                 if row["counts"] == 0:
-                    raise Exception("Not found")
+                    raise ValueError(f"{original} not found in database")
 
     def get_max_log_id(self):
         with self._db:

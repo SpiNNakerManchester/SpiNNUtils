@@ -27,7 +27,7 @@ class UncheckedBadParam(AbstractGrandParent):
 
     @overrides(AbstractHasConstraints.add_constraint)
     def add_constraint(self, constraint):
-        raise Exception("We set our own constrainst")
+        raise NotImplementedError("We set our own constrainst")
 
     @overrides(AbstractHasConstraints.constraints)
     def constraints(self):

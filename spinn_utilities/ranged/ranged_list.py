@@ -524,7 +524,7 @@ class RangedList(AbstractList):
         try:
             return self._default
         except AttributeError as e:
-            raise Exception("Default value not set.") from e
+            raise AttributeError("Default value not set.") from e
 
     def copy_into(self, other):
         """

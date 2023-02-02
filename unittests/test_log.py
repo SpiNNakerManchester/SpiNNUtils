@@ -179,7 +179,7 @@ def test_log_store():
     assert 3 == len(info)
     try:
         logger.critical("Now go boom")
-        raise Exception("Should not get here")
+        raise NotImplementedError("Should not get here")
     except ZeroDivisionError:
         pass
     logger.warning("This is a warning")
@@ -201,7 +201,7 @@ def test_bad_log_store():
     logger = FormatAdapter(logging.getLogger(__name__))
     try:
         logger.set_log_store("bacon")
-        raise Exception("bad call accepted")
+        raise NotImplementedError("bad call accepted")
     except TypeError:
         pass
 

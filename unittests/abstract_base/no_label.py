@@ -25,7 +25,7 @@ class NoLabel(AbstractGrandParent):
 
     @overrides(AbstractHasConstraints.add_constraint)
     def add_constraint(self, constraint):
-        raise Exception("We set our own constraints")
+        raise NotImplementedError("We set our own constraints")
 
     @overrides(AbstractHasConstraints.constraints)
     def constraints(self):

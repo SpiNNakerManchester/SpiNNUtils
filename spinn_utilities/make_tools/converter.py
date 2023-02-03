@@ -35,7 +35,8 @@ def convert(src, dest, new_dict):
 
     src_path = os.path.abspath(src)
     if not os.path.exists(src_path):
-        raise Exception(f"Unable to locate source directory {src_path}")
+        raise FileNotFoundError(
+            f"Unable to locate source directory {src_path}")
     dest_path = os.path.abspath(dest)
     __convert_dir(src_path, dest_path)
 
@@ -65,7 +66,7 @@ def __mkdir(destination):
     if not os.path.exists(destination):
         os.mkdir(destination)
     if not os.path.exists(destination):
-        raise Exception("mkdir failed {}".format(destination))
+        raise FileNotFoundError("mkdir failed {}".format(destination))
 
 
 if __name__ == '__main__':

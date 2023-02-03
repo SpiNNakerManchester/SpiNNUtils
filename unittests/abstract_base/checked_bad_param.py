@@ -27,7 +27,7 @@ class CheckedBadParam(AbstractGrandParent):
 
     @overrides(AbstractHasConstraints.add_constraint)
     def add_constraint(self, not_constraint):
-        raise Exception("We set our own constrainst")
+        raise NotImplementedError("We set our own constrainst")
 
     @overrides(AbstractHasConstraints.constraints)
     def constraints(self):

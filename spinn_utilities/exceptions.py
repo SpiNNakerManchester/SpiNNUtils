@@ -109,3 +109,16 @@ class SimulatorNotRunException(SpiNNUtilsException):
     """
     Raised when trying to reset or stop before starting
     """
+
+
+class ConfigException(SpiNNUtilsException):
+    """
+    Raise when reading or setting configs went wrong
+    """
+
+
+class UnexpectedCException(SpiNNUtilsException):
+    """
+    Raise when the Converted which replaces log messages found a pattern
+    it did not expect and can not handle
+    """

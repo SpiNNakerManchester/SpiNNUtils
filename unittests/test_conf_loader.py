@@ -255,7 +255,7 @@ def test_config_holder(not_there):
     # first time creates file and errors
     try:
         config_holder.load_config()
-        raise Exception("Why am I here")
+        raise NotImplementedError("Why am I here")
     except NoConfigFoundException as ex:
         assert name in str(ex)
     # Should work the second time
@@ -273,7 +273,7 @@ def test_no_default():
     config_holder.clear_cfg_files(False)
     try:
         config_holder.load_config()
-        raise Exception("Why am I here")
+        raise NotImplementedError("Why am I here")
     except Exception as ex:
         assert "No default configs set" in str(ex)
 
@@ -284,7 +284,7 @@ def test_preload_not_unittest():
     try:
         assert "from default" == config_holder.get_config_str(
             "sect", "a_string")
-        raise Exception("Why am I here")
+        raise NotImplementedError("Why am I here")
     except Exception as ex:
         assert ("Accessing config values before setup is not supported"
                 in str(ex))

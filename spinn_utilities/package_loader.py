@@ -98,7 +98,8 @@ def load_modules(
                 if line_line:
                     print("  ", line_line.rstrip())
     if errors:
-        raise Exception("Error when importing, starting at {}".format(prefix))
+        raise ImportError(
+            "Error when importing, starting at {}".format(prefix))
 
 
 def load_module(

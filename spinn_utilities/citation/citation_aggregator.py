@@ -215,6 +215,7 @@ class CitationAggregator(object):
             list of names of dependencies already processed
         :param str module_name:
             the name of this module to consider as a dependency
+        :raises FileNotFoundError:
         """
         # get modules citation file
         citation_level_dir = os.path.abspath(imported_module.__file__)
@@ -225,8 +226,8 @@ class CitationAggregator(object):
             last_citation_level_dir = citation_level_dir
             citation_level_dir = os.path.dirname(citation_level_dir)
         if citation_level_dir == last_citation_level_dir:  # pragma: no cover
-            raise Exception("Folder for module {} not found".format(
-                module_name))
+            raise FileNotFoundError(
+                f"Folder for module {module_name} not found")
 
         # get the reference data for the reference
         reference_entry = self._process_reference(

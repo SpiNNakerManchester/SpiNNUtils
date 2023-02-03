@@ -345,8 +345,9 @@ class CitationUpdaterAndDoiGenerator(object):
                     try:
                         return strptime(version_month, "%b").tm_mon
                     except ValueError:  # pragma: no cover
-                        raise Exception("Value {} not recognised as a month"
-                                        .format(version_month)) from original
+                        raise ValueError(
+                            f"Value {version_month} not recognised"
+                            f" as a month") from original
         else:  # pragma: no cover
-            raise Exception("Value {} not recognised as a month".format(
-                version_month))
+            raise ValueError(
+                f"Value {version_month} not recognised as a month")

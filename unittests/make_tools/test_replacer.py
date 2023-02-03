@@ -50,7 +50,7 @@ class TestReplacer(unittest.TestCase):
             os.path.join(PATH, "foo", "not_there.sqlite3"))
         try:
             Replacer()
-            raise Exception("Should not work!")
+            raise NotImplementedError("Should not work!")
         except Exception as ex:
             assert ("Unable to locate c_logs_dict" in str(ex))
 
@@ -60,7 +60,7 @@ class TestReplacer(unittest.TestCase):
             os.path.join(PATH, "foo", "not_there", "bad.sqlite3"))
         try:
             Replacer(True)
-            raise Exception("Should not work!")
+            raise NotImplementedError("Should not work!")
         except Exception as ex:
             assert ("Error accessing c_logs_dict" in str(ex))
 

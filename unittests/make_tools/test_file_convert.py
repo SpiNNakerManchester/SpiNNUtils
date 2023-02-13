@@ -93,7 +93,7 @@ class TestConverter(unittest.TestCase):
             FileConverter.convert(src, dest, "bad_comma.c")
             assert False
         except Exception as ex1:
-            self.assertIn('Unexpected line "); at 19 in', str(ex1))
+            self.assertIn('Unexpected line "); at 18 in', str(ex1))
             self.assertIn("mistakes", str(ex1))
             self.assertIn("bad_comma.c", str(ex1))
 

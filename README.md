@@ -1,3 +1,4 @@
+[![PyPi version](https://img.shields.io/pypi/v/SpiNNUtilities.svg?style=flat)](https://pypi.org/project/SpiNNUtilities/)
 [![Build Status](https://github.com/SpiNNakerManchester/SpiNNUtils/workflows/Python%20Actions/badge.svg?branch=master)](https://github.com/SpiNNakerManchester/SpiNNUtils/actions?query=workflow%3A%22Python+Actions%22+branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/github/SpiNNakerManchester/SpiNNUtils/badge.svg?branch=master)](https://coveralls.io/github/SpiNNakerManchester/SpiNNUtils?branch=master)
 
@@ -71,4 +72,4 @@ Documentation
 =============
 [SpiNNUtils python documentation](http://spinnutils.readthedocs.io)
 
-[Combined PyNN8 python documentation](http://spinnaker8manchester.readthedocs.io)
+[Combined python documentation](http://spinnakermanchester.readthedocs.io)

@@ -1,5 +1,6 @@
 [![PyPi version](https://img.shields.io/pypi/v/SpiNNUtilities.svg?style=flat)](https://pypi.org/project/SpiNNUtilities/)
 [![Build Status](https://github.com/SpiNNakerManchester/SpiNNUtils/workflows/Python%20Actions/badge.svg?branch=master)](https://github.com/SpiNNakerManchester/SpiNNUtils/actions?query=workflow%3A%22Python+Actions%22+branch%3Amaster)
+[![Documentation Status](https://readthedocs.org/projects/spinnutils/badge/?version=latest)](https://spinnutils.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/SpiNNakerManchester/SpiNNUtils/badge.svg?branch=master)](https://coveralls.io/github/SpiNNakerManchester/SpiNNUtils?branch=master)
 
 SpiNNUtils

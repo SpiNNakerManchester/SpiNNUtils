@@ -20,5 +20,4 @@ pytest-cov
 testfixtures
 sphinx >= 2
 pyyaml
-requests
 httpretty != 1.0.0

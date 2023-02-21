@@ -77,7 +77,7 @@ setup(
         "numpy > 1.13, < 1.21; python_version == '3.7'",
         "numpy < 1.24; python_version >= '3.8'",
         "pyyaml",
-        "requests",
+        "requests >= 2.4.1",
     ],
     maintainer="SpiNNakerTeam",
     maintainer_email="spinnakerusers@googlegroups.com"

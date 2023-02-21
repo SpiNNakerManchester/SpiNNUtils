@@ -368,7 +368,6 @@ def excluded_because_in_init(base):
 
 
 _output_dir = os.path.abspath(".")
-_unfiltered_files = os.path.abspath("../unfiltered-files.txt")
 _package_base = "spinn_utilities"
 
 # Do the rst generation; remove files which aren't in git first!

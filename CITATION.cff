@@ -17,7 +17,7 @@ message: If you use this software, please cite it as below.
 preferred-citation:
   type: article
   doi: 10.3389/fnins.2019.00231
-  issn= 1662-453X
+  issn: 1662-453X
   url: https://www.frontiersin.org/articles/10.3389/fnins.2019.00231
   title: "SpiNNTools: The Execution Engine for the SpiNNaker Platform"
   journal: Frontiers in Neuroscience

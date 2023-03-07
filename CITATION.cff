@@ -12,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cff-version: 1.0.3
+cff-version: 1.2.0
 message: If you use this software, please cite it as below.
-identifier:
 title: The container for common code used by the SpiNNaker tool chain in general
-version:
+version: 1!6.0.0
 authors:
 - affiliation: University Of Manchester
   email: alan.stokes-2@manchester.ac.uk
@@ -49,6 +48,6 @@ contact:
   email: spinnakerusers@googlegroups.com
   name: SpiNNaker Software Team
   post-code: M13 9PL
-date-released:
+date-released: 2021-05-09
 repository: https://github.com/SpiNNakerManchester/SpiNNUtils
 url: http://spinnakermanchester.github.io/

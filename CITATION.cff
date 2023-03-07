@@ -17,11 +17,14 @@ message: If you use this software, please cite it as below.
 preferred-citation:
   type: article
   doi: 10.3389/fnins.2019.00231
+  issn= 1662-453X
+  url: https://www.frontiersin.org/articles/10.3389/fnins.2019.00231
   title: "SpiNNTools: The Execution Engine for the SpiNNaker Platform"
   journal: Frontiers in Neuroscience
   volume: 13
   year: 2019
   month: 3
+  abstract: SpiNNaker is a massively parallel distributed architecture primarily focused on real time simulation of spiking neural networks. The largest realization of the architecture consists of one million general purpose processors, making it the largest neuromorphic computing platform in the world at the present time. Utilizing these processors efficiently requires expert knowledge of the architecture to generate executable code and to harness the potential of the unique inter-processor communications infra-structure that lies at the heart of the SpiNNaker architecture. This work introduces a software suite called SpiNNTools that can map a computational problem described as a graph into the required set of executables, application data and routing information necessary for simulation on this novel machine. The SpiNNaker architecture is highly scalable, giving rise to unique challenges in mapping the problem to the machines resources, loading the generated files to the machine and subsequently retrieving the results of simulation. In this paper we describe these challenges in detail and the solutions implemented.
   authors:
   - given-names: Andrew
     family-names: Rowley

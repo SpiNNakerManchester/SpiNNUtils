@@ -249,6 +249,15 @@ def test_iter_by_ids():
     assert rl[0:5] == ["a", "a", "a", "a", "a"]
     assert list(rl.iter_by_ids([9, 1, 2, 5])) == ["b", "a", "a", "b"]
 
+def test_iter_by_numpy():
+    rl = RangedList(size=10, value="a", key="alpha")
+    first = numpy.array([0, 1, 2, 3, 4])
+    second = numpy.array([5, 6, 7, 8, 9])
+    rl[second] = "b"
+    assert rl[second] == ["b", "b", "b", "b", "b"]
+    assert rl[first] == ["a", "a", "a", "a", "a"]
+    weird = numpy.array([9, 1, 2, 5])
+    assert list(rl.iter_by_ids([9, 1, 2, 5])) == ["b", "a", "a", "b"]
 
 def test_set_value_by_slice():
     rl = RangedList(size=10, value="a", key="alpha")
@@ -334,6 +343,8 @@ def test_bad_ids():
         rl.get_value_by_id(None)
     with pytest.raises(TypeError):
         rl["a"]
+    with pytest.raises(TypeError):
+        rl[2.3]
 
 
 def test_str():

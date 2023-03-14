@@ -205,8 +205,6 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             return self.get_value_by_id(selector)
         else:
             return [self.get_value_by_id(i) for i in selector]
-        #else:
-        #    raise TypeError(f"Invalid argument type: {type(selector)}")
 
     def iter_by_id(self, the_id):
         """ Fast but *not* update-safe iterator by one ID.

@@ -45,7 +45,8 @@ jobs:
 
     - name: Run Install
       uses: ./support/actions/run-install
-
+      with:
+        project-path: SpiNNUtils
     - name: Test with pytest
       uses: ./support/actions/pytest
       with:

@@ -46,7 +46,7 @@ jobs:
     - name: Run Install
       uses: ./support/actions/run-install
       with:
-        project-path: /home/runner/work/SpiNNUtils
+        project-path: /home/runner/work/SpiNNUtils/SpiNNUtils
     - name: Test with pytest
       uses: ./support/actions/pytest
       with:

@@ -17,11 +17,11 @@ from enum import Enum
 
 class RunStatus(Enum):
     """
-    Different states the run could be in
+    Different states the run could be in.
 
-    This is from the prespective of the users script.
-    It says nothing about if there is c code running.
-    Ie Has a sim.run (or similar) call started but not yet returned.
+    This is from the perspective of the users script.
+    It says nothing about if there is C code running,
+    i.e., has a sim.run (or similar) call started but not yet returned.
 
     This is combined with the ResetStatus to get the needed status
 

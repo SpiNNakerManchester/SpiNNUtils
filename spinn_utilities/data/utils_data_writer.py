@@ -54,7 +54,6 @@ class UtilsDataWriter(UtilsDataView):
 
     As the Writers are not designed for general usage the methods can change
     without notice.
-
     """
     __data = _UtilsDataModel()
     __slots__ = []
@@ -110,7 +109,6 @@ class UtilsDataWriter(UtilsDataView):
     def _mock(self):
         """
         This method should only be called by mock (via init)
-
         """
         self.__data._clear()
         self.__data._data_status = DataStatus.MOCKED
@@ -120,7 +118,6 @@ class UtilsDataWriter(UtilsDataView):
     def _setup(self):
         """
         This method should only be called by setup (via init)
-
         """
         self.__data._clear()
         self.__data._data_status = DataStatus.SETUP
@@ -130,7 +127,6 @@ class UtilsDataWriter(UtilsDataView):
     def start_run(self):
         """
         Puts all data into the state expected after do_run_loop started
-
         """
         if self.__data._run_status != RunStatus.NOT_RUNNING:
             self.check_valid_simulator()
@@ -142,7 +138,6 @@ class UtilsDataWriter(UtilsDataView):
     def finish_run(self):
         """
         Puts all data into the state expected after sim.run ends
-
         """
         if self.__data._run_status not in [
                 RunStatus.IN_RUN, RunStatus.STOP_REQUESTED]:
@@ -165,7 +160,7 @@ class UtilsDataWriter(UtilsDataView):
     def hard_reset(self):
         """
         Puts all data back into the state expected at graph changed and
-            sim.reset
+        sim.reset
 
         This resets any data set after sim.setup has finished
         """
@@ -189,7 +184,6 @@ class UtilsDataWriter(UtilsDataView):
     def _soft_reset(self):
         """
         This method should only be called from soft_reset
-
         """
         self.__data._soft_reset()
         self.__data._reset_status = ResetStatus.SOFT_RESET
@@ -250,7 +244,6 @@ class UtilsDataWriter(UtilsDataView):
         this call.
 
         Most data however will still be available.
-
         """
         self.__data._data_status = DataStatus.SHUTDOWN
         self.__data._run_status = RunStatus.SHUTDOWN
@@ -265,7 +258,7 @@ class UtilsDataWriter(UtilsDataView):
         As it is only accessed to create timestamp directories and
         remove old reports this is not a view method.
 
-        :rtpye: str
+        :rtype: str
         :raises SpiNNUtilsException:
             If the simulation_time_step is currently unavailable
         """
@@ -304,7 +297,6 @@ class UtilsDataWriter(UtilsDataView):
         Only usable by unittests!
 
         :param executable_finder:
-        :return:
         """
         if not self._is_mocked():
             raise NotImplementedError("Only valid in Mocked state!")

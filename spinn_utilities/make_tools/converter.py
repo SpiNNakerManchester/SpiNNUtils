@@ -23,7 +23,8 @@ SKIPPABLE_FILES = ["common.mk", "Makefile.common",
 
 
 def convert(src, dest, new_dict):
-    """ Converts a whole directory including sub directories
+    """
+    Converts a whole directory including sub directories.
 
     :param str src: Full source directory
     :param str dest: Full destination directory
@@ -41,7 +42,8 @@ def convert(src, dest, new_dict):
 
 
 def __convert_dir(src_path, dest_path):
-    """ Converts a whole directory including sub directories
+    """
+    Converts a whole directory including sub directories.
 
     :param str src_path: Full source directory
     :param str dest_path: Full destination directory

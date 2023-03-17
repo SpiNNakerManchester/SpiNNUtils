@@ -21,11 +21,12 @@ logger = logging.getLogger(__file__)
 
 
 class AbstractSized(object):
-    """ Base class for slice and ID checking against size.
+    """
+    Base class for slice and ID checking against size.
     """
 
-    __slots__ = [
-        "_size"]
+    __slots__ = (
+        "_size")
 
     def __init__(self, size):
         """
@@ -34,7 +35,8 @@ class AbstractSized(object):
         self._size = max(int(round(size)), 0)
 
     def __len__(self):
-        """ Size of the list, irrespective of actual values.
+        """
+        Size of the list, irrespective of actual values.
 
         :return: the initial and Fixed size of the list
         """
@@ -42,7 +44,9 @@ class AbstractSized(object):
 
     @staticmethod
     def _is_id_type(the_id):
-        """ Check if the given ID has a type acceptable for IDs. """
+        """
+        Check if the given ID has a type acceptable for IDs.
+        """
         return isinstance(the_id, int)
 
     def _check_id_in_range(self, the_id):
@@ -142,8 +146,9 @@ class AbstractSized(object):
                 "ignored!", self._size, len(selector))
 
     def selector_to_ids(self, selector, warn=False):
-        """ Gets the list of IDs covered by this selector. \
-            The types of selector currently supported are:
+        """
+        Gets the list of IDs covered by this selector.
+        The types of selector currently supported are:
 
         None:
             Returns all IDs.
@@ -168,7 +173,7 @@ class AbstractSized(object):
             unordered and contain duplicates.
 
         :param selector: Some object that identifies a range of IDs.
-        :param warn: \
+        :param bool warn:
             If True, this method will warn about problems with the selector.
         :return: a (possibly sorted) list of IDs
         """

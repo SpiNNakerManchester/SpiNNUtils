@@ -31,7 +31,8 @@ _LEVELS = {
 
 
 class ConfiguredFilter(object):
-    """ Allow a parent logger to filter a child logger.
+    """
+    Allow a parent logger to filter a child logger.
     """
     __slots__ = [
         "_default_level", "_levels"]
@@ -41,7 +42,8 @@ class ConfiguredFilter(object):
         self._default_level = _LEVELS[conf.get("Logging", "default")]
 
     def filter(self, record):
-        """ Get the level for the deepest parent, and filter appropriately.
+        """
+        Get the level for the deepest parent, and filter appropriately.
         """
         level = ConfiguredFormatter.level_of_deepest_parent(
             self._levels, record.name)
@@ -53,7 +55,8 @@ class ConfiguredFilter(object):
 
 
 class ConfiguredFormatter(logging.Formatter):
-    """ Defines the logging format for the SpiNNaker host software.
+    """
+    Defines the logging format for the SpiNNaker host software.
     """
     # Precompile this RE; it gets used quite a few times
     __last_component = re.compile(r'\.[^.]+$')
@@ -67,7 +70,8 @@ class ConfiguredFormatter(logging.Formatter):
 
     @staticmethod
     def construct_logging_parents(conf):
-        """ Create a dictionary of module names and logging levels.
+        """
+        Create a dictionary of module names and logging levels.
         """
 
         # Construct the dictionary
@@ -86,7 +90,8 @@ class ConfiguredFormatter(logging.Formatter):
 
     @staticmethod
     def deepest_parent(parents, child):
-        """ Greediest match between child and parent.
+        """
+        Greediest match between child and parent.
         """
 
         # TODO: this can almost certainly be neater!
@@ -105,7 +110,8 @@ class ConfiguredFormatter(logging.Formatter):
 
     @staticmethod
     def level_of_deepest_parent(parents, child):
-        """ The logging level of the greediest match between child and parent.
+        """
+        The logging level of the greediest match between child and parent.
         """
 
         # child = re.sub( r'^pacman103\.', '', child )
@@ -118,7 +124,8 @@ class ConfiguredFormatter(logging.Formatter):
 
 
 class _BraceMessage(object):
-    """ A message that converts a Python format string to a string
+    """
+    A message that converts a Python format string to a string.
     """
     __slots__ = [
         "args", "fmt", "kwargs"]
@@ -159,7 +166,8 @@ class LogLevelTooHighException(Exception):
 
 
 class FormatAdapter(logging.LoggerAdapter):
-    """ An adaptor for logging with messages that uses Python format strings.
+    """
+    An adaptor for logging with messages that uses Python format strings.
 
     Example::
 
@@ -204,9 +212,10 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @overrides(logging.LoggerAdapter.log, extend_doc=False)
     def log(self, level, msg, *args, **kwargs):
-        """ Delegate a log call to the underlying logger, applying appropriate\
-            transformations to allow the log message to be written using\
-            Python format string, rather than via `%`-substitutions.
+        """
+        Delegate a log call to the underlying logger, applying appropriate
+        transformations to allow the log message to be written using
+        Python format string, rather than via `%`-substitutions.
         """
         if level >= FormatAdapter.__kill_level:
             raise LogLevelTooHighException(_BraceMessage(msg, args, kwargs))
@@ -236,11 +245,11 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @overrides(logging.LoggerAdapter.process, extend_doc=False)
     def process(self, msg, kwargs):
-        """ Process the logging message and keyword arguments passed in to a\
-            logging call to insert contextual information. You can either\
-            manipulate the message itself, the keyword arguments or both.\
-            Return the message and *kwargs* modified (or not) to suit your\
-            needs.
+        """
+        Process the logging message and keyword arguments passed in to a
+        logging call to insert contextual information. You can either
+        manipulate the message itself, the keyword arguments or both.
+        Return the message and *kwargs* modified (or not) to suit your needs.
         """
         return msg, {
             key: kwargs[key]
@@ -278,7 +287,8 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def _pop_not_stored_messages(cls, min_level=0):
-        """ Returns the log of messages to print on exit and \
+        """
+        Returns the log of messages to print on exit and
         *clears that log*.
 
         .. note::

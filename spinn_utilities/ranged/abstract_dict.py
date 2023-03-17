@@ -16,14 +16,16 @@ from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 
 class AbstractDict(object, metaclass=AbstractBase):
-    """ Base class for the :py:class:`RangeDictionary` and *all* views.\
+    """
+    Base class for the :py:class:`RangeDictionary` and *all* views.
     This allows the users to not have to worry if they have a view.
     """
     __slots__ = []
 
     @abstractmethod
     def get_value(self, key):
-        """ Gets a single shared value for all IDs covered by this view.
+        """
+        Gets a single shared value for all IDs covered by this view.
 
         :param key: The key or keys to get the value of. Use None for all
         :type key: str or iterable(str) or None
@@ -37,15 +39,17 @@ class AbstractDict(object, metaclass=AbstractBase):
 
     @abstractmethod
     def keys(self):
-        """ Returns the keys in the dictionary
+        """
+        Returns the keys in the dictionary
 
         :return: keys in the dict
         """
 
     @abstractmethod
     def set_value(self, key, value, use_list_as_value=False):
-        """ Resets a already existing key to the new value. \
-            All IDs in the whole range or view will have this key set.
+        """
+        Resets a already existing key to the new value.
+        All IDs in the whole range or view will have this key set.
 
         .. warning::
             This method does not allow adding keys.
@@ -66,8 +70,9 @@ class AbstractDict(object, metaclass=AbstractBase):
 
     @abstractmethod
     def ids(self):
-        """ Returns the IDs in range or view.\
-        If the view is setup with IDs out of numerical order the order used\
+        """
+        Returns the IDs in range or view.
+        If the view is setup with IDs out of numerical order the order used
         to create the view is maintained.
 
         .. note::
@@ -81,7 +86,8 @@ class AbstractDict(object, metaclass=AbstractBase):
 
     @abstractmethod
     def iter_all_values(self, key, update_save=False):
-        """ Iterates over the value(s) for all IDs covered by this view. \
+        """
+        Iterates over the value(s) for all IDs covered by this view.
         There will be one yield for each ID even if values are repeated.
 
         :param key: The key or keys to get the value of. Use None for all keys
@@ -96,8 +102,9 @@ class AbstractDict(object, metaclass=AbstractBase):
         """
 
     def get_ranges(self, key=None):
-        """ Lists the ranges(s) for all IDs covered by this view. \
-        There will be one yield for each range which may cover one or\
+        """
+        Lists the ranges(s) for all IDs covered by this view.
+        There will be one yield for each range which may cover one or
         more IDs.
 
         .. note::
@@ -117,8 +124,9 @@ class AbstractDict(object, metaclass=AbstractBase):
 
     @abstractmethod
     def iter_ranges(self, key=None):
-        """ Iterates over the ranges(s) for all IDs covered by this view.\
-        There will be one yield for each range which may cover one or\
+        """
+        Iterates over the ranges(s) for all IDs covered by this view.
+        There will be one yield for each range which may cover one or
         more IDs.
 
         .. warning::
@@ -138,7 +146,8 @@ class AbstractDict(object, metaclass=AbstractBase):
 
     @abstractmethod
     def get_default(self, key):
-        """ Gets the default value for a single key.\
+        """
+        Gets the default value for a single key.
         Unless changed, the default is the original value.
 
         .. note::
@@ -151,7 +160,8 @@ class AbstractDict(object, metaclass=AbstractBase):
         """
 
     def items(self):
-        """ Returns a list of (``key``, ``value``) tuples.\
+        """
+        Returns a list of (``key``, ``value``) tuples.
         Works only if the whole ranges/view has single values.
 
         If the key is a str, the values are single objects.
@@ -169,7 +179,8 @@ class AbstractDict(object, metaclass=AbstractBase):
         return results
 
     def iteritems(self):
-        """ Iterates over the (``key``, ``value``) tuples. \
+        """
+        Iterates over the (``key``, ``value``) tuples.
         Works only if the whole ranges/view has single values.
 
         If the key is a str, the values are single objects.
@@ -187,7 +198,8 @@ class AbstractDict(object, metaclass=AbstractBase):
             yield (key, self.get_value(key))
 
     def values(self):
-        """ Returns a list of values.\
+        """
+        Returns a list of values.
         Works only if the whole ranges/view has single values.
 
         If key is a str, the values are single objects.
@@ -205,7 +217,8 @@ class AbstractDict(object, metaclass=AbstractBase):
         return results
 
     def itervalues(self):
-        """ Iterates over the values.\
+        """
+        Iterates over the values.
         Works only if the whole ranges/view has single values.
 
         If key is a str, the values are single objects.
@@ -223,7 +236,8 @@ class AbstractDict(object, metaclass=AbstractBase):
             yield self.get_value(key)
 
     def __contains__(self, key):
-        """ Checks if the key is a dictionary key or a range ID.
+        """
+        Checks if the key is a dictionary key or a range ID.
 
         :param key: Dictionary key or ID to check
         :type key: str or int
@@ -238,7 +252,8 @@ class AbstractDict(object, metaclass=AbstractBase):
         raise KeyError("Unexpected key type: {}".format(type(key)))
 
     def has_key(self, key):
-        """ As the Deprecated dict ``has_keys`` function.
+        """
+        As the Deprecated dict ``has_keys`` function.
 
         .. note::
             Int keys to IDs are not supported.
@@ -251,7 +266,8 @@ class AbstractDict(object, metaclass=AbstractBase):
         return key in self.keys()
 
     def reset(self, key):
-        """ Sets the value(s) for a single key back to the default value.
+        """
+        Sets the value(s) for a single key back to the default value.
 
         :param key: Existing dict key
         :type key: str

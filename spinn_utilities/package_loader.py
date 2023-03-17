@@ -18,8 +18,8 @@ import traceback
 
 
 def all_modules(directory, prefix, remove_pyc_files=False):
-    """ List all the python files found in this directory giving then the\
-        prefix.
+    """
+    List all the python files found in this directory giving then the prefix.
 
     Any file that ends in either ``.py`` or ``.pyc`` is assume a python module
     and added to the result set.
@@ -58,8 +58,9 @@ def all_modules(directory, prefix, remove_pyc_files=False):
 def load_modules(
         directory, prefix, remove_pyc_files=False, exclusions=None,
         gather_errors=True):
-    """ Loads all the python files found in this directory, giving them the\
-        specified prefix
+    """
+    Loads all the python files found in this directory, giving them the
+    specified prefix.
 
     Any file that ends in either ``.py`` or ``.pyc`` is assume a python module
     and added to the result set.
@@ -103,7 +104,8 @@ def load_modules(
 
 def load_module(
         name, remove_pyc_files=False, exclusions=None, gather_errors=True):
-    """ Loads this modules and all its children.
+    """
+    Loads this modules and all its children.
 
     :param str name: name of the modules
     :param bool remove_pyc_files: True if ``.pyc`` files should be deleted

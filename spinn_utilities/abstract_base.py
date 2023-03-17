@@ -23,7 +23,8 @@ Using Python 3 style ``metaclass=AbstractBase`` is preferred.
 
 
 def abstractmethod(funcobj):
-    """ A decorator indicating abstract methods.
+    """
+    A decorator indicating abstract methods.
 
     Requires that the metaclass is :py:class:`AbstractBase` or derived from
     it. A class that has a metaclass derived from :py:class:`AbstractBase`
@@ -50,7 +51,8 @@ def abstractmethod(funcobj):
 
 
 class abstractproperty(property):
-    """ A decorator indicating abstract properties.
+    """
+    A decorator indicating abstract properties.
 
     Requires that the metaclass is :py:class:`AbstractBase` or derived from
     it. A class that has a metaclass derived from :py:class:`AbstractBase`
@@ -91,7 +93,8 @@ class abstractproperty(property):
 
 
 class AbstractBase(type):
-    """ Metaclass for defining Abstract Base Classes (AbstractBases).
+    """
+    Metaclass for defining Abstract Base Classes (AbstractBases).
 
     Use this metaclass to create an AbstractBase. An AbstractBase can be
     subclassed directly, and then acts as a mix-in class.

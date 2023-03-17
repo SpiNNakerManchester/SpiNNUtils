@@ -23,8 +23,9 @@ class _RequiresSubclassTypeError(TypeError):
 
 
 def require_subclass(required_class):
-    """ Decorator that arranges for subclasses of the decorated class to\
-        require that they are also subclasses of the given class.
+    """
+    Decorator that arranges for subclasses of the decorated class to
+    require that they are also subclasses of the given class.
 
     :param type required_class:
         The class that the subclass of the decorated class must be an instance

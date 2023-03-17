@@ -27,10 +27,11 @@ def _timestamp():
 
 
 class LogSqlLiteDatabase(object):
-    """ Specific implementation of the Database for SQLite 3.
+    """
+    Specific implementation of the Database for SQLite 3.
 
     .. note::
-        NOT THREAD SAFE ON THE SAME DB.
+        *NOT THREAD SAFE ON THE SAME DB.*
         Threads can access different DBs just fine.
 
     .. note::
@@ -91,22 +92,24 @@ class LogSqlLiteDatabase(object):
         self.close()
 
     def __enter__(self):
-        """ Start method is use in a ``with`` statement
+        """
+        Start method is use in a ``with`` statement.
         """
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """ End method if used in a ``with`` statement.
+        """
+        End method if used in a ``with`` statement.
 
         :param exc_type:
         :param exc_val:
         :param exc_tb:
-        :return:
         """
         self.close()
 
     def close(self):
-        """ Finalises and closes the database.
+        """
+        Finalises and closes the database.
         """
         try:
             if self._db is not None:
@@ -116,7 +119,8 @@ class LogSqlLiteDatabase(object):
         self._db = None
 
     def __init_db(self):
-        """ Set up the database if required.
+        """
+        Set up the database if required.
         """
         self._db.row_factory = sqlite3.Row
         # Don't use memoryview / buffer as hard to deal with difference

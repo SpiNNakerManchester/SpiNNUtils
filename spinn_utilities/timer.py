@@ -22,7 +22,8 @@ if sys.version_info >= (3, 7):
     _NANO_TO_MICRO = 1000.0
 
     def _convert_to_timedelta(time_diff):
-        """ Have to convert to a timedelta for rest of code to read.
+        """
+        Have to convert to a timedelta for rest of code to read.
 
         As perf_counter_ns is nano seconds, and time delta lowest is micro,
         need to convert.
@@ -34,7 +35,8 @@ else:
     _now = time.perf_counter
 
     def _convert_to_timedelta(time_diff):
-        """ Have to convert to a timedelta for rest of code to read.
+        """
+        Have to convert to a timedelta for rest of code to read.
 
         As perf_counter is fractional seconds, put into correct time delta.
         """
@@ -42,7 +44,8 @@ else:
 
 
 class Timer(object):
-    """ A timer used for performance measurements.
+    """
+    A timer used for performance measurements.
 
     Recommended usage::
 
@@ -75,13 +78,15 @@ class Timer(object):
         self._measured_section_interval = None
 
     def start_timing(self):
-        """ Start the timing. Use :py:meth:`take_sample` to get the end.
+        """
+        Start the timing. Use :py:meth:`take_sample` to get the end.
         """
         self._start_time = _now()
 
     def take_sample(self):
-        """ Describes how long has elapsed since the instance that the\
-            :py:meth:`start_timing` method was last called.
+        """
+        Describes how long has elapsed since the instance that the
+        :py:meth:`start_timing` method was last called.
 
         :rtype: datetime.timedelta
         """
@@ -99,7 +104,8 @@ class Timer(object):
 
     @property
     def measured_interval(self):
-        """ Get how long elapsed during the measured section.
+        """
+        Get how long elapsed during the measured section.
 
         :rtype: datetime.timedelta
         """

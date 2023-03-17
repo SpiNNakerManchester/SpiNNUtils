@@ -16,8 +16,9 @@ import sys
 
 
 class IndexIsValue(object):
-    """ Tiny support class that implements ``object[x]`` by just returning\
-        ``x`` itself.
+    """
+    Tiny support class that implements ``object[x]`` by just returning
+    ``x`` itself.
 
     Used for where you want a range from 1 to *N* but you don't know *N*.
 

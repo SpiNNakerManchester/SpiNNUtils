@@ -41,13 +41,15 @@ CITATION_DOI_TYPE = 'identifier'
 
 
 class CitationAggregator(object):
-    """ Helper class for building a citation file which references all \
-        dependencies
+    """
+    Helper class for building a citation file which references all
+    dependencies.
     """
 
     def create_aggregated_citation_file(
             self, module_to_start_at, aggregated_citation_file):
-        """ Entrance method for building the aggregated citation file
+        """
+        Entrance method for building the aggregated citation file.
 
         :param module_to_start_at:
             the top level module to figure out its citation file for
@@ -55,7 +57,6 @@ class CitationAggregator(object):
         :param str aggregated_citation_file:
             file name of aggregated citation file
         """
-
         # get the top citation file to add references to
         top_citation_file_path = os.path.join(os.path.dirname(os.path.dirname(
             os.path.abspath(module_to_start_at.__file__))), CITATION_FILE)
@@ -121,7 +122,8 @@ class CitationAggregator(object):
 
     @staticmethod
     def _read_pypi_import_map(aggregated_citation_file):
-        """ Read the PYPI to import name map
+        """
+        Read the PYPI to import name map.
 
         :param str aggregated_citation_file: path to the PYPI map file
         :return: map between PYPI names and import names
@@ -136,7 +138,8 @@ class CitationAggregator(object):
 
     def _handle_c_dependency(
             self, top_citation_file, module, modules_seen_so_far):
-        """ Handle a C code dependency
+        """
+        Handle a C code dependency.
 
         :param str top_citation_file: YAML file for the top citation file
         :param str module: module to find
@@ -181,8 +184,9 @@ class CitationAggregator(object):
 
     def _search_for_other_c_references(
             self, reference_entry, software_path, modules_seen_so_far):
-        """ Go though the top level path and tries to locate other cff \
-            files that need to be added to the references pile
+        """
+        Go though the top level path and tries to locate other cff
+        files that need to be added to the references pile.
 
         :param dict(str,list(str)) reference_entry:
             The reference entry to add new dependencies as references for.
@@ -204,7 +208,8 @@ class CitationAggregator(object):
     def _handle_python_dependency(
             self, top_citation_file, imported_module, modules_seen_so_far,
             module_name):
-        """ Handle a python dependency
+        """
+        Handle a python dependency.
 
         :param dict(str,list(str)) top_citation_file:
             YAML file for the top citation file
@@ -240,7 +245,8 @@ class CitationAggregator(object):
     def _process_reference(
             self, citation_level_dir, imported_module, modules_seen_so_far,
             module_name):
-        """ Take a module level and tries to locate and process a citation file
+        """
+        Take a module level and tries to locate and process a citation file.
 
         :param str citation_level_dir:
             the expected level where the ``CITATION.cff`` should be
@@ -251,7 +257,6 @@ class CitationAggregator(object):
         :return: the reference entry in JSON format
         :rtype: dict
         """
-
         # if it exists, add it as a reference to the top one
         if os.path.isfile(os.path.join(citation_level_dir, CITATION_FILE)):
             reference_entry = self._read_and_process_reference_entry(
@@ -277,8 +282,9 @@ class CitationAggregator(object):
 
     @staticmethod
     def _try_to_find_version(imported_module, module_name):
-        """ Try to locate a version file or version data to auto-generate \
-            minimal citation data.
+        """
+        Try to locate a version file or version data to auto-generate
+        minimal citation data.
 
         :param imported_module:
             the module currently trying to find the version of
@@ -312,8 +318,9 @@ class CitationAggregator(object):
 
     @staticmethod
     def _read_and_process_reference_entry(dependency_citation_file_path):
-        """ Read a ``CITATION.cff`` and makes it a reference for a higher \
-            level citation file.
+        """
+        Read a ``CITATION.cff`` and makes it a reference for a higher
+        level citation file.
 
         :param str dependency_citation_file_path: path to a CITATION.cff file
         :return: reference entry for the higher level citation.cff
@@ -344,7 +351,8 @@ class CitationAggregator(object):
 
 
 def generate_aggregate(arguments=None):
-    """ Command-line tool to generate a single ``citation.cff`` from others.
+    """
+    Command-line tool to generate a single ``citation.cff`` from others.
 
     :param list(str) arguments: Command line arguments.
 

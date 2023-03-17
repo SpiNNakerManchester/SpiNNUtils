@@ -14,10 +14,11 @@
 
 
 class XView(object):
-    """ A view along a particular x-slice of a 2D matrix.
     """
-    __slots__ = [
-        "_matrix", "_x"]
+    A view along a particular x-slice of a 2D matrix.
+    """
+    __slots__ = (
+        "_matrix", "_x")
 
     def __init__(self, x, matrix):
         self._x = x

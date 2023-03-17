@@ -46,7 +46,8 @@ IDENTIFIER = 'identifier'
 
 
 class _ZenodoException(Exception):
-    """ Exception from a call to Zenodo.
+    """
+    Exception from a call to Zenodo.
     """
 
     def __init__(self, operation, expected, request):
@@ -61,7 +62,8 @@ class _ZenodoException(Exception):
 
 
 class _Zenodo(object):
-    """ Manages low level access to Zenodo.
+    """
+    Manages low level access to Zenodo.
     """
 
     # pragma: no cover
@@ -139,8 +141,9 @@ class CitationUpdaterAndDoiGenerator(object):
     def update_citation_file_and_create_doi(
             self, citation_file_path, doi_title, create_doi, publish_doi,
             previous_doi, zenodo_access_token, module_path):
-        """ Take a CITATION.cff file and updates the version and \
-            date-released fields, and rewrites the ``CITATION.cff`` file.
+        """
+        Take a CITATION.cff file and updates the version and
+        date-released fields, and rewrites the ``CITATION.cff`` file.
 
         :param str citation_file_path: File path to the ``CITATION.cff`` file
         :param bool create_doi:
@@ -179,7 +182,8 @@ class CitationUpdaterAndDoiGenerator(object):
                 yaml_file[CITATION_FILE_DESCRIPTION], yaml_file, module_path)
 
     def _request_doi(self, previous_doi):
-        """ Go to zenodo and requests a DOI
+        """
+        Go to zenodo and requests a DOI.
 
         :param str previous_doi: the previous DOI for this module, if exists
         :return: the DOI id, and deposit id
@@ -210,7 +214,8 @@ class CitationUpdaterAndDoiGenerator(object):
     def _finish_doi(
             self, deposit_id, publish_doi, title,
             doi_description, yaml_file, module_path):
-        """ Finishes the DOI on zenodo
+        """
+        Finishes the DOI on Zenodo.
 
         :param str deposit_id: the deposit id to publish
         :param bool publish_doi: whether we should publish the DOI
@@ -235,7 +240,8 @@ class CitationUpdaterAndDoiGenerator(object):
             self.__zenodo.post_publish(deposit_id)
 
     def _zip_up_module(self, module_path):
-        """ Zip up a module
+        """
+        Zip up a module.
 
         :param str module_path: the path to the module to zip up
         :return: the filename to the zip file
@@ -254,8 +260,9 @@ class CitationUpdaterAndDoiGenerator(object):
 
     @staticmethod
     def _zip_walker(module_path, avoids, module_zip_file):
-        """ Traverse the module and its subdirectories and only adds to the \
-            files to the zip which are not within a avoid directory that.
+        """
+        Traverse the module and its subdirectories and only adds to the
+        files to the zip which are not within a avoid directory that.
 
         :param str module_path: the path to start the search at
         :param set(str) avoids: the set of avoids to avoid
@@ -275,7 +282,8 @@ class CitationUpdaterAndDoiGenerator(object):
 
     @staticmethod
     def _fill_in_data(doi_title, doi_description, yaml_file):
-        """ Add in data to the Zenodo metadata
+        """
+        Add in data to the Zenodo metadata.
 
         :param str doi_title: the title of the DOI
         :param str doi_description: the description of the DOI
@@ -307,7 +315,8 @@ class CitationUpdaterAndDoiGenerator(object):
     @staticmethod
     def convert_text_date_to_date(
             version_month, version_year, version_day):
-        """ Convert the 3 components of a date into a CFF date
+        """
+        Convert the 3 components of a date into a CFF date.
 
         :param version_month: version month, in text form
         :type version_month: str or int
@@ -324,7 +333,8 @@ class CitationUpdaterAndDoiGenerator(object):
 
     @staticmethod
     def convert_month_name_to_number(version_month):
-        """ Convert a python month in text form to a number form
+        """
+        Convert a python month in text form to a number form.
 
         :param version_month: the text form of the month
         :type version_month: str or int

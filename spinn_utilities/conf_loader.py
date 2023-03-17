@@ -24,26 +24,27 @@ logger = log.FormatAdapter(logging.getLogger(__name__))
 
 
 def install_cfg_and_IOError(filename, defaults, config_locations):
-    """ Installs a local configuration file based on the templates and raises\
-        an exception.
+    """
+    Installs a local configuration file based on the templates and raises
+    an exception.
 
     This method is called when no user configuration file is found.
 
-    It will create a file in the users home directory based on the defaults.\
+    It will create a file in the users home directory based on the defaults.
     Then it prints a helpful message and throws an error with the same message.
 
     :param filename: Name under which to save the new configuration file
     :type filename: str
-    :param defaults: List of full paths to the default configuration files.\
-        Each of which *must* have an associated template file with exactly the\
+    :param defaults: List of full paths to the default configuration files.
+        Each of which *must* have an associated template file with exactly the
         same path plus `.template`.
     :type defaults: list(str)
-    :param config_locations: List of paths where the user configuration files\
+    :param config_locations: List of paths where the user configuration files
         were looked for. Only used for the message
     :type config_locations: list(str)
     :raise spinn_utilities.configs.NoConfigFoundException: Always raised
     """
-    home_cfg = os.path.join(os.path.expanduser("~"), ".{}".format(filename))
+    home_cfg = os.path.join(os.path.expanduser("~"), f".{filename}")
 
     found = False
     with open(home_cfg, "w", encoding="utf-8") as dst:
@@ -89,12 +90,13 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
 
 
 def logging_parser(config):
-    """ Create the root logger with the given level.
+    """
+    Create the root logger with the given level.
 
     Create filters based on logging levels
 
     .. note::
-        You do not normally need to call this function; it is used\
+        You do not normally need to call this function; it is used
         automatically to parse Logging configuration sections.
     """
     try:
@@ -109,18 +111,19 @@ def logging_parser(config):
 
 
 def _check_config(cfg_file, default_configs, strict):
-    """ Checks the configuration read up to this point to see if it is outdated
+    """
+    Checks the configuration read up to this point to see if it is outdated.
 
-    Once one difference is found a full reports is generated and an error\
+    Once one difference is found a full reports is generated and an error
     raised.
 
     Any section specifically listed as Dead will cause a error
 
-    Any section in the default_cfg should not have extra values.\
+    Any section in the default_cfg should not have extra values.
     It will never have less as the default_cfg are in the cfg
 
-    Errors on any values listed as PreviousValues.\
-    These are specific values in specific options no longer supported.\
+    Errors on any values listed as PreviousValues.
+    These are specific values in specific options no longer supported.
     For example old algorithm names
 
     :param str cfg_file: Path of last file read in
@@ -150,7 +153,8 @@ def _check_config(cfg_file, default_configs, strict):
 
 
 def _read_a_config(configs, cfg_file, default_configs, strict):
-    """ Reads in a configuration file and then directly its machine_spec_file
+    """
+    Reads in a configuration file and then directly its machine_spec_file.
 
     :param CamelCaseConfigParser configs:
         configuration to be updated by the reading of a file
@@ -170,7 +174,8 @@ def _read_a_config(configs, cfg_file, default_configs, strict):
 
 
 def _config_locations(filename):
-    """ Defines the list of places we can get configuration files from.
+    """
+    Defines the list of places we can get configuration files from.
 
     :param filename: The local name of the config file, e.g., 'spynnaker.cfg'
     :type filename: str
@@ -190,18 +195,19 @@ def _config_locations(filename):
 
 
 def load_config(filename, defaults, config_parsers=None):
-    """ Load the configuration.
+    """
+    Load the configuration.
 
-    :param filename: The base name of the configuration file(s). Should not\
+    :param filename: The base name of the configuration file(s). Should not
         include any path components.
     :type filename: str
     :param defaults: The list of files to get default configurations from.
     :type defaults: list(str)
-    :param config_parsers:\
-        The parsers to parse the sections of the configuration file with, as\
-        a list of (section name, parser); a configuration section will only\
-        be parsed if the section_name is found in the configuration files\
-        already loaded. The standard logging parser is appended to (a copy\
+    :param config_parsers:
+        The parsers to parse the sections of the configuration file with, as
+        a list of (section name, parser); a configuration section will only
+        be parsed if the section_name is found in the configuration files
+        already loaded. The standard logging parser is appended to (a copy
         of) this list.
     :type config_parsers: list(tuple(str, ConfigParser))
     :return: the fully-loaded and checked configuration

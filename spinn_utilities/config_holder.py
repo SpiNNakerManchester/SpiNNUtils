@@ -30,7 +30,7 @@ __unittest_mode = False
 
 def add_default_cfg(default):
     """
-    Adds an extra default config to be read after easrlier ones
+    Adds an extra default config to be read after earlier ones.
 
     :param str default: Absolute path to the cfg file
     """
@@ -60,9 +60,8 @@ def set_cfg_files(configfile, default):
     :param str configfile:
         The base name of the configuration file(s).
         Should not include any path components.
-    :param default: Full path to the extra file to get default configurations
-        from.
-    :param str default: Absolute path to the cfg file
+    :param str default:
+        Full path to the extra file to get default configurations from.
     """
     global __config_file
     __config_file = configfile
@@ -101,7 +100,8 @@ def load_config():
 
 
 def get_config_str(section, option):
-    """ Get the string value of a config option.
+    """
+    Get the string value of a config option.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.
@@ -117,7 +117,8 @@ def get_config_str(section, option):
 
 
 def get_config_str_list(section, option, token=","):
-    """ Get the string value of a config option split into a list
+    """
+    Get the string value of a config option split into a list.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.
@@ -134,7 +135,8 @@ def get_config_str_list(section, option, token=","):
 
 
 def get_config_int(section, option):
-    """ Get the integer value of a config option.
+    """
+    Get the integer value of a config option.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.
@@ -150,7 +152,8 @@ def get_config_int(section, option):
 
 
 def get_config_float(section, option):
-    """ Get the float value of a config option.
+    """
+    Get the float value of a config option.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.
@@ -166,7 +169,8 @@ def get_config_float(section, option):
 
 
 def get_config_bool(section, option):
-    """ Get the boolean value of a config option.
+    """
+    Get the boolean value of a config option.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.
@@ -182,7 +186,8 @@ def get_config_bool(section, option):
 
 
 def set_config(section, option, value):
-    """ Sets the value of a config option.
+    """
+    Sets the value of a config option.
 
     This method should only be called by the simulator or by unittests
 
@@ -206,7 +211,8 @@ def set_config(section, option, value):
 
 
 def has_config_option(section, option):
-    """ Check if the section has this config option.
+    """
+    Check if the section has this config option.
 
     :param str section: What section to check
     :param str option: What option to check.
@@ -222,7 +228,8 @@ def has_config_option(section, option):
 
 
 def config_options(section):
-    """Return a list of option names for the given section name.
+    """
+    Return a list of option names for the given section name.
 
     :param str section: What section to list options for.
     """
@@ -231,7 +238,7 @@ def config_options(section):
 
 def _check_lines(py_path, line, lines, index, method):
     """
-    Support for check_python_file. Gets section and option name
+    Support for check_python_file. Gets section and option name.
 
     :param str line: Line with get_config call
     :param list(str) lines: All lines in the file
@@ -262,7 +269,7 @@ def _check_lines(py_path, line, lines, index, method):
 
 def _check_python_file(py_path):
     """
-    A testing function to check that all the get_config calls work
+    A testing function to check that all the get_config calls work.
 
     :param str py_path: path to file to be checked
     :raises ConfigException: If an unexpected or uncovered get_config found
@@ -292,7 +299,7 @@ def _check_python_files(directory):
 
 def _find_double_defaults(repeaters=None):
     """
-    Testing function to identify any cfg options in multiple default files
+    Testing function to identify any cfg options in multiple default files.
 
     :param repeaters: List of options that are expected to be repeated.
     :type repeaters: None or list(str)
@@ -318,7 +325,7 @@ def _find_double_defaults(repeaters=None):
 
 def _check_cfg_file(config1, cfg_path):
     """
-    Support method for check_cfgs
+    Support method for check_cfgs.
 
     :param CamelCaseConfigParser config1:
     :param str cfg_path:
@@ -339,7 +346,7 @@ def _check_cfg_file(config1, cfg_path):
 
 def _check_cfgs(path):
     """
-    A testng function check local cfg files against the defaults
+    A testng function check local cfg files against the defaults.
 
     It only checks that the option exists in a default.
     It does not check if the option is used or if the value is the expected
@@ -364,7 +371,7 @@ def _check_cfgs(path):
 
 def run_config_checks(directories, *, exceptions=None, repeaters=None):
     """
-    Master test
+    Master test.
 
     :param module:
     :param repeaters:

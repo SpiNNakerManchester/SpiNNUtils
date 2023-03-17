@@ -29,7 +29,8 @@ LEVELS = {10: "[DEBUG]",
 
 
 class Replacer(LogSqlLiteDatabase):
-    """ Performs replacements.
+    """
+    Performs replacements.
     """
 
     def __enter__(self):
@@ -44,7 +45,8 @@ class Replacer(LogSqlLiteDatabase):
     _DBL_FMT = struct.Struct("!d")
 
     def _replace(self, short):
-        """ Apply the replacements to a short message.
+        """
+        Apply the replacements to a short message.
 
         :param str short: The short message to apply the transform to.
         :return: The expanded message.

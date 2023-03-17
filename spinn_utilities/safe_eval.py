@@ -14,8 +14,9 @@
 
 
 class SafeEval(object):
-    """ This provides expression evaluation capabilities while allowing the\
-        set of symbols exposed to the expression to be strictly controlled.
+    """
+    This provides expression evaluation capabilities while allowing the
+    set of symbols exposed to the expression to be strictly controlled.
 
     Sample of use::
 
@@ -36,24 +37,23 @@ class SafeEval(object):
         NameError: name 'evil_func' is not defined
 
     .. warning::
-        This is not guaranteed to be safe under all circumstances. It\
-        is not designed to be a fully secured interface; it just\
-        *discourages* abuse.
+        This is not guaranteed to be safe under all circumstances. It is not
+        designed to be a fully secured interface; it just *discourages* abuse.
     """
     __slots__ = ["_environment"]
 
     def __init__(self, *args, **kwargs):
         """
-        :param args:\
-            The symbols to use to populate the global reference table. \
-            Note that all of these symbols must support the `__name__`\
-            property, but that includes any function, method of an object, or\
-            module. If you want to make an object available by anything other\
-            than its inherent name, define it in the\
+        :param args:
+            The symbols to use to populate the global reference table.
+            Note that all of these symbols must support the `__name__`
+            property, but that includes any function, method of an object, or
+            module. If you want to make an object available by anything other
+            than its inherent name, define it in the
             :py:meth:`eval` call.
-        :param kwargs:\
-            Define the symbols with explicit names. Needed because some\
-            symbols (e.g., constants in numpy) do not have names that we can\
+        :param kwargs:
+            Define the symbols with explicit names. Needed because some
+            symbols (e.g., constants in numpy) do not have names that we can
             otherwise look up easily.
         """
         env = {}
@@ -63,15 +63,16 @@ class SafeEval(object):
         self._environment = env
 
     def eval(self, expression, **kwargs):
-        """ Evaluate an expression and return the result.
+        """
+        Evaluate an expression and return the result.
 
         :param expression: The expression to evaluate
         :type expression: str
-        :param kwargs:\
-            The extra symbol bindings to use for this evaluation. \
-            This is useful for passing in particular parameters to an\
+        :param kwargs:
+            The extra symbol bindings to use for this evaluation.
+            This is useful for passing in particular parameters to an
             individual evaluation run.
-        :return: The expression result, the type of which will depend on the\
+        :return: The expression result, the type of which will depend on the
             expression itself and the operations exposed to it.
         """
         # pylint: disable=eval-used

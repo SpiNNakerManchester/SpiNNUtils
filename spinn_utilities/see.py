@@ -18,8 +18,9 @@ _introspector = inspect.getfullargspec
 
 
 class see(overrides):
-    """ A decorator for indicating that the documentation of the method\
-        is provided by another method with exactly the same arguments.
+    """
+    A decorator for indicating that the documentation of the method
+    is provided by another method with exactly the same arguments.
 
     .. note::
         This has the same effect as overrides in reality, but is provided

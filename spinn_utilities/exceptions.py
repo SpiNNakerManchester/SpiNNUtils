@@ -30,7 +30,7 @@ class NotSetupException(SpiNNUtilsException):
     """
 
     def __init__(self, data):
-            super().__init__(             f"Requesting {data} is not valid before setup")
+        super().__init__(f"Requesting {data} is not valid before setup")
 
 
 class InvalidDirectory(SpiNNUtilsException):

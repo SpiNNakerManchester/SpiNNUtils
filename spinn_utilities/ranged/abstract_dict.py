@@ -111,13 +111,13 @@ class AbstractDict(object, metaclass=AbstractBase):
             As the data is created in a single call this is not affected
             by any updates.
 
-        :param key: The key or keys to get the value of. Use None for all
+        :param key: The key or keys to get the value of. Use `None` for all
         :type key: str or iterable(str) or None
         :return: List of tuples of (`start`, `stop`, `value`).
             `start` is *inclusive* so is the first ID in the range.
             `stop` is *exclusive* so is the last ID in the range + 1.
             If `key` is a str, `value` is a single object.
-            If `key` is iterable (list, tuple, set, etc) of str (or None)
+            If `key` is iterable (list, tuple, set, etc) of str (or `None`)
             `value` is a dictionary object
         """
         return list(self.iter_ranges(key=key))
@@ -134,13 +134,13 @@ class AbstractDict(object, metaclass=AbstractBase):
             Behaviour is *undefined* and *unchecked* if *any* values are
             changed during iteration.
 
-        :param key: The key or keys to get the value of. Use None for all
+        :param key: The key or keys to get the value of. Use `None` for all
         :type key: str or iterable(str) or None
         :return: yields tuples of (`start`, `stop`, `value`).
             `start` is *inclusive* so is the first ID in the range.
             `stop` is *exclusive* so is the last ID in the range + 1.
             If `key` is a str, `value` is a single object.
-            If `key` is iterable (list, tuple, set, etc) of str (or None),
+            If `key` is iterable (list, tuple, set, etc) of str (or `None`),
             `value` is a dictionary object
         """
 
@@ -165,7 +165,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         Works only if the whole ranges/view has single values.
 
         If the key is a str, the values are single objects.
-        If the key is iterable (list, tuple, set, etc) of str (or None),
+        If the key is iterable (list, tuple, set, etc) of str (or `None`),
         the values are dictionary objects
 
         :return: List of (``key``, ``value``) tuples
@@ -184,7 +184,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         Works only if the whole ranges/view has single values.
 
         If the key is a str, the values are single objects.
-        If the key is iterable (list, tuple, set, etc) of str (or None),
+        If the key is iterable (list, tuple, set, etc) of str (or `None`),
         the values are dictionary objects
 
         This function is safe for value updates but may miss new keys
@@ -203,7 +203,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         Works only if the whole ranges/view has single values.
 
         If key is a str, the values are single objects.
-        If key is iterable (list, tuple, set, etc) of str (or None),
+        If key is iterable (list, tuple, set, etc) of str (or `None`),
         values are dictionary objects
 
         :return: List of values
@@ -222,7 +222,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         Works only if the whole ranges/view has single values.
 
         If key is a str, the values are single objects.
-        If key is iterable (list, tuple, set, etc) of str (or None),
+        If key is iterable (list, tuple, set, etc) of str (or `None`),
         values are dictionary objects
 
         This function is safe for value updates but may miss new keys

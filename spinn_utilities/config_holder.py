@@ -217,7 +217,7 @@ def has_config_option(section, option):
     :param str section: What section to check
     :param str option: What option to check.
     :rtype: bool
-    :return: True if and only if the option is defined. It may be None
+    :return: True if and only if the option is defined. It may be `None`
     """
     try:
         return __config.has_option(section, option)

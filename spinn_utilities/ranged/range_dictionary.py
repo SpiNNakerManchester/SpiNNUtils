@@ -69,8 +69,9 @@ class RangeDictionary(AbstractSized, AbstractDict):
         This is the preferred way of creating new views as it checks
         parameters and returns the most efficient view.
 
-        Note the ``__getitem__`` methods called by Object[id] and similar
-        defer to this method so are fine to use.
+        .. note::
+            The ``__getitem__`` methods called by Object[id] and similar
+            defer to this method so are fine to use.
 
         The ID(s) used are the actual IDs in the range and not indexes on
         the list of IDs
@@ -132,7 +133,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         Otherwise a view (AbstractView) over part of the IDs in the dict is
         returned.
 
-        Multiple str objects or None are not supported as keys here.
+        Multiple str objects or `None` are not supported as keys here.
 
         :param key: a str, int, or iterable of int values
         :return: An AbstractList or AbstractView
@@ -240,7 +241,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         Wrapper around set_value to support ``range["key"] =``
 
-        .. note:
+        .. note::
             ``range[int] =`` is not supported
 
         ``value`` can be a single object or ``None`` in
@@ -413,7 +414,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
 
     def copy_into(self, other):
         """
-        Turns this dict into a copy of the other dict but keep its id
+        Turns this dict into a copy of the other dict but keep its id.
 
         :param RangedDict other:
             Another Ranged Dictionary assumed created by cloning this one

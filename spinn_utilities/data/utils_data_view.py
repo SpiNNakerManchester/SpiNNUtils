@@ -119,7 +119,7 @@ class UtilsDataView(object):
 
     The get... methods will either return a valid value or
     raise an Exception if the data is currently not available.
-    The get methods will will not return None unless specifically documented
+    The get methods will will not return `None` unless specifically documented
     to do so.
     As a reasonable effort is made the setters to verify the data types,
     the get methods can be expected to return the correct type.

@@ -46,11 +46,13 @@ class SafeEval(object):
         """
         :param args:
             The symbols to use to populate the global reference table.
-            Note that all of these symbols must support the `__name__`
-            property, but that includes any function, method of an object, or
-            module. If you want to make an object available by anything other
-            than its inherent name, define it in the
-            :py:meth:`eval` call.
+
+            .. note::
+                All of these symbols must support the `__name__` property, but
+                that includes any function, method of an object, or module. If
+                you want to make an object available by anything other than its
+                inherent name, define it in the
+                :py:meth:`eval` call.
         :param kwargs:
             Define the symbols with explicit names. Needed because some
             symbols (e.g., constants in numpy) do not have names that we can

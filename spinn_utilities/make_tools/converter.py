@@ -60,14 +60,14 @@ def __convert_dir(src_path, dest_path):
                 pass
             else:
                 source = os.path.join(src_dir, file_name)
-                print("Unexpected file {}".format(source))
+                print(f"Unexpected file {source}")
 
 
 def __mkdir(destination):
     if not os.path.exists(destination):
         os.mkdir(destination)
     if not os.path.exists(destination):
-        raise FileNotFoundError("mkdir failed {}".format(destination))
+        raise FileNotFoundError(f"mkdir failed {destination}")
 
 
 if __name__ == '__main__':

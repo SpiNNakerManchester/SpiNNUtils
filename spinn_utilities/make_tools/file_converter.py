@@ -422,7 +422,7 @@ class FileConverter(object):
         count = original.count("%") - original.count("%%") * 2
 
         if count == 0:
-            return '"%u", {});'.format(message_id)
+            return f'"%u", {message_id});'
 
         front = '"%u'
         back = ""
@@ -443,15 +443,15 @@ class FileConverter(object):
             front += TOKEN
             if match.endswith("f"):
                 front += "%x"
-                back += ", float_to_int({})".format(parts[i + 1])
+                back += f", float_to_int({parts[i + 1]})"
             elif match.endswith("F"):
                 front += "%x" + TOKEN + "%x"
                 back += DOUBLE_HEX.format(parts[i + 1])
             else:
-                back += ", {}".format(parts[i + 1])
+                back += f", {parts[i + 1]}"
                 front += match
 
-        front += '", {}'.format(message_id)
+        front += f'", {message_id}'
         back += ");"
         return front + back
 

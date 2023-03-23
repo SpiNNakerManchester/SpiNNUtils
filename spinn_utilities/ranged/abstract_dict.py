@@ -249,7 +249,7 @@ class AbstractDict(object, metaclass=AbstractBase):
             return key in self.keys()
         if isinstance(key, int):
             return key in self.ids()
-        raise KeyError("Unexpected key type: {}".format(type(key)))
+        raise KeyError(f"Unexpected key type: {type(key)}")
 
     def has_key(self, key):
         """

@@ -30,7 +30,7 @@ class _SliceView(AbstractView):
         self._stop = stop
 
     def __str__(self):
-        return "View with range: {} to {}".format(self._start, self._stop)
+        return f"View with range: {self._start} to {self._stop}"
 
     @overrides(AbstractDict.ids)
     def ids(self):

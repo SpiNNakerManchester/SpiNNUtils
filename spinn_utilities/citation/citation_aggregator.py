@@ -20,6 +20,8 @@ import argparse
 import sys
 from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
 
+ENCODING = "utf-8"
+
 REQUIREMENTS_FILE = "requirements.txt"
 C_REQUIREMENTS_FILE = "c_requirements.txt"
 CITATION_FILE = "CITATION.cff"
@@ -62,7 +64,7 @@ class CitationAggregator(object):
             os.path.abspath(module_to_start_at.__file__))), CITATION_FILE)
         modules_seen_so_far = set()
         modules_seen_so_far.add("")  # Make sure the empty entry is absent
-        with open(top_citation_file_path, encoding="utf-8") as stream:
+        with open(top_citation_file_path, encoding=ENCODING) as stream:
             top_citation_file = yaml.safe_load(stream)
         top_citation_file[REFERENCES_YAML_POINTER] = list()
 
@@ -101,11 +103,11 @@ class CitationAggregator(object):
                                 modules_seen_so_far,
                                 pypi_to_import_map[module])
                         except Exception as e:  # pragma: no cover
-                            print("Error handling python dependency {}: {}"
-                                  .format(module, str(e)))
+                            print("Error handling python dependency "
+                                  f"{module}: {e:s}")
 
         if os.path.isfile(c_requirements_file_path):
-            with open(c_requirements_file_path, encoding="utf-8") as r_file:
+            with open(c_requirements_file_path, encoding=ENCODING) as r_file:
                 for line in r_file:
                     module = line.strip()
                     if module.startswith("#"):
@@ -116,7 +118,7 @@ class CitationAggregator(object):
 
         # write citation file with updated fields
         with io.open(
-                aggregated_citation_file, 'w', encoding='utf8') as outfile:
+                aggregated_citation_file, 'w', encoding=ENCODING) as outfile:
             yaml.dump(top_citation_file, outfile, default_flow_style=False,
                       allow_unicode=True)
 
@@ -130,7 +132,7 @@ class CitationAggregator(object):
         :rtype: dict(str,str)
         """
         pypi_to_import_map = dict()
-        with open(aggregated_citation_file, encoding="utf-8") as f:
+        with open(aggregated_citation_file, encoding=ENCODING) as f:
             for line in f:
                 [pypi, import_command] = line.split(":")
                 pypi_to_import_map[pypi] = import_command.split("\n")[0]
@@ -157,7 +159,7 @@ class CitationAggregator(object):
             self._search_for_other_c_references(
                 reference_entry, cleaned_path, modules_seen_so_far)
         else:
-            print("Could not find C dependency {}".format(module))
+            print(f"Could not find C dependency {module}")
 
     @staticmethod
     def locate_path_for_c_dependency(true_software_name):

@@ -51,12 +51,10 @@ class _ZenodoException(Exception):
     """
 
     def __init__(self, operation, expected, request):
-        Exception.__init__(
-            self,
+        super().__init__(
             "don't know what went wrong. got wrong status code when trying "
-            "to {}. Got error code {} (when expecting {}) with response "
-            "content {}".format(
-                operation, request.status_code, expected, request.content))
+            f"to {operation}. Got error code {request.status_code} (when "
+            f"expecting {expected}) with response content {request.content}")
         self.request = request
         self.expected = expected
 

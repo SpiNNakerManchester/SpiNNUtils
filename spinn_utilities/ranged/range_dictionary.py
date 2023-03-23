@@ -90,8 +90,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
                 key.start, key.stop)
 
             if slice_start >= slice_stop:
-                msg = "{} would result in an empty view".format(key)
-                raise KeyError(msg)
+                raise KeyError(f"{key} would result in an empty view")
 
             # Slice is really just one item - return a single view
             if slice_start == slice_stop - 1:
@@ -268,7 +267,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         elif isinstance(key, (slice, int, tuple, list)):
             raise KeyError("Setting of a slice/ids not supported")
         else:
-            raise KeyError("Unexpected key type: {}".format(type(key)))
+            raise KeyError(f"Unexpected key type: {type(key)}")
 
     @overrides(AbstractDict.ids)
     def ids(self):

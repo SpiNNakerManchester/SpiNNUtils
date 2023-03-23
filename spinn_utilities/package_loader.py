@@ -91,15 +91,14 @@ def load_modules(
                 raise
 
     for module, (exc_type, exc_value, exc_traceback) in errors:
-        print("Error importing {}:".format(module))
+        print(f"Error importing {module}:")
         for line in traceback.format_exception(
                 exc_type, exc_value, exc_traceback):
             for line_line in line.split("\n"):
                 if line_line:
                     print("  ", line_line.rstrip())
     if errors:
-        raise ImportError(
-            "Error when importing, starting at {}".format(prefix))
+        raise ImportError(f"Error when importing, starting at {prefix}")
 
 
 def load_module(

@@ -69,7 +69,7 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
 
         dst.write("\n# Additional config options can be found in:\n")
         for source in defaults:
-            dst.write("# {}\n".format(source))
+            dst.write(f"# {source}\n")
         dst.write("\n# Copy any additional settings you want to change"
                   " here including section headings\n")
 

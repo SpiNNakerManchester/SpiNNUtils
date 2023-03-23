@@ -52,15 +52,13 @@ class AbstractSized(object):
     def _check_id_in_range(self, the_id):
         if the_id < 0:
             if self._is_id_type(the_id):
-                raise IndexError(
-                    "The index {} is out of range.".format(the_id))
+                raise IndexError(f"The index {the_id} is out of range.")
             # pragma: no cover
-            raise TypeError("Invalid argument type {}.".format(type(the_id)))
+            raise TypeError(f"Invalid argument type {type(the_id)}.")
         if the_id >= self._size:
             if self._is_id_type(the_id):
-                raise IndexError(
-                    "The index {0} is out of range.".format(the_id))
-            raise TypeError("Invalid argument type {}.".format(type(the_id)))
+                raise IndexError(f"The index {the_id} is out of range.")
+            raise TypeError(f"Invalid argument type {type(the_id)}.")
 
     def _check_slice_in_range(self, slice_start, slice_stop):
         if slice_start is None:
@@ -69,8 +67,8 @@ class AbstractSized(object):
             slice_start = self._size + slice_start
             if slice_start < 0:
                 if not self._is_id_type(slice_start):
-                    raise TypeError("Invalid argument type {}.".format(
-                        type(slice_start)))
+                    raise TypeError(
+                        f"Invalid argument type {type(slice_start)}.")
                 logger.warning(
                     "Specified slice start was %d while size is only %d. "
                     "Therefore slice will start at index 0",
@@ -90,11 +88,9 @@ class AbstractSized(object):
 
         if slice_start > slice_stop:
             if not self._is_id_type(slice_start):
-                raise TypeError("Invalid argument type {}.".format(
-                    type(slice_start)))
+                raise TypeError(f"Invalid argument type {type(slice_start)}.")
             if not self._is_id_type(slice_stop):
-                raise TypeError("Invalid argument type {}.".format(
-                    type(slice_start)))
+                raise TypeError(f"Invalid argument type {type(slice_stop)}.")
             logger.warning(
                 "Specified slice has a start %d greater than its stop %d "
                 "(based on size %d). Therefore slice will be empty",
@@ -102,8 +98,7 @@ class AbstractSized(object):
             return (self._size, self._size)
         if slice_stop > len(self):
             if not self._is_id_type(slice_stop):
-                raise TypeError("Invalid argument type {}.".format(
-                    type(slice_start)))
+                raise TypeError(f"Invalid argument type {type(slice_stop)}.")
             logger.warning(
                 "Specified slice has a start %d equal to its stop %d "
                 "(based on size %d). Therefore slice will be empty",
@@ -201,12 +196,12 @@ class AbstractSized(object):
                 for _id in ids:
                     if _id < 0:
                         raise TypeError(
-                            "Selector includes the ID {} which is less than "
-                            "zero".format(_id))
+                            f"Selector includes the ID {_id} which is "
+                            "less than zero")
                     if _id >= self._size:
                         raise TypeError(
-                            "Selector includes the ID {} which not less than "
-                            "the size {}".format(_id, self._size))
+                            f"Selector includes the ID {_id} which not "
+                            f"less than the size {self._size}")
                 return ids
             else:
                 raise TypeError(
@@ -226,8 +221,9 @@ class AbstractSized(object):
             if selector < 0:
                 selector = self._size + selector
             if selector < 0 or selector >= self._size:
-                raise TypeError("Selector {} is unsupproted for size {} "
-                                "".format(selector-self._size, self._size))
+                raise TypeError(
+                    f"Selector {selector-self._size} is unsupported "
+                    f"for size {self._size}")
             return [selector]
 
-        raise TypeError("Unexpected selector type {}".format(type(selector)))
+        raise TypeError(f"Unexpected selector type {type(selector)}")

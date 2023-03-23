@@ -375,7 +375,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         for (start, _, value) in self.iter_ranges():
             if numpy.array_equal(value, x):
                 return start
-        raise ValueError("{} is not in list".format(x))
+        raise ValueError(f"{x} is not in list")
 
     @abstractmethod
     def iter_ranges(self):

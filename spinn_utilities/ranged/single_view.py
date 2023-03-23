@@ -29,7 +29,7 @@ class _SingleView(AbstractView):
         self._id = the_id
 
     def __str__(self):
-        return "View with ID: {}".format(self._id)
+        return f"View with ID: {self._id}"
 
     @overrides(AbstractDict.ids)
     def ids(self):

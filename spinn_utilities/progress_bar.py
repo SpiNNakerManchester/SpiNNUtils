@@ -162,7 +162,7 @@ class ProgressBar(object):
         self._print_progress_done()
 
     def __repr__(self):
-        return "<ProgressBar:{}>".format(self._string)
+        return f"<ProgressBar:{self._string}>"
 
     def __enter__(self):
         """
@@ -334,7 +334,7 @@ class DummyProgressBar(ProgressBar):
         pass
 
     def __repr__(self):
-        return "<DummyProgressBar:{}>".format(self._string)
+        return f"<DummyProgressBar:{self._string}>"
 
 
 if __name__ == "__main__":  # pragma: no cover

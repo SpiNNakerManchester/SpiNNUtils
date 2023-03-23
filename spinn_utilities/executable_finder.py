@@ -94,8 +94,7 @@ class ExecutableFinder(object):
                 return potential_filename
 
         # No executable found
-        raise KeyError("Executable {} not found in path".format(
-            executable_name))
+        raise KeyError(f"Executable {executable_name} not found in path")
 
     def get_executable_paths(self, executable_names):
         """
@@ -148,8 +147,8 @@ class ExecutableFinder(object):
                 used_binaries.add(line.strip())
 
         missing = in_folders - used_binaries
-        print("{} binaries asked for. {} binaries never asked for.".format(
-            len(used_binaries), len(missing)))
+        print(f"{len(used_binaries)} binaries asked for. "
+              f"{len(missing)} binaries never asked for.")
         if len(missing) > 0:
             print("Binaries asked for are:")
             for binary in (used_binaries):

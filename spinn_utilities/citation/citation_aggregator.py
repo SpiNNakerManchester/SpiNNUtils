@@ -104,7 +104,7 @@ class CitationAggregator(object):
                                 pypi_to_import_map[module])
                         except Exception as e:  # pragma: no cover
                             print("Error handling python dependency "
-                                  f"{module}: {e:s}")
+                                  f"{module}: {e}")
 
         if os.path.isfile(c_requirements_file_path):
             with open(c_requirements_file_path, encoding=ENCODING) as r_file:

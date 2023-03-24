@@ -205,14 +205,14 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             return [self[i] for i in range(*selector.indices(self._size))]
 
         # If the key is an int, get the single value
-        elif isinstance(selector, int):
+        elif isinstance(selector, (int, numpy.integer)):
 
             # Handle negative indices
             if selector < 0:
                 selector += len(self)
             return self.get_value_by_id(selector)
         else:
-            raise TypeError("Invalid argument type.")
+            return [self.get_value_by_id(i) for i in selector]
 
     def iter_by_id(self, the_id):
         """

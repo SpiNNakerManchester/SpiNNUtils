@@ -287,7 +287,8 @@ class RangedList(AbstractList):
         else:
             values = list(value)
         if len(values) != size:
-            raise ValueError("The number of values does not equal the size")
+            raise ValueError(f"The number of values:{len(values)} "
+                             f"does not equal the size:{size}")
         return values
 
     def set_value(self, value, use_list_as_value=False):

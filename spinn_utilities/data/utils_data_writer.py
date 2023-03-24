@@ -37,17 +37,18 @@ class UtilsDataWriter(UtilsDataView):
     Any other usage is not supported.
 
     The Writers are specifically designed to support only one instant
-    (typically held by ASB as self._data_writer).
+    (typically held by ASB as `self._data_writer`).
 
     Creating a new instant of the Writer will clear out any data added by the
     previous instance.
 
-    Unittest can create a writer by doing ...Writer.mock() or Writer.setup()
+    Unittest can create a writer by doing `...Writer.mock()` or
+    `Writer.setup()`
     The mock method adds some default data such as directories and
     a Virtual 8 * 8 Machine, as well as allowing some backdoor methods.
-    ...Writer.mock() is the recommnded one for unittests
-    setup() is more like what ASB does and allows for state changes such as
-    writer.start_running
+    `...Writer.mock()` is the recommended one for unittests
+    `setup()` is more like what ASB does and allows for state changes such as
+    `writer.start_running`
 
     ASB init (or it sub classes) will create a new writer
     so a call to sim.setup will clear all previously held data

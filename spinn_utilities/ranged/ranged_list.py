@@ -242,8 +242,8 @@ class RangedList(AbstractList):
         else:
             previous_value = self._ranges[slice_start]
             previous_start = slice_start
-            for index, value in \
-                    enumerate(self._ranges[slice_start: slice_stop]):
+            for index, value in enumerate(
+                    self._ranges[slice_start: slice_stop]):
                 if not numpy.array_equal(value, previous_value):
                     # Index is one ahead so no need for a + 1 here
                     yield (previous_start, slice_start + index, previous_value)

@@ -73,18 +73,18 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
         dst.write("\n# Copy any additional settings you want to change"
                   " here including section headings\n")
 
-    msg = f"Unable to find config file in any of the following locations: \n" \
-          f"{config_locations}\n" \
-          f"********************************************************\n" \
-          f"{home_cfg} has been created. \n" \
-          f"Please edit this file and change \"None\" after \"machineName\" " \
-          f"to the hostname or IP address of your SpiNNaker board, " \
-          f"and change \"None\" after \"version\" to the version of " \
-          f"SpiNNaker hardware you are running on:\n" \
-          f"[Machine]\n" \
-          f"machineName = None\n" \
-          f"version = None\n" \
-          f"***********************************************************\n"
+    msg = (f'Unable to find config file in any of the following locations: \n'
+           f'{config_locations}\n'
+           f'**********************************************************\n'
+           f'{home_cfg} has been created. \n'
+           f'Please edit this file and change "None" after "machineName" '
+           f'to the hostname or IP address of your SpiNNaker board, '
+           f'and change "None" after "version" to the version of '
+           f'SpiNNaker hardware you are running on:\n'
+           f'[Machine]\n'
+           f'machineName = None\n'
+           f'version = None\n'
+           f'***********************************************************\n')
     print(msg)
     return NoConfigFoundException(msg)
 

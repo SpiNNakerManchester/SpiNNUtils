@@ -21,11 +21,11 @@ class RunStatus(Enum):
 
     This is from the perspective of the users script.
     It says nothing about if there is C code running,
-    i.e., has a sim.run (or similar) call started but not yet returned.
+    i.e., has a `sim.run` (or similar) call started but not yet returned.
 
-    This is combined with the ResetStatus to get the needed status
+    This is combined with the :py:class:`ResetStatus` to get the needed status.
 
-    This class is design to used internally by UtilsDataView
+    This class is design to used internally by :py:class:`UtilsDataView`.
     """
     NOT_SETUP = (0)
     NOT_RUNNING = (12)

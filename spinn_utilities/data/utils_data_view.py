@@ -95,10 +95,14 @@ class UtilsDataView(object):
     """
     A read only view of the data available at each level.
 
+    .. note::
+        The state model of this class is designed primarily to support
+        sPyNNaker.
+
     All methods are class methods so can be accessed directly without
     instantiating a view.
-    There is a stack of subclasses such as MachineDataView, FecDataView,
-    SpynnakerDataView (and more). All inherit all methods.
+    There is a stack of subclasses such as `MachineDataView`, `FecDataView`,
+    `SpynnakerDataView` (and more). All inherit all methods.
     We reserve the right to override methods defined in one View in subclasses.
 
     There are also Writer classes which override the Views but these are
@@ -107,8 +111,8 @@ class UtilsDataView(object):
 
     You should use the data view most appropriate to what you are doing i.e.
     If you are accessing it from a class or function in FEC,
-    use FecDataView but if you are accessing it from Spynnaker,
-    use SpynnakerDataView.
+    use `FecDataView` but if you are accessing it from sPyNNaker,
+    use `SpynnakerDataView`.
     This will ensure that any changes to the view local to the code will
     affect all code in that package
 
@@ -117,48 +121,50 @@ class UtilsDataView(object):
     check or updates done in the writer(s).
     Objects returned could be changed to immutable versions without notice!
 
-    The get... methods will either return a valid value or
-    raise an Exception if the data is currently not available.
-    The get methods will will not return `None` unless specifically documented
-    to do so.
+    The `get...` methods will either return a valid value or
+    raise an exception if the data is currently not available.
+    The `get` methods will will not return `None` unless specifically
+    documented to do so.
     As a reasonable effort is made the setters to verify the data types,
     the get methods can be expected to return the correct type.
 
-    There are also several semantic sugar get.. methods.
+    There are also several semantic sugar `get...` methods.
     Some are slightly faster but many are just to make the code more readable.
     Some semantic sugar methods do not start with get to keep the same name as
     the existing function on the object has.
 
-    The iterate... methods offer a view over the collections within
+    The `iterate...` methods offer a view over the collections within
     mutable data objects, particularly ones changed between runs.
     There is no guarantee if the returned iterator will or will not reflect
     any changes to the underlying data object,
     nor that how a method behaves in this way does not change over time.
     So the methods should be called for every iteration.
 
-    Each iterate.. method will have a corresponding get_n.. which you need to
-    do instead of len(iterate..) as we reserve the right to make any iterate
-    method return an iterable which does not support len without notice.
+    Each `iterate...` method will have a corresponding `get_n...` which you
+    need to do instead of `len(iterate...)` as we reserve the right to make
+    any `iterate...` method return an iterable which does not support `len`
+    without notice.
 
-    add... methods allow for the scripts directly or indirectly to add extra
+    `add...` methods allow for the scripts directly or indirectly to add extra
     values.
     They allow the view to add extra safety such as type checking.
     They will raise an exception if called while the simulator is running.
 
-    The has... methods will return True if the value is known and False if not.
+    The `has...` methods will return True if the value is known and False if
+    not.
     Semantically they are the same as checking if the get raises an exception.
     They may be faster if the object needs to be generated on the fly or
     protected to be made immutable.
-    Has methods have been added where needed.
+    `has...` methods have been added where found needed.
     More can easily be added if required.
 
-    The is... methods will return a bool value to say the simulator is in
+    The `is...` methods will return a bool value to say the simulator is in
     the expected state.
     They may throw an exception if called at an unexpected time.
-    For example if called before sim.setup or after sim.end
+    For example if called before `sim.setup` or after `sim.end`.
 
     While how and where the underpinning DataModel(s) store data can change
-    without notice, methods in View classes can be considered a supported API
+    without notice, methods in View classes can be considered a supported API.
     """
 
     __data = _UtilsDataModel()
@@ -202,7 +208,7 @@ class UtilsDataView(object):
     @classmethod
     def is_soft_reset(cls):
         """
-        Check if the system has been soft_reset since the last run finished.
+        Check if the system has been soft reset since the last run finished.
 
         Critically during the first run after reset this continues to return
         True!
@@ -256,8 +262,8 @@ class UtilsDataView(object):
         """
         Reports if `sim.reset` called since the last `sim.run`.
 
-        Unlike `is_soft_reset` and `is_hard_reset` this method return False
-        during any `sim.run`.
+        Unlike :py:meth:`is_soft_reset` and :py:meth:`is_hard_reset` this
+        method return False during any `sim.run`.
 
         It also returns False after a `sim.stop` or `sim.end` call starts
 
@@ -447,9 +453,8 @@ class UtilsDataView(object):
     @classmethod
     def _temporary_dir_path(cls):
         """
-        The path to an existing temp directory, creating it if needed.
+        The path to an existing temporary directory, creating it if needed.
 
-        :param str data: Name of the data to be replace with temp
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             if not in Mocked state
         """
@@ -493,7 +498,7 @@ class UtilsDataView(object):
         """
         Register an additional binary search path for executables.
 
-        semantic sugar for executable_finder.add_path
+        Syntactic sugar for `get_executable_finder().add_path()`
 
         :param str search_path: absolute search path for binaries
         """
@@ -505,7 +510,7 @@ class UtilsDataView(object):
         Finds an executable within the set of folders. The set of folders
         is searched sequentially and the first match is returned.
 
-        Semantic sugar for get_executable_finder().get_executable_path
+        Syntactic sugar for `get_executable_finder().get_executable_path()`
 
         :param str executable_name: The name of the executable to find
         :return: The full path of the discovered executable
@@ -526,7 +531,7 @@ class UtilsDataView(object):
 
         Names not found are ignored and not added to the list.
 
-        Semantic sugar for get_executable_finder().get_executable_paths
+        Syntactic sugar for `get_executable_finder().get_executable_paths()`
 
         :param str executable_names: The name of the executable to find.
             Assumed to be comma separated.
@@ -546,7 +551,7 @@ class UtilsDataView(object):
         Set to True at the start and by any change that could require
         data generation or mapping
         Remains True during the first run after a data change
-        Only set to False at the END of the first run
+        Only set to False at the *end* of the first run
 
         :rtype: bool
         """
@@ -555,7 +560,7 @@ class UtilsDataView(object):
     @classmethod
     def set_requires_data_generation(cls):
         """
-        Sets requires_data_generation to True.
+        Sets `requires_data_generation` to True.
 
         Only the end of a run can set it to False
         """
@@ -579,7 +584,7 @@ class UtilsDataView(object):
     @classmethod
     def set_requires_mapping(cls):
         """
-        Sets requires_mapping and requires_data_generation to True.
+        Sets `requires_mapping` and `requires_data_generation` to True.
 
         Only the end of a run can set it to False
         """
@@ -596,7 +601,7 @@ class UtilsDataView(object):
 
             *ONLY FOR USE IN UNITTESTS*
 
-            Any use outside of unittests is NOT supported and will cause
+            Any use outside of unittests is *not* supported and will cause
             errors!
         """
         cls.__data._run_status = RunStatus.NOT_RUNNING

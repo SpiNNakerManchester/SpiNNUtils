@@ -291,7 +291,7 @@ class FileConverter(object):
 
     def _process_line_normal_code(self, dest_f, line_num, text):
         """
-        Process a line where the status is normal code
+        Process a line where the status is normal code.
 
         :param dest_f: Open file like Object to write modified source to
         :param int line_num: Line number in the source c file
@@ -401,7 +401,7 @@ class FileConverter(object):
 
     def _short_log(self, line_num):
         """
-        Shortens the log string message and adds the id.
+        Shortens the log string message and adds the ID.
 
         :param int line_num: Current line number
         :return: shorten form

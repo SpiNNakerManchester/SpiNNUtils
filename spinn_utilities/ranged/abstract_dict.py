@@ -27,10 +27,10 @@ class AbstractDict(object, metaclass=AbstractBase):
         """
         Gets a single shared value for all IDs covered by this view.
 
-        :param key: The key or keys to get the value of. Use None for all
+        :param key: The key or keys to get the value of. Use `None` for all
         :type key: str or iterable(str) or None
         :return: If key is a str, this returns the single object.
-            If key is iterable (list, tuple, set, etc) of str (or None),
+            If key is iterable (list, tuple, set, etc) of str (or `None`),
             returns a dictionary object
         :raises ~spinn_utilities.ranged.MultipleValuesException:
             If even one of the keys has multiple values set.
@@ -90,14 +90,15 @@ class AbstractDict(object, metaclass=AbstractBase):
         Iterates over the value(s) for all IDs covered by this view.
         There will be one yield for each ID even if values are repeated.
 
-        :param key: The key or keys to get the value of. Use None for all keys
+        :param key:
+            The key or keys to get the value of. Use `None` for all keys
         :type key: str or iterable(str) or None
         :param update_save: If set True the iteration will work even if values
             are updated during iteration. If left False the iterator may be
             faster but behaviour is *undefined* and *unchecked* if *any*
             values are changed during iteration.
         :return: If key is a str, this yields single objects.
-            If key is iterable (list, tuple, set, etc) of str (or None),
+            If key is iterable (list, tuple, set, etc) of str (or `None`),
             yields dictionary objects
         """
 
@@ -164,11 +165,12 @@ class AbstractDict(object, metaclass=AbstractBase):
         Returns a list of (``key``, ``value``) tuples.
         Works only if the whole ranges/view has single values.
 
-        If the key is a str, the values are single objects.
-        If the key is iterable (list, tuple, set, etc) of str (or `None`),
-        the values are dictionary objects
+        If the ``key`` is a str, the ``value``s are single objects.
+        If the ``key`` is iterable (list, tuple, set, etc) of str (or `None`),
+        the ``value``s are dictionary objects.
 
         :return: List of (``key``, ``value``) tuples
+        :rtype: list(tuple)
         :raises ~spinn_utilities.ranged.MultipleValuesException:
             If even one of the keys has multiple values set.
         """
@@ -183,14 +185,15 @@ class AbstractDict(object, metaclass=AbstractBase):
         Iterates over the (``key``, ``value``) tuples.
         Works only if the whole ranges/view has single values.
 
-        If the key is a str, the values are single objects.
-        If the key is iterable (list, tuple, set, etc) of str (or `None`),
-        the values are dictionary objects
+        If the ``key`` is a str, the ``value``s are single objects.
+        If the ``key`` is iterable (list, tuple, set, etc) of str (or `None`),
+        the ``value``s are dictionary objects
 
         This function is safe for value updates but may miss new keys
         added during iteration.
 
         :return: yield (``key``, ``value``) tuples
+        :rtype: iterable(tuple)
         :raises ~spinn_utilities.ranged.MultipleValuesException:
             If even one of the keys has multiple values set.
         """
@@ -202,9 +205,9 @@ class AbstractDict(object, metaclass=AbstractBase):
         Returns a list of values.
         Works only if the whole ranges/view has single values.
 
-        If key is a str, the values are single objects.
-        If key is iterable (list, tuple, set, etc) of str (or `None`),
-        values are dictionary objects
+        If a key is a str, its value is a single object.
+        If a key is an iterable (list, tuple, set, etc) of str (or `None`),
+        its value is a dictionary object.
 
         :return: List of values
         :raises ~spinn_utilities.ranged.MultipleValuesException:
@@ -221,9 +224,9 @@ class AbstractDict(object, metaclass=AbstractBase):
         Iterates over the values.
         Works only if the whole ranges/view has single values.
 
-        If key is a str, the values are single objects.
-        If key is iterable (list, tuple, set, etc) of str (or `None`),
-        values are dictionary objects
+        If a key is a str, its value is a single object.
+        If a key is an iterable (list, tuple, set, etc) of str (or `None`),
+        its value is a dictionary object.
 
         This function is safe for value updates but may miss new keys
         added during iteration.

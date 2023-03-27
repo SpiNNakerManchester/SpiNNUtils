@@ -41,8 +41,8 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         `reverse`, `__reversed__`
         `sort`
 
-    In the current version the IDs are zero base consecutive numbers so there
-    is no difference between value-based IDs and index-based IDs
+    In the current version the IDs are zero-based consecutive numbers so there
+    is no difference between value-based IDs and index-based IDs,
     but this could change in the future.
 
     Supports the following arithmetic operations over the list:
@@ -367,10 +367,12 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
 
     def index(self, x):
         """
-        Finds the first ID of the first element in the list with value ``x``.
+        Finds the first ID of the first element in the list with the given
+        value.
 
-        :param x:
+        :param x: The value to find.
         :return: The ID/index
+        :raise ValueError: If the value is not found
         """
         for (start, _, value) in self.iter_ranges():
             if numpy.array_equal(value, x):
@@ -428,6 +430,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             The start and stop of the range will be reduced to just the IDs
 
         :return: yields each range one by one
+        :rtype: iterable
         """
         range_pointer = 0
         result = None

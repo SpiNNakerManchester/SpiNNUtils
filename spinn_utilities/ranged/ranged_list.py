@@ -541,7 +541,7 @@ class RangedList(AbstractList):
 
     def copy_into(self, other):
         """
-        Turns this List into a of the other list but keep its id.
+        Turns this List into a of the other list but keep its ID.
 
         Depth is just enough so that any changes done through the RangedList
         API on other will not change self

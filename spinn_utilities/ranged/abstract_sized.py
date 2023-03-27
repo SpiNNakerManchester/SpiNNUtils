@@ -145,26 +145,26 @@ class AbstractSized(object):
         Gets the list of IDs covered by this selector.
         The types of selector currently supported are:
 
-        None:
+        `None`:
             Returns all IDs.
 
         slice: Standard python slice.
-            Negative values and values larger than size are handled using\
-            slices's indices method. \
+            Negative values and values larger than size are handled using
+            slices's `indices` method.
             This could result in am empty list.
 
-        int: (or long) Handles negative values as normal.
+        int: Handles negative values as normal.
             Checks if ID is within expected range.
 
-        iterator of bools: Used as a mask.
-            If the length of the mask is longer or shorted than number of IDs \
-            the result is the shorter of the two, \
+        iterator(bool): Used as a mask.
+            If the length of the mask is longer or shorted than number of IDs
+            the result is the shorter of the two,
             with the remainder of the longer ignored.
 
-        iterator of int (long) but not bool:
-            Every value checked that it is with the range 0 to size. \
-            Negative values are *not* allowed. \
-            Original order and duplication is respected so result may be\
+        iterator(int) but not bool:
+            Every value checked that it is with the range 0 to size.
+            Negative values are *not* allowed.
+            Original order and duplication is respected so result may be
             unordered and contain duplicates.
 
         :param selector: Some object that identifies a range of IDs.

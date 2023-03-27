@@ -36,7 +36,10 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         The Object is set up initially where every ID in the range will share
         the same value for each key. All keys must be of type str. The
-        default Values can be anything including None.
+        default values can be anything, including `None`.
+
+        .. warning::
+            Using mutable default values can result in weird problems.
 
         :param int size: Fixed number of IDs / Length of lists
         :param defaults: Default dictionary where all keys must be str
@@ -53,7 +56,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         Defines which class or subclass of :py:class:`RangedList` to use.
 
-        Main purpose is for subclasses to use a subclass or RangedList.
+        Main purpose is for subclasses to use a subclass or `RangedList`.
         All parameters are pass through ones to the List constructor
 
         :param size: Fixed length of the list
@@ -70,7 +73,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         parameters and returns the most efficient view.
 
         .. note::
-            The ``__getitem__`` methods called by Object[id] and similar
+            The ``__getitem__`` methods called by `Object[id]` and similar
             defer to this method so are fine to use.
 
         The ID(s) used are the actual IDs in the range and not indexes on
@@ -128,14 +131,16 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         Support for the view[x] based the type of the key
 
-        If key is a str, a list type object of ``AbstractList`` is returned.
-        Otherwise a view (AbstractView) over part of the IDs in the dict is
+        If key is a str, a list type object of :py:class:`AbstractList` is
         returned.
+        Otherwise a view (:py:class:`AbstractView`) over part of the IDs in
+        the dict is returned.
 
         Multiple str objects or `None` are not supported as keys here.
 
         :param key: a str, int, or iterable of int values
         :return: An AbstractList or AbstractView
+        :rtype: AbstractList or AbstractView
         """
         if isinstance(key, str):
             return self._value_lists[key]
@@ -249,10 +254,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
         then it must be exactly the size of all lists in this dictionary.
         ``value`` can be an ``AbstractList``
 
-        :param key: Existing or NEW str dictionary key
-        :type key: str
+        :param str key: Existing or *new* dictionary key
         :param value: List or value to create list based on.
-        :return:
         """
         if isinstance(key, str):
             if key in self:
@@ -398,12 +401,12 @@ class RangeDictionary(AbstractSized, AbstractDict):
             would do
 
         .. warning::
-            If called on a View it sets the default for the *whole* range
+            If called on a view, it sets the default for the *whole* range
             and not just the view.
 
         :param key: Existing dict key
         :type key: str
-        :param default: Value to be used by reset
+        :param default: Value to be used by reset; should not be mutable!
         """
         self._value_lists[key].set_default(default)
 
@@ -415,8 +418,8 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         Turns this dict into a copy of the other dict but keep its id.
 
-        :param RangedDict other:
-            Another Ranged Dictionary assumed created by cloning this one
+        :param RangeDictionary other:
+            Another ranged dictionary assumed created by cloning this one
         """
         for key in other.keys():
             value = other[key]
@@ -431,6 +434,13 @@ class RangeDictionary(AbstractSized, AbstractDict):
                 self._value_lists[key].copy_into(value)
 
     def copy(self):
+        """
+        Make a copy of this dictionary. Inner ranged entities are deep copied,
+        inner leaf values are shallow copied.
+
+        :return: The copy.
+        :rtype: RangeDictionary
+        """
         copy = RangeDictionary(self._size)
         copy.copy_into(self)
         return copy

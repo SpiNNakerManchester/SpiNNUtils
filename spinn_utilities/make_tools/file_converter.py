@@ -49,6 +49,9 @@ class State(enum.Enum):
 
 
 class FileConverter(object):
+    """
+    Converts a file. See :py:meth:`convert`.
+    """
 
     __slots__ = [
         "_log_database",
@@ -67,11 +70,12 @@ class FileConverter(object):
         """
         Creates the file_convertor to convert one file.
 
-        :param str src: Source file
-        :param str dest: Destination file
-        :param log_databasee:
-        :type log_database:
-            :py:class:`.log_sqllite_database.LogSqlLiteDatabase`
+        :param str src: Absolute path to source file
+        :param str dest: Absolute path to destination file
+        :param int log_file_id:
+            Id in the database for this file
+        :param LogSqlLiteDatabase log_database:
+            The database which handles the mapping of id to log messages.
         """
         #: Absolute path to source file
         #:
@@ -180,7 +184,7 @@ class FileConverter(object):
 
     def _process_line_in_comment(self, dest_f, text):
         """
-        Process a single line when in a multi-line comment `/*  .. */`
+        Process a single line when in a multi-line comment: ``/* .. */``
 
         :param dest_f: Open file like Object to write modified source to
         :param str text: Text of that line including whitespace
@@ -202,7 +206,7 @@ class FileConverter(object):
 
     def _process_line_comment_start(self, dest_f, line_num, text):
         """
-        Processes a line known assumed to contain a `/*` but not know where.
+        Processes a line known assumed to contain a ``/*`` but not know where.
 
         There is also the assumption that the start status is not ``COMMENT``.
 
@@ -257,7 +261,7 @@ class FileConverter(object):
 
     def _process_line_in_log_close_bracket(self, dest_f, line_num, text):
         """
-        Process where the last log line has the `)` but not the `;`
+        Process where the last log line has the ``)`` but not the ``;``
 
         :param dest_f: Open file like Object to write modified source to
         :param int line_num: Line number in the source c file
@@ -466,7 +470,7 @@ class FileConverter(object):
         - Old log message with full text added as comment
 
         :param dest_f: Open file like Object to write modified source to
-        :param int line_num: Line number in the source c file
+        :param int line_num: Line number in the source C file
         :param str text: Text of that line including whitespace
         """
         self._log_full = self._log_full.replace('""', '')
@@ -629,8 +633,11 @@ class FileConverter(object):
         """
         Static method to create Object and do the conversion.
 
-        :param str src: Source file
-        :param str dest: Destination file
+        :param str src_dir: Source directory
+        :param str dest_dir: Destination directory
+        :param str file_name:
+            The name of the file to convert within the source directory; it
+            will be made with the same name in the destination directory.
         """
         source = os.path.join(src_dir, file_name)
         if not os.path.exists(source):

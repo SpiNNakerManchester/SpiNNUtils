@@ -17,9 +17,11 @@ import sys
 from .file_converter import FileConverter
 from .log_sqllite_database import LogSqlLiteDatabase
 
-SKIPPABLE_FILES = ["common.mk", "Makefile.common",
-                   "paths.mk", "Makefile.paths",
-                   "neural_build.mk", "Makefile.neural_build"]
+ALLOWED_EXTENSIONS = frozenset([".c", ".cpp", ".h"])
+SKIPPABLE_FILES = frozenset([
+    "common.mk", "Makefile.common",
+    "paths.mk", "Makefile.paths",
+    "neural_build.mk", "Makefile.neural_build"])
 
 
 def convert(src, dest, new_dict):
@@ -38,23 +40,26 @@ def convert(src, dest, new_dict):
         raise FileNotFoundError(
             f"Unable to locate source directory {src_path}")
     dest_path = os.path.abspath(dest)
-    __convert_dir(src_path, dest_path)
+    _convert_dir(src_path, dest_path)
 
 
-def __convert_dir(src_path, dest_path):
+def _convert_dir(src_path, dest_path, make_directories=False):
     """
     Converts a whole directory including sub directories.
 
     :param str src_path: Full source directory
     :param str dest_path: Full destination directory
+    :param bool make_directories: Whether to do mkdir first
     """
-#    __mkdir(dest_path)
+    if make_directories:
+        _mkdir(dest_path)
     for src_dir, _, file_list in os.walk(src_path):
         dest_dir = os.path.join(dest_path, os.path.relpath(src_dir, src_path))
-#        __mkdir(dest_dir)
+        if make_directories:
+            _mkdir(dest_dir)
         for file_name in file_list:
             _, extension = os.path.splitext(file_name)
-            if extension in [".c", ".cpp", ".h"]:
+            if extension in ALLOWED_EXTENSIONS:
                 FileConverter.convert(src_dir, dest_dir, file_name)
             elif file_name in SKIPPABLE_FILES:
                 pass
@@ -63,7 +68,7 @@ def __convert_dir(src_path, dest_path):
                 print(f"Unexpected file {source}")
 
 
-def __mkdir(destination):
+def _mkdir(destination):
     if not os.path.exists(destination):
         os.mkdir(destination)
     if not os.path.exists(destination):

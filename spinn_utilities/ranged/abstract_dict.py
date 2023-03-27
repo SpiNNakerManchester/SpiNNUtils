@@ -165,9 +165,9 @@ class AbstractDict(object, metaclass=AbstractBase):
         Returns a list of (``key``, ``value``) tuples.
         Works only if the whole ranges/view has single values.
 
-        If the ``key`` is a str, the ``value``s are single objects.
+        If the ``key`` is a str, the ``value``\\s are single objects.
         If the ``key`` is iterable (list, tuple, set, etc) of str (or `None`),
-        the ``value``s are dictionary objects.
+        the ``value``\\s are dictionary objects.
 
         :return: List of (``key``, ``value``) tuples
         :rtype: list(tuple)
@@ -185,9 +185,9 @@ class AbstractDict(object, metaclass=AbstractBase):
         Iterates over the (``key``, ``value``) tuples.
         Works only if the whole ranges/view has single values.
 
-        If the ``key`` is a str, the ``value``s are single objects.
+        If the ``key`` is a str, the ``value``\\s are single objects.
         If the ``key`` is iterable (list, tuple, set, etc) of str (or `None`),
-        the ``value``s are dictionary objects
+        the ``value``\\s are dictionary objects
 
         This function is safe for value updates but may miss new keys
         added during iteration.

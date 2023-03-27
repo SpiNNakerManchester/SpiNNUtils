@@ -23,13 +23,27 @@ class see(overrides):
     is provided by another method with exactly the same arguments.
 
     .. note::
-        This has the same effect as overrides in reality, but is provided
-        to show that the method doesn't actually override
+        This has the same effect as `overrides` in reality, but is provided to
+        show that the method doesn't actually override.
     """
 
     def __init__(
             self, documentation_method, extend_doc=True,
             additional_arguments=None, extend_defaults=False):
+        """
+        :param documentation_method:
+            The other method to reference.
+        :param bool extend_doc:
+            True the method doc string should be appended to the other method's
+            doc string, False if the documentation should be set to the
+            other method's doc string only if there isn't a doc string already
+        :param iterable(str) additional_arguments:
+            Additional arguments taken by the decorated method over the
+            referenced method, e.g., that are to be injected
+        :param bool extend_defaults:
+            Whether the decorated method may specify extra defaults for the
+            parameters
+        """
         super().__init__(
             documentation_method, extend_doc=extend_doc,
             additional_arguments=additional_arguments,

@@ -73,9 +73,7 @@ class ProgressBar(object):
         Update the progress bar by a given amount.
 
         :param amount_to_add:
-        :rtype: None
         """
-
         if self._currently_completed + amount_to_add > self._number_of_things:
             logger_utils.error_once(logger, self.TOO_MANY_ERROR)
             return
@@ -197,11 +195,12 @@ class ProgressBar(object):
         The progress bar should have been initialised to the size of the
         collection being iterated over.
 
-        :param collection:
+        :param ~collections.abc.Iterable collection:
             The base collection (any iterable) being iterated over
         :param bool finish_at_end:
             Flag to say if the bar should finish at the end of the collection
         :return: An iterable. Expected to be directly used in a for.
+        :rtype: ~collections.abc.Iterable
         """
         try:
             for item in collection:

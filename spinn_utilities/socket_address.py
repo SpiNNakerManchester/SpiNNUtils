@@ -61,14 +61,14 @@ class SocketAddress(object):
     @property
     def notify_host_name(self):
         """
-        The notify host name.
+        The host name or IP address to send a notification message to.
         """
         return self._notify_host_name
 
     @property
     def notify_port_no(self):
         """
-        The notify port number.
+        The UDP port number to send a notification message to.
         """
         return self._notify_port_no
 

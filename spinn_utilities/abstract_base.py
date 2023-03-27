@@ -13,12 +13,6 @@
 # limitations under the License.
 """
 A trimmed down version of standard Python Abstract Base classes.
-
-If using ``@add_metaclass``, this requires::
-
-    from six import add_metaclass
-
-Using Python 3 style ``metaclass=AbstractBase`` is preferred.
 """
 
 
@@ -34,14 +28,7 @@ def abstractmethod(funcobj):
 
     Usage::
 
-        @add_metaclass(AbstractBase)
-        class C:
-            @abstractmethod
-            def my_abstract_method(self, ...):
-                ...
-
-        # Python 3 only syntax
-        class C3(object, metaclass=AbstractBase):
+        class C(object, metaclass=AbstractBase):
             @abstractmethod
             def my_abstract_method(self, ...):
                 ...
@@ -62,14 +49,7 @@ class abstractproperty(property):
 
     Usage::
 
-        @add_metaclass(AbstractBase)
-        class C:
-            @abstractproperty
-            def my_abstract_property(self):
-                ...
-
-        # Python 3 only syntax
-        class C3(object, metaclass=AbstractBase):
+        class C(object, metaclass=AbstractBase):
             @abstractproperty
             def my_abstract_property(self):
                 ...
@@ -77,14 +57,7 @@ class abstractproperty(property):
     This defines a read-only property; you can also define a read-write
     abstract property using the 'long' form of property declaration::
 
-        @add_metaclass(AbstractBase)
-        class C:
-            def getx(self): ...
-            def setx(self, value): ...
-            x = abstractproperty(getx, setx)
-
-        # Python 3 only syntax
-        class C3(object, metaclass=AbstractBase):
+        class C(object, metaclass=AbstractBase):
             def getx(self): ...
             def setx(self, value): ...
             x = abstractproperty(getx, setx)
@@ -101,6 +74,13 @@ class AbstractBase(type):
 
     This is a trimmed down version of ABC.
     Unlike ABC you can not register unrelated concrete classes.
+
+    Usage::
+
+        class C(object, metaclass=AbstractBase):
+            @abstractmethod
+            def my_abstract_method(self, ...):
+                ...
     """
 
     def __new__(cls, name, bases, namespace, **kwargs):

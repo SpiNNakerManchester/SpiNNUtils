@@ -20,8 +20,8 @@ def find_max_success(max_possible, check):
     :param max_possible: The maximum value that should be tested.
     :type max_possible: int
     :param check: A boolean function that given an int value returns
-        true for every value up and including the cutoff and
-        false for every value greater than the cutoff
+        True for every value up and including the cutoff and
+        False for every value greater than the cutoff
     :return: The highest value that returns true for the check
         but is not more than the max_possible
     """
@@ -44,11 +44,12 @@ def search_for_max_success(best_success, min_fail, check):
         but must be greater than best_success but may also be negative
     :type min_fail: int
     :param check: A boolean function that given an int value returns
-        true for every value up and including the cutoff and
-        false for every value greater than the cutoff
+        True for every value up and including the cutoff and
+        False for every value greater than the cutoff
+    :type check: callable(int, bool)
     :return: The highest value that returns true in the range between
-        best_success and min_fail (both exclusive ends) or best_success if the
-        whole range fails or is empty.
+        `best_success` and `min_fail` (both exclusive ends) or `best_success`
+        if the whole range fails or is empty.
     """
     # Check if there are still values in the middle to check
     if best_success >= min_fail - 1:

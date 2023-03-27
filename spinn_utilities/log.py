@@ -73,7 +73,6 @@ class ConfiguredFormatter(logging.Formatter):
         """
         Create a dictionary of module names and logging levels.
         """
-
         # Construct the dictionary
         _levels = {}
 
@@ -93,7 +92,6 @@ class ConfiguredFormatter(logging.Formatter):
         """
         Greediest match between child and parent.
         """
-
         # TODO: this can almost certainly be neater!
         # Repeatedly strip elements off the child until we match an item in
         # parents
@@ -113,7 +111,6 @@ class ConfiguredFormatter(logging.Formatter):
         """
         The logging level of the greediest match between child and parent.
         """
-
         # child = re.sub( r'^pacman103\.', '', child )
         parent = ConfiguredFormatter.deepest_parent(parents.keys(), child)
 
@@ -184,9 +181,10 @@ class FormatAdapter(logging.LoggerAdapter):
     def set_kill_level(cls, level=None):
         """
         Allow system to change the level at which a log is changed to an
-        Exception
+        Exception.
 
-        Static so effects all log messages
+        .. note::
+            This is a static method; it affects all log messages.
 
         :param int level:
             The level to set. The values in :py:mod:`logging` are recommended.
@@ -258,7 +256,6 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def atexit_handler(cls):
-
         messages = []
         if cls.__log_store:
             try:

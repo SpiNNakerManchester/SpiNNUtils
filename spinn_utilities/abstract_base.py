@@ -61,6 +61,19 @@ class abstractproperty(property):
             def getx(self): ...
             def setx(self, value): ...
             x = abstractproperty(getx, setx)
+
+    .. note::
+        When documenting abstract properties, remember to document them as if
+        they are nouns, not verbs; they are things about the object that may
+        be observed as many times as the user of the class desires.
+
+    .. warning::
+        Implementations should be idempotent; fetching the property twice in a
+        row should get an equivalent value with no (meaningful) change to the
+        state of the object (assuming no other non-property methods of the
+        object are invoked between).
+
+        This is an assumption that debuggers make. *Do not violate it!*
     """
     __isabstractmethod__ = True
 

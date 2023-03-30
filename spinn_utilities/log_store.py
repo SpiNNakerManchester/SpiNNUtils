@@ -16,29 +16,37 @@ from .abstract_base import abstractmethod
 
 
 class LogStore(object):
+    """
+    API supported by classes that can store logs for later retrieval.
+    """
 
     @abstractmethod
     def store_log(self, level, message, timestamp=None):
-        """ Writes the log message for later retreival
+        """
+        Writes the log message for later retrieval.
 
-        :param int level:
-        :param str message:
+        :param int level: The logging level.
+        :param str message: The logged message.
+        :param timestamp: The timestamp of the message.
         :type timestamp: datatime or None
         """
 
     @abstractmethod
     def retreive_log_messages(self, min_level=0):
         """
-        Retrieves all log messages at or above the min_level
+        Retrieves all log messages at or above the `min_level`.
 
         :param int min_level:
+            Constraint on the minimum logging level to retrieve.
+        :return:
+            A list of messages that satisfy the constraint.
         :rtype: list(tuple(int, str))
         """
 
     @abstractmethod
     def get_location(self):
         """
-        Retrieves the location of the log store
+        Retrieves the location of the log store.
 
         :rtype: str
         """

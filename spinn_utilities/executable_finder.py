@@ -17,8 +17,9 @@ from spinn_utilities.ordered_set import OrderedSet
 
 
 class ExecutableFinder(object):
-    """ Manages a set of folders in which to search for binaries,\
-        and allows for binaries to be discovered within this path
+    """
+    Manages a set of folders in which to search for binaries,
+    and allows for binaries to be discovered within this path.
     """
     __slots__ = [
         "_binary_search_paths",
@@ -39,9 +40,10 @@ class ExecutableFinder(object):
         self._binary_search_paths = OrderedSet()
 
     def add_path(self, path):
-        """ Adds a path to the set of folders to be searched.  The path is\
-            added to the end of the list, so it is searched after all the\
-            paths currently in the list.
+        """
+        Adds a path to the set of folders to be searched.  The path is
+        added to the end of the list, so it is searched after all the
+        paths currently in the list.
 
         :param str path: The path to add
         """
@@ -56,16 +58,18 @@ class ExecutableFinder(object):
 
     @property
     def binary_paths(self):
-        """ The set of folders to search for binaries, as a printable\
-            colon-separated string.
+        """
+        The set of folders to search for binaries, as a printable
+        colon-separated string.
 
         :rtype: str
         """
         return " : ".join(self._binary_search_paths)
 
     def get_executable_path(self, executable_name):
-        """ Finds an executable within the set of folders. The set of folders\
-            is searched sequentially and the first match is returned.
+        """
+        Finds an executable within the set of folders. The set of folders
+        is searched sequentially and the first match is returned.
 
         :param str executable_name: The name of the executable to find
         :return: The full path of the discovered executable
@@ -90,11 +94,11 @@ class ExecutableFinder(object):
                 return potential_filename
 
         # No executable found
-        raise KeyError("Executable {} not found in path".format(
-            executable_name))
+        raise KeyError(f"Executable {executable_name} not found in path")
 
     def get_executable_paths(self, executable_names):
-        """ Finds each executables within the set of folders.
+        """
+        Finds each executables within the set of folders.
 
         The names are assumed to be comma separated
         The set of folders is searched sequentially
@@ -143,8 +147,8 @@ class ExecutableFinder(object):
                 used_binaries.add(line.strip())
 
         missing = in_folders - used_binaries
-        print("{} binaries asked for. {} binaries never asked for.".format(
-            len(used_binaries), len(missing)))
+        print(f"{len(used_binaries)} binaries asked for. "
+              f"{len(missing)} binaries never asked for.")
         if len(missing) > 0:
             print("Binaries asked for are:")
             for binary in (used_binaries):

@@ -13,8 +13,9 @@
 # limitations under the License.
 
 
-class ClassPropertyDescriptor(object):
-    """ A class to handle the management of class properties
+class _ClassPropertyDescriptor(object):
+    """
+    A class to handle the management of class properties.
     """
 
     def __init__(self, fget):
@@ -27,9 +28,19 @@ class ClassPropertyDescriptor(object):
 
 
 def classproperty(func):
-    """ Defines a property at the class-level
+    """
+    Defines a property at the class-level.
+
+    Usage::
+
+        class C(object):
+            _my_property = "Value"
+
+            @classproperty
+            def my_property(cls):
+                return cls._my_property
     """
     if not isinstance(func, (classmethod, staticmethod)):
         func = classmethod(func)
 
-    return ClassPropertyDescriptor(func)
+    return _ClassPropertyDescriptor(func)

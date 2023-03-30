@@ -39,7 +39,9 @@ MINIS = {"log_info(": "log_mini_info(",
 
 
 class State(enum.Enum):
-    """Status values"""
+    """
+    Status values.
+    """
     NORMAL_CODE = 0
     COMMENT = 1
     IN_LOG = 2
@@ -47,6 +49,9 @@ class State(enum.Enum):
 
 
 class FileConverter(object):
+    """
+    Converts a file. See :py:meth:`convert`.
+    """
 
     __slots__ = [
         "_log_database",
@@ -62,13 +67,15 @@ class FileConverter(object):
     ]
 
     def __call__(self, src, dest, log_file_id, log_database):
-        """ Creates the file_convertor to convert one file
+        """
+        Creates the file_convertor to convert one file.
 
-        :param str src: Source file
-        :param str dest: Destination file
-        :param log_databasee:
-        :type log_database:
-            :py:class:`.log_sqllite_database.LogSqlLiteDatabase`
+        :param str src: Absolute path to source file
+        :param str dest: Absolute path to destination file
+        :param int log_file_id:
+            Id in the database for this file
+        :param LogSqlLiteDatabase log_database:
+            The database which handles the mapping of id to log messages.
         """
         #: Absolute path to source file
         #:
@@ -151,7 +158,8 @@ class FileConverter(object):
         raise NotImplementedError(f"Unexpected status {self._status}")
 
     def _process_line(self, dest_f, line_num, text):
-        """ Process a single line
+        """
+        Process a single line.
 
         :param dest_f: Open file like Object to write modified source to
         :param int line_num: Line number in the source c file
@@ -175,7 +183,8 @@ class FileConverter(object):
         return self._process_line_normal_code(dest_f, line_num, text)
 
     def _process_line_in_comment(self, dest_f, text):
-        """ Process a single line when in a multi-line comment /*  .. */
+        """
+        Process a single line when in a multi-line comment: ``/* .. */``
 
         :param dest_f: Open file like Object to write modified source to
         :param str text: Text of that line including whitespace
@@ -196,7 +205,8 @@ class FileConverter(object):
         return True
 
     def _process_line_comment_start(self, dest_f, line_num, text):
-        """ Processes a line known assumed to contain a /* but not know where
+        """
+        Processes a line known assumed to contain a ``/*`` but not know where.
 
         There is also the assumption that the start status is not ``COMMENT``.
 
@@ -216,7 +226,8 @@ class FileConverter(object):
         return False  # More than one possible end so check by char
 
     def _process_line_in_log(self, dest_f, line_num, text):
-        """ Process a line when the status is a log call has been started
+        """
+        Process a line when the status is a log call has been started.
 
         :param dest_f: Open file like Object to write modified source to
         :param int line_num: Line number in the source c file
@@ -249,7 +260,8 @@ class FileConverter(object):
         return True
 
     def _process_line_in_log_close_bracket(self, dest_f, line_num, text):
-        """ Process where the last log line has the ) but not the ;
+        """
+        Process where the last log line has the ``)`` but not the ``;``
 
         :param dest_f: Open file like Object to write modified source to
         :param int line_num: Line number in the source c file
@@ -282,7 +294,8 @@ class FileConverter(object):
             return self._process_line_in_log(dest_f, line_num, text)
 
     def _process_line_normal_code(self, dest_f, line_num, text):
-        """ Process a line where the status is normal code
+        """
+        Process a line where the status is normal code.
 
         :param dest_f: Open file like Object to write modified source to
         :param int line_num: Line number in the source c file
@@ -321,7 +334,8 @@ class FileConverter(object):
         return self._process_line_in_log(dest_f, line_num, text[start_len:])
 
     def quote_part(self, text):
-        """ Net count of double quotes in line.
+        """
+        Net count of double quotes in line.
 
         :param str text:
         :rtype: int
@@ -329,7 +343,8 @@ class FileConverter(object):
         return (text.count('"') - text.count('\\"')) % 2 > 0
 
     def bracket_count(self, text):
-        """ Net count of open brackets in line.
+        """
+        Net count of open brackets in line.
 
         :param str text:
         :rtype: int
@@ -337,7 +352,8 @@ class FileConverter(object):
         return (text.count('(') - text.count(')'))
 
     def split_by_comma_plus(self, main, line_num):
-        """ split line by comma and partially parse
+        """
+        Split line by comma and partially parse.
 
         :param str main:
         :param int line_num:
@@ -388,7 +404,8 @@ class FileConverter(object):
                                        f"at {line_num} in {self._src}") from e
 
     def _short_log(self, line_num):
-        """ shortens the log string message and adds the id
+        """
+        Shortens the log string message and adds the ID.
 
         :param int line_num: Current line number
         :return: shorten form
@@ -409,7 +426,7 @@ class FileConverter(object):
         count = original.count("%") - original.count("%%") * 2
 
         if count == 0:
-            return '"%u", {});'.format(message_id)
+            return f'"%u", {message_id});'
 
         front = '"%u'
         back = ""
@@ -430,20 +447,21 @@ class FileConverter(object):
             front += TOKEN
             if match.endswith("f"):
                 front += "%x"
-                back += ", float_to_int({})".format(parts[i + 1])
+                back += f", float_to_int({parts[i + 1]})"
             elif match.endswith("F"):
                 front += "%x" + TOKEN + "%x"
                 back += DOUBLE_HEX.format(parts[i + 1])
             else:
-                back += ", {}".format(parts[i + 1])
+                back += f", {parts[i + 1]}"
                 front += match
 
-        front += '", {}'.format(message_id)
+        front += f'", {message_id}'
         back += ");"
         return front + back
 
     def _write_log_method(self, dest_f, line_num, tail=""):
-        """ Writes the log message and the dict value
+        """
+        Writes the log message and the dict value.
 
         Writes the log call to the destination
         - New log method used
@@ -452,7 +470,7 @@ class FileConverter(object):
         - Old log message with full text added as comment
 
         :param dest_f: Open file like Object to write modified source to
-        :param int line_num: Line number in the source c file
+        :param int line_num: Line number in the source C file
         :param str text: Text of that line including whitespace
         """
         self._log_full = self._log_full.replace('""', '')
@@ -482,7 +500,8 @@ class FileConverter(object):
             dest_f.write(end * (self._log_lines - 1))
 
     def _process_chars(self, dest_f, line_num, text):
-        """ Deals with complex lines that can not be handled in one go
+        """
+        Deals with complex lines that can not be handled in one go.
 
         :param dest_f: Open file like Object to write modified source to
         :param int line_num: Line number in the source c file
@@ -611,10 +630,14 @@ class FileConverter(object):
 
     @staticmethod
     def convert(src_dir, dest_dir, file_name):
-        """ Static method to create Object and do the conversion
+        """
+        Static method to create Object and do the conversion.
 
-        :param str src: Source file
-        :param str dest: Destination file
+        :param str src_dir: Source directory
+        :param str dest_dir: Destination directory
+        :param str file_name:
+            The name of the file to convert within the source directory; it
+            will be made with the same name in the destination directory.
         """
         source = os.path.join(src_dir, file_name)
         if not os.path.exists(source):

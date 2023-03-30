@@ -28,7 +28,8 @@ logger = FormatAdapter(logging.getLogger(__name__))
 
 
 class ProgressBar(object):
-    """ Progress bar for telling the user where a task is up to
+    """
+    Progress bar for telling the user where a task is up to.
     """
     MAX_LENGTH_IN_CHARS = 60
 
@@ -68,12 +69,11 @@ class ProgressBar(object):
             string_describing_what_being_progressed)
 
     def update(self, amount_to_add=1):
-        """ Update the progress bar by a given amount
+        """
+        Update the progress bar by a given amount.
 
         :param amount_to_add:
-        :rtype: None
         """
-
         if self._currently_completed + amount_to_add > self._number_of_things:
             logger_utils.error_once(logger, self.TOO_MANY_ERROR)
             return
@@ -151,9 +151,8 @@ class ProgressBar(object):
         self._chars_done = expected_chars_done
 
     def end(self):
-        """ Close the progress bar, updating whatever is left if needed
-
-        :rtype: None
+        """
+        Close the progress bar, updating whatever is left if needed.
         """
         difference = self._number_of_things - self._currently_completed
         self._currently_completed += difference
@@ -161,10 +160,11 @@ class ProgressBar(object):
         self._print_progress_done()
 
     def __repr__(self):
-        return "<ProgressBar:{}>".format(self._string)
+        return f"<ProgressBar:{self._string}>"
 
     def __enter__(self):
-        """ Support method to use the progress bar as a context manager::
+        """
+        Support method to use the progress bar as a context manager::
 
             with ProgressBar(...) as p:
                 ...
@@ -189,16 +189,18 @@ class ProgressBar(object):
         return False
 
     def over(self, collection, finish_at_end=True):
-        """ Simple wrapper for the cases where the progress bar is being used\
-            to show progress through the iteration over a single collection.\
-            The progress bar should have been initialised to the size of the\
-            collection being iterated over.
+        """
+        Simple wrapper for the cases where the progress bar is being used
+        to show progress through the iteration over a single collection.
+        The progress bar should have been initialised to the size of the
+        collection being iterated over.
 
-        :param collection:
+        :param ~collections.abc.Iterable collection:
             The base collection (any iterable) being iterated over
         :param bool finish_at_end:
             Flag to say if the bar should finish at the end of the collection
         :return: An iterable. Expected to be directly used in a for.
+        :rtype: ~collections.abc.Iterable
         """
         try:
             for item in collection:
@@ -220,7 +222,8 @@ class ProgressBar(object):
 
 
 class _EnhancedProgressBar(ProgressBar):
-    """ Nothing to see here.
+    """
+    Nothing to see here.
     """
 
     _line_no = 0
@@ -308,9 +311,10 @@ _EnhancedProgressBar.init_once()
 
 
 class DummyProgressBar(ProgressBar):
-    """ This is a dummy version of the progress bar that just stubs out the\
-        internal printing operations with code that does nothing. It otherwise\
-        fails in exactly the same way.
+    """
+    This is a dummy version of the progress bar that just stubs out the
+    internal printing operations with code that does nothing. It otherwise
+    fails in exactly the same way.
     """
     @overrides(ProgressBar._print_overwritten_line)
     def _print_overwritten_line(self, string):
@@ -329,7 +333,7 @@ class DummyProgressBar(ProgressBar):
         pass
 
     def __repr__(self):
-        return "<DummyProgressBar:{}>".format(self._string)
+        return f"<DummyProgressBar:{self._string}>"
 
 
 if __name__ == "__main__":  # pragma: no cover

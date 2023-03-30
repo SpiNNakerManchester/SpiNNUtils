@@ -22,14 +22,15 @@ class _SliceView(AbstractView):
         "_start", "_stop"]
 
     def __init__(self, range_dict, start, stop):
-        """ Use :py:meth:`RangeDictionary.view_factory` to create views
+        """
+        Use :py:meth:`RangeDictionary.view_factory` to create views
         """
         super().__init__(range_dict)
         self._start = start
         self._stop = stop
 
     def __str__(self):
-        return "View with range: {} to {}".format(self._start, self._stop)
+        return f"View with range: {self._start} to {self._stop}"
 
     @overrides(AbstractDict.ids)
     def ids(self):

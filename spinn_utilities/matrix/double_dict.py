@@ -30,7 +30,7 @@ class DoubleDict(object):
             return XView(x=key, matrix=self._matrix)
         if isinstance(key, self._ytype):
             return YView(y=key, matrix=self._matrix)
-        raise KeyError("Key {} has an unexpected type".format(key))
+        raise KeyError(f"Key {key} has an unexpected type")
 
     def __setitem__(self, key, value):
         try:
@@ -38,20 +38,18 @@ class DoubleDict(object):
                 correct = all(isinstance(y, self._ytype) for y in value.keys())
                 if not correct:
                     raise ValueError(
-                        "All keys in the value must be of type {}".format(
-                            self._ytype))
+                        f"All keys in the value must be of type {self._ytype}")
                 for y in value.keys():
                     self._matrix.set_data(x=key, y=y, value=value[y])
             elif isinstance(key, self._ytype):
                 correct = all(isinstance(x, self._xtype) for x in value.keys())
                 if not correct:
                     raise ValueError(
-                        "All keys in the value must be of type {}".format(
-                            self._xtype))
+                        f"All keys in the value must be of type {self._xtype}")
                 for x in value.keys():
                     self._matrix.set_data(x=x, y=key, value=value[x])
             else:
-                raise KeyError("Key {} has an unexpected type".format(key))
+                raise KeyError(f"Key {key} has an unexpected type")
         except AttributeError as e:
             raise ValueError("Value must of type dict. Or at least "
                              "implement keys() and __getitem__") from e

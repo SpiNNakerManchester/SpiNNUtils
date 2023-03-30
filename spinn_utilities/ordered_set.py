@@ -79,7 +79,8 @@ class OrderedSet(MutableSet):
         return set(self) == set(other)
 
     def __ne__(self, other):
-        """ Comparison method for comparing ordered sets
+        """
+        Comparison method for comparing ordered sets.
 
         :param other: instance of OrderedSet
         :rtype: None

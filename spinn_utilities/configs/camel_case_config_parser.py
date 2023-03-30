@@ -24,8 +24,9 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
     __slots__ = ["_read_files"]
 
     def optionxform(self, optionstr):
-        """ Transforms the name of an option to lower case and strips\
-            underscores, so matching is more user-friendly.
+        """
+        Transforms the name of an option to lower case and strips
+        underscores, so matching is more user-friendly.
         """
         lower = optionstr.lower()
         return lower.replace("_", "")
@@ -35,7 +36,8 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         self._read_files = list()
 
     def read(self, filenames, encoding=None):
-        """ Read and parse a filename or a list of filenames.
+        """
+        Read and parse a filename or a list of filenames.
         """
         new_files = super().read(filenames, encoding)
         self._read_files.extend(new_files)
@@ -43,17 +45,17 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
 
     @property
     def read_files(self):
-        """ The configuration files that have been actually read.
+        """
+        The configuration files that have been actually read.
         """
         return self._read_files
 
     def get_str(self, section, option):
-        """ Get the string value of an option.
+        """
+        Get the string value of an option.
 
-        :param section: What section to get the option from.
-        :type section: str
-        :param option: What option to read.
-        :type option: str
+        :param str section: What section to get the option from.
+        :param str option: What option to read.
         :return: The option value
         :rtype: str or None
         """
@@ -63,7 +65,8 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return value
 
     def get_str_list(self, section, option, token=","):
-        """ Get the string value of an option split into a list
+        """
+        Get the string value of an option split into a list.
 
         :param str section: What section to get the option from.
         :param str option: What option to read.
@@ -80,12 +83,11 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return list(map(lambda x: x.strip(), as_list))
 
     def get_int(self, section, option):
-        """ Get the integer value of an option.
+        """
+        Get the integer value of an option.
 
-        :param section: What section to get the option from.
-        :type section: str
-        :param option: What option to read.
-        :type option: str
+        :param str section: What section to get the option from.
+        :param str option: What option to read.
         :return: The option value
         :rtype: int
         """
@@ -95,12 +97,11 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return int(value)
 
     def get_float(self, section, option):
-        """ Get the float value of an option.
+        """
+        Get the float value of an option.
 
-        :param section: What section to get the option from.
-        :type section: str
-        :param option: What option to read.
-        :type option: str
+        :param str section: What section to get the option from.
+        :param str option: What option to read.
         :return: The option value.
         :rtype: float
         """
@@ -110,12 +111,11 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return float(value)
 
     def get_bool(self, section, option):
-        """ Get the boolean value of an option.
+        """
+        Get the boolean value of an option.
 
-        :param section: What section to get the option from.
-        :type section: str
-        :param option: What option to read.
-        :type option: str
+        :param str section: What section to get the option from.
+        :param str option: What option to read.
         :return: The option value.
         :rtype: bool
         """

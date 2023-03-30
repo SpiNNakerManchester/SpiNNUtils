@@ -17,9 +17,9 @@ from enum import Enum
 
 class ResetStatus(Enum):
     """
-    Different states the reset could be in
+    Different states the reset could be in.
 
-    This class is design to used internally by UtilsDataView
+    This class is design to used internally by UtilsDataView.
     """
     NOT_SETUP = (0)
     SETUP = (1)

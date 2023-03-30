@@ -19,7 +19,7 @@ class MultipleValuesException(Exception):
         if key is None:
             msg = "Multiple values found"
         else:
-            msg = "Multiple values found for key {}".format(key)
+            msg = f"Multiple values found for key {key}"
         if value1 is not None and value2 is not None:
-            msg += " values found include {} and {}".format(value1, value2)
+            msg += f" values found include {value1} and {value2}"
         super().__init__(msg)

@@ -16,7 +16,8 @@ from spinn_utilities.config_holder import get_config_int, get_config_str
 
 
 class SocketAddress(object):
-    """ Data holder for a socket interface for notification protocol.
+    """
+    Data holder for a socket interface for notification protocol.
     """
     __slots__ = [
         "_listen_port",
@@ -59,19 +60,22 @@ class SocketAddress(object):
 
     @property
     def notify_host_name(self):
-        """ The notify host name
+        """
+        The host name or IP address to send a notification message to.
         """
         return self._notify_host_name
 
     @property
     def notify_port_no(self):
-        """ The notify port no
+        """
+        The UDP port number to send a notification message to.
         """
         return self._notify_port_no
 
     @property
     def listen_port(self):
-        """ The port to listen to for responses
+        """
+        The port to listen to for responses.
         """
         return self._listen_port
 

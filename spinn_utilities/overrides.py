@@ -16,10 +16,11 @@ import inspect
 
 
 class overrides(object):
-    """ A decorator for indicating that a method overrides another method in\
-        a superclass.  This checks that the method does actually exist,\
-        copies the doc-string for the method, and enforces that the method\
-        overridden is specified, making maintenance easier.
+    """
+    A decorator for indicating that a method overrides another method in
+    a superclass.  This checks that the method does actually exist,
+    copies the doc-string for the method, and enforces that the method
+    overridden is specified, making maintenance easier.
     """
 
     __slots__ = [
@@ -75,7 +76,9 @@ class overrides(object):
         return len(default_args) == len(super_defaults)
 
     def __verify_method_arguments(self, method):
-        """ Check that the arguments match. """
+        """
+        Check that the arguments match.
+        """
         method_args = inspect.getfullargspec(method)
         super_args = inspect.getfullargspec(self._superclass_method)
         all_args = [
@@ -88,40 +91,34 @@ class overrides(object):
                 if arg not in self._additional_arguments]
         if len(all_args) != len(super_args.args):
             raise AttributeError(
-                "Method has {} arguments but {} has {}"
-                " arguments".format(
-                    len(method_args.args), self._override_name,
-                    len(super_args.args)))
+                f"Method has {len(method_args.args)} arguments but "
+                f"{self._override_name} has {len(super_args.args)} arguments")
         for arg, super_arg in zip(all_args, super_args.args):
             if arg != super_arg:
-                raise AttributeError(
-                    "Missing argument {}".format(super_arg))
+                raise AttributeError(f"Missing argument {super_arg}")
         if not self.__match_defaults(
                 default_args, super_args.defaults, self._extend_defaults):
             raise AttributeError(
-                "Default arguments don't match {}".format(
-                    self._override_name))
+                f"Default arguments don't match {self._override_name}")
 
     def __call__(self, method):
-        """ Apply the decorator to the given method.
         """
-
+        Apply the decorator to the given method.
+        """
         # Check and fail if this is a property
         if isinstance(method, property):
             raise AttributeError(
-                "Please ensure that the {} decorator is the last"
-                " decorator before the method declaration".format(
-                    self.__class__.__name__))
+                f"Please ensure that the {self.__class__.__name__} decorator "
+                "is the last decorator before the method declaration")
 
         # Check that the name matches
         if (not self._relax_name_check and
                 method.__name__ != self._superclass_method.__name__):
             raise AttributeError(
-                "{} name {} does not match {}. "
-                "Ensure {} is the last decorator before the method "
-                "declaration".format(
-                    self._override_name, self._superclass_method.__name__,
-                    method.__name__, self.__class__.__name__))
+                f"{self._override_name} name "
+                f"{self._superclass_method.__name__} does not match "
+                f"{method.__name__}. Ensure {self.__class__.__name__} is the "
+                "last decorator before the method declaration")
 
         # Check that the arguments match (except for __init__ as this might
         # take extra arguments or pass arguments not specified)

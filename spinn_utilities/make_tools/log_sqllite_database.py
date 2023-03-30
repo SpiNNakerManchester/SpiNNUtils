@@ -16,6 +16,7 @@ import os
 import sqlite3
 import sys
 import time
+from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
 _SECONDS_TO_MICRO_SECONDS_CONVERSION = 1000
@@ -26,11 +27,12 @@ def _timestamp():
     return int(time.time() * _SECONDS_TO_MICRO_SECONDS_CONVERSION)
 
 
-class LogSqlLiteDatabase(object):
-    """ Specific implementation of the Database for SQLite 3.
+class LogSqlLiteDatabase(AbstractContextManager):
+    """
+    Specific implementation of the Database for SQLite 3.
 
     .. note::
-        NOT THREAD SAFE ON THE SAME DB.
+        **Not thread-safe on the same database.**
         Threads can access different DBs just fine.
 
     .. note::
@@ -45,12 +47,12 @@ class LogSqlLiteDatabase(object):
 
     def __init__(self, new_dict=False):
         """
-        Connects to a log dict.
+        Connects to a log dict. The location of the file can be overridden
+        using the ``C_LOGS_DICT`` environment variable.
 
-        :param bool new_dict: Flag to say if this is a new dict or not
-            if True clears and previous values.
-            If False makes sure the dict exists.
-
+        :param bool new_dict: Flag to say if this is a new dict or not.
+            If True, clears and previous values.
+            If False, makes sure the dict exists.
         """
         # To Avoid an Attribute error on close after an exception
         self._db = None
@@ -63,9 +65,9 @@ class LogSqlLiteDatabase(object):
         if not new_dict and not os.path.exists(database_file):
             message = f"Unable to locate c_logs_dict at {database_file}. "
             if 'C_LOGS_DICT' in os.environ:
-                message += "This came from the environment variable "
-                message += "'C_LOGS_DICT "
-            message += "Please rebuild the c code."
+                message += (
+                    "This came from the environment variable 'C_LOGS_DICT'. ")
+            message += "Please rebuild the C code."
             raise FileNotFoundError(message)
 
         try:
@@ -76,37 +78,24 @@ class LogSqlLiteDatabase(object):
         except Exception as ex:
             message = f"Error accessing c_logs_dict at {database_file}. "
             if 'C_LOGS_DICT' in os.environ:
-                message += "This came from the environment variable " \
-                           "'C_LOGS_DICT' "
+                message += (
+                    "This came from the environment variable 'C_LOGS_DICT'. ")
             else:
-                message += "This is the default location. Set environment " \
-                           "variable 'C_LOGS_DICT' to use somewhere else."
+                message += (
+                    "This is the default location. Set environment "
+                    "variable 'C_LOGS_DICT' to use somewhere else.")
             if new_dict:
-                message += "Check this is a location with write access. "
+                message += "Check this is a location with write access."
             else:
-                message += "Please rebuild the c code."
+                message += "Please rebuild the C code."
             raise FileNotFoundError(message) from ex
 
     def __del__(self):
         self.close()
 
-    def __enter__(self):
-        """ Start method is use in a ``with`` statement
-        """
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """ End method if used in a ``with`` statement.
-
-        :param exc_type:
-        :param exc_val:
-        :param exc_tb:
-        :return:
-        """
-        self.close()
-
     def close(self):
-        """ Finalises and closes the database.
+        """
+        Finalises and closes the database.
         """
         try:
             if self._db is not None:
@@ -116,7 +105,8 @@ class LogSqlLiteDatabase(object):
         self._db = None
 
     def __init_db(self):
-        """ Set up the database if required.
+        """
+        Set up the database if required.
         """
         self._db.row_factory = sqlite3.Row
         # Don't use memoryview / buffer as hard to deal with difference

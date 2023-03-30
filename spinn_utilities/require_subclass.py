@@ -23,8 +23,15 @@ class _RequiresSubclassTypeError(TypeError):
 
 
 def require_subclass(required_class):
-    """ Decorator that arranges for subclasses of the decorated class to\
-        require that they are also subclasses of the given class.
+    """
+    Decorator that arranges for subclasses of the decorated class to
+    require that they are also subclasses of the given class.
+
+    Usage example::
+
+        @require_subclass(AbstractVertex)
+        class AbstractVirtual(object):
+            ...
 
     :param type required_class:
         The class that the subclass of the decorated class must be an instance

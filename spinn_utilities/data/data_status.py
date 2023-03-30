@@ -37,9 +37,9 @@ class DataStatus(Enum):
 
     def exception(self, data):
         """
-        Returns the most suitable data not available exception
+        Returns an instance of the most suitable data-not-available exception.
 
-        :param data:
-        :rtype: ~pinn_utilities.exceptions.SpiNNUtilsException
+        :param data: Parameter to pass to the relevant constructor.
+        :rtype: ~spinn_utilities.exceptions.SpiNNUtilsException
         """
         return self._exception(data)

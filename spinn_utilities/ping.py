@@ -52,7 +52,11 @@ class Ping(object):
     @staticmethod
     def host_is_reachable(ipaddr):
         """
-        Test if a host is unreachable via ICMP ECHO. Note that this caches.
+        Test if a host is unreachable via ICMP ECHO.
+
+        .. note::
+            This information may be cached in various ways. Transient failures
+            are not necessarily detected or recovered from.
 
         :param str ipaddr:
             The IP address to ping. Hostnames can be used, but are not

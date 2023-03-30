@@ -16,23 +16,27 @@ from .abstract_base import AbstractBase, abstractmethod
 
 
 class AbstractContextManager(object, metaclass=AbstractBase):
-    """ Closeable class that supports being used as a simple context manager.
+    """
+    Closeable class that supports being used as a simple context manager.
     """
 
     __slots__ = []
 
     @abstractmethod
     def close(self):
-        """ How to actually close the underlying resources.
+        """
+        How to actually close the underlying resources.
         """
 
     def _context_entered(self):
-        """ Called when the context is entered. The result is ignored.
+        """
+        Called when the context is entered. The result is ignored.
         """
 
     def _context_exception_occurred(self, exc_type, exc_val, exc_tb):
-        """ Called when an exception occurs during the `with` context, *after*\
-            the context has been closed.
+        """
+        Called when an exception occurs during the `with` context, *after*
+        the context has been closed.
 
         :param type exc_type:
         :param object exc_val:

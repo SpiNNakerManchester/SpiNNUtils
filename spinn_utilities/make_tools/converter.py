@@ -17,13 +17,16 @@ import sys
 from .file_converter import FileConverter
 from .log_sqllite_database import LogSqlLiteDatabase
 
-SKIPPABLE_FILES = ["common.mk", "Makefile.common",
-                   "paths.mk", "Makefile.paths",
-                   "neural_build.mk", "Makefile.neural_build"]
+ALLOWED_EXTENSIONS = frozenset([".c", ".cpp", ".h"])
+SKIPPABLE_FILES = frozenset([
+    "common.mk", "Makefile.common",
+    "paths.mk", "Makefile.paths",
+    "neural_build.mk", "Makefile.neural_build"])
 
 
 def convert(src, dest, new_dict):
-    """ Converts a whole directory including sub directories
+    """
+    Converts a whole directory including sub directories.
 
     :param str src: Full source directory
     :param str dest: Full destination directory
@@ -37,35 +40,39 @@ def convert(src, dest, new_dict):
         raise FileNotFoundError(
             f"Unable to locate source directory {src_path}")
     dest_path = os.path.abspath(dest)
-    __convert_dir(src_path, dest_path)
+    _convert_dir(src_path, dest_path)
 
 
-def __convert_dir(src_path, dest_path):
-    """ Converts a whole directory including sub directories
+def _convert_dir(src_path, dest_path, make_directories=False):
+    """
+    Converts a whole directory including sub directories.
 
     :param str src_path: Full source directory
     :param str dest_path: Full destination directory
+    :param bool make_directories: Whether to do mkdir first
     """
-#    __mkdir(dest_path)
+    if make_directories:
+        _mkdir(dest_path)
     for src_dir, _, file_list in os.walk(src_path):
         dest_dir = os.path.join(dest_path, os.path.relpath(src_dir, src_path))
-#        __mkdir(dest_dir)
+        if make_directories:
+            _mkdir(dest_dir)
         for file_name in file_list:
             _, extension = os.path.splitext(file_name)
-            if extension in [".c", ".cpp", ".h"]:
+            if extension in ALLOWED_EXTENSIONS:
                 FileConverter.convert(src_dir, dest_dir, file_name)
             elif file_name in SKIPPABLE_FILES:
                 pass
             else:
                 source = os.path.join(src_dir, file_name)
-                print("Unexpected file {}".format(source))
+                print(f"Unexpected file {source}")
 
 
-def __mkdir(destination):
+def _mkdir(destination):
     if not os.path.exists(destination):
         os.mkdir(destination)
     if not os.path.exists(destination):
-        raise FileNotFoundError("mkdir failed {}".format(destination))
+        raise FileNotFoundError(f"mkdir failed {destination}")
 
 
 if __name__ == '__main__':

@@ -20,7 +20,8 @@ from .multiple_values_exception import MultipleValuesException
 
 
 def function_iterator(function, size, ids=None):
-    """ Converts a function into an iterator based on size or IDs.\
+    """
+    Converts a function into an iterator based on size or IDs.
     This so that the function can be used to create a list as in::
 
         list(function_iterator(lambda x: x * 2 , 3, ids=[2, 4, 6]))
@@ -42,8 +43,9 @@ def function_iterator(function, size, ids=None):
 
 
 class RangedList(AbstractList):
-    """ A list that is able to efficiently hold large numbers of elements\
-        that all have the same value.
+    """
+    A list that is able to efficiently hold large numbers of elements
+    that all have the same value.
     """
     __slots__ = [
         "_default", "_ranged_based", "_ranges"]
@@ -152,7 +154,8 @@ class RangedList(AbstractList):
         return result
 
     def __iter__(self):
-        """ Fast but *not* update-safe iterator of all elements.
+        """
+        Fast but *not* update-safe iterator of all elements.
 
         .. note::
             Duplicate/Repeated elements are yielded for each ID.
@@ -239,8 +242,8 @@ class RangedList(AbstractList):
         else:
             previous_value = self._ranges[slice_start]
             previous_start = slice_start
-            for index, value in \
-                    enumerate(self._ranges[slice_start: slice_stop]):
+            for index, value in enumerate(
+                    self._ranges[slice_start: slice_stop]):
                 if not numpy.array_equal(value, previous_value):
                     # Index is one ahead so no need for a + 1 here
                     yield (previous_start, slice_start + index, previous_value)
@@ -251,13 +254,15 @@ class RangedList(AbstractList):
     # pylint: disable=unused-argument
     @staticmethod
     def is_list(value, size):  # @UnusedVariable
-        """ Determines if the value should be treated as a list.
+        """
+        Determines if the value should be treated as a list.
 
         .. note::
             This method can be extended to add other checks for list in which
             case :py:meth:`as_list` must also be extended.
-        """
 
+        :param value: The value to examine.
+        """
         # Assume any iterable is a list
         if callable(value):
             return True
@@ -265,8 +270,9 @@ class RangedList(AbstractList):
 
     @staticmethod
     def as_list(value, size, ids=None):
-        """ Converts (if required) the value into a list of a given size. \
-            An exception is raised if value cannot be given size elements.
+        """
+        Converts (if required) the value into a list of a given size.
+        An exception is raised if value cannot be given size elements.
 
         .. note::
             This method can be extended to add other conversions to list in
@@ -286,7 +292,8 @@ class RangedList(AbstractList):
         return values
 
     def set_value(self, value, use_list_as_value=False):
-        """ Sets *all* elements in the list to this value.
+        """
+        Sets *all* elements in the list to this value.
 
         .. note::
             Does not change the default.
@@ -308,7 +315,8 @@ class RangedList(AbstractList):
             self._ranged_based = True
 
     def set_value_by_id(self, the_id, value):
-        """ Sets the value for a single ID to the new value.
+        """
+        Sets the value for a single ID to the new value.
 
         .. note::
             This method only works for a single positive int ID.
@@ -372,7 +380,8 @@ class RangedList(AbstractList):
 
     def set_value_by_slice(
             self, slice_start, slice_stop, value, use_list_as_value=False):
-        """ Sets the value for a single range to the new value.
+        """
+        Sets the value for a single range to the new value.
 
         .. note::
             This method only works for a single positive range.
@@ -469,7 +478,8 @@ class RangedList(AbstractList):
                 self.set_value_by_id(id_value, value)
 
     def set_value_by_selector(self, selector, value, use_list_as_value=False):
-        """ Support for the ``list[x] =`` format.
+        """
+        Support for the ``list[x] =`` format.
 
         :param selector: A single ID, a slice of IDs or a list of IDs
         :type selector: int or slice or list(int)
@@ -493,7 +503,8 @@ class RangedList(AbstractList):
     __setitem__ = set_value_by_selector
 
     def get_ranges(self):
-        """ Returns a copy of the list of ranges.
+        """
+        Returns a copy of the list of ranges.
 
         .. note::
             As this is a copy it will not reflect any updates.
@@ -505,7 +516,8 @@ class RangedList(AbstractList):
         return list(self.iter_ranges())
 
     def set_default(self, default):
-        """ Sets the default value.
+        """
+        Sets the default value.
 
         .. note::
             Does not change the value of any element in the list.
@@ -516,7 +528,8 @@ class RangedList(AbstractList):
 
     @overrides(AbstractList.get_default, extend_doc=False)
     def get_default(self):
-        """ Returns the default value for this list.
+        """
+        Returns the default value for this list.
 
         :return: Default Value
         :rtype: object
@@ -528,7 +541,7 @@ class RangedList(AbstractList):
 
     def copy_into(self, other):
         """
-        Turns this List into a of the other list but keep its id
+        Turns this List into a of the other list but keep its ID.
 
         Depth is just enough so that any changes done through the RangedList
         API on other will not change self

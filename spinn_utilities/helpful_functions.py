@@ -23,13 +23,14 @@ FINISHED_FILENAME = "finished"
 
 
 def is_singleton(value):
-    """ Tests whether the value is a singleton.
+    """
+    Tests whether the value is a singleton.
 
-        Singleton types are strings and any other class that can not be
-        iterated.
+    Singleton types are strings and any other class that can not be
+    iterated.
 
-        Strings are considered singleton as rarely will someone use a String
-        to represent an iterable of characters
+    Strings are considered singleton as only rarely will someone use a string
+    to represent an iterable of characters.
     """
     return not hasattr(value, '__iter__') or isinstance(value, str)
 

@@ -22,13 +22,14 @@ class _SingleView(AbstractView):
         "_id"]
 
     def __init__(self, range_dict, the_id):
-        """ Use :py:meth:`RangeDictionary.view_factory` to create views
+        """
+        Use :py:meth:`RangeDictionary.view_factory` to create views
         """
         super().__init__(range_dict)
         self._id = the_id
 
     def __str__(self):
-        return "View with ID: {}".format(self._id)
+        return f"View with ID: {self._id}"
 
     @overrides(AbstractDict.ids)
     def ids(self):

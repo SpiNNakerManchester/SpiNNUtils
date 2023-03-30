@@ -14,10 +14,11 @@
 
 
 class YView(object):
-    """ A view along a particular y-slice of a 2D matrix.
     """
-    __slots__ = [
-        "_matrix", "_y"]
+    A view along a particular y-slice of a 2D matrix.
+    """
+    __slots__ = (
+        "_matrix", "_y")
 
     def __init__(self, y, matrix):
         self._y = y

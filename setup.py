@@ -12,6 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import distutils.dir_util
+
 from setuptools import setup
+import os
+import sys
 if __name__ == '__main__':
+    if len(sys.argv) > 0 and sys.argv[1] == 'egg_info':
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        build_dir = os.path.join(this_dir, "build")
+        if os.path.isdir(build_dir):
+            distutils.dir_util.remove_tree(build_dir)
+        egg_dir = os.path.join(this_dir, "SpiNNUtilities.egg-info")
+        if os.path.isdir(egg_dir):
+            distutils.dir_util.remove_tree(egg_dir)
+    print(sys.argv)
     setup()

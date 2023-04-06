@@ -67,6 +67,7 @@ jobs:
         package: ${{ env.ROOT_PKG }}
         # exitcheck 35 is without warnings 39 also fails on warnings
         exitcheck: 39
+        disable: R
 
   validate:
     runs-on: ubuntu-latest

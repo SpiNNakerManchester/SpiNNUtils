@@ -21,7 +21,7 @@ def find_max_success(max_possible, check):
     :type max_possible: int
     :param check: A boolean function that given an int value returns
         True for every value up and including the cut-off and
-        False for every value greater than the cutoff
+        False for every value greater than the cut-off
     :type check: ~typing.Callable[[int], bool]
     :return: The highest value that returns true for the check
         but is not more than the max_possible

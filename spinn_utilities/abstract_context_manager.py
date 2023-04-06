@@ -18,8 +18,6 @@ from .abstract_base import AbstractBase, abstractmethod
 class AbstractContextManager(object, metaclass=AbstractBase):
     """
     Closable class that supports being used as a simple context manager.
-
-    Deluberate speelign erorr.
     """
 
     __slots__ = []

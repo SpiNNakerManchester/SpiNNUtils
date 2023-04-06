@@ -19,6 +19,7 @@ sPyNNaker
 CFF
 Zenodo
 DBs
+LCM
 
 # Sphinx keyword
 py
@@ -51,6 +52,8 @@ abstractmethod
 abstractproperty
 classmethod
 classproperty
+getx
+setx
 
 # Python packages
 math
@@ -59,6 +62,7 @@ configparser
 numpy
 testfixtures
 abc
+zipfile
 
 # Misc
 haha
@@ -67,3 +71,10 @@ whitespace
 ids
 submessage
 subclassed
+src
+dest
+msg
+spynnaker
+cfg
+X'th
+etc

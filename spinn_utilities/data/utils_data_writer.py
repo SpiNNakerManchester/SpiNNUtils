@@ -41,19 +41,20 @@ class UtilsDataWriter(UtilsDataView):
     Creating a new instant of the Writer will clear out any data added by the
     previous instance.
 
-    Unittest can create a writer by doing `...Writer.mock()` or
-    `Writer.setup()`
-    The mock method adds some default data such as directories and
-    a Virtual 8 * 8 Machine, as well as allowing some backdoor methods.
-    `...Writer.mock()` is the recommended one for unit tests
+    Unit tests can create a writer by doing `...Writer.mock()` or
+    `Writer.setup()`.
+    The `mock` method adds some default data such as directories and
+    a Virtual 8 * 8 Machine, as well as allowing some back-door methods.
+    `...Writer.mock()` is the recommended one for unit tests;
     `setup()` is more like what ASB does and allows for state changes such as
-    `writer.start_running`
+    `writer.start_running`.
 
     ASB `__init__()` (or it subclasses) will create a new writer
-    so a call to `sim.setup` will clear all previously held data
+    so a call to `sim.setup` will clear all previously held data.
 
-    As the Writers are not designed for general usage the methods can change
-    without notice.
+    .. warning::
+        As the Writers are not designed for general usage the methods can
+        change without notice.
     """
     __data = _UtilsDataModel()
     __slots__ = []
@@ -107,7 +108,7 @@ class UtilsDataWriter(UtilsDataView):
 
     def _mock(self):
         """
-        This method should only be called by mock (via init).
+        This method should only be called by `mock` (via `__init__`).
         """
         self.__data._clear()
         self.__data._data_status = DataStatus.MOCKED
@@ -116,7 +117,7 @@ class UtilsDataWriter(UtilsDataView):
 
     def _setup(self):
         """
-        This method should only be called by setup (via init).
+        This method should only be called by `setup` (via `__init__`).
         """
         self.__data._clear()
         self.__data._data_status = DataStatus.SETUP

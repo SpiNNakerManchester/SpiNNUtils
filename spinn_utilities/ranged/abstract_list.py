@@ -27,7 +27,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
     Functions that change the size of the list are *not* supported.
     These include::
 
-        `__setitem__` where key >= len
+        `__setitem__` where `key` >= `len`
         `__delitem__`
         `append`
         `extend`

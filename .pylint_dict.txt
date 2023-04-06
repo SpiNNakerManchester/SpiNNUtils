@@ -18,8 +18,10 @@ ASB
 sPyNNaker
 CFF
 Zenodo
+DBs
 
 # Sphinx keyword
+py
 rtype
 
 # Python types
@@ -33,6 +35,8 @@ traceback
 timedelta
 RawConfigParser
 AbstractBase
+LogCapture
+ZipFile
 
 # Python pseudo-types
 iterable
@@ -54,8 +58,12 @@ datetime
 configparser
 numpy
 testfixtures
+abc
 
 # Misc
 haha
 stdin
 whitespace
+ids
+submessage
+subclassed

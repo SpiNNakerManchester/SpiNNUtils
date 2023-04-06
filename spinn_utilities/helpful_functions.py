@@ -43,15 +43,15 @@ def lcm(*numbers):
     """
     Lowest common multiple of 0, 1 or more integers.
 
-    GIGO: If any of the values are anything except positive int values
+    GIGO: If any of the values are anything except positive `int` values
     this function will either produce incorrect results or raise an exception.
 
-    :param numbers: The Positive integers to get the lcm for.
+    :param numbers: The Positive integers to get the LCM for.
         This can be zero, one or more int values or
-        a singleton which is an iterator (possibly empty) of ints.
-    :return: the lcm or 1 if numbers is empty or an empty iterator
+        a singleton which is an iterator (possibly empty) of `int`\\s.
+    :return: the LCM, or 1 if `numbers` is empty or an empty iterator
     :rtype: int
-    :raises TypeError: If any value can not be interpreted as an Integer
+    :raises TypeError: If any value cannot be interpreted as an integer
     :raises ZeroDivisionError: May be raised if one of the values is zero
     """
     if len(numbers) == 1:
@@ -66,15 +66,15 @@ def gcd(*numbers):
     """
     Greatest common divisor of 1 or more integers.
 
-    GIGO: If any of the values are anything except positive int values
+    GIGO: If any of the values are anything except positive `int` values
     this function will either produce incorrect results or raise an exception.
 
-    :param numbers: The Positive integers to get the GCD for.
-        This can be one or more int values or
-        a singleton which is an iterator (not empty) of ints.
-    :return: the gcd or 1 if numbers is empty or an empty iterator
+    :param numbers: The positive integers to get the GCD for.
+        This can be one or more `int` values or
+        a singleton which is an iterator (*not* empty) of `int`\\s.
+    :return: the GCD
     :rtype: int
-    :raises TypeError: If any value can not be interpreted as an Integer or
+    :raises TypeError: If any value cannot be interpreted as an integer or
         if no values are provided
     :raises ZeroDivisionError: May be raised if one of the values is zero
     """

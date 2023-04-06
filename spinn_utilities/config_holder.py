@@ -54,18 +54,18 @@ def clear_cfg_files(unittest_mode):
     __unittest_mode = unittest_mode
 
 
-def set_cfg_files(configfile, default):
+def set_cfg_files(config_file, default):
     """
     Adds the configuration files to be loaded.
 
-    :param str configfile:
+    :param str config_file:
         The base name of the configuration file(s).
         Should not include any path components.
     :param str default:
         Full path to the extra file to get default configurations from.
     """
     global __config_file
-    __config_file = configfile
+    __config_file = config_file
     add_default_cfg(default)
 
 
@@ -349,7 +349,7 @@ def _check_cfg_file(config1, cfg_path):
 
 def _check_cfgs(path):
     """
-    A testing function check local cfg files against the defaults.
+    A testing function check local configuration files against the defaults.
 
     It only checks that the option exists in a default.
     It does not check if the option is used or if the value is the expected

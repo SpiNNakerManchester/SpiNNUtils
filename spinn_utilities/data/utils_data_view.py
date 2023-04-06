@@ -243,7 +243,7 @@ class UtilsDataView(object):
         """
         Checks if the simulation has run and not been reset.
 
-        :rytpe: bool
+        :rtype: bool
         :raises NotImplementedError:
             If this is called from an unexpected state
         """
@@ -267,7 +267,7 @@ class UtilsDataView(object):
 
         It also returns False after a `sim.stop` or `sim.end` call starts
 
-        :rytpe: bool
+        :rtype: bool
         :raises NotImplementedError:
             If this is called from an unexpected state
         """

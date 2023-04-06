@@ -43,7 +43,7 @@ jobs:
     - name: Install enchant
       uses: ./support/actions/apt-get-install
       with:
-        packages: enchant-2 ibritish
+        packages: enchant-2 hunspell hunspell-en-gb
     - name: Install pip, etc.
       uses: ./support/actions/python-tools
     - name: Install pylint spell checker support

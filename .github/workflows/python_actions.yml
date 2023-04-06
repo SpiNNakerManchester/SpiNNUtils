@@ -58,6 +58,7 @@ jobs:
         coverage: ${{ matrix.python-version == 3.8 }}
         cover-packages: ${{ env.ROOT_PKG }}
         coveralls-token: ${{ secrets.GITHUB_TOKEN }}
+        disable: R
 
     - name: Lint with flake8
       run: flake8 $ROOT_PKG unittests

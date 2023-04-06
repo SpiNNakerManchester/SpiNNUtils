@@ -40,8 +40,14 @@ jobs:
       with:
         repository: SpiNNakerManchester/SupportScripts
         path: support
+    - name: Install enchant
+      uses: ./support/actions/apt-get-install
+      with:
+        packages: enchant
     - name: Install pip, etc.
       uses: ./support/actions/python-tools
+    - name: Install pylint spell checker support
+      run: pip install pyenchant
     - name: Setup
       uses: ./support/actions/run-setup
 
@@ -61,17 +67,42 @@ jobs:
         package: ${{ env.ROOT_PKG }}
         # exitcheck 35 is without warnings 39 also fails on warnings
         exitcheck: 39
+
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+    env:
+      ROOT_PKG: spinn_utilities
+      # Tests using ping won't work in Github Actions because of system config
+      SKIP_PING_TESTS: true
+
+    steps:
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Checkout SupportScripts
+      uses: actions/checkout@v3
+      with:
+        repository: SpiNNakerManchester/SupportScripts
+        path: support
+    - name: Install pip, etc.
+      uses: ./support/actions/python-tools
+    - name: Setup
+      uses: ./support/actions/run-setup
+
+    # Actual valiation steps
     - name: Run rat copyright enforcement
-      if: matrix.python-version == 3.8
       uses: ./support/actions/check-copyrights
       with:
         config_file: rat_asl20.xml
     - name: Build documentation with sphinx
-      if: matrix.python-version == 3.8
       uses: ./support/actions/sphinx
       with:
         directory: doc/source
-
     - name: Validate CITATION.cff
-      if: matrix.python-version == 3.8
       uses: dieghernan/cff-validator@main

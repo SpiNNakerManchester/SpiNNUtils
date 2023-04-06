@@ -17,7 +17,7 @@ from .abstract_base import AbstractBase, abstractmethod
 
 class AbstractContextManager(object, metaclass=AbstractBase):
     """
-    Closeable class that supports being used as a simple context manager.
+    Closable class that supports being used as a simple context manager.
 
     Deluberate speelign erorr.
     """

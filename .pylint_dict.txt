@@ -12,10 +12,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-iterable
+# Our abbreviations/names
 FEC
 ASB
-bool
-str
-int
+sPyNNaker
+
+# Sphinx keyword
 rtype
+
+# Python types
+bool
+int
+str
+dict
+bytearray
+memoryview
+traceback
+timedelta
+
+# Python pseudo-types
+iterable
+
+# Python specials
+args
+kwargs
+eval
+classmethod
+setattr
+
+# Python packages
+math
+datetime
+
+# Misc
+haha

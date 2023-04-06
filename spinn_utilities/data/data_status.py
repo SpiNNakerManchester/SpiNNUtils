@@ -23,9 +23,13 @@ class DataStatus(Enum):
 
     This class is designed to used internally by UtilsDataView
     """
+    #: No setup calls have been done yet.
     NOT_SETUP = (0, NotSetupException)
+    #: The system is (to be) setup in mocked mode for unit testing.
     MOCKED = (1, DataNotMocked)
+    #: The system is (to be) setup for running user code.
     SETUP = (2, DataNotYetAvialable)
+    #: The system has been shut down.
     SHUTDOWN = (3, ShutdownException)
 
     def __new__(cls, value, exception):

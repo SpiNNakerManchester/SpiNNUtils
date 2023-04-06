@@ -32,7 +32,7 @@ class UtilsDataWriter(UtilsDataView):
     Writer class for the information in UtilsDataView
 
     This and subclass Writers are specifically designed to be used by the
-    simulators (ASB) and unitests only!
+    simulators (ASB) and unit tests only!
     Any other usage is not supported.
 
     The Writers are specifically designed to support only one instant
@@ -45,11 +45,11 @@ class UtilsDataWriter(UtilsDataView):
     `Writer.setup()`
     The mock method adds some default data such as directories and
     a Virtual 8 * 8 Machine, as well as allowing some backdoor methods.
-    `...Writer.mock()` is the recommended one for unittests
+    `...Writer.mock()` is the recommended one for unit tests
     `setup()` is more like what ASB does and allows for state changes such as
     `writer.start_running`
 
-    ASB init (or it subclasses) will create a new writer
+    ASB `__init__()` (or it subclasses) will create a new writer
     so a call to `sim.setup` will clear all previously held data
 
     As the Writers are not designed for general usage the methods can change
@@ -60,7 +60,8 @@ class UtilsDataWriter(UtilsDataView):
 
     def __init__(self, state):
         """
-        :param Data_Status state: State writer should be in
+        :param ~spinn_utilities.data.DataStatus state:
+            State writer should be in
         """
         if state == DataStatus.MOCKED:
             self._mock()
@@ -249,10 +250,10 @@ class UtilsDataWriter(UtilsDataView):
         """
         Returns path to existing reports directory.
 
-        This is the high level directory which in which timestamp directories
-        and run directories are placed.
+        This is the high level directory which in which `timestamp` directories
+        and `run` directories are placed.
 
-        As it is only accessed to create timestamp directories and
+        As it is only accessed to create `timestamp` directories and
         remove old reports, this is not a view method.
 
         :rtype: str
@@ -291,9 +292,9 @@ class UtilsDataWriter(UtilsDataView):
 
     def _set_executable_finder(self, executable_finder):
         """
-        Only usable by unittests!
+        Only usable by unit tests!
 
-        :param executable_finder:
+        :param ExecutableFinder executable_finder:
         """
         if not self._is_mocked():
             raise NotImplementedError("Only valid in Mocked state!")

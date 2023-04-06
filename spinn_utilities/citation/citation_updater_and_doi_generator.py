@@ -181,13 +181,12 @@ class CitationUpdaterAndDoiGenerator(object):
 
     def _request_doi(self, previous_doi):
         """
-        Go to zenodo and requests a DOI.
+        Go to Zenodo and requests a DOI.
 
         :param str previous_doi: the previous DOI for this module, if exists
         :return: the DOI id, and deposit id
         :rtype: tuple(str, str)
         """
-
         # create link to previous version (if applicable)
         related = list()
         related.append({
@@ -259,14 +258,13 @@ class CitationUpdaterAndDoiGenerator(object):
     @staticmethod
     def _zip_walker(module_path, avoids, module_zip_file):
         """
-        Traverse the module and its subdirectories and only adds to the
+        Traverse the module and its sub-directories and only adds to the
         files to the zip which are not within a avoid directory that.
 
         :param str module_path: the path to start the search at
         :param set(str) avoids: the set of avoids to avoid
         :param ~zipfile.ZipFile module_zip_file: the zip file to put into
         """
-
         for directory_path, _, files in os.walk(module_path):
             for directory_name in directory_path.split(os.sep):
                 if directory_name in avoids:
@@ -286,7 +284,7 @@ class CitationUpdaterAndDoiGenerator(object):
         :param str doi_title: the title of the DOI
         :param str doi_description: the description of the DOI
         :param dict yaml_file: the citation file once read into the system
-        :return: dict containing zenodo metadata
+        :return: dict containing Zenodo metadata
         :rtype: dict
         """
         # add basic meta data
@@ -320,7 +318,7 @@ class CitationUpdaterAndDoiGenerator(object):
         :type version_month: str or int
         :param int version_year: version year
         :param int version_day: version day of month
-        :return: the string representation for the cff file
+        :return: the string representation for the CFF file
         :rtype: str
         """
         return "{}-{}-{}".format(
@@ -338,7 +336,7 @@ class CitationUpdaterAndDoiGenerator(object):
         :type version_month: str or int
         :return: the month int value
         :rtype: int
-        :raises: Exception when the month name is not recognised
+        :raises ValueError: when the month name is not recognised
         """
         if isinstance(version_month, int):
             return version_month
@@ -354,7 +352,7 @@ class CitationUpdaterAndDoiGenerator(object):
                     except ValueError:  # pragma: no cover
                         raise ValueError(
                             f"Value {version_month} not recognised"
-                            f" as a month") from original
+                            " as a month") from original
         else:  # pragma: no cover
             raise ValueError(
                 f"Value {version_month} not recognised as a month")

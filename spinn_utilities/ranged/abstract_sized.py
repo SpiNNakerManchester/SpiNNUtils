@@ -23,6 +23,7 @@ logger = logging.getLogger(__file__)
 class AbstractSized(object):
     """
     Base class for slice and ID checking against size.
+    Subclasses of this support the `len()` built-in.
     """
 
     __slots__ = (
@@ -30,8 +31,9 @@ class AbstractSized(object):
 
     def __init__(self, size):
         """
-        :param size: Fixed length of the list
+        :param int size: Fixed length of the list.
         """
+        # Strictly doesn't need to be int, but really should be!
         self._size = max(int(round(size)), 0)
 
     def __len__(self):
@@ -148,20 +150,20 @@ class AbstractSized(object):
         `None`:
             Returns all IDs.
 
-        slice: Standard python slice.
+        :py:class:`slice`: Standard python slice.
             Negative values and values larger than size are handled using
-            slices's `indices` method.
+            slice's `indices` method.
             This could result in am empty list.
 
-        int: Handles negative values as normal.
+        :py:class:`int`: Handles negative values as normal.
             Checks if ID is within expected range.
 
-        iterator(bool): Used as a mask.
+        iterator(:py:class:`bool`): Used as a mask.
             If the length of the mask is longer or shorted than number of IDs
             the result is the shorter of the two,
             with the remainder of the longer ignored.
 
-        iterator(int) but not bool:
+        iterator(:py:class:`int`) but not bool:
             Every value checked that it is with the range 0 to size.
             Negative values are *not* allowed.
             Original order and duplication is respected so result may be

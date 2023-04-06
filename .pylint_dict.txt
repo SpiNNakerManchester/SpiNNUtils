@@ -16,6 +16,8 @@
 FEC
 ASB
 sPyNNaker
+CFF
+Zenodo
 
 # Sphinx keyword
 rtype
@@ -41,6 +43,8 @@ kwargs
 eval
 setattr
 metaclass
+abstractmethod
+abstractproperty
 classmethod
 classproperty
 
@@ -49,7 +53,9 @@ math
 datetime
 configparser
 numpy
+testfixtures
 
 # Misc
 haha
 stdin
+whitespace

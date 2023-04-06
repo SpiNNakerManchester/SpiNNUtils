@@ -15,5 +15,5 @@
 
 class ConfigTemplateException(Exception):
     """
-    Throws when an existing Section has an extra config value
+    Throws when a problem is found with a configuration template.
     """

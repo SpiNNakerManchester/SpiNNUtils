@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from .data_status import DataStatus
 from .utils_data_view import UtilsDataView
 
-__all__ = ["UtilsDataView"]
+__all__ = ["DataStatus", "UtilsDataView"]

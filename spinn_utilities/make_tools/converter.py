@@ -26,11 +26,13 @@ SKIPPABLE_FILES = frozenset([
 
 def convert(src, dest, new_dict):
     """
-    Converts a whole directory including sub directories.
+    Converts a whole directory including sub-directories.
 
     :param str src: Full source directory
     :param str dest: Full destination directory
-    :param bool new_dict: says if we should generate a new dict
+    :param bool new_dict:
+        Whether we should generate a new dictionary/DB.
+        If not, we add to the existing one.
     """
     if new_dict:
         LogSqlLiteDatabase(new_dict)
@@ -49,7 +51,7 @@ def _convert_dir(src_path, dest_path, make_directories=False):
 
     :param str src_path: Full source directory
     :param str dest_path: Full destination directory
-    :param bool make_directories: Whether to do mkdir first
+    :param bool make_directories: Whether to do `mkdir()` first
     """
     if make_directories:
         _mkdir(dest_path)

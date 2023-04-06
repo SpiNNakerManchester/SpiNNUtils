@@ -33,7 +33,7 @@ def find_max_success(max_possible, check):
 
 def search_for_max_success(best_success, min_fail, check):
     """
-    Finds the maximun value in the range that pass the check
+    Finds the maximum value in the range that pass the check
 
     :param best_success: A minimum value that needs not be tested because it
         is either known to succeed or is a flag for total failure.

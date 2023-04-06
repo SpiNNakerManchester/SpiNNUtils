@@ -29,6 +29,8 @@ bytearray
 memoryview
 traceback
 timedelta
+RawConfigParser
+AbstractBase
 
 # Python pseudo-types
 iterable
@@ -37,12 +39,17 @@ iterable
 args
 kwargs
 eval
-classmethod
 setattr
+metaclass
+classmethod
+classproperty
 
 # Python packages
 math
 datetime
+configparser
+numpy
 
 # Misc
 haha
+stdin

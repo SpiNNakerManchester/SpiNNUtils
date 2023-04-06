@@ -21,12 +21,13 @@ BASE_CONFIG_FILE = "spinn_utilities.cfg"
 
 def unittest_setup():
     """
-    Resets the configs so only the local default config is included.
+    Resets the configurations so only the local default configuration is
+    included.
 
     .. note::
-        This file should only be called from SpiNNUtils/unittests
+        This file should only be called from `SpiNNUtils/unittests`
 
-    :param unittest_mode: Flag to indicate in unittests
+    :param unittest_mode: Flag to indicate in unit tests
     """
     clear_cfg_files(True)
     add_spinn_utilities_cfg()

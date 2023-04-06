@@ -30,9 +30,9 @@ __unittest_mode = False
 
 def add_default_cfg(default):
     """
-    Adds an extra default config to be read after earlier ones.
+    Adds an extra default configuration file to be read after earlier ones.
 
-    :param str default: Absolute path to the cfg file
+    :param str default: Absolute path to the configuration file
     """
     if default not in __default_config_files:
         __default_config_files.append(default)
@@ -40,11 +40,12 @@ def add_default_cfg(default):
 
 def clear_cfg_files(unittest_mode):
     """
-    Clears any previous set configs and config files.
+    Clears any previous set configurations and configuration files.
 
-    After this method add_default_cfg and set_cfg_files need to be called
+    After this method :py:func:`add_default_cfg` and :py:func:`set_cfg_files`
+    need to be called.
 
-    :param bool unittest_mode: Flag to put the holder into unittests mode
+    :param bool unittest_mode: Flag to put the holder into unit testing mode
     """
     global __config, __config_file, __unittest_mode
     __config = None
@@ -55,7 +56,7 @@ def clear_cfg_files(unittest_mode):
 
 def set_cfg_files(configfile, default):
     """
-    Adds the cfg files to be loaded
+    Adds the configuration files to be loaded.
 
     :param str configfile:
         The base name of the configuration file(s).
@@ -70,7 +71,7 @@ def set_cfg_files(configfile, default):
 
 def _pre_load_config():
     """
-    Loads configs due to early access to a config value
+    Loads configurations due to early access to a configuration value.
 
     :raises ConfigException: Raise if called before setup
     """
@@ -83,7 +84,7 @@ def _pre_load_config():
 
 def load_config():
     """
-    Reads in all the config files, resetting all values.
+    Reads in all the configuration files, resetting all values.
 
     :raises ConfigException: If called before setting defaults
     """
@@ -101,7 +102,7 @@ def load_config():
 
 def get_config_str(section, option):
     """
-    Get the string value of a config option.
+    Get the string value of a configuration option.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.
@@ -118,7 +119,7 @@ def get_config_str(section, option):
 
 def get_config_str_list(section, option, token=","):
     """
-    Get the string value of a config option split into a list.
+    Get the string value of a configuration option split into a list.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.
@@ -136,7 +137,7 @@ def get_config_str_list(section, option, token=","):
 
 def get_config_int(section, option):
     """
-    Get the integer value of a config option.
+    Get the integer value of a configuration option.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.
@@ -153,7 +154,7 @@ def get_config_int(section, option):
 
 def get_config_float(section, option):
     """
-    Get the float value of a config option.
+    Get the float value of a configuration option.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.
@@ -170,7 +171,7 @@ def get_config_float(section, option):
 
 def get_config_bool(section, option):
     """
-    Get the boolean value of a config option.
+    Get the boolean value of a configuration option.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.
@@ -187,9 +188,9 @@ def get_config_bool(section, option):
 
 def set_config(section, option, value):
     """
-    Sets the value of a config option.
+    Sets the value of a configuration option.
 
-    This method should only be called by the simulator or by unittests
+    This method should only be called by the simulator or by unit tests.
 
     :param str section: What section to set the option in.
     :param str option: What option to set.
@@ -212,7 +213,7 @@ def set_config(section, option, value):
 
 def has_config_option(section, option):
     """
-    Check if the section has this config option.
+    Check if the section has this configuration option.
 
     :param str section: What section to check
     :param str option: What option to check.
@@ -238,12 +239,12 @@ def config_options(section):
 
 def _check_lines(py_path, line, lines, index, method):
     """
-    Support for check_python_file. Gets section and option name.
+    Support for `_check_python_file`. Gets section and option name.
 
     :param str line: Line with get_config call
     :param list(str) lines: All lines in the file
-    :param int index: index of line with get_config call
-    :raises ConfigException: If an unexpected or uncovered get_config found
+    :param int index: index of line with `get_config` call
+    :raises ConfigException: If an unexpected or uncovered `get_config` found
     """
     while ")" not in line:
         index += 1
@@ -269,10 +270,10 @@ def _check_lines(py_path, line, lines, index, method):
 
 def _check_python_file(py_path):
     """
-    A testing function to check that all the get_config calls work.
+    A testing function to check that all the `get_config` calls work.
 
     :param str py_path: path to file to be checked
-    :raises ConfigException: If an unexpected or uncovered get_config found
+    :raises ConfigException: If an unexpected or uncovered `get_config` found
     """
     with open(py_path, 'r', encoding="utf-8") as py_file:
         lines = py_file.readlines()
@@ -299,11 +300,13 @@ def _check_python_files(directory):
 
 def _find_double_defaults(repeaters=None):
     """
-    Testing function to identify any cfg options in multiple default files.
+    Testing function to identify any configuration options in multiple default
+    files.
 
     :param repeaters: List of options that are expected to be repeated.
     :type repeaters: None or list(str)
-    :raises ConfigException: If two defaults config files set the same value
+    :raises ConfigException:
+        If two defaults configuration files set the same value
     """
     config1 = CamelCaseConfigParser()
     for default in __default_config_files[:-1]:
@@ -325,7 +328,7 @@ def _find_double_defaults(repeaters=None):
 
 def _check_cfg_file(config1, cfg_path):
     """
-    Support method for check_cfgs.
+    Support method for :py:func:`check_cfgs`.
 
     :param CamelCaseConfigParser config1:
     :param str cfg_path:
@@ -346,7 +349,7 @@ def _check_cfg_file(config1, cfg_path):
 
 def _check_cfgs(path):
     """
-    A testng function check local cfg files against the defaults.
+    A testing function check local cfg files against the defaults.
 
     It only checks that the option exists in a default.
     It does not check if the option is used or if the value is the expected
@@ -374,9 +377,9 @@ def run_config_checks(directories, *, exceptions=None, repeaters=None):
     Master test.
 
     :param module:
+    :param exceptions:
     :param repeaters:
     :raises ConfigException: If an incorrect directory passed in
-    :return:
     """
     if isinstance(directories, str):
         directories = [directories]

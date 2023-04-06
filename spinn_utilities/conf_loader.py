@@ -121,7 +121,7 @@ def _check_config(cfg_file, default_configs, strict):
     Any section specifically listed as Dead will cause a error
 
     Any section in the default_cfg should not have extra values.
-    It will never have less as the default_cfg are in the cfg.
+    It will never have less as the default_cfg are in the configuration.
 
     Errors on any values listed as PreviousValues.
     These are specific values in specific options no longer supported.
@@ -178,8 +178,8 @@ def _config_locations(filename):
     """
     Defines the list of places we can get configuration files from.
 
-    :param filename: The local name of the config file, e.g., 'spynnaker.cfg'
-    :type filename: str
+    :param str filename:
+        The local name of the configuration file, e.g., 'spynnaker.cfg'
     :return: list of fully-qualified filenames
     :rtype: list(str)
     """

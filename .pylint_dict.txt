@@ -24,25 +24,8 @@ LogCapture
 ZipFile
 
 # Python packages
-math
-datetime
-configparser
-numpy
-testfixtures
-abc
-zipfile
+# numpy
 
 # Misc
 haha
-stdin
-whitespace
-ids
-submessage
-subclassed
-src
-dest
-msg
-spynnaker
-cfg
 X'th
-etc

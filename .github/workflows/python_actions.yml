@@ -42,9 +42,9 @@ jobs:
         path: support
     - name: Install pip, etc.
       uses: ./support/actions/python-tools
-    - name: Setup
-      uses: ./support/actions/run-setup
 
+    - name: Run Install
+      uses: ./support/actions/run-install
     - name: Test with pytest
       uses: ./support/actions/pytest
       with:

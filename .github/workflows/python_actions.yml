@@ -72,8 +72,6 @@ jobs:
         python-version: [3.8]
     env:
       ROOT_PKG: spinn_utilities
-      # Tests using ping won't work in Github Actions because of system config
-      SKIP_PING_TESTS: true
 
     steps:
     - name: Set up Python ${{ matrix.python-version }}
@@ -90,7 +88,7 @@ jobs:
     - name: Install pip, etc.
       uses: ./support/actions/python-tools
     - name: Setup
-      uses: ./support/actions/run-setup
+      uses: ./support/actions/run-install
 
     # Actual valiation steps
     - name: Run rat copyright enforcement

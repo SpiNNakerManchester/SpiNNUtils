@@ -13,47 +13,15 @@
 # limitations under the License.
 
 # Our abbreviations/names
-FEC
-ASB
-sPyNNaker
 CFF
 Zenodo
-DBs
 LCM
 
-# Sphinx keyword
-py
-rtype
-
 # Python types
-bool
-int
-str
-dict
-bytearray
-memoryview
-traceback
-timedelta
 RawConfigParser
 AbstractBase
 LogCapture
 ZipFile
-
-# Python pseudo-types
-iterable
-
-# Python specials
-args
-kwargs
-eval
-setattr
-metaclass
-abstractmethod
-abstractproperty
-classmethod
-classproperty
-getx
-setx
 
 # Python packages
 math

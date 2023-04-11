@@ -62,6 +62,8 @@ jobs:
         package: ${{ env.ROOT_PKG }}
         # exitcheck 35 is without warnings 39 also fails on warnings
         exitcheck: 39
+        # Enable spell checking
+        language: en_GB
 
   validate:
     runs-on: ubuntu-latest

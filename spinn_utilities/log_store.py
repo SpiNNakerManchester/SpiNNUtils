@@ -27,8 +27,8 @@ class LogStore(object):
 
         :param int level: The logging level.
         :param str message: The logged message.
-        :param timestamp: The timestamp of the message.
-        :type timestamp: datatime or None
+        :param timestamp: The time-stamp of the message.
+        :type timestamp: ~datetime.datetime or None
         """
 
     @abstractmethod

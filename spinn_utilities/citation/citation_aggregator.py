@@ -187,7 +187,7 @@ class CitationAggregator(object):
     def _search_for_other_c_references(
             self, reference_entry, software_path, modules_seen_so_far):
         """
-        Go though the top level path and tries to locate other cff
+        Go though the top level path and tries to locate other CFF
         files that need to be added to the references pile.
 
         :param dict(str,list(str)) reference_entry:
@@ -324,8 +324,9 @@ class CitationAggregator(object):
         Read a ``CITATION.cff`` and makes it a reference for a higher
         level citation file.
 
-        :param str dependency_citation_file_path: path to a CITATION.cff file
-        :return: reference entry for the higher level citation.cff
+        :param str dependency_citation_file_path:
+            path to a `CITATION.cff` file
+        :return: reference entry for the higher level `CITATION.cff`
         :rtype: dict
         """
         reference_entry = dict()
@@ -361,7 +362,7 @@ def generate_aggregate(arguments=None):
         * ``--output_path``: \
             Where to write the aggregate file
         * ``--top_module``: \
-            The module to start aggregating the citation.cffs from
+            The module to start aggregating the ``citation.cff``\\s from
         * ``--doi_title``: \
             The title of the DOI
         * ``--zenodo_access_token``: \

@@ -1,4 +1,4 @@
-# Copyright (c) 2021 The University of Manchester
+# Copyright (c) 2023 The University of Manchester
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .data_status import DataStatus
-from .utils_data_view import UtilsDataView
+# Our abbreviations/names
+CFF
+Zenodo
+LCM
 
-__all__ = ["DataStatus", "UtilsDataView"]
+# Python types
+RawConfigParser
+AbstractBase
+LogCapture
+ZipFile
+
+# Python packages
+# numpy
+
+# Misc
+haha
+X'th

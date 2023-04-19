@@ -121,7 +121,7 @@ def _check_config(cfg_file, default_configs, strict):
     Any section specifically listed as Dead will cause a error
 
     Any section in the default_cfg should not have extra values.
-    It will never have less as the default_cfg are in the cfg.
+    It will never have less as the default_cfg are in the configuration.
 
     Errors on any values listed as PreviousValues.
     These are specific values in specific options no longer supported.
@@ -153,33 +153,32 @@ def _check_config(cfg_file, default_configs, strict):
             logger.warning(msg)
 
 
-def _read_a_config(configs, cfg_file, default_configs, strict):
+def _read_a_config(configuration, cfg_file, default_configs, strict):
     """
     Reads in a configuration file and then directly its `machine_spec_file`.
 
-    :param CamelCaseConfigParser configs:
+    :param CamelCaseConfigParser configuration:
         configuration to be updated by the reading of a file
     :param str cfg_file: path to file which should be read in
     :param CamelCaseConfigParser default_configs:
         configuration with just the default files in
     :param bool strict: Flag to say checker should raise an exception
-    :return: None
     """
     _check_config(cfg_file, default_configs, strict)
-    configs.read(cfg_file)
-    if configs.has_option("Machine", "machine_spec_file"):
-        machine_spec_file = configs.get("Machine", "machine_spec_file")
+    configuration.read(cfg_file)
+    if configuration.has_option("Machine", "machine_spec_file"):
+        machine_spec_file = configuration.get("Machine", "machine_spec_file")
         _check_config(machine_spec_file, default_configs, strict)
-        configs.read(machine_spec_file)
-        configs.remove_option("Machine", "machine_spec_file")
+        configuration.read(machine_spec_file)
+        configuration.remove_option("Machine", "machine_spec_file")
 
 
 def _config_locations(filename):
     """
     Defines the list of places we can get configuration files from.
 
-    :param filename: The local name of the config file, e.g., 'spynnaker.cfg'
-    :type filename: str
+    :param str filename:
+        The local name of the configuration file, e.g., 'spynnaker.cfg'
     :return: list of fully-qualified filenames
     :rtype: list(str)
     """

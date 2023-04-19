@@ -27,7 +27,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
     Functions that change the size of the list are *not* supported.
     These include::
 
-        `__setitem__` where key >= len
+        `__setitem__` where `key` >= `len`
         `__delitem__`
         `append`
         `extend`
@@ -63,7 +63,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
 
     def __init__(self, size, key=None):
         """
-        :param size: Fixed length of the list
+        :param int size: Fixed length of the list
         :param key: The dict key this list covers.
             This is used only for better Exception messages
         """

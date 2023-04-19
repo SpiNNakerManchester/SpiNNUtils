@@ -106,7 +106,7 @@ class UtilsDataView(object):
     We reserve the right to override methods defined in one View in subclasses.
 
     There are also Writer classes which override the Views but these are
-    specifically designed to only be usable in unittests and by the simulator
+    specifically designed to only be usable in unit tests and by the simulator
     (ASB) directly.
 
     You should use the data view most appropriate to what you are doing i.e.
@@ -158,7 +158,7 @@ class UtilsDataView(object):
     `has...` methods have been added where found needed.
     More can easily be added if required.
 
-    The `is...` methods will return a bool value to say the simulator is in
+    The `is...` methods will return a boolean value to say the simulator is in
     the expected state.
     They may throw an exception if called at an unexpected time.
     For example if called before `sim.setup` or after `sim.end`.
@@ -194,10 +194,11 @@ class UtilsDataView(object):
     @classmethod
     def is_hard_reset(cls):
         """
-        Check if the system has been hard reset since the last run finished.
+        Check if the system has been hard reset since the last run
+        *finished*.
 
-        Critically during the first run after reset this continues to return
-        True!
+        .. warning::
+            During the first run after reset this continues to return True!
 
         Returns False after a reset that was considered soft.
 
@@ -208,10 +209,10 @@ class UtilsDataView(object):
     @classmethod
     def is_soft_reset(cls):
         """
-        Check if the system has been soft reset since the last run finished.
+        Check if the system has been soft reset since the last run *finished*.
 
-        Critically during the first run after reset this continues to return
-        True!
+        .. warning::
+            During the first run after reset this continues to return True!
 
         Returns False after a reset that was considered hard.
 
@@ -243,7 +244,7 @@ class UtilsDataView(object):
         """
         Checks if the simulation has run and not been reset.
 
-        :rytpe: bool
+        :rtype: bool
         :raises NotImplementedError:
             If this is called from an unexpected state
         """
@@ -267,7 +268,7 @@ class UtilsDataView(object):
 
         It also returns False after a `sim.stop` or `sim.end` call starts
 
-        :rytpe: bool
+        :rtype: bool
         :raises NotImplementedError:
             If this is called from an unexpected state
         """
@@ -471,7 +472,7 @@ class UtilsDataView(object):
         the next run if it has not yet been called.
 
         .. note::
-            In unittest mode this returns a tempdir
+            In unit test mode this returns a temporary directory
             shared by all path methods.
 
         :rtype: str
@@ -601,7 +602,7 @@ class UtilsDataView(object):
 
             *ONLY FOR USE IN UNITTESTS*
 
-            Any use outside of unittests is *not* supported and will cause
+            Any use outside of unit tests is *not* supported and will cause
             errors!
         """
         cls.__data._run_status = RunStatus.NOT_RUNNING

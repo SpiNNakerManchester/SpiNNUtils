@@ -13,27 +13,34 @@
 # limitations under the License.
 
 
-def as_string(bytestring, start=None, end=None):
+def as_string(byte_string, start=None, end=None):
     """
     Returns the length and the hex values.
 
     The length is always the full length irrespective of the start and end.
 
-    :param bytestring: data as a bytestring
-    :param start: the inclusive start of the slice to return. May be `None`
-    :param end: the exclusive end of the slice to return. May be `None`
-    :return: The length of the bytesting and the hex values, comma separated
+    :param bytes byte_string: data as a byte string
+    :param int start:
+        The inclusive start of the slice to convert to hexadecimal.
+        May be `None`
+    :param int end:
+        The exclusive end of the slice to convert to hexadecimal. May be `None`
+    :return:
+        The length of the byte string and the comma separated hex values, as a
+        descriptive string
+    :rtype: str
     """
-    return "(" + str(len(bytestring)) + ")" + as_hex(bytestring, start, end)
+    return "(" + str(len(byte_string)) + ")" + as_hex(byte_string, start, end)
 
 
-def as_hex(bytestring, start=None, end=None):
+def as_hex(byte_string, start=None, end=None):
     """
-    Returns the bytestring as string showing the hex values
+    Returns the byte string as string showing the hex values
 
-    :param bytestring: data as a byteString
-    :param start: the inclusive start of the slice to return. May be `None`
-    :param end: the exclusive end of the slice to return. May be `None`
-    :return: Comma separated hex values
+    :param bytes byte_string: data as a byte string
+    :param int start: the inclusive start of the slice to return. May be `None`
+    :param int end: the exclusive end of the slice to return. May be `None`
+    :return: Comma-separated hex values
+    :rtype: str
     """
-    return ','.join('%02x' % i for i in iter(bytestring[start:end]))
+    return ','.join('%02x' % i for i in iter(byte_string[start:end]))

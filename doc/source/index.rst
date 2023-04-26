@@ -3,7 +3,7 @@ which is part of the SpiNNaker_ Project (Combined_documentation_).
 
 .. _SpiNNUtils: https://github.com/SpiNNakerManchester/SpiNNMachine
 .. _SpiNNaker: https://apt.cs.manchester.ac.uk/projects/SpiNNaker/
-.. _Combined_documentation: https://spinnakermanchester.readthedocs.io/en/7.0.0-a5/en/7.0.0-a5/en/7.0.0-a5
+.. _Combined_documentation: https://spinnakermanchester.readthedocs.io/en/7.0.0-a5/en/7.0.0-a5/en/7.0.0-a5/en/7.0.0-a5
 
 SpiNNUtils
 ==========

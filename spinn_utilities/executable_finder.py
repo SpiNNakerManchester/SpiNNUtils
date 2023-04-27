@@ -27,12 +27,19 @@ class ExecutableFinder(object):
         "_paths_log"]
 
     def __init__(self):
-        binary_logs_path = os.environ.get("BINARY_LOGS_DIR", None)
-        if binary_logs_path:
+        global_reports = os.environ.get("GLOBAL_REPORTS", None)
+        if global_reports:
+            if not os.path.exists(global_reports):
+                # It might now exist if run in parallel
+                try:
+                    os.makedirs(global_reports)
+                except Exception:  # pylint: disable=broad-except
+                    pass
             self._paths_log = os.path.join(
-                binary_logs_path, "binary_paths_used.log")
+                global_reports, "binary_paths_used.log")
             self._binary_log = os.path.join(
-                binary_logs_path, "binary_files_used.log")
+                global_reports, "binary_files_used.log")
+
         else:
             self._paths_log = None
             self._binary_log = None
@@ -123,7 +130,7 @@ class ExecutableFinder(object):
 
     def check_logs(self):
         if not self._paths_log:
-            print("environ BINARY_LOGS_DIR not set!")
+            print("environ GLOBAL_REPORTS not set!")
             return
 
         folders = set()
@@ -159,7 +166,7 @@ class ExecutableFinder(object):
 
     def clear_logs(self):
         if not self._paths_log:
-            print("environ BINARY_LOGS_DIR not set!")
+            print("environ GLOBAL_REPORTS not set!")
             return
         if os.path.isfile(self._paths_log):
             os.remove(self._paths_log)

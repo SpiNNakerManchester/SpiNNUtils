@@ -70,7 +70,7 @@ def test_find_in_two_places(tmpdir):
 
 
 def test_logs(tmpdir):
-    if "BINARY_LOGS_DIR" not in os.environ:
+    if "GLOBAL_REPORTS" not in os.environ:
 
         # test with not logging
         efn = ExecutableFinder()
@@ -78,7 +78,7 @@ def test_logs(tmpdir):
         efn.check_logs()
 
         # test the logging if bad does not block
-        os.environ["BINARY_LOGS_DIR"] = "A bad dir that does not exist"
+        os.environ["GLOBAL_REPORTS"] = "A bad dir that does not exist"
         efx = ExecutableFinder()
         x = tmpdir.mkdir("x")
         w = tmpdir.join("x/abc.aplx")
@@ -87,7 +87,7 @@ def test_logs(tmpdir):
         efx.get_executable_path("abc.aplx")
 
         # Now use one that does
-        os.environ["BINARY_LOGS_DIR"] = tmpdir.strpath
+        os.environ["GLOBAL_REPORTS"] = tmpdir.strpath
 
     ef = ExecutableFinder()
     a = tmpdir.mkdir("a")

@@ -147,7 +147,6 @@ class UtilsDataWriter(UtilsDataView):
                 f"{self.__data._run_status}")
         self.__data._run_status = RunStatus.NOT_RUNNING
         self.__data._reset_status = ResetStatus.HAS_RUN
-        self.__data._requires_data_generation = False
         self.__data._requires_mapping = False
 
     def _hard_reset(self):

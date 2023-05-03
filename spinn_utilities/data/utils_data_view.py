@@ -44,7 +44,6 @@ class _UtilsDataModel(object):
         "_data_status",
         "_executable_finder",
         "_report_dir_path",
-        "_requires_data_generation",
         "_requires_mapping",
         "_reset_status",
         "_run_dir_path",
@@ -78,7 +77,6 @@ class _UtilsDataModel(object):
         `sim.reset`.
         """
         self._run_dir_path = None
-        self._requires_data_generation = True
         self._requires_mapping = True
         self._temporary_directory = None
         self._soft_reset()
@@ -545,30 +543,6 @@ class UtilsDataView(object):
             executable_names)
 
     @classmethod
-    def get_requires_data_generation(cls):
-        """
-        Reports if data generation is required.
-
-        Set to True at the start and by any change that could require
-        data generation or mapping
-        Remains True during the first run after a data change
-        Only set to False at the *end* of the first run
-
-        :rtype: bool
-        """
-        return cls.__data._requires_data_generation
-
-    @classmethod
-    def set_requires_data_generation(cls):
-        """
-        Sets `requires_data_generation` to True.
-
-        Only the end of a run can set it to False
-        """
-        cls.check_user_can_act()
-        cls.__data._requires_data_generation = True
-
-    @classmethod
     def get_requires_mapping(cls):
         """
         Reports if mapping is required.
@@ -585,13 +559,12 @@ class UtilsDataView(object):
     @classmethod
     def set_requires_mapping(cls):
         """
-        Sets `requires_mapping` and `requires_data_generation` to True.
+        Sets `requires_mapping` to True.
 
         Only the end of a run can set it to False
         """
         cls.check_user_can_act()
         cls.__data._requires_mapping = True
-        cls.__data._requires_data_generation = True
 
     @classmethod
     def _mock_has_run(cls):
@@ -607,5 +580,4 @@ class UtilsDataView(object):
         """
         cls.__data._run_status = RunStatus.NOT_RUNNING
         cls.__data._reset_status = ResetStatus.HAS_RUN
-        cls.__data._requires_data_generation = False
         cls.__data._requires_mapping = False

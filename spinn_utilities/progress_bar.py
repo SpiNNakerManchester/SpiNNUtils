@@ -18,6 +18,7 @@ import logging
 import math
 import os
 import sys
+from typing import Dict, Iterable, List, TypeVar
 from spinn_utilities.config_holder import get_config_bool
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.overrides import overrides
@@ -25,6 +26,7 @@ from spinn_utilities import logger_utils
 import spinn_utilities
 
 logger = FormatAdapter(logging.getLogger(__name__))
+T = TypeVar("T")
 
 
 class ProgressBar(object):
@@ -188,7 +190,8 @@ class ProgressBar(object):
         self.end()
         return False
 
-    def over(self, collection, finish_at_end=True):
+    def over(self, collection: Iterable[T],
+             finish_at_end: bool = True) -> Iterable[T]:
         """
         Simple wrapper for the cases where the progress bar is being used
         to show progress through the iteration over a single collection.
@@ -228,7 +231,7 @@ class _EnhancedProgressBar(ProgressBar):
 
     _line_no = 0
     _seq_id = 0
-    _step_characters = defaultdict(list)
+    _step_characters: Dict[int, List[str]] = defaultdict(list)
     _enabled = False
     _DATA_FILE = "progress_bar.txt"
 

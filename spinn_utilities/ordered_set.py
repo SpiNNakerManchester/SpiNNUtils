@@ -14,38 +14,42 @@
 
 from collections import OrderedDict
 from collections.abc import MutableSet
+from typing import (
+    Any, Dict, Set, Iterable, Iterator, Optional, Generic, TypeVar)
+
+T = TypeVar("T")
 
 
-class OrderedSet(MutableSet):
+class OrderedSet(MutableSet[T], Generic[T]):
     __slots__ = (
         "_map",
     )
 
-    def __init__(self, iterable=None):
+    def __init__(self, iterable: Optional[Set[T]] = None):
         # pylint: disable=super-init-not-called
         # Always use OrderedDict as plain dict does not support
         # __reversed__ and key indexing
-        self._map = OrderedDict()
+        self._map: Dict[T, None] = OrderedDict()
 
         # or is overridden in mutable set; calls add on each element
         if iterable is not None:
             self |= iterable
 
-    def add(self, value):
+    def add(self, value: T):
         if value not in self._map:
             self._map[value] = None
 
-    def discard(self, value):
+    def discard(self, value: T):
         if value in self._map:
             self._map.pop(value)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[T]:
         return self._map.__iter__()
 
-    def __reversed__(self):
+    def __reversed__(self) -> Iterator[T]:
         return self._map.__reversed__()
 
-    def peek(self, last=True):
+    def peek(self, last: bool = True) -> T:
         if not self._map:  # i.e., is self._map empty?
             raise KeyError('set is empty')
         if last:
@@ -53,32 +57,32 @@ class OrderedSet(MutableSet):
         else:
             return next(iter(self))
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._map)
 
-    def __contains__(self, key):
+    def __contains__(self, key: Any) -> bool:
         return key in self._map
 
-    def update(self, iterable):
+    def update(self, iterable: Iterable[T]):
         for item in iterable:
             self.add(item)
 
-    def pop(self, last=True):  # pylint: disable=arguments-differ
+    def pop(self, last: bool = True) -> T:  # pylint: disable=arguments-differ
         key = self.peek(last)
         self.discard(key)
         return key
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if not self._map:  # i.e., is self._map empty?
             return '%s()' % (self.__class__.__name__,)
         return '%s(%r)' % (self.__class__.__name__, list(self))
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, OrderedSet):
             return len(self) == len(other) and self._map == other._map
         return set(self) == set(other)
 
-    def __ne__(self, other):
+    def __ne__(self, other: Any) -> bool:
         """
         Comparison method for comparing ordered sets.
 

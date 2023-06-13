@@ -20,7 +20,7 @@ class AbstractContextManager(object, metaclass=AbstractBase):
     Closable class that supports being used as a simple context manager.
     """
 
-    __slots__ = []
+    __slots__ = ()
 
     @abstractmethod
     def close(self):

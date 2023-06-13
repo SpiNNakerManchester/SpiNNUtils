@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from __future__ import annotations
 import os.path
 import logging
 from spinn_utilities.exceptions import (
@@ -22,6 +22,7 @@ from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus
 from .utils_data_view import UtilsDataView, _UtilsDataModel
+from spinn_utilities.executable_finder import ExecutableFinder
 
 logger = FormatAdapter(logging.getLogger(__file__))
 # pylint: disable=protected-access
@@ -57,9 +58,9 @@ class UtilsDataWriter(UtilsDataView):
         change without notice.
     """
     __data = _UtilsDataModel()
-    __slots__ = []
+    __slots__ = ()
 
-    def __init__(self, state):
+    def __init__(self, state: DataStatus):
         """
         :param ~spinn_utilities.data.DataStatus state:
             State writer should be in
@@ -73,7 +74,7 @@ class UtilsDataWriter(UtilsDataView):
                 "Writers can only be created by mock or setup")
 
     @classmethod
-    def mock(cls):
+    def mock(cls) -> UtilsDataWriter:
         """
         Creates a writer in mock mode.
 
@@ -95,7 +96,7 @@ class UtilsDataWriter(UtilsDataView):
         return cls(DataStatus.MOCKED)
 
     @classmethod
-    def setup(cls):
+    def setup(cls) -> UtilsDataWriter:
         """
         Creates a writer in normal mode.
 
@@ -106,7 +107,7 @@ class UtilsDataWriter(UtilsDataView):
         """
         return cls(DataStatus.SETUP)
 
-    def _mock(self):
+    def _mock(self) -> None:
         """
         This method should only be called by `mock` (via `__init__`).
         """
@@ -115,7 +116,7 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._reset_status = ResetStatus.NOT_SETUP
         self.__data._run_status = RunStatus.NOT_SETUP
 
-    def _setup(self):
+    def _setup(self) -> None:
         """
         This method should only be called by `setup` (via `__init__`).
         """
@@ -124,7 +125,7 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._reset_status = ResetStatus.SETUP
         self.__data._run_status = RunStatus.NOT_RUNNING
 
-    def start_run(self):
+    def start_run(self) -> None:
         """
         Puts all data into the state expected after `do_run_loop` started.
         """
@@ -135,7 +136,7 @@ class UtilsDataWriter(UtilsDataView):
                 f"{self.__data._run_status}")
         self.__data._run_status = RunStatus.IN_RUN
 
-    def finish_run(self):
+    def finish_run(self) -> None:
         """
         Puts all data into the state expected after `sim.run` ends.
         """
@@ -150,14 +151,14 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._requires_data_generation = False
         self.__data._requires_mapping = False
 
-    def _hard_reset(self):
+    def _hard_reset(self) -> None:
         """
         This method should only be called by `hard_setup`.
         """
         self.__data._hard_reset()
         self.__data._reset_status = ResetStatus.HARD_RESET
 
-    def hard_reset(self):
+    def hard_reset(self) -> None:
         """
         Puts all data back into the state expected at graph changed and
         `sim.reset`.
@@ -181,14 +182,14 @@ class UtilsDataWriter(UtilsDataView):
             f"Unexpected call to reset while reset status is "
             f"{self.__data._reset_status}")
 
-    def _soft_reset(self):
+    def _soft_reset(self) -> None:
         """
         This method should only be called from `soft_reset`.
         """
         self.__data._soft_reset()
         self.__data._reset_status = ResetStatus.SOFT_RESET
 
-    def soft_reset(self):
+    def soft_reset(self) -> None:
         """
         Puts all data back into the state expected at `sim.reset` but where the
         graph has not changed.
@@ -206,7 +207,7 @@ class UtilsDataWriter(UtilsDataView):
             f"Unexpected call to reset while reset status is "
             f"{self.__data._reset_status}")
 
-    def request_stop(self):
+    def request_stop(self) -> None:
         """
         Used to indicate a user has requested a stop.
 
@@ -219,7 +220,7 @@ class UtilsDataWriter(UtilsDataView):
                 f"{self.__data._run_status}")
         self.__data._run_status = RunStatus.STOP_REQUESTED
 
-    def stopping(self):
+    def stopping(self) -> None:
         """
         Puts all data into the state expected during stop.
 
@@ -235,7 +236,7 @@ class UtilsDataWriter(UtilsDataView):
                 f" {self.__data._run_status}")
         self.__data._run_status = RunStatus.STOPPING
 
-    def shut_down(self):
+    def shut_down(self) -> None:
         """
         Puts all data into the state expected after `sim.end`.
 
@@ -247,7 +248,7 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._data_status = DataStatus.SHUTDOWN
         self.__data._run_status = RunStatus.SHUTDOWN
 
-    def get_report_dir_path(self):
+    def get_report_dir_path(self) -> str:
         """
         Returns path to existing reports directory.
 
@@ -265,7 +266,7 @@ class UtilsDataWriter(UtilsDataView):
             return self.__data._report_dir_path
         raise self._exception("report_dir_path")
 
-    def set_run_dir_path(self, run_dir_path):
+    def set_run_dir_path(self, run_dir_path: str):
         """
         Checks and sets the `run_dir_path`.
 
@@ -278,7 +279,7 @@ class UtilsDataWriter(UtilsDataView):
             self.__data._run_dir_path = None
             raise InvalidDirectory("run_dir_path", run_dir_path)
 
-    def set_report_dir_path(self, reports_dir_path):
+    def set_report_dir_path(self, reports_dir_path: str):
         """
         Checks and sets the `reports_dir_path`.
 
@@ -291,7 +292,7 @@ class UtilsDataWriter(UtilsDataView):
             self.__data._report_dir_path = None
             raise InvalidDirectory("run_dir_path", reports_dir_path)
 
-    def _set_executable_finder(self, executable_finder):
+    def _set_executable_finder(self, executable_finder: ExecutableFinder):
         """
         Only usable by unit tests!
 

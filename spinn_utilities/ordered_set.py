@@ -15,7 +15,7 @@
 from collections import OrderedDict
 from collections.abc import MutableSet
 from typing import (
-    Any, Dict, Set, Iterable, Iterator, Optional, Generic, TypeVar)
+    Any, Dict, Iterable, Iterator, Optional, Generic, TypeVar)
 
 T = TypeVar("T")
 
@@ -25,7 +25,7 @@ class OrderedSet(MutableSet[T], Generic[T]):
         "_map",
     )
 
-    def __init__(self, iterable: Optional[Set[T]] = None):
+    def __init__(self, iterable: Optional[Iterable[T]] = None):
         # pylint: disable=super-init-not-called
         # Always use OrderedDict as plain dict does not support
         # __reversed__ and key indexing
@@ -33,7 +33,7 @@ class OrderedSet(MutableSet[T], Generic[T]):
 
         # or is overridden in mutable set; calls add on each element
         if iterable is not None:
-            self |= iterable
+            self.update(iterable)
 
     def add(self, value: T):
         if value not in self._map:

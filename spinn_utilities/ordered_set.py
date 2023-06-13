@@ -20,7 +20,7 @@ from typing import (
 T = TypeVar("T")
 
 
-class OrderedSet(MutableSet[T], Generic[T]):
+class OrderedSet(MutableSet, Generic[T]):
     __slots__ = (
         "_map",
     )

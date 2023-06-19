@@ -1,4 +1,4 @@
-# Copyright (c) 2021 The University of Manchester
+# Copyright (c) 2017 The University of Manchester
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,17 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
-
-
-class ResetStatus(Enum):
-    """
-    Different states the reset could be in.
-
-    This class is design to used internally by UtilsDataView.
-    """
-    NOT_SETUP = (0)
-    SETUP = (1)
-    HAS_RUN = (2)
-    SOFT_RESET = (3)
-    HARD_RESET = (4)
+"""
+Bits and pieces of generic types.
+"""

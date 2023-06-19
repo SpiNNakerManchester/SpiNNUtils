@@ -32,12 +32,9 @@ class DataStatus(Enum):
     #: The system has been shut down.
     SHUTDOWN = (3, ShutdownException)
 
-    def __new__(cls, value, exception):
-        # pylint: disable=protected-access
-        obj = object.__new__(cls)
-        obj._value_ = value
-        obj._exception = exception
-        return obj
+    def __init__(self, value, exception):
+        self._value_ = value
+        self._exception = exception
 
     def exception(self, data):
         """

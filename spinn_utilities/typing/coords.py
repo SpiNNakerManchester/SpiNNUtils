@@ -1,4 +1,4 @@
-# Copyright (c) 2021 The University of Manchester
+# Copyright (c) 2023 The University of Manchester
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,17 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
+"""
+Types for coordinates.
+"""
 
+from typing import Tuple
+from typing_extensions import TypeAlias
 
-class ResetStatus(Enum):
-    """
-    Different states the reset could be in.
+#: The type of X,Y pairs.
+XY: TypeAlias = Tuple[int, int]
 
-    This class is design to used internally by UtilsDataView.
-    """
-    NOT_SETUP = (0)
-    SETUP = (1)
-    HAS_RUN = (2)
-    SOFT_RESET = (3)
-    HARD_RESET = (4)
+#: The tyoe of JSON objects.
+XYP: TypeAlias = Tuple[int, int, int]

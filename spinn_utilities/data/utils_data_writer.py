@@ -14,6 +14,7 @@
 from __future__ import annotations
 import os.path
 import logging
+from typing_extensions import Self
 from spinn_utilities.exceptions import (
     IllegalWriterException, InvalidDirectory, SimulatorNotRunException,
     UnexpectedStateChange)
@@ -74,7 +75,7 @@ class UtilsDataWriter(UtilsDataView):
                 "Writers can only be created by mock or setup")
 
     @classmethod
-    def mock(cls) -> UtilsDataWriter:
+    def mock(cls) -> Self:
         """
         Creates a writer in mock mode.
 
@@ -96,7 +97,7 @@ class UtilsDataWriter(UtilsDataView):
         return cls(DataStatus.MOCKED)
 
     @classmethod
-    def setup(cls) -> UtilsDataWriter:
+    def setup(cls) -> Self:
         """
         Creates a writer in normal mode.
 

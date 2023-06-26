@@ -22,5 +22,5 @@ from typing_extensions import TypeAlias
 #: The type of X,Y pairs.
 XY: TypeAlias = Tuple[int, int]
 
-#: The tyoe of JSON objects.
+#: The type of X,Y,P triples.
 XYP: TypeAlias = Tuple[int, int, int]

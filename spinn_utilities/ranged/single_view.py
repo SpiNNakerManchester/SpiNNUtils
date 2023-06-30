@@ -11,11 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Dict, Generic, Iterable, Optional, Tuple, overload
+from __future__ import annotations
+from typing import (
+    Dict, Generic, Iterable, Optional, Tuple, overload, TYPE_CHECKING)
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, T, _StrSeq
 from .abstract_view import AbstractView
-from spinn_utilities.ranged.range_dictionary import RangeDictionary
+if TYPE_CHECKING:
+    from .range_dictionary import RangeDictionary
 
 
 class _SingleView(AbstractView[T], Generic[T]):

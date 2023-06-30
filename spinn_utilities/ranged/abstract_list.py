@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from __future__ import annotations
 import numbers
 import numpy
 from typing import (
@@ -484,7 +484,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :return: Default value
         """
 
-    def __add__(self, other) -> 'AbstractList[float]':
+    def __add__(self, other) -> AbstractList[float]:
         """
         Support for ``new_list = list1 + list2``.
         Applies the add operator over this and other to create a new list.
@@ -505,7 +505,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         raise TypeError("__add__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __sub__(self, other) -> 'AbstractList[float]':
+    def __sub__(self, other) -> AbstractList[float]:
         """
         Support for ``new_list = list1 - list2``.
         Applies the subtract operator over this and other to create a new list.
@@ -526,7 +526,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         raise TypeError("__sub__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __mul__(self, other) -> 'AbstractList[float]':
+    def __mul__(self, other) -> AbstractList[float]:
         """
         Support for ``new_list = list1 * list2``.
         Applies the multiply operator over this and other.
@@ -547,7 +547,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         raise TypeError("__mul__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __truediv__(self, other) -> 'AbstractList[float]':
+    def __truediv__(self, other) -> AbstractList[float]:
         """
         Support for ``new_list = list1 / list2``.
         Applies the division operator over this and other to create a
@@ -571,7 +571,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         raise TypeError("__truediv__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __floordiv__(self, other) -> 'AbstractList[int]':
+    def __floordiv__(self, other) -> AbstractList[int]:
         """
         Support for ``new_list = list1 // list2``.
         Applies the floor division operator over this and other.
@@ -593,7 +593,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
                         "RangedLists and numerical Values")
 
     def apply_operation(
-            self, operation: Callable[[T], T]) -> 'AbstractList[T]':
+            self, operation: Callable[[T], T]) -> AbstractList[T]:
         """
         Applies a function on the list to create a new one.
         The values of the new list are created on the fly so any changes

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from __future__ import annotations
 from typing import (
     Callable, Generic, List, Iterable, Optional, Sequence, Tuple, Union, cast)
 from typing_extensions import TypeAlias, TypeGuard
@@ -561,7 +561,7 @@ class RangedList(AbstractList[T], Generic[T]):
         except AttributeError as e:
             raise AttributeError("Default value not set.") from e
 
-    def copy_into(self, other: 'RangedList[T]'):
+    def copy_into(self, other: RangedList[T]):
         """
         Turns this List into a of the other list but keep its ID.
 
@@ -579,7 +579,7 @@ class RangedList(AbstractList[T], Generic[T]):
         else:
             self._ranges.extend(other)
 
-    def copy(self) -> 'RangedList[T]':
+    def copy(self) -> RangedList[T]:
         """
         Creates a copy of this list.
 
@@ -589,7 +589,7 @@ class RangedList(AbstractList[T], Generic[T]):
         :return: The copy
         :rtype: RangedList
         """
-        clone: 'RangedList[T]' = RangedList(
+        clone: RangedList[T] = RangedList(
             self._size, self._default, self._key)
         clone.copy_into(self)
         return clone

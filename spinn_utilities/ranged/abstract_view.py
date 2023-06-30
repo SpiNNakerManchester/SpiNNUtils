@@ -11,10 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Generic, Iterable, Union
+from __future__ import annotations
+from typing import Generic, Iterable, Union, TYPE_CHECKING
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, T
-from .range_dictionary import RangeDictionary
+if TYPE_CHECKING:
+    from .range_dictionary import RangeDictionary
 
 
 class AbstractView(AbstractDict[T], Generic[T]):
@@ -62,7 +64,7 @@ class AbstractView(AbstractDict[T], Generic[T]):
             return self._range_dict.view_factory(ids[key])
         return self._range_dict.view_factory([ids[i] for i in key])
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: T):
         """
         See :py:meth:`AbstractDict.set_value`
 

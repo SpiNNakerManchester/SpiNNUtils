@@ -11,18 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
 from typing import (
     Dict, Iterable, Iterator, Optional, Sequence, Tuple, Union,
-    Generic, overload)
+    Generic, overload, TYPE_CHECKING)
 from typing_extensions import TypeAlias
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, T, _StrSeq
 from .abstract_sized import AbstractSized
-from .abstract_view import AbstractView
 from .ids_view import _IdsView
 from .ranged_list import RangedList
 from .single_view import _SingleView
 from .slice_view import _SliceView
+if TYPE_CHECKING:
+    from .abstract_view import AbstractView
 
 _KeyType: TypeAlias = Union[int, slice, Iterable[int]]
 _Range: TypeAlias = Tuple[int, int, T]
@@ -515,7 +517,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     def get_default(self, key: str) -> T:
         return self._value_lists[key].get_default()
 
-    def copy_into(self, other: 'RangeDictionary[T]'):
+    def copy_into(self, other: RangeDictionary[T]):
         """
         Turns this dict into a copy of the other dict but keep its id.
 
@@ -534,7 +536,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
                     len(value), key=key)
                 self._value_lists[key].copy_into(value)
 
-    def copy(self) -> 'RangeDictionary[T]':
+    def copy(self) -> RangeDictionary[T]:
         """
         Make a copy of this dictionary. Inner ranged entities are deep copied,
         inner leaf values are shallow copied.
@@ -542,6 +544,6 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         :return: The copy.
         :rtype: RangeDictionary
         """
-        copy: 'RangeDictionary[T]' = RangeDictionary(self._size)
+        copy: RangeDictionary[T] = RangeDictionary(self._size)
         copy.copy_into(self)
         return copy

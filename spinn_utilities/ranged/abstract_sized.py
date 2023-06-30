@@ -15,9 +15,27 @@
 import itertools
 import logging
 import sys
+from typing import Any, Sequence, Sized, Tuple, Union
+from typing_extensions import TypeAlias, TypeGuard
 import numpy
 
 logger = logging.getLogger(__file__)
+
+#: The type of selectors
+Selector: TypeAlias = Union[
+    None, int, numpy.integer, slice, Sequence[Union[bool, numpy.bool_]],
+    Sequence[Union[int, numpy.integer]]]
+
+
+def _is_iterable_selector(selector: Selector) -> TypeGuard[
+        Union[Sequence[Union[bool, numpy.bool_]],
+              Sequence[Union[int, numpy.integer]]]]:
+    # Check selector is an iterable using pythonic try
+    try:
+        iterator = iter(selector)  # type: ignore[arg-type]
+    except TypeError:
+        return False
+    return iterator is not None
 
 
 class AbstractSized(object):
@@ -29,14 +47,14 @@ class AbstractSized(object):
     __slots__ = (
         "_size")
 
-    def __init__(self, size):
+    def __init__(self, size: Union[int, float]):
         """
         :param int size: Fixed length of the list.
         """
         # Strictly doesn't need to be int, but really should be!
         self._size = max(int(round(size)), 0)
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         Size of the list, irrespective of actual values.
 
@@ -45,13 +63,13 @@ class AbstractSized(object):
         return self._size
 
     @staticmethod
-    def _is_id_type(the_id):
+    def _is_id_type(the_id: Any) -> bool:
         """
         Check if the given ID has a type acceptable for IDs.
         """
         return isinstance(the_id, int)
 
-    def _check_id_in_range(self, the_id):
+    def _check_id_in_range(self, the_id: int):
         if the_id < 0:
             if self._is_id_type(the_id):
                 raise IndexError(f"The index {the_id} is out of range.")
@@ -62,7 +80,8 @@ class AbstractSized(object):
                 raise IndexError(f"The index {the_id} is out of range.")
             raise TypeError(f"Invalid argument type {type(the_id)}.")
 
-    def _check_slice_in_range(self, slice_start, slice_stop):
+    def _check_slice_in_range(
+            self, slice_start: int, slice_stop: int) -> Tuple[int, int]:
         if slice_start is None:
             slice_start = 0
         elif slice_start < 0:
@@ -130,7 +149,7 @@ class AbstractSized(object):
             slice_stop = self._size
         return slice_start, slice_stop
 
-    def _check_mask_size(self, selector):
+    def _check_mask_size(self, selector: Sized) -> None:
         if len(selector) < self._size:
             logger.warning(
                 "The boolean mask is too short. The expected length was %d "
@@ -142,7 +161,7 @@ class AbstractSized(object):
                 "but the length was only %d. All the missing entries will be "
                 "ignored!", self._size, len(selector))
 
-    def selector_to_ids(self, selector, warn=False):
+    def selector_to_ids(self, selector: Selector, warn=False) -> Sequence[int]:
         """
         Gets the list of IDs covered by this selector.
         The types of selector currently supported are:
@@ -174,13 +193,7 @@ class AbstractSized(object):
             If True, this method will warn about problems with the selector.
         :return: a (possibly sorted) list of IDs
         """
-        # Check selector is an iterable using pythonic try
-        try:
-            iterator = iter(selector)
-        except TypeError:
-            iterator = None
-
-        if iterator is not None:
+        if _is_iterable_selector(selector):
             # bool is superclass of int so if any are bools all must be
             if any(isinstance(item, (bool, numpy.bool_)) for item in selector):
                 if all(isinstance(item, (bool, numpy.bool_))
@@ -194,7 +207,7 @@ class AbstractSized(object):
             elif all(isinstance(item, (int, numpy.integer))
                      for item in selector):
                 # list converts any specific numpy types
-                ids = list(selector)
+                ids = list(map(int, selector))
                 for _id in ids:
                     if _id < 0:
                         raise TypeError(

@@ -11,19 +11,40 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from typing import (
+    Dict, FrozenSet, Iterable, MutableSequence, Optional, Sequence, Tuple,
+    Union,
+    Generic, TypeVar, overload)
+from typing_extensions import TypeAlias
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
+#: :meta private:
+T = TypeVar("T")
+_StrSeq: TypeAlias = Union[
+    MutableSequence[str], Tuple[str, ...], FrozenSet[str]]
+_Keys: TypeAlias = Union[None, str, _StrSeq]
 
 
-class AbstractDict(object, metaclass=AbstractBase):
+class AbstractDict(Generic[T], metaclass=AbstractBase):
     """
     Base class for the :py:class:`RangeDictionary` and *all* views.
     This allows the users to not have to worry if they have a view.
     """
-    __slots__ = []
+    __slots__ = ()
+
+    @overload
+    def get_value(self, key: str) -> T:
+        ...
+
+    @overload
+    def get_value(self, key: None) -> Dict[str, T]:
+        ...
+
+    @overload
+    def get_value(self, key: _StrSeq) -> Dict[str, T]:
+        ...
 
     @abstractmethod
-    def get_value(self, key):
+    def get_value(self, key: _Keys) -> Union[T, Dict[str, T]]:
         """
         Gets a single shared value for all IDs covered by this view.
 
@@ -38,7 +59,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         """
 
     @abstractmethod
-    def keys(self):
+    def keys(self) -> Iterable[str]:
         """
         Returns the keys in the dictionary
 
@@ -46,7 +67,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         """
 
     @abstractmethod
-    def set_value(self, key, value, use_list_as_value=False):
+    def set_value(self, key: str, value: T, use_list_as_value: bool = False):
         """
         Resets a already existing key to the new value.
         All IDs in the whole range or view will have this key set.
@@ -69,7 +90,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         """
 
     @abstractmethod
-    def ids(self):
+    def ids(self) -> Sequence[int]:
         """
         Returns the IDs in range or view.
         If the view is setup with IDs out of numerical order the order used
@@ -83,6 +104,15 @@ class AbstractDict(object, metaclass=AbstractBase):
         :return: list of IDs
         :rtype: list(int)
         """
+
+    @overload
+    def iter_all_values(self, key: str, update_save=False) -> Iterable[T]:
+        ...
+
+    @overload
+    def iter_all_values(self, key: Optional[_StrSeq],
+                        update_save: bool = False) -> Iterable[Dict[str, T]]:
+        ...
 
     @abstractmethod
     def iter_all_values(self, key, update_save=False):
@@ -102,7 +132,22 @@ class AbstractDict(object, metaclass=AbstractBase):
             yields dictionary objects
         """
 
-    def get_ranges(self, key=None):
+    @overload
+    def get_ranges(self, key: None = None) -> Sequence[Tuple[
+            int, int, Dict[str, T]]]:
+        ...
+
+    @overload
+    def get_ranges(self, key: str) -> Sequence[Tuple[int, int, T]]:
+        ...
+
+    @overload
+    def get_ranges(self, key: _StrSeq) -> Sequence[Tuple[
+            int, int, Dict[str, T]]]:
+        ...
+
+    def get_ranges(self, key: _Keys = None) -> Sequence[Tuple[
+            int, int, Union[T, Dict[str, T]]]]:
         """
         Lists the ranges(s) for all IDs covered by this view.
         There will be one yield for each range which may cover one or
@@ -122,6 +167,15 @@ class AbstractDict(object, metaclass=AbstractBase):
             `value` is a dictionary object
         """
         return list(self.iter_ranges(key=key))
+
+    @overload
+    def iter_ranges(self, key: str) -> Iterable[Tuple[int, int, T]]:
+        ...
+
+    @overload
+    def iter_ranges(self, key: Optional[_StrSeq]) -> Iterable[Tuple[
+            int, int, Dict[str, T]]]:
+        ...
 
     @abstractmethod
     def iter_ranges(self, key=None):
@@ -146,7 +200,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         """
 
     @abstractmethod
-    def get_default(self, key):
+    def get_default(self, key: str) -> T:
         """
         Gets the default value for a single key.
         Unless changed, the default is the original value.
@@ -160,7 +214,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         :return: default for this key.
         """
 
-    def items(self):
+    def items(self) -> Sequence[Tuple[str, T]]:
         """
         Returns a list of (``key``, ``value``) tuples.
         Works only if the whole ranges/view has single values.
@@ -180,7 +234,7 @@ class AbstractDict(object, metaclass=AbstractBase):
             results.append((key, value))
         return results
 
-    def iteritems(self):
+    def iteritems(self) -> Iterable[Tuple[str, T]]:
         """
         Iterates over the (``key``, ``value``) tuples.
         Works only if the whole ranges/view has single values.
@@ -200,7 +254,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         for key in self.keys():
             yield (key, self.get_value(key))
 
-    def values(self):
+    def values(self) -> Sequence[T]:
         """
         Returns a list of values.
         Works only if the whole ranges/view has single values.
@@ -219,7 +273,7 @@ class AbstractDict(object, metaclass=AbstractBase):
             results.append(value)
         return results
 
-    def itervalues(self):
+    def itervalues(self) -> Iterable[T]:
         """
         Iterates over the values.
         Works only if the whole ranges/view has single values.
@@ -238,7 +292,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         for key in self.keys():
             yield self.get_value(key)
 
-    def __contains__(self, key):
+    def __contains__(self, key: Union[str, int]) -> bool:
         """
         Checks if the key is a dictionary key or a range ID.
 
@@ -254,7 +308,7 @@ class AbstractDict(object, metaclass=AbstractBase):
             return key in self.ids()
         raise KeyError(f"Unexpected key type: {type(key)}")
 
-    def has_key(self, key):
+    def has_key(self, key: str) -> bool:
         """
         As the Deprecated dict ``has_keys`` function.
 
@@ -268,7 +322,7 @@ class AbstractDict(object, metaclass=AbstractBase):
         """
         return key in self.keys()
 
-    def reset(self, key):
+    def reset(self, key: str):
         """
         Sets the value(s) for a single key back to the default value.
 

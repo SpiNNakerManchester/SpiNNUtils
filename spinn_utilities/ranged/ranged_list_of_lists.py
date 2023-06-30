@@ -12,17 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Generic, List, TypeVar
 from spinn_utilities.helpful_functions import is_singleton
 from spinn_utilities.overrides import overrides
 from .ranged_list import RangedList
+#: :meta hidden:
+T = TypeVar("T")
 
 
-class RangedListOfList(RangedList):
+class RangedListOfList(RangedList[List[T]], Generic[T]):
 
     # pylint: disable=unused-argument
     @staticmethod
     @overrides(RangedList.is_list)
-    def is_list(value, size):  # @UnusedVariable
+    def is_list(value, size: int) -> bool:  # @UnusedVariable
         if callable(value):
             return True
         if is_singleton(value):

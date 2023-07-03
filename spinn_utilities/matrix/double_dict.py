@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Generic, Mapping, Union, overload, cast
+from typing import Generic, Mapping, Type, Union, overload, cast
 from .abstract_matrix import AbstractMatrix
 from .x_view import XView
 from .y_view import YView
@@ -24,7 +24,7 @@ class DoubleDict(Generic[T, X, Y]):
         "_matrix", "_xtype", "_ytype"]
 
     def __init__(
-            self, xtype: type[X], ytype: type[Y],
+            self, xtype: Type[X], ytype: Type[Y],
             matrix: AbstractMatrix[T, X, Y]):
         self._xtype = xtype
         self._ytype = ytype

@@ -110,10 +110,9 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, AbstractList):
             if self.range_based and other.range_based:
-                return numpy.array_equal(list(self.iter_ranges()),
-                                         list(other.iter_ranges()))
-        return numpy.array_equal(
-            list(self), list(other))  # type: ignore[arg-type]
+                return _eq(list(self.iter_ranges()),
+                           list(other.iter_ranges()))
+        return _eq(list(self), list(other))
 
     def __ne__(self, other: Any) -> bool:
         if not isinstance(other, AbstractList):
@@ -466,7 +465,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
             while id_value >= ranges[range_pointer][1]:
                 range_pointer += 1
             if result is not None:
-                if (result[1] == id_value and numpy.array_equal(
+                if (result[1] == id_value and _eq(
                         result[2], ranges[range_pointer][2])):
                     result = (result[0], id_value + 1, result[2])
                     continue

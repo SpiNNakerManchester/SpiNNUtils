@@ -26,6 +26,7 @@ from spinn_utilities import logger_utils
 import spinn_utilities
 
 logger = FormatAdapter(logging.getLogger(__name__))
+#: :meta private:
 T = TypeVar("T")
 
 

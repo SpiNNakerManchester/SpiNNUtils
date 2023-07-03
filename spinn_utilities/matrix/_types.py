@@ -11,24 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Generic
-from .abstract_matrix import AbstractMatrix
-from ._types import T, X, Y
 
+from typing import TypeVar
 
-class YView(Generic[T, X, Y]):
-    """
-    A view along a particular y-slice of a 2D matrix.
-    """
-    __slots__ = (
-        "_matrix", "_y")
+#: Type of values in an abstract matrix.
+T = TypeVar("T")
 
-    def __init__(self, y: Y, matrix: AbstractMatrix[T, X, Y]):
-        self._y = y
-        self._matrix = matrix
+#: Type of X-dimension keys in an abstract matrix.
+X = TypeVar("X")
 
-    def __getitem__(self, key: X) -> T:
-        return self._matrix.get_data(x=key, y=self._y)
-
-    def __setitem__(self, key: X, value: T):
-        self._matrix.set_data(x=key, y=self._y, value=value)
+#: Type of Y-dimension keys in an abstract matrix.
+Y = TypeVar("Y")

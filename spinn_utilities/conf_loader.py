@@ -13,17 +13,22 @@
 # limitations under the License.
 
 import appdirs
-import configparser
+from configparser import RawConfigParser, NoOptionError
 import logging
 import os
+from typing import Callable, Dict, List, Sequence, Tuple, Union
+from typing_extensions import TypeAlias
 from spinn_utilities import log
 from spinn_utilities.configs import (
     CamelCaseConfigParser, ConfigTemplateException,
     NoConfigFoundException, UnexpectedConfigException)
 logger = log.FormatAdapter(logging.getLogger(__name__))
+_SectionParser: TypeAlias = Callable[[CamelCaseConfigParser], None]
 
 
-def install_cfg_and_IOError(filename, defaults, config_locations):
+def install_cfg_and_IOError(
+        filename: str, defaults: List[str],
+        config_locations: List[str]) -> NoConfigFoundException:
     """
     Installs a local configuration file based on the templates and raises
     an exception.
@@ -90,7 +95,7 @@ def install_cfg_and_IOError(filename, defaults, config_locations):
     return NoConfigFoundException(msg)
 
 
-def logging_parser(config):
+def logging_parser(config: CamelCaseConfigParser):
     """
     Create the root logger with the given level.
 
@@ -105,13 +110,15 @@ def logging_parser(config):
             level = config.get("Logging", "default").upper()
             logging.basicConfig(level=level)
         for handler in logging.root.handlers:
-            handler.addFilter(log.ConfiguredFilter(config))
+            handler.addFilter(
+                log.ConfiguredFilter(config))  # type: ignore[arg-type]
             handler.setFormatter(log.ConfiguredFormatter(config))
-    except configparser.NoOptionError:
+    except NoOptionError:
         pass
 
 
-def _check_config(cfg_file, default_configs, strict):
+def _check_config(
+        cfg_file: str, default_configs: CamelCaseConfigParser, strict: bool):
     """
     Checks the configuration read up to this point to see if it is outdated.
 
@@ -153,7 +160,9 @@ def _check_config(cfg_file, default_configs, strict):
             logger.warning(msg)
 
 
-def _read_a_config(configuration, cfg_file, default_configs, strict):
+def _read_a_config(
+        configuration: CamelCaseConfigParser, cfg_file: str,
+        default_configs: CamelCaseConfigParser, strict: bool):
     """
     Reads in a configuration file and then directly its `machine_spec_file`.
 
@@ -173,7 +182,7 @@ def _read_a_config(configuration, cfg_file, default_configs, strict):
         configuration.remove_option("Machine", "machine_spec_file")
 
 
-def _config_locations(filename):
+def _config_locations(filename: str) -> List[str]:
     """
     Defines the list of places we can get configuration files from.
 
@@ -194,7 +203,10 @@ def _config_locations(filename):
             user_home_cfg_file]
 
 
-def load_config(filename, defaults, config_parsers=None):
+def load_config(
+        filename: str, defaults: List[str], config_parsers: Union[
+            Sequence[Tuple[str, _SectionParser]],
+            Dict[str, _SectionParser]] = ()) -> RawConfigParser:
     """
     Load the configuration.
 
@@ -205,10 +217,11 @@ def load_config(filename, defaults, config_parsers=None):
         The list of files to get default configurations from.
     :param config_parsers:
         The parsers to parse the sections of the configuration file with, as
-        a list of (section name, parser); a configuration section will only
+        a list of (section name, parser) or a dictionary from section name to
+        parser; a configuration section will only
         be parsed if the section_name is found in the configuration files
         already loaded. The standard logging parser is appended to (a copy
-        of) this list.
+        of) this.
     :type config_parsers: list(tuple(str, ~configparser.RawConfigParser))
     :return: the fully-loaded and checked configuration
     :rtype: ~configparser.RawConfigParser
@@ -234,14 +247,12 @@ def load_config(filename, defaults, config_parsers=None):
     cfg_file = os.path.join(os.curdir, filename)
     _read_a_config(configs, cfg_file, default_configs, True)
 
-    parsers = list()
-    if config_parsers is not None:
-        parsers.extend(config_parsers)
-    parsers.append(("Logging", logging_parser))
+    parsers = dict(config_parsers)
+    parsers["Logging"] = logging_parser
 
-    for section, parser in parsers:
+    for section in parsers:
         if configs.has_section(section):
-            parser(configs)
+            parsers[section](configs)
 
     # Log which configs files we read
     print(configs.read_files)

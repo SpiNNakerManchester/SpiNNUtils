@@ -17,6 +17,7 @@ from collections.abc import MutableSet
 from typing import (
     Any, Dict, Iterable, Iterator, Optional, Generic, TypeVar)
 
+#: :meta private:
 T = TypeVar("T")
 
 

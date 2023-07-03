@@ -13,21 +13,23 @@
 # limitations under the License.
 
 from collections import defaultdict
+from typing import Dict, Generic
 from spinn_utilities.overrides import overrides
 from .abstract_matrix import AbstractMatrix
+from ._types import T, X, Y
 
 
-class DemoMatrix(AbstractMatrix):
-    __slots__ = [
-        "data"]
+class DemoMatrix(AbstractMatrix[T, X, Y], Generic[T, X, Y]):
+    __slots__ = (
+        "data")
 
-    def __init__(self):
-        self.data = defaultdict(dict)
+    def __init__(self) -> None:
+        self.data: Dict[X, Dict[Y, T]] = defaultdict(dict)
 
     @overrides(AbstractMatrix.get_data)
-    def get_data(self, x, y):
+    def get_data(self, x: X, y: Y) -> T:
         return self.data[x][y]
 
     @overrides(AbstractMatrix.set_data)
-    def set_data(self, x, y, value):
+    def set_data(self, x: X, y: Y, value: T):
         self.data[x][y] = value

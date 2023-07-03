@@ -16,7 +16,7 @@ from typing import Generic, List, TypeVar
 from spinn_utilities.helpful_functions import is_singleton
 from spinn_utilities.overrides import overrides
 from .ranged_list import RangedList
-#: :meta hidden:
+#: :meta private:
 T = TypeVar("T")
 
 

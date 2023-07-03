@@ -20,7 +20,7 @@ from spinn_utilities.data.utils_data_writer import UtilsDataWriter
 BASE_CONFIG_FILE = "spinn_utilities.cfg"
 
 
-def unittest_setup():
+def unittest_setup() -> None:
     """
     Resets the configurations so only the local default configuration is
     included.
@@ -35,5 +35,5 @@ def unittest_setup():
     UtilsDataWriter.mock()
 
 
-def add_spinn_utilities_cfg():
+def add_spinn_utilities_cfg() -> None:
     add_default_cfg(os.path.join(os.path.dirname(__file__), BASE_CONFIG_FILE))

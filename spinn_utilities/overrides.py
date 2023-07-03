@@ -13,6 +13,14 @@
 # limitations under the License.
 
 import inspect
+from typing import Callable, Iterable, Optional, TypeVar
+from typing_extensions import ParamSpec, TypeAlias
+#: :meta private:
+P = ParamSpec("P")
+#: :meta private:
+T = TypeVar("T")
+#: :meta private:
+Method: TypeAlias = Callable[P, T]
 
 
 class overrides(object):
@@ -39,8 +47,9 @@ class overrides(object):
     ]
 
     def __init__(
-            self, super_class_method, extend_doc=True,
-            additional_arguments=None, extend_defaults=False):
+            self, super_class_method: Method, extend_doc=True,
+            additional_arguments: Optional[Iterable[str]] = None,
+            extend_defaults=False):
         """
         :param super_class_method: The method to override in the superclass
         :param bool extend_doc:
@@ -58,10 +67,10 @@ class overrides(object):
         self._extend_defaults = bool(extend_defaults)
         self._relax_name_check = False
         self._override_name = "super class method"
-        if additional_arguments is None:
-            self._additional_arguments = {}
-        else:
+        if additional_arguments is not None:
             self._additional_arguments = frozenset(additional_arguments)
+        else:
+            self._additional_arguments = frozenset()
         if isinstance(super_class_method, property):
             self._superclass_method = super_class_method.fget
 
@@ -75,7 +84,7 @@ class overrides(object):
             return len(default_args) >= len(super_defaults)
         return len(default_args) == len(super_defaults)
 
-    def __verify_method_arguments(self, method):
+    def __verify_method_arguments(self, method: Method):
         """
         Check that the arguments match.
         """
@@ -101,7 +110,7 @@ class overrides(object):
             raise AttributeError(
                 f"Default arguments don't match {self._override_name}")
 
-    def __call__(self, method):
+    def __call__(self, method: Method) -> Method:
         """
         Apply the decorator to the given method.
         """
@@ -131,5 +140,5 @@ class overrides(object):
         elif (self._extend_doc and
                 self._superclass_method.__doc__ is not None):
             method.__doc__ = (
-                self._superclass_method.__doc__ + method.__doc__)
+                self._superclass_method.__doc__ + (method.__doc__ or ""))
         return method

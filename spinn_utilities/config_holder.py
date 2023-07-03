@@ -14,6 +14,7 @@
 
 import logging
 import os
+from typing import List, Optional
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
@@ -22,7 +23,7 @@ from spinn_utilities.log import FormatAdapter
 # pylint: disable=global-statement
 logger = FormatAdapter(logging.getLogger(__file__))
 
-__config = None
+__config: Optional[CamelCaseConfigParser] = None
 __default_config_files = []
 __config_file = None
 __unittest_mode = False
@@ -100,7 +101,7 @@ def load_config():
             __config.read(default)
 
 
-def get_config_str(section, option):
+def get_config_str(section: str, option: str) -> Optional[str]:
     """
     Get the string value of a configuration option.
 
@@ -109,6 +110,8 @@ def get_config_str(section, option):
     :return: The option value
     :rtype: str or None
     """
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     try:
         return __config.get_str(section, option)
     except AttributeError:
@@ -117,7 +120,8 @@ def get_config_str(section, option):
     return __config.get_str(section, option)
 
 
-def get_config_str_list(section, option, token=","):
+def get_config_str_list(
+        section: str, option: str, token: str = ",") -> List[str]:
     """
     Get the string value of a configuration option split into a list.
 
@@ -127,6 +131,8 @@ def get_config_str_list(section, option, token=","):
     :return: The list (possibly empty) of the option values
     :rtype: list(str)
     """
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     try:
         return __config.get_str_list(section, option, token)
     except AttributeError:
@@ -135,7 +141,7 @@ def get_config_str_list(section, option, token=","):
     return __config.get_str_list(section, option, token)
 
 
-def get_config_int(section, option):
+def get_config_int(section: str, option: str) -> Optional[int]:
     """
     Get the integer value of a configuration option.
 
@@ -144,6 +150,8 @@ def get_config_int(section, option):
     :return: The option value
     :rtype: int
     """
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     try:
         return __config.get_int(section, option)
     except AttributeError:
@@ -152,7 +160,7 @@ def get_config_int(section, option):
     return __config.get_int(section, option)
 
 
-def get_config_float(section, option):
+def get_config_float(section: str, option: str) -> Optional[float]:
     """
     Get the float value of a configuration option.
 
@@ -161,6 +169,8 @@ def get_config_float(section, option):
     :return: The option value.
     :rtype: float
     """
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     try:
         return __config.get_float(section, option)
     except AttributeError:
@@ -169,7 +179,7 @@ def get_config_float(section, option):
     return __config.get_float(section, option)
 
 
-def get_config_bool(section, option):
+def get_config_bool(section: str, option: str) -> Optional[bool]:
     """
     Get the boolean value of a configuration option.
 
@@ -178,6 +188,8 @@ def get_config_bool(section, option):
     :return: The option value.
     :rtype: bool
     """
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     try:
         return __config.get_bool(section, option)
     except AttributeError:
@@ -186,7 +198,7 @@ def get_config_bool(section, option):
     return __config.get_bool(section, option)
 
 
-def set_config(section, option, value):
+def set_config(section: str, option: str, value: Optional[str]):
     """
     Sets the value of a configuration option.
 
@@ -206,12 +218,14 @@ def set_config(section, option, value):
             raise ConfigException(
                 "set_config should only be called by unittests "
                 "which should have called unittest_setup")
+        if __config is None:
+            raise ConfigException("configuration not loaded")
     __config.set(section, option, value)
     # Intentionally no try here to force tests that set to
     # load_default_configs before AND after
 
 
-def has_config_option(section, option):
+def has_config_option(section: str, option: str) -> bool:
     """
     Check if the section has this configuration option.
 
@@ -220,6 +234,8 @@ def has_config_option(section, option):
     :rtype: bool
     :return: True if and only if the option is defined. It may be `None`
     """
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     try:
         return __config.has_option(section, option)
     except AttributeError:
@@ -228,12 +244,14 @@ def has_config_option(section, option):
     return __config.has_option(section, option)
 
 
-def config_options(section):
+def config_options(section: str) -> List[str]:
     """
     Return a list of option names for the given section name.
 
     :param str section: What section to list options for.
     """
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     return __config.options(section)
 
 

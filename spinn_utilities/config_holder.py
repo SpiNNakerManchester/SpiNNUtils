@@ -110,13 +110,14 @@ def get_config_str(section: str, option: str) -> Optional[str]:
     :return: The option value
     :rtype: str or None
     """
-    if __config is None:
-        raise ConfigException("configuration not loaded")
     try:
-        return __config.get_str(section, option)
+        if __config is not None:
+            return __config.get_str(section, option)
     except AttributeError:
         pass
     _pre_load_config()
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     return __config.get_str(section, option)
 
 
@@ -131,13 +132,14 @@ def get_config_str_list(
     :return: The list (possibly empty) of the option values
     :rtype: list(str)
     """
-    if __config is None:
-        raise ConfigException("configuration not loaded")
     try:
-        return __config.get_str_list(section, option, token)
+        if __config is not None:
+            return __config.get_str_list(section, option, token)
     except AttributeError:
         pass
     _pre_load_config()
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     return __config.get_str_list(section, option, token)
 
 
@@ -150,13 +152,14 @@ def get_config_int(section: str, option: str) -> Optional[int]:
     :return: The option value
     :rtype: int
     """
-    if __config is None:
-        raise ConfigException("configuration not loaded")
     try:
-        return __config.get_int(section, option)
+        if __config is not None:
+            return __config.get_int(section, option)
     except AttributeError:
         pass
     _pre_load_config()
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     return __config.get_int(section, option)
 
 
@@ -169,13 +172,14 @@ def get_config_float(section: str, option: str) -> Optional[float]:
     :return: The option value.
     :rtype: float
     """
-    if __config is None:
-        raise ConfigException("configuration not loaded")
     try:
-        return __config.get_float(section, option)
+        if __config is not None:
+            return __config.get_float(section, option)
     except AttributeError:
         pass
     _pre_load_config()
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     return __config.get_float(section, option)
 
 
@@ -188,13 +192,14 @@ def get_config_bool(section: str, option: str) -> Optional[bool]:
     :return: The option value.
     :rtype: bool
     """
-    if __config is None:
-        raise ConfigException("configuration not loaded")
     try:
-        return __config.get_bool(section, option)
+        if __config is not None:
+            return __config.get_bool(section, option)
     except AttributeError:
         pass
     _pre_load_config()
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     return __config.get_bool(section, option)
 
 

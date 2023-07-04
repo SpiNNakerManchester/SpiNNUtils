@@ -29,7 +29,7 @@ class Base(object):
         return [x, y, z]
 
     @property
-    def boo(self):
+    def boo(self) -> int:
         return 123
 
 
@@ -185,22 +185,22 @@ def test_crazy_extends():
         "the last decorator before the method declaration"
 
 
-def test_overrides_property():
+def test_overrides_property() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
-            @overrides(Base.boo)
+            @overrides(Base.boo)  # type: ignore[misc]
             @property
-            def boo(self):
+            def boo(self) -> int:
                 return 1513
     assert str(e.value) == \
         "Please ensure that the overrides decorator is the last decorator "\
         "before the method declaration"
 
 
-def test_property_overrides():
+def test_property_overrides() -> None:
     class Sub(Base):
         @property
         @overrides(Base.boo)
-        def boo(self):
+        def boo(self) -> int:
             return 1513
     assert Sub().boo == 1513

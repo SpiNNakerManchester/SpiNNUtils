@@ -68,6 +68,17 @@ class abstractproperty(property):
         be observed as many times as the user of the class desires.
 
     .. warning::
+        This does *not* work with mypy type checking! When doing typed abstract
+        properties, you should instead do::
+
+            @property
+            @abstractmethod
+            def my_abstract_property(self) -> int:
+                ...
+
+        I assume that this is because ``@property`` is a special form in mypy.
+
+    .. warning::
         Implementations should be idempotent; fetching the property twice in a
         row should get an equivalent value with no (meaningful) change to the
         state of the object (assuming no other non-property methods of the

@@ -13,14 +13,9 @@
 # limitations under the License.
 
 import inspect
-from typing import Callable, Iterable, Optional, TypeVar
-from typing_extensions import ParamSpec, TypeAlias
+from typing import Any, Callable, Iterable, Optional, TypeVar
 #: :meta private:
-P = ParamSpec("P")
-#: :meta private:
-T = TypeVar("T")
-#: :meta private:
-Method: TypeAlias = Callable[P, T]
+Method = TypeVar("Method", bound=Callable[..., Any])
 
 
 class overrides(object):

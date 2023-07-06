@@ -12,26 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Generic, List, TypeVar
+from collections.abc import Sized
+from typing import (
+    Callable, Generic, List, Optional, Sequence, TypeVar, Union)
+from typing_extensions import TypeAlias
 from spinn_utilities.helpful_functions import is_singleton
-from spinn_utilities.overrides import overrides
 from .ranged_list import RangedList
 #: :meta private:
 T = TypeVar("T")
+_ValueType: TypeAlias = Optional[Union[
+    List[T], Callable[[int], List[T]], Sequence[List[T]]]]
 
 
 class RangedListOfList(RangedList[List[T]], Generic[T]):
-
     # pylint: disable=unused-argument
-    @staticmethod
-    @overrides(RangedList.is_list)
-    def is_list(value, size: int) -> bool:  # @UnusedVariable
+    def _is_list(self, value: _ValueType, size: int) -> bool:
         if callable(value):
             return True
         if is_singleton(value):
             raise TypeError(
                 "Value must be an iterable or iterable of iterables")
         try:
+            if not isinstance(value, Sized):
+                raise TypeError
             # Must be an iterable
             if len(value) == 0:
                 return False

@@ -13,7 +13,8 @@
 # limitations under the License.
 from __future__ import annotations
 from typing import (
-    Callable, Generic, List, Iterable, Optional, Sequence, Tuple, Union, cast)
+    Callable, Generic, List, Iterable, Iterator, Optional, Sequence, Tuple,
+    Union, cast, final)
 from typing_extensions import TypeAlias, TypeGuard
 from spinn_utilities.overrides import overrides
 from spinn_utilities.helpful_functions import is_singleton
@@ -173,7 +174,7 @@ class RangedList(AbstractList[T], Generic[T]):
                 raise MultipleValuesException(self._key, result, value)
         return result
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[T]:
         """
         Fast but *not* update-safe iterator of all elements.
 
@@ -191,7 +192,7 @@ class RangedList(AbstractList[T], Generic[T]):
                 yield value
 
     @overrides(AbstractList.iter_by_slice)
-    def iter_by_slice(self, slice_start: int, slice_stop: int) -> Iterable[T]:
+    def iter_by_slice(self, slice_start: int, slice_stop: int) -> Iterator[T]:
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
 
@@ -220,7 +221,7 @@ class RangedList(AbstractList[T], Generic[T]):
                 return
 
     @overrides(AbstractList.iter_ranges)
-    def iter_ranges(self) -> Iterable[_RangeType]:
+    def iter_ranges(self) -> Iterator[_RangeType]:
         # If range based just yield the ranges
         if self._ranged_based:
             yield from self.__the_ranges
@@ -245,7 +246,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     @overrides(AbstractList.iter_ranges_by_slice)
     def iter_ranges_by_slice(
-            self, slice_start: int, slice_stop: int) -> Iterable[_RangeType]:
+            self, slice_start: int, slice_stop: int) -> Iterator[_RangeType]:
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
 
@@ -275,8 +276,8 @@ class RangedList(AbstractList[T], Generic[T]):
         yield (previous_start, slice_stop, previous_value)
 
     # pylint: disable=unused-argument
-    @staticmethod
-    def is_list(value: _ValueType, size: int  # @UnusedVariable
+    @final
+    def is_list(self, value: _ValueType, size: int  # @UnusedVariable
                 ) -> TypeGuard[Union[Callable[[int], T], Sequence[T]]]:
         """
         Determines if the value should be treated as a list.
@@ -287,6 +288,9 @@ class RangedList(AbstractList[T], Generic[T]):
 
         :param value: The value to examine.
         """
+        return self._is_list(value, size)
+
+    def _is_list(self, value: _ValueType, size: int) -> bool:
         # Assume any iterable is a list
         if callable(value):
             return True
@@ -575,9 +579,9 @@ class RangedList(AbstractList[T], Generic[T]):
         # clear the list fast and 2.7 safe
         self._ranges *= 0
         if self._ranged_based:
-            self._ranges.extend(other.iter_ranges())
+            self.__the_ranges.extend(other.iter_ranges())
         else:
-            self._ranges.extend(other)
+            self.__the_values.extend(other)
 
     def copy(self) -> RangedList[T]:
         """

@@ -12,15 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import (
-    Dict, FrozenSet, Iterable, MutableSequence, Optional, Sequence, Tuple,
-    Union,
+    Dict, FrozenSet, Iterable, Iterator, MutableSequence, Optional, Sequence,
+    Set, Tuple, Union,
     Generic, TypeVar, overload)
 from typing_extensions import TypeAlias
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 #: :meta private:
 T = TypeVar("T")
+# Can't be Iterable[str] or Sequence[str] because that includes str itself
 _StrSeq: TypeAlias = Union[
-    MutableSequence[str], Tuple[str, ...], FrozenSet[str]]
+    MutableSequence[str], Tuple[str, ...], FrozenSet[str], Set[str]]
 _Keys: TypeAlias = Union[None, str, _StrSeq]
 
 
@@ -36,11 +37,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         ...
 
     @overload
-    def get_value(self, key: None) -> Dict[str, T]:
-        ...
-
-    @overload
-    def get_value(self, key: _StrSeq) -> Dict[str, T]:
+    def get_value(self, key: Optional[_StrSeq]) -> Dict[str, T]:
         ...
 
     @abstractmethod
@@ -57,6 +54,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
             If even one of the keys has multiple values set.
             But not if other keys not asked for have multiple values
         """
+        raise NotImplementedError
 
     @abstractmethod
     def keys(self) -> Iterable[str]:
@@ -65,6 +63,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
 
         :return: keys in the dict
         """
+        raise NotImplementedError
 
     @abstractmethod
     def set_value(self, key: str, value: T, use_list_as_value: bool = False):
@@ -88,6 +87,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         :param use_list_as_value: True if the value *is* a list
         :raise KeyError: If a new key is being used.
         """
+        raise NotImplementedError
 
     @abstractmethod
     def ids(self) -> Sequence[int]:
@@ -104,14 +104,15 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         :return: list of IDs
         :rtype: list(int)
         """
+        raise NotImplementedError
 
     @overload
-    def iter_all_values(self, key: str, update_save=False) -> Iterable[T]:
+    def iter_all_values(self, key: str, update_save=False) -> Iterator[T]:
         ...
 
     @overload
     def iter_all_values(self, key: Optional[_StrSeq],
-                        update_save: bool = False) -> Iterable[Dict[str, T]]:
+                        update_save: bool = False) -> Iterator[Dict[str, T]]:
         ...
 
     @abstractmethod
@@ -131,6 +132,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
             If key is iterable (list, tuple, set, etc.) of str (or `None`),
             yields dictionary objects
         """
+        raise NotImplementedError
 
     @overload
     def get_ranges(self, key: None = None) -> Sequence[Tuple[
@@ -169,11 +171,11 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         return list(self.iter_ranges(key=key))
 
     @overload
-    def iter_ranges(self, key: str) -> Iterable[Tuple[int, int, T]]:
+    def iter_ranges(self, key: str) -> Iterator[Tuple[int, int, T]]:
         ...
 
     @overload
-    def iter_ranges(self, key: Optional[_StrSeq]) -> Iterable[Tuple[
+    def iter_ranges(self, key: Optional[_StrSeq]) -> Iterator[Tuple[
             int, int, Dict[str, T]]]:
         ...
 
@@ -198,9 +200,10 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
             If `key` is iterable (list, tuple, set, etc.) of str (or `None`),
             `value` is a dictionary object
         """
+        raise NotImplementedError
 
     @abstractmethod
-    def get_default(self, key: str) -> T:
+    def get_default(self, key: str) -> Optional[T]:
         """
         Gets the default value for a single key.
         Unless changed, the default is the original value.
@@ -213,6 +216,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         :type key: str
         :return: default for this key.
         """
+        raise NotImplementedError
 
     def items(self) -> Sequence[Tuple[str, T]]:
         """
@@ -234,7 +238,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
             results.append((key, value))
         return results
 
-    def iteritems(self) -> Iterable[Tuple[str, T]]:
+    def iteritems(self) -> Iterator[Tuple[str, T]]:
         """
         Iterates over the (``key``, ``value``) tuples.
         Works only if the whole ranges/view has single values.
@@ -273,7 +277,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
             results.append(value)
         return results
 
-    def itervalues(self) -> Iterable[T]:
+    def itervalues(self) -> Iterator[T]:
         """
         Iterates over the values.
         Works only if the whole ranges/view has single values.

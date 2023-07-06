@@ -17,6 +17,8 @@ from datetime import datetime
 import logging
 import re
 import sys
+from types import NoneType
+from typing import List, Optional, Tuple
 from inspect import getfullargspec
 from .log_store import LogStore
 from .overrides import overrides
@@ -174,11 +176,11 @@ class FormatAdapter(logging.LoggerAdapter):
     """
     __kill_level = logging.CRITICAL + 1
     __repeat_at_end = logging.WARNING
-    __not_stored_messages = []
-    __log_store = None
+    __not_stored_messages: List[Tuple[datetime, int, str]] = []
+    __log_store: Optional[LogStore] = None
 
     @classmethod
-    def set_kill_level(cls, level=None):
+    def set_kill_level(cls, level: Optional[int] = None):
         """
         Allow system to change the level at which a log is changed to an
         Exception.
@@ -195,21 +197,22 @@ class FormatAdapter(logging.LoggerAdapter):
             cls.__kill_level = level
 
     @classmethod
-    def set_log_store(cls, log_store):
-        if not isinstance(log_store, (type(None), LogStore)):
+    def set_log_store(cls, log_store: Optional[LogStore]):
+        if not isinstance(log_store, (NoneType, LogStore)):
             raise TypeError("log_store must be a LogStore")
         cls.__log_store = log_store
-        for timestamp, level, message in cls._pop_not_stored_messages():
-            cls.__log_store.store_log(level, message, timestamp)
+        if cls.__log_store:
+            for timestamp, level, message in cls._pop_not_stored_messages():
+                cls.__log_store.store_log(level, message, timestamp)
 
-    def __init__(self, logger, extra=None):
+    def __init__(self, logger: logging.Logger, extra=None):
         if extra is None:
             extra = {}
         super().__init__(logger, extra)
         self.do_log = logger._log  # pylint: disable=protected-access
 
     @overrides(logging.LoggerAdapter.log, extend_doc=False)
-    def log(self, level, msg, *args, **kwargs):
+    def log(self, level: int, msg: object, *args, **kwargs):
         """
         Delegate a log call to the underlying logger, applying appropriate
         transformations to allow the log message to be written using
@@ -219,22 +222,22 @@ class FormatAdapter(logging.LoggerAdapter):
             raise LogLevelTooHighException(_BraceMessage(msg, args, kwargs))
         if self.isEnabledFor(level):
             message = _BraceMessage(msg, args, kwargs)
-            if self.__log_store:
+            if FormatAdapter.__log_store:
                 try:
                     FormatAdapter.__log_store.store_log(level, str(message))
                 except Exception as ex:
                     # Avoid an endless loop of log store errors being logged
-                    self.__not_stored_messages.append((
+                    FormatAdapter.__not_stored_messages.append((
                         datetime.now(),
                         level,
                         f"Unable to store log messages in database due to"
                         f" {ex}"))
-                    self.__not_stored_messages.append(
+                    FormatAdapter.__not_stored_messages.append(
                         (datetime.now(), level, str(message)))
                     FormatAdapter.__log_store = None
                     raise
             else:
-                self.__not_stored_messages.append(
+                FormatAdapter.__not_stored_messages.append(
                     (datetime.now(), level, str(message)))
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
@@ -242,7 +245,7 @@ class FormatAdapter(logging.LoggerAdapter):
             self.do_log(level, message, (), **log_kwargs)
 
     @overrides(logging.LoggerAdapter.process, extend_doc=False)
-    def process(self, msg, kwargs):
+    def process(self, msg: object, kwargs) -> Tuple[object, dict]:
         """
         Process the logging message and keyword arguments passed in to a
         logging call to insert contextual information. You can either
@@ -255,7 +258,7 @@ class FormatAdapter(logging.LoggerAdapter):
             if key in kwargs}
 
     @classmethod
-    def atexit_handler(cls):
+    def atexit_handler(cls) -> None:
         messages = []
         if cls.__log_store:
             try:

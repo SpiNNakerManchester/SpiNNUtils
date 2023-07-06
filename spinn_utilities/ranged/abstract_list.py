@@ -98,6 +98,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :return: True if and only if Ranged based calls are recommended.
         :rtype: bool
         """
+        raise NotImplementedError
 
     def __len__(self) -> int:
         """
@@ -160,6 +161,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :type the_id: int
         :return: The value of that element
         """
+        raise NotImplementedError
 
     @abstractmethod
     def get_single_value_by_slice(
@@ -175,6 +177,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
             If even one elements has a different value.
             Not thrown if elements outside of the slice have a different value
         """
+        raise NotImplementedError
 
     def __getslice__(self, start: int, stop: int) -> Sequence[T]:
         return list(self.iter_by_slice(start, stop))
@@ -193,6 +196,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
             Not thrown if elements outside of the IDs have a different value,
             even if these elements are between the ones pointed to by IDs
         """
+        raise NotImplementedError
 
     def __getitem__(self, selector: Selector) -> Union[Self, T, Sequence[T]]:
         """
@@ -229,7 +233,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         else:
             return [self.get_value_by_id(i) for i in selector]
 
-    def iter_by_id(self, the_id: int) -> Iterable[T]:
+    def iter_by_id(self, the_id: int) -> Iterator[T]:
         """
         Fast but *not* update-safe iterator by one ID.
 
@@ -241,7 +245,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         yield self.get_value_by_id(the_id)
 
-    def iter_by_ids(self, ids: Sequence[int]) -> Iterable[T]:
+    def iter_by_ids(self, ids: Sequence[int]) -> Iterator[T]:
         """
         Fast but *not* update-safe iterator by collection of IDs.
 
@@ -266,7 +270,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
 
             yield value
 
-    def iter(self) -> Iterable[T]:
+    def iter(self) -> Iterator[T]:
         """
         Update-safe iterator of all elements.
 
@@ -298,7 +302,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         except StopIteration:
             return
 
-    def iter_by_slice(self, slice_start: int, slice_stop: int) -> Iterable[T]:
+    def iter_by_slice(self, slice_start: int, slice_stop: int) -> Iterator[T]:
         """
         Fast but *not* update-safe iterator of all elements in the slice.
 
@@ -318,7 +322,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
             for id_value in range(slice_start, slice_stop):
                 yield self.get_value_by_id(id_value)
 
-    def iter_by_selector(self, selector: Selector = None) -> Iterable[T]:
+    def iter_by_selector(self, selector: Selector = None) -> Iterator[T]:
         """
         Fast but *not* update-safe iterator of all elements in the slice.
 
@@ -395,14 +399,15 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         raise ValueError(f"{x} is not in list")
 
     @abstractmethod
-    def iter_ranges(self) -> Iterable[Tuple[int, int, T]]:
+    def iter_ranges(self) -> Iterator[Tuple[int, int, T]]:
         """
         Fast but *not* update-safe iterator of the ranges.
 
         :return: yields each range one by one
         """
+        raise NotImplementedError
 
-    def iter_ranges_by_id(self, the_id: int) -> Iterable[Tuple[int, int, T]]:
+    def iter_ranges_by_id(self, the_id: int) -> Iterator[Tuple[int, int, T]]:
         """
         Iterator of the range for this ID.
 
@@ -423,7 +428,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
 
     @abstractmethod
     def iter_ranges_by_slice(
-            self, slice_start: int, slice_stop: int) -> Iterable[
+            self, slice_start: int, slice_stop: int) -> Iterator[
                 Tuple[int, int, T]]:
         """
         Fast but *not* update-safe iterator of the ranges covered by this
@@ -435,8 +440,9 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
 
         :return: yields each range one by one
         """
+        raise NotImplementedError
 
-    def iter_ranges_by_ids(self, ids: Iterable[int]) -> Iterable[
+    def iter_ranges_by_ids(self, ids: Iterable[int]) -> Iterator[
             Tuple[int, int, T]]:
         """
         Fast but *not* update-safe iterator of the ranges covered by these IDs.
@@ -475,13 +481,14 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
             yield result
 
     @abstractmethod
-    def get_default(self) -> T:
+    def get_default(self) -> Optional[T]:
         """
         Gets the default value of the list.
         Just in case we later allow to increase the number of elements.
 
         :return: Default value
         """
+        raise NotImplementedError
 
     def __add__(self, other) -> AbstractList[float]:
         """

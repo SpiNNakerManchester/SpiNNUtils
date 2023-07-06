@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
-from typing import Generic, Iterable, Union, TYPE_CHECKING
+from typing import Generic, Iterable, Optional, Union, TYPE_CHECKING
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, T
 if TYPE_CHECKING:
     from .range_dictionary import RangeDictionary
 
 
-class AbstractView(AbstractDict[T], Generic[T]):
+class AbstractView(  # pylint: disable=abstract-method
+        AbstractDict[T], Generic[T]):
     """
     A view over a ranged dictionary.
 
@@ -79,7 +80,7 @@ class AbstractView(AbstractDict[T], Generic[T]):
         raise KeyError(f"Unexpected key type: {type(key)}")
 
     @overrides(AbstractDict.get_default)
-    def get_default(self, key: str) -> T:
+    def get_default(self, key: str) -> Optional[T]:
         return self._range_dict.get_default(key)
 
     @overrides(AbstractDict.keys)

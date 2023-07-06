@@ -13,9 +13,10 @@
 # limitations under the License.
 from __future__ import annotations
 from typing import (
-    Dict, Generic, Iterable, Optional, Tuple, overload, TYPE_CHECKING)
+    Dict, Generic, Iterable, Iterator, Optional, Sequence, Tuple, overload,
+    TYPE_CHECKING)
 from spinn_utilities.overrides import overrides
-from .abstract_dict import AbstractDict, T, _StrSeq
+from .abstract_dict import AbstractDict, T, _StrSeq, _Keys
 from .abstract_view import AbstractView
 if TYPE_CHECKING:
     from .range_dictionary import RangeDictionary
@@ -37,13 +38,32 @@ class _SliceView(AbstractView[T], Generic[T]):
         return f"View with range: {self._start} to {self._stop}"
 
     @overrides(AbstractDict.ids)
-    def ids(self) -> Iterable[int]:
+    def ids(self) -> Sequence[int]:
         return range(self._start, self._stop)
 
-    @overrides(AbstractDict.get_value)
+    @overload
     def get_value(self, key: str) -> T:
-        return self._range_dict.get_list(key).get_single_value_by_slice(
-            slice_start=self._start, slice_stop=self._stop)
+        ...
+
+    @overload
+    def get_value(self, key: Optional[_StrSeq]) -> Dict[str, T]:
+        ...
+
+    @overrides(AbstractDict.get_value)
+    def get_value(self, key: _Keys):
+        if isinstance(key, str):
+            return self._range_dict.get_list(key).get_single_value_by_slice(
+                slice_start=self._start, slice_stop=self._stop)
+        elif key is None:
+            return {
+                k: self._range_dict.get_list(k).get_single_value_by_slice(
+                    slice_start=self._start, slice_stop=self._stop)
+                for k in self._range_dict.keys()}
+        else:
+            return {
+                k: self._range_dict.get_list(k).get_single_value_by_slice(
+                    slice_start=self._start, slice_stop=self._stop)
+                for k in key}
 
     def update_save_iter_all_values(self, key: str) -> Iterable[T]:
         ranged_list = self._range_dict.get_list(key)
@@ -52,13 +72,13 @@ class _SliceView(AbstractView[T], Generic[T]):
 
     @overload
     def iter_all_values(
-            self, key: str, update_save=False) -> Iterable[T]:
+            self, key: str, update_save=False) -> Iterator[T]:
         ...
 
     @overload
     def iter_all_values(
             self, key: Optional[_StrSeq] = None,
-            update_save=False) -> Iterable[Dict[str, T]]:
+            update_save=False) -> Iterator[Dict[str, T]]:
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
@@ -79,11 +99,11 @@ class _SliceView(AbstractView[T], Generic[T]):
             use_list_as_value=use_list_as_value)
 
     @overload
-    def iter_ranges(self, key: str) -> Iterable[Tuple[int, int, T]]:
+    def iter_ranges(self, key: str) -> Iterator[Tuple[int, int, T]]:
         ...
 
     @overload
-    def iter_ranges(self, key: Optional[_StrSeq] = None) -> Iterable[
+    def iter_ranges(self, key: Optional[_StrSeq] = None) -> Iterator[
             Tuple[int, int, Dict[str, T]]]:
         ...
 

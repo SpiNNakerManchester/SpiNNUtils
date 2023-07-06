@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import os
-import yaml
+import yaml  # type: ignore[import]
 import io
 import importlib
 import argparse

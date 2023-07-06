@@ -13,10 +13,10 @@
 # limitations under the License.
 from __future__ import annotations
 from typing import (
-    Dict, Generic, Iterable, Optional, Sequence, Tuple,
+    Dict, Generic, Iterable, Iterator, Optional, Sequence, Tuple,
     overload, TYPE_CHECKING)
 from spinn_utilities.overrides import overrides
-from .abstract_dict import AbstractDict, _StrSeq
+from .abstract_dict import AbstractDict, _StrSeq, _Keys
 from .abstract_view import AbstractView, T
 if TYPE_CHECKING:
     from .range_dictionary import RangeDictionary
@@ -39,10 +39,29 @@ class _IdsView(AbstractView[T], Generic[T]):
     def ids(self) -> Sequence[int]:
         return list(self._ids)
 
-    @overrides(AbstractDict.get_value)
+    @overload
     def get_value(self, key: str) -> T:
-        return self._range_dict.get_list(key).get_single_value_by_ids(
-            self._ids)
+        ...
+
+    @overload
+    def get_value(self, key: Optional[_StrSeq]) -> Dict[str, T]:
+        ...
+
+    @overrides(AbstractDict.get_value)
+    def get_value(self, key: _Keys):
+        if isinstance(key, str):
+            return self._range_dict.get_list(key).get_single_value_by_ids(
+                self._ids)
+        elif key is None:
+            return {
+                k: self._range_dict.get_list(k).get_single_value_by_ids(
+                    self._ids)
+                for k in self._range_dict.keys()}
+        else:
+            return {
+                k: self._range_dict.get_list(k).get_single_value_by_ids(
+                    self._ids)
+                for k in key}
 
     @overrides(AbstractDict.set_value)
     def set_value(self, key: str, value: T, use_list_as_value=False):
@@ -55,17 +74,30 @@ class _IdsView(AbstractView[T], Generic[T]):
         for _id in ids:
             rl.set_value_by_id(the_id=_id, value=value)
 
-    @overrides(AbstractDict.iter_all_values)
-    def iter_all_values(self, key: str, update_save=False) -> Iterable[T]:
-        return self._range_dict.iter_values_by_ids(
-            ids=self._ids, key=key, update_save=update_save)
-
     @overload
-    def iter_ranges(self, key: str) -> Iterable[Tuple[int, int, T]]:
+    def iter_all_values(self, key: str, update_save=False) -> Iterator[T]:
         ...
 
     @overload
-    def iter_ranges(self, key: Optional[_StrSeq] = None) -> Iterable[Tuple[
+    def iter_all_values(self, key: Optional[_StrSeq],
+                        update_save: bool = False) -> Iterator[Dict[str, T]]:
+        ...
+
+    @overrides(AbstractDict.iter_all_values)
+    def iter_all_values(self, key: _Keys, update_save=False):
+        if isinstance(key, str):
+            yield from self._range_dict.iter_values_by_ids(
+                ids=self._ids, key=key, update_save=update_save)
+        else:
+            for _id in self._ids:
+                yield self._range_dict.get_values_by_id(key, _id)
+
+    @overload
+    def iter_ranges(self, key: str) -> Iterator[Tuple[int, int, T]]:
+        ...
+
+    @overload
+    def iter_ranges(self, key: Optional[_StrSeq] = None) -> Iterator[Tuple[
             int, int, Dict[str, T]]]:
         ...
 

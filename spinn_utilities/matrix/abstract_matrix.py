@@ -27,9 +27,11 @@ class AbstractMatrix(Generic[T, X, Y], metaclass=AbstractBase):
         """
         Get the value at a particular X,Y coordinate.
         """
+        raise NotImplementedError
 
     @abstractmethod
     def set_data(self, x: X, y: Y, value: T):
         """
         Set the value at a particular X,Y coordinate.
         """
+        raise NotImplementedError

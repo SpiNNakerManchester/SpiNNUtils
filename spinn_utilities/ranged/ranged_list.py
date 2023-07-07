@@ -13,8 +13,8 @@
 # limitations under the License.
 from __future__ import annotations
 from typing import (
-    Callable, Generic, List, Iterable, Iterator, Optional, Sequence, Tuple,
-    Union, cast, final)
+    Any, Callable, Generic, List, Iterable, Iterator, Optional, Sequence,
+    Sized, Tuple, Union, cast, final)
 from typing_extensions import TypeAlias, TypeGuard
 from spinn_utilities.overrides import overrides
 from spinn_utilities.helpful_functions import is_singleton
@@ -84,13 +84,21 @@ class RangedList(AbstractList[T], Generic[T]):
                 raise ValueError("value parameter must have a length to "
                                  "determine the unsupplied size") from e
         super().__init__(size=size, key=key)
-        if not use_list_as_value and not self.is_list(value, size):
+        if not use_list_as_value and (
+                not self.is_list(value, size) or self.__length(value) != size):
             self._default: Optional[T] = cast(Optional[T], value)
         else:
             self._default = None
         self._ranges: Union[List[T], List[_RangeType]]
         self._ranged_based: Optional[bool] = None
         self.set_value(value, use_list_as_value=use_list_as_value)
+
+    def __length(self, value: Any) -> int:
+        if callable(value):
+            return self._size
+        if not isinstance(value, Sized):
+            return 1
+        return len(value)
 
     @overrides(AbstractList.range_based)
     def range_based(self) -> bool:
@@ -108,7 +116,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     @overrides(AbstractList.get_value_by_id)
     def get_value_by_id(self, the_id: int) -> T:
-        self._check_id_in_range(the_id)
+        the_id = self._check_id_in_range(the_id)
 
         # If range based, find the range containing the value and return
         if self._ranged_based:
@@ -281,14 +289,14 @@ class RangedList(AbstractList[T], Generic[T]):
 
     # pylint: disable=unused-argument
     @final
-    def is_list(self, value: _ValueType, size: int) -> TypeGuard[_ListType]:
+    def is_list(self, value: _ValueType,
+                size: Optional[int]) -> TypeGuard[_ListType]:
         """
         Determines if the value should be treated as a list.
 
         :param value: The value to examine.
-        :param size: The length of chunk being considered.
         """
-        return self.listness_check(value) and size == self._size
+        return self.listness_check(value)
 
     def listness_check(self, value: _ValueType) -> bool:
         """
@@ -297,6 +305,8 @@ class RangedList(AbstractList[T], Generic[T]):
         .. note::
             This method can be extended to add other checks for list in which
             case :py:meth:`as_list` must also be extended.
+
+        :param value: The value to examine.
         """
         # Assume any iterable is a list
         if callable(value):
@@ -361,7 +371,7 @@ class RangedList(AbstractList[T], Generic[T]):
         :param int the_id: Single ID
         :param object value: The value to save
         """
-        self._check_id_in_range(the_id)
+        the_id = self._check_id_in_range(the_id)
 
         # If non-range-based, set the value directly
         if not self._ranged_based:

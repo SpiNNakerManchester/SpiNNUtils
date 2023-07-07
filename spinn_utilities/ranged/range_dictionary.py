@@ -94,7 +94,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         """
         # Key is an int - return single view
         if isinstance(key, int):
-            self._check_id_in_range(key)
+            key = self._check_id_in_range(key)
             return _SingleView(range_dict=self, the_id=key)
 
         # Key is a slice - return a sliced view

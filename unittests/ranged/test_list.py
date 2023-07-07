@@ -328,7 +328,7 @@ def test_bad_no_size():
 def test_high_id():
     rl = RangedList(value=["a", "b", "c"])
     with pytest.raises(IndexError):
-        rl[7]
+        print(rl[7])
     with pytest.raises(IndexError):
         rl.get_value_by_id(7)
 
@@ -336,7 +336,7 @@ def test_high_id():
 def test_bad_ids():
     rl = RangedList(value=["a", "b", "c"])
     with pytest.raises(IndexError):
-        rl[4]
+        print(rl[4])
     with pytest.raises(IndexError):
         rl.get_value_by_id(-1)
     with pytest.raises(TypeError):
@@ -344,9 +344,9 @@ def test_bad_ids():
     with pytest.raises(TypeError):
         rl.get_value_by_id(None)
     with pytest.raises(TypeError):
-        rl["a"]
+        print(rl["a"])
     with pytest.raises(TypeError):
-        rl[2.3]
+        print(rl[2.3])
 
 
 def test_str():

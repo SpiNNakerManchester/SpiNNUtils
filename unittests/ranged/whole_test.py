@@ -59,8 +59,8 @@ def test_ranges_by_key():
 def test_iter_values():
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1[4]
-    aware = rd1.iter_all_values(key="a", update_save=True)
-    fast = rd1.iter_all_values(key="a", update_save=False)
+    aware = rd1.iter_all_values(key="a", update_safe=True)
+    fast = rd1.iter_all_values(key="a", update_safe=False)
     assert ["alpha", "alpha", "alpha", "alpha", "alpha", "alpha", "alpha",
             "alpha", "alpha", "alpha"] == list(fast)
     single1["a"] = "Foo"
@@ -70,8 +70,8 @@ def test_iter_values():
 
 def test_iter_values_keys():
     rd1 = RangeDictionary(10, defaults)
-    aware = rd1.iter_all_values(key=("a", "b"), update_save=True)
-    fast = rd1.iter_all_values(key=("b", "a"), update_save=False)
+    aware = rd1.iter_all_values(key=("a", "b"), update_safe=True)
+    fast = rd1.iter_all_values(key=("b", "a"), update_safe=False)
     assert [{'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
             {'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
             {'a': 'alpha', 'b': 'bravo'}, {'a': 'alpha', 'b': 'bravo'},
@@ -195,7 +195,7 @@ def test_iter_by_slice():
     with pytest.raises(StopIteration):
         next(iterator)
 
-    iterator = rd1.iter_values_by_slice(2, 4, update_save=True)
+    iterator = rd1.iter_values_by_slice(2, 4, update_safe=True)
     assert {"a": "alpha", "b": "bravo2", "g": "gamma"} == next(iterator)
     rd1["b"][3] = "new3"
     assert {"a": "alpha", "b": "new3", "g": "gamma"} == next(iterator)
@@ -209,7 +209,7 @@ def test_iter_by_slice():
     with pytest.raises(StopIteration):
         next(iterator)
 
-    iterator = rd1.iter_values_by_slice(2, 4, key="b", update_save=True)
+    iterator = rd1.iter_values_by_slice(2, 4, key="b", update_safe=True)
     assert "bravo2" == next(iterator)
     rd1["b"][3] = "new3"
     assert "new3" == next(iterator)
@@ -224,7 +224,7 @@ def test_iter_by_slice():
         next(iterator)
 
     iterator = rd1.iter_values_by_slice(
-        2, 4, key=["b", "a"], update_save=True)
+        2, 4, key=["b", "a"], update_safe=True)
     assert {"a": "alpha", "b": "bravo2"} == next(iterator)
     rd1["b"][3] = "new3"
     assert {"a": "alpha", "b": "new3"} == next(iterator)

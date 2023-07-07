@@ -15,6 +15,8 @@
 from functools import reduce
 import logging
 import math
+from typing import Any, Sequence, Union, overload
+from typing_extensions import TypeGuard
 from spinn_utilities.log import FormatAdapter
 
 
@@ -22,7 +24,7 @@ logger = FormatAdapter(logging.getLogger(__name__))
 FINISHED_FILENAME = "finished"
 
 
-def is_singleton(value):
+def is_singleton(value: Any) -> TypeGuard[Union[bool, int, float]]:
     """
     Tests whether the value is a singleton.
 
@@ -35,11 +37,23 @@ def is_singleton(value):
     return not hasattr(value, '__iter__') or isinstance(value, str)
 
 
-def _lcm(a, b):
+def _lcm(a: int, b: int) -> int:
     return (a * b) // math.gcd(a, b)
 
 
-def lcm(*numbers):
+# A sequence of integers..
+@overload
+def lcm(numbers: Sequence[int], /) -> int:
+    ...
+
+
+# ... or several integers. All in positional-only parameters.
+@overload
+def lcm(number: int, /, *numbers: int) -> int:
+    ...
+
+
+def lcm(*numbers) -> int:
     """
     Lowest common multiple of 0, 1 or more integers.
 
@@ -62,7 +76,19 @@ def lcm(*numbers):
     return reduce(_lcm, numbers, 1)
 
 
-def gcd(*numbers):
+# A sequence of integers..
+@overload
+def gcd(numbers: Sequence[int], /) -> int:
+    ...
+
+
+# ... or several integers. All in positional-only parameters.
+@overload
+def gcd(number: int, /, *numbers: int) -> int:
+    ...
+
+
+def gcd(*numbers) -> int:
     """
     Greatest common divisor of 1 or more integers.
 

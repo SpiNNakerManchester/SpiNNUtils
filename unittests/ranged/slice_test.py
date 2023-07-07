@@ -57,8 +57,8 @@ def test_set_range_direct():
 def test_iter_values():
     rd1 = RangeDictionary(10, defaults)
     slice_view1 = rd1[4:7]
-    aware = slice_view1.iter_all_values("a", update_save=False)
-    fast = slice_view1.iter_all_values("a", update_save=True)
+    aware = slice_view1.iter_all_values("a", update_safe=False)
+    fast = slice_view1.iter_all_values("a", update_safe=True)
     assert ["alpha", "alpha", "alpha"] == list(fast)
     rd1["a"] = "Foo"
     assert rd1["a"].get_single_value_all() == "Foo"
@@ -144,7 +144,7 @@ def test_iter_by_slice():
     with pytest.raises(StopIteration):
         next(iterator)
 
-    iterator = slice_view1.iter_all_values(update_save=True)
+    iterator = slice_view1.iter_all_values(update_safe=True)
     assert {"a": "alpha", "b": "bravo2", "g": "gamma"} == next(iterator)
     rd1["b"][3] = "new3"
     assert {"a": "alpha", "b": "new3", "g": "gamma"} == next(iterator)
@@ -158,7 +158,7 @@ def test_iter_by_slice():
     with pytest.raises(StopIteration):
         next(iterator)
 
-    iterator = slice_view1.iter_all_values(update_save=True, key="b")
+    iterator = slice_view1.iter_all_values(update_safe=True, key="b")
     assert "bravo2" == next(iterator)
     rd1["b"][3] = "new3"
     assert "new3" == next(iterator)
@@ -173,7 +173,7 @@ def test_iter_by_slice():
         next(iterator)
 
     iterator = rd1.iter_values_by_slice(
-        2, 4, key=["b", "a"], update_save=True)
+        2, 4, key=["b", "a"], update_safe=True)
     assert {"a": "alpha", "b": "bravo2"} == next(iterator)
     rd1["b"][3] = "new3"
     assert {"a": "alpha", "b": "new3"} == next(iterator)

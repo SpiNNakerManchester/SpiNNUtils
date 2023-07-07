@@ -15,8 +15,8 @@ from __future__ import annotations
 import numbers
 import numpy
 from typing import (
-    Any, Callable, Generic, Iterable, Iterator, Optional, Sequence,
-    SupportsInt, Tuple, TypeVar, Union, cast)
+    Any, Callable, Generic, Iterable, Iterator, Optional, Sequence, Tuple,
+    TypeVar, Union, cast)
 from typing_extensions import Self
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides
@@ -224,15 +224,16 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
                 for i in range(*selector.indices(self._size))]
 
         # If the key is an int, get the single value
-        elif isinstance(selector, (int, numpy.integer, SupportsInt)):
-            selector = int(selector)
+        elif self._is_id_type(selector):
+            selector = int(cast(int, selector))
 
             # Handle negative indices
             if selector < 0:
                 selector += len(self)
             return self.get_value_by_id(selector)
         else:
-            return [self.get_value_by_id(i) for i in selector]
+            return [self.get_value_by_id(i)
+                    for i in cast(Sequence[int], selector)]
 
     def iter_by_id(self, the_id: int) -> Iterator[T]:
         """
@@ -421,7 +422,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :return: yields the one range
         """
 
-        self._check_id_in_range(the_id)
+        the_id = self._check_id_in_range(the_id)
         for (_, stop, value) in self.iter_ranges():
             if the_id < stop:
                 yield (the_id, the_id + 1, value)

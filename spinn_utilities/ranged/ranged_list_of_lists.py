@@ -17,6 +17,7 @@ from typing import (
     Callable, Generic, List, Optional, Sequence, TypeVar, Union)
 from typing_extensions import TypeAlias
 from spinn_utilities.helpful_functions import is_singleton
+from spinn_utilities.overrides import overrides
 from .ranged_list import RangedList
 #: :meta private:
 T = TypeVar("T")
@@ -27,7 +28,8 @@ _ValueType: TypeAlias = Optional[Union[
 
 class RangedListOfList(RangedList[List[T]], Generic[T]):
     # pylint: disable=unused-argument
-    def _is_list(self, value: _ValueType) -> bool:
+    @overrides(RangedList.listness_check)
+    def listness_check(self, value: _ValueType) -> bool:
         if callable(value):
             return True
         if is_singleton(value):

@@ -20,13 +20,14 @@ from spinn_utilities.helpful_functions import is_singleton
 from .ranged_list import RangedList
 #: :meta private:
 T = TypeVar("T")
+# ranged_list._ValueType but specialised for how we use it here
 _ValueType: TypeAlias = Optional[Union[
     List[T], Callable[[int], List[T]], Sequence[List[T]]]]
 
 
 class RangedListOfList(RangedList[List[T]], Generic[T]):
     # pylint: disable=unused-argument
-    def _is_list(self, value: _ValueType, size: int) -> bool:
+    def _is_list(self, value: _ValueType) -> bool:
         if callable(value):
             return True
         if is_singleton(value):

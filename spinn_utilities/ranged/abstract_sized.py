@@ -15,7 +15,7 @@
 import itertools
 import logging
 import sys
-from typing import Any, Sequence, Sized, Tuple, Union
+from typing import Any, Sequence, Sized, SupportsInt, Tuple, Union
 from typing_extensions import TypeAlias, TypeGuard
 import numpy
 
@@ -23,13 +23,14 @@ logger = logging.getLogger(__file__)
 
 #: The type of selectors
 Selector: TypeAlias = Union[
-    None, int, numpy.integer, slice, Sequence[Union[bool, numpy.bool_]],
-    Sequence[Union[int, numpy.integer]]]
+    None, int, numpy.integer, SupportsInt, slice,
+    Sequence[Union[bool, numpy.bool_]],
+    Sequence[Union[int, numpy.integer, SupportsInt]]]
 
 
 def _is_iterable_selector(selector: Selector) -> TypeGuard[
         Union[Sequence[Union[bool, numpy.bool_]],
-              Sequence[Union[int, numpy.integer]]]]:
+              Sequence[Union[int, numpy.integer, SupportsInt]]]]:
     # Check selector is an iterable using pythonic try
     try:
         iterator = iter(selector)  # type: ignore[arg-type]
@@ -194,7 +195,7 @@ class AbstractSized(object):
         :return: a (possibly sorted) list of IDs
         """
         if _is_iterable_selector(selector):
-            # bool is superclass of int so if any are bools all must be
+            # bool is subclass of int so if any are bools all must be
             if any(isinstance(item, (bool, numpy.bool_)) for item in selector):
                 if all(isinstance(item, (bool, numpy.bool_))
                        for item in selector):
@@ -204,7 +205,7 @@ class AbstractSized(object):
                         range(self._size), selector))
                 raise TypeError(
                     "An iterable type must be all ints or all bools")
-            elif all(isinstance(item, (int, numpy.integer))
+            elif all(isinstance(item, (int, numpy.integer, SupportsInt))
                      for item in selector):
                 # list converts any specific numpy types
                 ids = list(map(int, selector))
@@ -232,7 +233,19 @@ class AbstractSized(object):
             (slice_start, slice_stop, step) = selector.indices(self._size)
             return range(slice_start, slice_stop, step)
 
-        if isinstance(selector, int):
+        if isinstance(selector, (int, numpy.integer)):
+            selector = int(selector)  # De-numpy-fy
+            if selector < 0:
+                selector = self._size + selector
+            if selector < 0 or selector >= self._size:
+                raise TypeError(
+                    f"Selector {selector-self._size} is unsupported "
+                    f"for size {self._size}")
+            return [selector]
+
+        # Last throw of the dice...
+        if isinstance(selector, SupportsInt):
+            selector = int(selector)
             if selector < 0:
                 selector = self._size + selector
             if selector < 0 or selector >= self._size:

@@ -22,8 +22,12 @@ from .abstract_sized import Selector
 from .abstract_list import AbstractList, T, _eq
 from .multiple_values_exception import MultipleValuesException
 
+#: The type of a range descriptor
 _RangeType: TypeAlias = Tuple[int, int, T]
-_ValueType: TypeAlias = Optional[Union[T, Callable[[int], T], Sequence[T]]]
+# The type of things we consider to be a list of values
+_ListType: TypeAlias = Union[Callable[[int], T], Sequence[T]]
+# The type of value arguments in several places
+_ValueType: TypeAlias = Optional[Union[T, _ListType]]
 
 
 def function_iterator(
@@ -61,7 +65,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     def __init__(
             self, size: Optional[int] = None, value: _ValueType = None,
-            key=None, use_list_as_value=False):
+            key=None, *, use_list_as_value=False):
         """
         :param size:
             Fixed length of the list;
@@ -86,7 +90,7 @@ class RangedList(AbstractList[T], Generic[T]):
             self._default = None
         self._ranges: Union[List[T], List[_RangeType]]
         self._ranged_based: Optional[bool] = None
-        self.set_value(value, use_list_as_value)
+        self.set_value(value, use_list_as_value=use_list_as_value)
 
     @overrides(AbstractList.range_based)
     def range_based(self) -> bool:
@@ -277,28 +281,30 @@ class RangedList(AbstractList[T], Generic[T]):
 
     # pylint: disable=unused-argument
     @final
-    def is_list(self, value: _ValueType, size: int  # @UnusedVariable
-                ) -> TypeGuard[Union[Callable[[int], T], Sequence[T]]]:
+    def is_list(self, value: _ValueType, size: int) -> TypeGuard[_ListType]:
         """
         Determines if the value should be treated as a list.
+
+        :param value: The value to examine.
+        :param size: The length of chunk being considered.
+        """
+        return self.listness_check(value) and size == self._size
+
+    def listness_check(self, value: _ValueType) -> bool:
+        """
+        Easier to override in subclasses as not type guard.
 
         .. note::
             This method can be extended to add other checks for list in which
             case :py:meth:`as_list` must also be extended.
-
-        :param value: The value to examine.
         """
-        return self._is_list(value, size)
-
-    def _is_list(self, value: _ValueType, size: int) -> bool:
         # Assume any iterable is a list
         if callable(value):
             return True
         return not is_singleton(value)
 
-    @staticmethod
     def as_list(
-            value: Union[Callable[[int], T], Sequence[T]], size: int,
+            self, value: _ListType, size: int,
             ids: Optional[Sequence[int]] = None) -> List[T]:
         """
         Converts (if required) the value into a list of a given size.
@@ -306,7 +312,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
         .. note::
             This method can be extended to add other conversions to list in
-            which case :py:meth:`is_list` must also be extended.
+            which case :py:meth:`listness_check` must also be extended.
 
         :param value:
         :return: value as a list
@@ -321,7 +327,7 @@ class RangedList(AbstractList[T], Generic[T]):
                              f"does not equal the size:{size}")
         return values
 
-    def set_value(self, value: _ValueType, use_list_as_value=False):
+    def set_value(self, value: _ValueType, *, use_list_as_value=False):
         """
         Sets *all* elements in the list to this value.
 
@@ -403,7 +409,7 @@ class RangedList(AbstractList[T], Generic[T]):
                 ranges.pop(idx)
 
     def set_value_by_slice(
-            self, slice_start: int, slice_stop: int, value: _ValueType,
+            self, slice_start: int, slice_stop: int, value: _ValueType, *,
             use_list_as_value=False):
         """
         Sets the value for a single range to the new value.
@@ -486,15 +492,13 @@ class RangedList(AbstractList[T], Generic[T]):
         # set the value in case missed elsewhere
         ranges[index] = (ranges[index][0], ranges[index][1], value)
 
-    def _set_values_list(
-            self, ids: Sequence[int],
-            value: Union[Callable[[int], T], Sequence[T]]):
+    def _set_values_list(self, ids: Sequence[int], value: _ListType):
         values = self.as_list(value=value, size=len(ids), ids=ids)
         for id_value, val in zip(ids, values):
             self.set_value_by_id(id_value, val)
 
     def set_value_by_ids(
-            self, ids: Sequence[int], value: _ValueType,
+            self, ids: Sequence[int], value: _ValueType, *,
             use_list_as_value=False):
         if not use_list_as_value and self.is_list(value, len(ids)):
             self._set_values_list(ids, value)
@@ -503,7 +507,7 @@ class RangedList(AbstractList[T], Generic[T]):
                 self.set_value_by_id(id_value, cast(T, value))
 
     def set_value_by_selector(
-            self, selector: Selector, value: _ValueType,
+            self, selector: Selector, value: _ValueType, *,
             use_list_as_value=False):
         """
         Support for the ``list[x] =`` format.
@@ -513,13 +517,14 @@ class RangedList(AbstractList[T], Generic[T]):
         :param object value:
         """
         if selector is None:
-            self.set_value(value, use_list_as_value)
+            self.set_value(value, use_list_as_value=use_list_as_value)
             return
         if isinstance(selector, slice):
             # Handle a slice
             if selector.step is None or selector.step == 1:
                 (start, stop, _) = selector.indices(self._size)
-                self.set_value_by_slice(start, stop, value, use_list_as_value)
+                self.set_value_by_slice(
+                    start, stop, value, use_list_as_value=use_list_as_value)
                 return
 
         ids = self.selector_to_ids(selector)

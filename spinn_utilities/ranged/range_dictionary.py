@@ -230,78 +230,78 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         :py:meth:`iter_all_values`
         but limited to a collection of IDs and update-safe.
         """
-        return iter(list(
+        return (
             self.get_values_by_id(key=key, the_id=id_value)
-            for id_value in ids))
+            for id_value in ids)
 
     @overload
     def iter_all_values(
-            self, key: str, update_save: bool = False) -> Iterator[T]:
+            self, key: str, *, update_safe: bool = False) -> Iterator[T]:
         ...
 
     @overload
-    def iter_all_values(self, key: Optional[_StrSeq],
-                        update_save: bool = False) -> Iterator[Dict[str, T]]:
+    def iter_all_values(self, key: Optional[_StrSeq], *,
+                        update_safe: bool = False) -> Iterator[Dict[str, T]]:
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
-    def iter_all_values(self, key=None, update_save: bool = False):
+    def iter_all_values(self, key=None, *, update_safe: bool = False):
         if isinstance(key, str):
-            if update_save:
+            if update_safe:
                 return self._value_lists[key].iter()
             return iter(self._value_lists[key])
         else:  # Sub methods will check key type
-            if update_save:
+            if update_safe:
                 return self.update_safe_iter_all_values(
                     key, range(self._size))
             return iter(self._values_from_ranges(self.iter_ranges(key)))
 
     @overload
     def iter_values_by_slice(
-            self, slice_start: int, slice_stop: int, key: str,
-            update_save: bool = False) -> Iterator[T]:
+            self, slice_start: int, slice_stop: int, key: str, *,
+            update_safe: bool = False) -> Iterator[T]:
         ...
 
     @overload
     def iter_values_by_slice(
             self, slice_start: int, slice_stop: int,
-            key: Optional[_StrSeq] = None,
-            update_save: bool = False) -> Iterator[Dict[str, T]]:
+            key: Optional[_StrSeq] = None, *,
+            update_safe: bool = False) -> Iterator[Dict[str, T]]:
         ...
 
     def iter_values_by_slice(
-            self, slice_start: int, slice_stop: int, key=None,
-            update_save=False):
+            self, slice_start: int, slice_stop: int, key=None, *,
+            update_safe=False):
         """
         Same as :py:meth:`iter_all_values` but limited to a simple slice.
         """
-        if isinstance(key, str) and not update_save:
+        if isinstance(key, str) and not update_safe:
             return self._value_lists[key].iter_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop)
         # Sub methods will check key type
-        if update_save:
+        if update_safe:
             return self.update_safe_iter_all_values(
                 key, range(slice_start, slice_stop))
         return self._values_from_ranges(self.iter_ranges_by_slice(
             slice_start=slice_start, slice_stop=slice_stop, key=key))
 
     @overload
-    def iter_values_by_ids(self, ids: Iterable[int], key: str,
-                           update_save: bool = False) -> Iterator[T]:
+    def iter_values_by_ids(self, ids: Iterable[int], key: str, *,
+                           update_safe: bool = False) -> Iterator[T]:
         ...
 
     @overload
     def iter_values_by_ids(
-            self, ids: Iterable[int], key: Optional[_StrSeq] = None,
-            update_save: bool = False) -> Iterator[Dict[str, T]]:
+            self, ids: Iterable[int], key: Optional[_StrSeq] = None, *,
+            update_safe: bool = False) -> Iterator[Dict[str, T]]:
         ...
 
-    def iter_values_by_ids(self, ids: Iterable[int], key=None,
-                           update_save=False):
+    def iter_values_by_ids(self, ids: Iterable[int], key=None, *,
+                           update_safe=False):
         """
         Same as :py:meth:`iter_all_values` but limited to a simple slice.
         """
-        if update_save:
+        if update_safe:
             return self.update_safe_iter_all_values(key, ids)
         return self._values_from_ranges(self.iter_ranges_by_ids(
             key=key, ids=ids))
@@ -313,8 +313,10 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
                 yield value
 
     @overrides(AbstractDict.set_value)
-    def set_value(self, key: str, value: T, use_list_as_value: bool = False):
-        self._value_lists[key].set_value(value, use_list_as_value)
+    def set_value(
+            self, key: str, value: T, *, use_list_as_value: bool = False):
+        self._value_lists[key].set_value(
+            value, use_list_as_value=use_list_as_value)
 
     def __setitem__(self, key: str, value: Union[T, RangedList[T]]):
         """

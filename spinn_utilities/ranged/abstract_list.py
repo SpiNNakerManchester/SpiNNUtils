@@ -15,8 +15,8 @@ from __future__ import annotations
 import numbers
 import numpy
 from typing import (
-    Any, Callable, Generic, Iterable, Iterator, Optional, Sequence, Tuple,
-    TypeVar, Union, cast)
+    Any, Callable, Generic, Iterable, Iterator, Optional, Sequence,
+    SupportsInt, Tuple, TypeVar, Union, cast)
 from typing_extensions import Self
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides
@@ -224,7 +224,8 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
                 for i in range(*selector.indices(self._size))]
 
         # If the key is an int, get the single value
-        elif isinstance(selector, (int, numpy.integer)):
+        elif isinstance(selector, (int, numpy.integer, SupportsInt)):
+            selector = int(selector)
 
             # Handle negative indices
             if selector < 0:

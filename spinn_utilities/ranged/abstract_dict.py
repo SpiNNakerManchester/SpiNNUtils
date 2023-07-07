@@ -66,7 +66,8 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         raise NotImplementedError
 
     @abstractmethod
-    def set_value(self, key: str, value: T, use_list_as_value: bool = False):
+    def set_value(
+            self, key: str, value: T, *, use_list_as_value: bool = False):
         """
         Resets a already existing key to the new value.
         All IDs in the whole range or view will have this key set.
@@ -107,16 +108,16 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         raise NotImplementedError
 
     @overload
-    def iter_all_values(self, key: str, update_save=False) -> Iterator[T]:
+    def iter_all_values(self, key: str, *, update_safe=False) -> Iterator[T]:
         ...
 
     @overload
-    def iter_all_values(self, key: Optional[_StrSeq],
-                        update_save: bool = False) -> Iterator[Dict[str, T]]:
+    def iter_all_values(self, key: Optional[_StrSeq], *,
+                        update_safe: bool = False) -> Iterator[Dict[str, T]]:
         ...
 
     @abstractmethod
-    def iter_all_values(self, key, update_save=False):
+    def iter_all_values(self, key, *, update_safe=False):
         """
         Iterates over the value(s) for all IDs covered by this view.
         There will be one yield for each ID even if values are repeated.
@@ -124,7 +125,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         :param key:
             The key or keys to get the value of. Use `None` for all keys
         :type key: str or iterable(str) or None
-        :param update_save: If set True the iteration will work even if values
+        :param update_safe: If set True the iteration will work even if values
             are updated during iteration. If left False the iterator may be
             faster but behaviour is *undefined* and *unchecked* if *any*
             values are changed during iteration.

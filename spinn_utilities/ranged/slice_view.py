@@ -65,35 +65,36 @@ class _SliceView(AbstractView[T], Generic[T]):
                     slice_start=self._start, slice_stop=self._stop)
                 for k in key}
 
-    def update_save_iter_all_values(self, key: str) -> Iterable[T]:
+    def update_safe_iter_all_values(self, key: str) -> Iterable[T]:
         ranged_list = self._range_dict.get_list(key)
         for the_id in self.ids():
             yield ranged_list.get_value_by_id(the_id=the_id)
 
     @overload
     def iter_all_values(
-            self, key: str, update_save=False) -> Iterator[T]:
+            self, key: str, *, update_safe=False) -> Iterator[T]:
         ...
 
     @overload
     def iter_all_values(
-            self, key: Optional[_StrSeq] = None,
-            update_save=False) -> Iterator[Dict[str, T]]:
+            self, key: Optional[_StrSeq] = None, *,
+            update_safe=False) -> Iterator[Dict[str, T]]:
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
-    def iter_all_values(self, key=None, update_save=False):
+    def iter_all_values(self, key=None, *, update_safe=False):
         if isinstance(key, str):
-            if update_save:
-                return self.update_save_iter_all_values(key)
+            if update_safe:
+                return self.update_safe_iter_all_values(key)
             return self._range_dict.get_list(key).iter_by_slice(
                 slice_start=self._start, slice_stop=self._stop)
         return self._range_dict.iter_values_by_slice(
             key=key, slice_start=self._start, slice_stop=self._stop,
-            update_save=update_save)
+            update_safe=update_safe)
 
     @overrides(AbstractDict.set_value)
-    def set_value(self, key: str, value: _ValueType, use_list_as_value=False):
+    def set_value(
+            self, key: str, value: _ValueType, *, use_list_as_value=False):
         self._range_dict.get_list(key).set_value_by_slice(
             slice_start=self._start, slice_stop=self._stop, value=value,
             use_list_as_value=use_list_as_value)

@@ -17,7 +17,6 @@ from datetime import datetime
 import logging
 import re
 import sys
-from types import NoneType
 from typing import List, Optional, Tuple
 from inspect import getfullargspec
 from .log_store import LogStore
@@ -198,7 +197,7 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def set_log_store(cls, log_store: Optional[LogStore]):
-        if not isinstance(log_store, (NoneType, LogStore)):
+        if log_store is not None and not isinstance(log_store, LogStore):
             raise TypeError("log_store must be a LogStore")
         cls.__log_store = log_store
         if cls.__log_store:

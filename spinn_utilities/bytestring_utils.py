@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Optional
 
 
-def as_string(byte_string, start=None, end=None):
+def as_string(byte_string: bytes, start: Optional[int] = None,
+              end: Optional[int] = None) -> str:
     """
     Returns the length and the hex values.
 
@@ -33,7 +35,8 @@ def as_string(byte_string, start=None, end=None):
     return "(" + str(len(byte_string)) + ")" + as_hex(byte_string, start, end)
 
 
-def as_hex(byte_string, start=None, end=None):
+def as_hex(byte_string: bytes, start: Optional[int] = None,
+           end: Optional[int] = None) -> str:
     """
     Returns the byte string as string showing the hex values
 

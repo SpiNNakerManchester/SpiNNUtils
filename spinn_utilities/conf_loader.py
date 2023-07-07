@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import appdirs
-from configparser import RawConfigParser, NoOptionError
+from configparser import NoOptionError
 import logging
 import os
 from typing import Callable, Dict, List, Sequence, Tuple, Union
@@ -206,7 +206,7 @@ def _config_locations(filename: str) -> List[str]:
 def load_config(
         filename: str, defaults: List[str], config_parsers: Union[
             Sequence[Tuple[str, _SectionParser]],
-            Dict[str, _SectionParser]] = ()) -> RawConfigParser:
+            Dict[str, _SectionParser]] = ()) -> CamelCaseConfigParser:
     """
     Load the configuration.
 

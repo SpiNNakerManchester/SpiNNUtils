@@ -14,7 +14,7 @@
 
 import logging
 import os
-from typing import List, Optional
+from typing import Any, Callable, Collection, List, Optional, Union
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
@@ -24,12 +24,12 @@ from spinn_utilities.log import FormatAdapter
 logger = FormatAdapter(logging.getLogger(__file__))
 
 __config: Optional[CamelCaseConfigParser] = None
-__default_config_files = []
-__config_file = None
-__unittest_mode = False
+__default_config_files: List[str] = []
+__config_file: Optional[str] = None
+__unittest_mode: bool = False
 
 
-def add_default_cfg(default):
+def add_default_cfg(default: str):
     """
     Adds an extra default configuration file to be read after earlier ones.
 
@@ -39,7 +39,7 @@ def add_default_cfg(default):
         __default_config_files.append(default)
 
 
-def clear_cfg_files(unittest_mode):
+def clear_cfg_files(unittest_mode: bool):
     """
     Clears any previous set configurations and configuration files.
 
@@ -55,7 +55,7 @@ def clear_cfg_files(unittest_mode):
     __unittest_mode = unittest_mode
 
 
-def set_cfg_files(config_file, default):
+def set_cfg_files(config_file: str, default: str):
     """
     Adds the configuration files to be loaded.
 
@@ -70,7 +70,7 @@ def set_cfg_files(config_file, default):
     add_default_cfg(default)
 
 
-def _pre_load_config():
+def _pre_load_config() -> None:
     """
     Loads configurations due to early access to a configuration value.
 
@@ -83,7 +83,7 @@ def _pre_load_config():
     load_config()
 
 
-def load_config():
+def load_config() -> None:
     """
     Reads in all the configuration files, resetting all values.
 
@@ -260,7 +260,8 @@ def config_options(section: str) -> List[str]:
     return __config.options(section)
 
 
-def _check_lines(py_path, line, lines, index, method):
+def _check_lines(py_path: str, line: str, lines: List[str], index: int,
+                 method: Callable[[str, str], Any]):
     """
     Support for `_check_python_file`. Gets section and option name.
 
@@ -291,7 +292,7 @@ def _check_lines(py_path, line, lines, index, method):
             f"section:{section} option:{option}") from original
 
 
-def _check_python_file(py_path):
+def _check_python_file(py_path: str):
     """
     A testing function to check that all the `get_config` calls work.
 
@@ -313,7 +314,7 @@ def _check_python_file(py_path):
                 _check_lines(py_path, line, lines, index, get_config_str_list)
 
 
-def _check_python_files(directory):
+def _check_python_files(directory: str):
     for root, _, files in os.walk(directory):
         for file_name in files:
             if file_name.endswith(".py"):
@@ -321,13 +322,13 @@ def _check_python_files(directory):
                 _check_python_file(py_path)
 
 
-def _find_double_defaults(repeaters=None):
+def _find_double_defaults(repeaters: Optional[Collection[str]] = ()):
     """
     Testing function to identify any configuration options in multiple default
     files.
 
     :param repeaters: List of options that are expected to be repeated.
-    :type repeaters: None or list(str)
+    :type repeaters: list(str)
     :raises ConfigException:
         If two defaults configuration files set the same value
     """
@@ -339,7 +340,7 @@ def _find_double_defaults(repeaters=None):
     if repeaters is None:
         repeaters = []
     else:
-        repeaters = map(config2.optionxform, repeaters)
+        repeaters = frozenset(map(config2.optionxform, repeaters))
     for section in config2.sections():
         for option in config2.options(section):
             if config1.has_option(section, option):
@@ -349,7 +350,7 @@ def _find_double_defaults(repeaters=None):
                         f"repeats [{section}]{option}")
 
 
-def _check_cfg_file(config1, cfg_path):
+def _check_cfg_file(config1: CamelCaseConfigParser, cfg_path: str):
     """
     Support method for :py:func:`check_cfgs`.
 
@@ -370,7 +371,7 @@ def _check_cfg_file(config1, cfg_path):
                     f"has unexpected options [{section}]{option}")
 
 
-def _check_cfgs(path):
+def _check_cfgs(path: str):
     """
     A testing function check local configuration files against the defaults.
 
@@ -395,7 +396,9 @@ def _check_cfgs(path):
                 _check_cfg_file(config1, cfg_path)
 
 
-def run_config_checks(directories, *, exceptions=None, repeaters=None):
+def run_config_checks(directories: Union[str, Collection[str]], *,
+                      exceptions: Union[str, Collection[str]] = (),
+                      repeaters: Optional[Collection[str]] = ()):
     """
     Master test.
 

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import configparser
+from typing import List, Optional
 
 
 NONES = ("none", )
@@ -23,7 +24,7 @@ FALSES = ('n', 'no', 'f', 'false', 'off', '0')
 class CamelCaseConfigParser(configparser.RawConfigParser):
     __slots__ = ["_read_files"]
 
-    def optionxform(self, optionstr):
+    def optionxform(self, optionstr: str) -> str:
         """
         Transforms the name of an option to lower case and strips
         underscores, so matching is more user-friendly.
@@ -50,7 +51,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         """
         return self._read_files
 
-    def get_str(self, section, option):
+    def get_str(self, section: str, option: str) -> Optional[str]:
         """
         Get the string value of an option.
 
@@ -64,7 +65,8 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
             return None
         return value
 
-    def get_str_list(self, section, option, token=","):
+    def get_str_list(
+            self, section: str, option: str, token: str = ",") -> List[str]:
         """
         Get the string value of an option split into a list.
 
@@ -82,7 +84,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         as_list = value.split(token)
         return list(map(lambda x: x.strip(), as_list))
 
-    def get_int(self, section, option):
+    def get_int(self, section: str, option: str) -> Optional[int]:
         """
         Get the integer value of an option.
 
@@ -96,7 +98,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
             return None
         return int(value)
 
-    def get_float(self, section, option):
+    def get_float(self, section: str, option: str) -> Optional[float]:
         """
         Get the float value of an option.
 
@@ -110,7 +112,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
             return None
         return float(value)
 
-    def get_bool(self, section, option):
+    def get_bool(self, section: str, option: str) -> Optional[bool]:
         """
         Get the boolean value of an option.
 

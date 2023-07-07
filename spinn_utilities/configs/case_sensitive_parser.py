@@ -16,7 +16,7 @@ import configparser
 
 
 class CaseSensitiveParser(configparser.RawConfigParser):
-    def optionxform(self, optionstr):
+    def optionxform(self, optionstr: str) -> str:
         """
         Performs no transformation of option strings.
         """

@@ -55,7 +55,6 @@ class SocketAddress(object):
             notify_host_name = str(notify_host_name)
         if listen_port is None:
             listen_port = get_config_int("Database", "listen_port")
-            assert listen_port is not None
         else:
             listen_port = int(listen_port)
         self._notify_host_name = notify_host_name
@@ -78,7 +77,7 @@ class SocketAddress(object):
         return self._notify_port_no
 
     @property
-    def listen_port(self) -> int:
+    def listen_port(self) -> Optional[int]:
         """
         The port to listen to for responses.
         """

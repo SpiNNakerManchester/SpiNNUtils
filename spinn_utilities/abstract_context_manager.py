@@ -13,6 +13,9 @@
 # limitations under the License.
 
 from .abstract_base import AbstractBase, abstractmethod
+from types import TracebackType
+from typing import Optional, Type
+from typing_extensions import Literal, Self
 
 
 class AbstractContextManager(object, metaclass=AbstractBase):
@@ -23,31 +26,35 @@ class AbstractContextManager(object, metaclass=AbstractBase):
     __slots__ = ()
 
     @abstractmethod
-    def close(self):
+    def close(self) -> None:
         """
         How to actually close the underlying resources.
         """
 
-    def _context_entered(self):
+    def _context_entered(self) -> None:
         """
         Called when the context is entered. The result is ignored.
+
+        :meta public:
         """
 
-    def _context_exception_occurred(self, exc_type, exc_val, exc_tb):
+    def _context_exception_occurred(
+            self, exc_val: Exception, exc_tb: TracebackType):
         """
         Called when an exception occurs during the `with` context, *after*
         the context has been closed.
 
-        :param type exc_type:
-        :param object exc_val:
-        :param traceback exc_tb:
+        :param Exception exc_val:
+        :param ~types.TracebackType exc_tb:
+        :meta public:
         """
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         self._context_entered()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[Type], exc_val: Exception,
+                 exc_tb: TracebackType) -> Literal[False]:
         self.close()
         if exc_type:
             self._context_exception_occurred(exc_type, exc_val, exc_tb)

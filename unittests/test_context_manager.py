@@ -25,7 +25,7 @@ class CM(AbstractContextManager):
     def close(self):
         self.state += 1
 
-    def _context_exception_occurred(self, exc_type, exc_val, exc_tb):
+    def _context_exception_occurred(self, exc_val, exc_tb):
         self.state = str(exc_val)
 
 

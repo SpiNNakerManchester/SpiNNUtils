@@ -57,5 +57,5 @@ class AbstractContextManager(object, metaclass=AbstractBase):
                  exc_tb: TracebackType) -> Literal[False]:
         self.close()
         if exc_type:
-            self._context_exception_occurred(exc_type, exc_val, exc_tb)
+            self._context_exception_occurred(exc_val, exc_tb)
         return False

@@ -19,7 +19,7 @@ from typing_extensions import TypeAlias, TypeGuard
 from spinn_utilities.overrides import overrides
 from spinn_utilities.helpful_functions import is_singleton
 from .abstract_sized import Selector
-from .abstract_list import AbstractList, T, _eq
+from .abstract_list import AbstractList, T, _eq, IdsType
 from .multiple_values_exception import MultipleValuesException
 
 #: The type of a range descriptor
@@ -176,7 +176,7 @@ class RangedList(AbstractList[T], Generic[T]):
         return result
 
     @overrides(AbstractList.get_single_value_by_ids)
-    def get_single_value_by_ids(self, ids: Sequence[int]) -> T:
+    def get_single_value_by_ids(self, ids: IdsType) -> T:
         # Take the first ID, and then simply check all the others are the same
         # This works for both range-based and non-range-based
         result = self.get_value_by_id(ids[0])
@@ -315,7 +315,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     def as_list(
             self, value: _ListType, size: int,
-            ids: Optional[Sequence[int]] = None) -> List[T]:
+            ids: Optional[IdsType] = None) -> List[T]:
         """
         Converts (if required) the value into a list of a given size.
         An exception is raised if value cannot be given size elements.
@@ -502,13 +502,13 @@ class RangedList(AbstractList[T], Generic[T]):
         # set the value in case missed elsewhere
         ranges[index] = (ranges[index][0], ranges[index][1], value)
 
-    def _set_values_list(self, ids: Sequence[int], value: _ListType):
+    def _set_values_list(self, ids: IdsType, value: _ListType):
         values = self.as_list(value=value, size=len(ids), ids=ids)
         for id_value, val in zip(ids, values):
             self.set_value_by_id(id_value, val)
 
     def set_value_by_ids(
-            self, ids: Sequence[int], value: _ValueType, *,
+            self, ids: IdsType, value: _ValueType, *,
             use_list_as_value=False):
         if not use_list_as_value and self.is_list(value, len(ids)):
             self._set_values_list(ids, value)

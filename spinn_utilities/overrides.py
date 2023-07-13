@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import inspect
+from types import FunctionType
 from typing import Any, Callable, Iterable, Optional, TypeVar
 #: :meta private:
 Method = TypeVar("Method", bound=Callable[..., Any])
@@ -42,9 +43,9 @@ class overrides(object):
     ]
 
     def __init__(
-            self, super_class_method: Method, extend_doc=True,
+            self, super_class_method, extend_doc: bool = True,
             additional_arguments: Optional[Iterable[str]] = None,
-            extend_defaults=False):
+            extend_defaults: bool = False):
         """
         :param super_class_method: The method to override in the superclass
         :param bool extend_doc:
@@ -57,6 +58,10 @@ class overrides(object):
         :param bool extend_defaults:
             Whether the subclass may specify extra defaults for the parameters
         """
+        if isinstance(super_class_method, property):
+            super_class_method = super_class_method.fget
+        if not isinstance(super_class_method, FunctionType):
+            raise TypeError("may only decorate method declarations")
         self._superclass_method = super_class_method
         self._extend_doc = bool(extend_doc)
         self._extend_defaults = bool(extend_defaults)
@@ -66,8 +71,6 @@ class overrides(object):
             self._additional_arguments = frozenset(additional_arguments)
         else:
             self._additional_arguments = frozenset()
-        if isinstance(super_class_method, property):
-            self._superclass_method = super_class_method.fget
 
     @staticmethod
     def __match_defaults(default_args, super_defaults, extend_ok):

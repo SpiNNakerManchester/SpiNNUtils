@@ -13,10 +13,11 @@
 # limitations under the License.
 from __future__ import annotations
 from typing import (
-    Dict, Generic, Iterable, Iterator, Optional, Sequence, Tuple,
+    Dict, Generic, Iterable, Iterator, Optional, Tuple,
     overload, TYPE_CHECKING)
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, _StrSeq, _Keys
+from .abstract_list import IdsType
 from .abstract_view import AbstractView, T
 if TYPE_CHECKING:
     from .range_dictionary import RangeDictionary
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
 class _IdsView(AbstractView[T], Generic[T]):
     __slots__ = ("_ids", )
 
-    def __init__(self, range_dict: RangeDictionary[T], ids: Sequence[int]):
+    def __init__(self, range_dict: RangeDictionary[T], ids: IdsType):
         """
         Use :py:meth:`RangeDictionary.view_factory` to create views
         """
@@ -36,7 +37,7 @@ class _IdsView(AbstractView[T], Generic[T]):
         return f"View with IDs: {self._ids}"
 
     @overrides(AbstractDict.ids)
-    def ids(self) -> Sequence[int]:
+    def ids(self) -> IdsType:
         return list(self._ids)
 
     @overload

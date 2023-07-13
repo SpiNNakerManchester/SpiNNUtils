@@ -14,16 +14,19 @@
 from __future__ import annotations
 import numbers
 import numpy
+from numpy.typing import NDArray
 from typing import (
-    Any, Callable, Generic, Iterable, Iterator, Optional, Sequence, Tuple,
+    Any, Callable, Generic, Iterator, Optional, Sequence, Tuple,
     TypeVar, Union, cast)
-from typing_extensions import Self
+from typing_extensions import Self, TypeAlias
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides
 from .abstract_sized import AbstractSized, Selector
 from .multiple_values_exception import MultipleValuesException
 #: :meta private:
 T = TypeVar("T")
+#: :meta private:
+IdsType: TypeAlias = Union[Sequence[int], NDArray[numpy.integer]]
 
 
 def _eq(x: Any, y: Any) -> bool:
@@ -183,7 +186,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         return list(self.iter_by_slice(start, stop))
 
     @abstractmethod
-    def get_single_value_by_ids(self, ids: Sequence[int]) -> T:
+    def get_single_value_by_ids(self, ids: IdsType) -> T:
         """
         If possible, returns a single value shared by all the IDs.
 
@@ -247,7 +250,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         yield self.get_value_by_id(the_id)
 
-    def iter_by_ids(self, ids: Sequence[int]) -> Iterator[T]:
+    def iter_by_ids(self, ids: IdsType) -> Iterator[T]:
         """
         Fast but *not* update-safe iterator by collection of IDs.
 
@@ -444,7 +447,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         raise NotImplementedError
 
-    def iter_ranges_by_ids(self, ids: Iterable[int]) -> Iterator[
+    def iter_ranges_by_ids(self, ids: IdsType) -> Iterator[
             Tuple[int, int, T]]:
         """
         Fast but *not* update-safe iterator of the ranges covered by these IDs.
@@ -461,7 +464,8 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         range_pointer = 0
         result = None
         ranges = list(self.iter_ranges())
-        for id_value in ids:
+        for _id_value in ids:
+            id_value = int(_id_value)
 
             # check if ranges reset so too far ahead
             if id_value < ranges[range_pointer][0]:

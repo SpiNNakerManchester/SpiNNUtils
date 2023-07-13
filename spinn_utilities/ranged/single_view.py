@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 from typing import (
-    Dict, Generic, Iterable, Iterator, Optional, Tuple, overload,
+    Dict, Generic, Iterator, Optional, Sequence, Tuple, overload,
     TYPE_CHECKING)
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, T, _StrSeq, _Keys
@@ -36,7 +36,7 @@ class _SingleView(AbstractView[T], Generic[T]):
         return f"View with ID: {self._id}"
 
     @overrides(AbstractDict.ids)
-    def ids(self) -> Iterable[int]:
+    def ids(self) -> Sequence[int]:
         return [self._id]
 
     @overload

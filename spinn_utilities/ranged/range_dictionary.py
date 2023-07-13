@@ -19,6 +19,7 @@ from typing_extensions import TypeAlias
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, T, _StrSeq
 from .abstract_sized import AbstractSized
+from .abstract_list import IdsType
 from .ids_view import _IdsView
 from .ranged_list import RangedList
 from .single_view import _SingleView
@@ -216,15 +217,15 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     @overload
     def update_safe_iter_all_values(
-            self, key: str, ids: Iterable[int]) -> Iterator[T]: ...
+            self, key: str, ids: IdsType) -> Iterator[T]: ...
 
     @overload
     def update_safe_iter_all_values(
             self, key: Optional[_StrSeq],
-            ids: Iterable[int]) -> Iterator[Dict[str, T]]: ...
+            ids: IdsType) -> Iterator[Dict[str, T]]: ...
 
     def update_safe_iter_all_values(
-            self, key: Union[str, Optional[_StrSeq]], ids: Iterable[int]):
+            self, key: Union[str, Optional[_StrSeq]], ids: IdsType):
         """
         Same as
         :py:meth:`iter_all_values`
@@ -286,17 +287,17 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             slice_start=slice_start, slice_stop=slice_stop, key=key))
 
     @overload
-    def iter_values_by_ids(self, ids: Iterable[int], key: str, *,
+    def iter_values_by_ids(self, ids: IdsType, key: str, *,
                            update_safe: bool = False) -> Iterator[T]:
         ...
 
     @overload
     def iter_values_by_ids(
-            self, ids: Iterable[int], key: Optional[_StrSeq] = None, *,
+            self, ids: IdsType, key: Optional[_StrSeq] = None, *,
             update_safe: bool = False) -> Iterator[Dict[str, T]]:
         ...
 
-    def iter_values_by_ids(self, ids: Iterable[int], key=None, *,
+    def iter_values_by_ids(self, ids: IdsType, key=None, *,
                            update_safe=False):
         """
         Same as :py:meth:`iter_all_values` but limited to a simple slice.
@@ -474,16 +475,16 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     @overload
     def iter_ranges_by_ids(
-            self, ids: Iterable[int], key: str) -> _SimpleRangeIter:
+            self, ids: IdsType, key: str) -> _SimpleRangeIter:
         ...
 
     @overload
     def iter_ranges_by_ids(
-            self, ids: Iterable[int],
-            key: Optional[_StrSeq]) -> _CompoundRangeIter:
+            self, ids: IdsType,
+            key: Optional[_StrSeq] = None) -> _CompoundRangeIter:
         ...
 
-    def iter_ranges_by_ids(self, ids, key=None):
+    def iter_ranges_by_ids(self, ids: IdsType, key=None):
         """
         Same as :py:meth:`iter_ranges` but limited to a collection of IDs.
 

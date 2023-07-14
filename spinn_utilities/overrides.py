@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import inspect
-from types import FunctionType
+from types import FunctionType, MethodType
 from typing import Any, Callable, Iterable, Optional, TypeVar
 #: :meta private:
 Method = TypeVar("Method", bound=Callable[..., Any])
@@ -60,8 +60,9 @@ class overrides(object):
         """
         if isinstance(super_class_method, property):
             super_class_method = super_class_method.fget
-        if not isinstance(super_class_method, FunctionType):
-            raise TypeError("may only decorate method declarations")
+        if not isinstance(super_class_method, (FunctionType, MethodType)):
+            raise TypeError("may only decorate method declarations; "
+                            f"this is a {type(super_class_method)}")
         self._superclass_method = super_class_method
         self._extend_doc = bool(extend_doc)
         self._extend_defaults = bool(extend_defaults)

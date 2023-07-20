@@ -14,9 +14,12 @@
 """
 A trimmed down version of standard Python Abstract Base classes.
 """
+from typing import TypeVar
+#: :meta private:
+T = TypeVar("T")
 
 
-def abstractmethod(funcobj):
+def abstractmethod(funcobj: T) -> T:
     """
     A decorator indicating abstract methods.
 
@@ -33,7 +36,7 @@ def abstractmethod(funcobj):
             def my_abstract_method(self, ...):
                 ...
     """
-    funcobj.__isabstractmethod__ = True
+    funcobj.__isabstractmethod__ = True  # type: ignore[attr-defined]
     return funcobj
 
 

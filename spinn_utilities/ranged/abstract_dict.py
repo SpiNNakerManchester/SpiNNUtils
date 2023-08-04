@@ -335,4 +335,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         :type key: str
         :param default: Value to be used by reset
         """
-        self.set_value(key, self.get_default(key=key))
+        default = self.get_default(key)
+        if default is None:
+            raise ValueError(f"key '{key}' is not resettable")
+        self.set_value(key, default)

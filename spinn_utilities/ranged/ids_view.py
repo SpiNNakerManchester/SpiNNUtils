@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 from typing import (
-    Dict, Generic, Iterable, Iterator, Optional, Tuple,
+    Dict, Generic, Iterable, Iterator, Optional, Sequence, Tuple,
     overload, TYPE_CHECKING)
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, _StrSeq, _Keys
@@ -31,14 +31,14 @@ class _IdsView(AbstractView[T], Generic[T]):
         Use :py:meth:`RangeDictionary.view_factory` to create views
         """
         super().__init__(range_dict)
-        self._ids = ids
+        self._ids = tuple(ids)
 
     def __str__(self) -> str:
         return f"View with IDs: {self._ids}"
 
     @overrides(AbstractDict.ids)
-    def ids(self) -> IdsType:
-        return list(self._ids)
+    def ids(self) -> Sequence[int]:
+        return self._ids
 
     @overload
     def get_value(self, key: str) -> T:

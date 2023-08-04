@@ -17,5 +17,7 @@ branch = True
 
 [report]
 # Coverage should ignore overloads; they're not real code
-exclude_also =
+exclude_lines =
     @overload
+    \.\.\.$
+    #\s*(pragma|PRAGMA)[:\s]?\s*(no|NO)\s*(cover|COVER)

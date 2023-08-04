@@ -14,3 +14,8 @@
 
 [run]
 branch = True
+
+[report]
+# Coverage should ignore ellipses; they're not real code
+exclude_also =
+	[.][.][.]$

@@ -21,7 +21,7 @@ ranged_view = rd[2, 3, 8]
 
 
 def test_ids():
-    assert [2, 3, 8] == ranged_view.ids()
+    assert [2, 3, 8] == list(ranged_view.ids())
 
 
 def test_value():

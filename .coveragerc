@@ -20,4 +20,5 @@ branch = True
 exclude_lines =
     @overload
     \.\.\.$
+    raise\s+NotImplementedError
     #\s*(pragma|PRAGMA)[:\s]?\s*(no|NO)\s*(cover|COVER)

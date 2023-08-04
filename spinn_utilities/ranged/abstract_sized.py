@@ -69,8 +69,6 @@ class AbstractSized(object):
         """
         Check if the given ID has a type acceptable for IDs.
         """
-        if type(the_id) == float:
-            print(type(the_id))
         return isinstance(the_id, (int, SupportsInt)) and (
             not isinstance(the_id, (float, numpy.ndarray)))
 

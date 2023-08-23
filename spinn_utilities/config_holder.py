@@ -23,10 +23,44 @@ from spinn_utilities.log import FormatAdapter
 # pylint: disable=global-statement
 logger = FormatAdapter(logging.getLogger(__file__))
 
-__config: Optional[CamelCaseConfigParser] = None
 __default_config_files: List[str] = []
 __config_file: Optional[str] = None
 __unittest_mode: bool = False
+
+
+class _Needs_Loading(CamelCaseConfigParser):
+
+    def get_str(self, section: str, option: str) -> Optional[str]:
+        return _pre_load_config().get_str(section, option)
+
+    def get_str_list(
+            self, section: str, option: str, token: str = ",") -> List[str]:
+        return _pre_load_config().get_str_list(section, option, token)
+
+    def get_int(self, section: str, option: str) -> Optional[int]:
+        return _pre_load_config().get_int(section, option)
+
+    def get_float(self, section: str, option: str) -> Optional[float]:
+        return _pre_load_config().get_float(section, option)
+
+    def get_bool(self, section: str, option: str) -> Optional[bool]:
+        return _pre_load_config().get_bool(section, option)
+
+    def set(self, section, option, value=None):
+        try:
+            _pre_load_config().set(section, option, value)
+        except ConfigException as ex:
+            # The actual error is that load_config should be called before
+            # set_config but this discourages the use outside of unittests
+            raise ConfigException(
+                "set_config should only be called by unittests "
+                "which should have called unittest_setup") from ex
+
+    def has_option(self, section: str, option: str) -> bool:
+        return _pre_load_config().has_option(section, option)
+
+
+__config: CamelCaseConfigParser = _Needs_Loading()
 
 
 def add_default_cfg(default: str):
@@ -49,7 +83,7 @@ def clear_cfg_files(unittest_mode: bool):
     :param bool unittest_mode: Flag to put the holder into unit testing mode
     """
     global __config, __config_file, __unittest_mode
-    __config = None
+    __config = _Needs_Loading()
     __default_config_files.clear()
     __config_file = None
     __unittest_mode = unittest_mode
@@ -70,7 +104,7 @@ def set_cfg_files(config_file: str, default: str):
     add_default_cfg(default)
 
 
-def _pre_load_config() -> None:
+def _pre_load_config() -> CamelCaseConfigParser:
     """
     Loads configurations due to early access to a configuration value.
 
@@ -81,6 +115,7 @@ def _pre_load_config() -> None:
         raise ConfigException(
             "Accessing config values before setup is not supported")
     load_config()
+    return __config
 
 
 def load_config() -> None:
@@ -110,14 +145,6 @@ def get_config_str(section: str, option: str) -> Optional[str]:
     :return: The option value
     :rtype: str or None
     """
-    try:
-        if __config is not None:
-            return __config.get_str(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    if __config is None:
-        raise ConfigException("configuration not loaded")
     return __config.get_str(section, option)
 
 
@@ -132,14 +159,6 @@ def get_config_str_list(
     :return: The list (possibly empty) of the option values
     :rtype: list(str)
     """
-    try:
-        if __config is not None:
-            return __config.get_str_list(section, option, token)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    if __config is None:
-        raise ConfigException("configuration not loaded")
     return __config.get_str_list(section, option, token)
 
 
@@ -152,14 +171,6 @@ def get_config_int(section: str, option: str) -> Optional[int]:
     :return: The option value
     :rtype: int
     """
-    try:
-        if __config is not None:
-            return __config.get_int(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    if __config is None:
-        raise ConfigException("configuration not loaded")
     return __config.get_int(section, option)
 
 
@@ -172,14 +183,6 @@ def get_config_float(section: str, option: str) -> Optional[float]:
     :return: The option value.
     :rtype: float
     """
-    try:
-        if __config is not None:
-            return __config.get_float(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    if __config is None:
-        raise ConfigException("configuration not loaded")
     return __config.get_float(section, option)
 
 
@@ -192,14 +195,6 @@ def get_config_bool(section: str, option: str) -> Optional[bool]:
     :return: The option value.
     :rtype: bool
     """
-    try:
-        if __config is not None:
-            return __config.get_bool(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    if __config is None:
-        raise ConfigException("configuration not loaded")
     return __config.get_bool(section, option)
 
 
@@ -214,20 +209,7 @@ def set_config(section: str, option: str, value: Optional[str]):
     :param object value: Value to set option to
     :raises ConfigException: If called unexpectedly
     """
-    if __config is None:
-        if __unittest_mode:
-            load_config()
-        else:
-            # The actual error is that load_config should be called before
-            # set_config but this discourages the use outside of unittests
-            raise ConfigException(
-                "set_config should only be called by unittests "
-                "which should have called unittest_setup")
-        if __config is None:
-            raise ConfigException("configuration not loaded")
     __config.set(section, option, value)
-    # Intentionally no try here to force tests that set to
-    # load_default_configs before AND after
 
 
 def has_config_option(section: str, option: str) -> bool:
@@ -239,13 +221,6 @@ def has_config_option(section: str, option: str) -> bool:
     :rtype: bool
     :return: True if and only if the option is defined. It may be `None`
     """
-    if __config is None:
-        raise ConfigException("configuration not loaded")
-    try:
-        return __config.has_option(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
     return __config.has_option(section, option)
 
 

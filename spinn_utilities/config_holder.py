@@ -110,14 +110,8 @@ def get_config_str(section: str, option: str) -> Optional[str]:
     :return: The option value
     :rtype: str or None
     """
-    try:
-        if __config is not None:
-            return __config.get_str(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    if __config is None:
-        raise ConfigException("configuration not loaded")
+    if __config is not None:
+        _pre_load_config()
     return __config.get_str(section, option)
 
 

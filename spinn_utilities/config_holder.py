@@ -110,7 +110,7 @@ def get_config_str(section: str, option: str) -> Optional[str]:
     :return: The option value
     :rtype: str or None
     """
-    if __config is not None:
+    if __config is None:
         _pre_load_config()
     return __config.get_str(section, option)
 

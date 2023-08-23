@@ -24,7 +24,7 @@ from spinn_utilities.log import FormatAdapter
 logger = FormatAdapter(logging.getLogger(__file__))
 
 __config: CamelCaseConfigParser = CamelCaseConfigParser()
-__needs_loading:bool = True
+__needs_loading: bool = True
 __default_config_files: List[str] = []
 __config_file: Optional[str] = None
 __unittest_mode: bool = False
@@ -101,6 +101,7 @@ def load_config() -> None:
         for default in __default_config_files:
             __config.read(default)
     __needs_loading = False
+
 
 def get_config_str(section: str, option: str) -> Optional[str]:
     """

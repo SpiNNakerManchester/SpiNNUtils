@@ -50,7 +50,7 @@ def clear_cfg_files(unittest_mode: bool):
     :param bool unittest_mode: Flag to put the holder into unit testing mode
     """
     global __config, __config_file, __needs_loading, __unittest_mode
-    __config = None
+    __config = CamelCaseConfigParser()
     __default_config_files.clear()
     __config_file = None
     __needs_loading = True
@@ -100,7 +100,7 @@ def load_config() -> None:
     else:
         for default in __default_config_files:
             __config.read(default)
-
+    __needs_loading = False
 
 def get_config_str(section: str, option: str) -> Optional[str]:
     """

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import tempfile
+from unittest import SkipTest
 from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus
@@ -609,3 +610,26 @@ class UtilsDataView(object):
         cls.__data._reset_status = ResetStatus.HAS_RUN
         cls.__data._requires_data_generation = False
         cls.__data._requires_mapping = False
+
+    def raise_skiptest(self, reason=None, parent=None):
+        """
+        Sets the status as shutdown amd raises a SkipTest
+
+        :param reason: Message for the exception is any
+        :type reason: Exception or None
+        :param parent: Exception which trggered the skip if any
+        :type reason: Exception or None
+        :raises: SkipTest very time called
+        """
+        self.__data._data_status = DataStatus.SHUTDOWN
+        self.__data._run_status = RunStatus.SHUTDOWN
+        if reason is None:
+            if parent is None:
+                raise SkipTest()
+            else:
+                raise SkipTest() from parent
+        else:
+            if parent is None:
+                raise SkipTest(reason)
+            else:
+                raise SkipTest(reason) from parent

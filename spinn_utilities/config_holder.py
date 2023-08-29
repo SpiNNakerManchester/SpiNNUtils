@@ -80,11 +80,10 @@ def _pre_load_config() -> CamelCaseConfigParser:
     if not __unittest_mode:
         raise ConfigException(
             "Accessing config values before setup is not supported")
-    load_config()
-    return __config
+    return load_config()
 
 
-def load_config() -> None:
+def load_config() -> CamelCaseConfigParser:
     """
     Reads in all the configuration files, resetting all values.
 
@@ -100,6 +99,7 @@ def load_config() -> None:
         __config = CamelCaseConfigParser()
         for default in __default_config_files:
             __config.read(default)
+    return __config
 
 
 def get_config_str(section: str, option: str) -> Optional[str]:

@@ -70,7 +70,7 @@ def set_cfg_files(config_file: str, default: str):
     add_default_cfg(default)
 
 
-def _pre_load_config() -> None:
+def _pre_load_config() -> CamelCaseConfigParser:
     """
     Loads configurations due to early access to a configuration value.
 
@@ -81,6 +81,7 @@ def _pre_load_config() -> None:
         raise ConfigException(
             "Accessing config values before setup is not supported")
     load_config()
+    return __config
 
 
 def load_config() -> None:
@@ -110,15 +111,10 @@ def get_config_str(section: str, option: str) -> Optional[str]:
     :return: The option value
     :rtype: str or None
     """
-    try:
-        if __config is not None:
-            return __config.get_str(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
     if __config is None:
-        raise ConfigException("configuration not loaded")
-    return __config.get_str(section, option)
+        return _pre_load_config().get_str(section, option)
+    else:
+        return __config.get_str(section, option)
 
 
 def get_config_str_list(
@@ -132,15 +128,10 @@ def get_config_str_list(
     :return: The list (possibly empty) of the option values
     :rtype: list(str)
     """
-    try:
-        if __config is not None:
-            return __config.get_str_list(section, option, token)
-    except AttributeError:
-        pass
-    _pre_load_config()
     if __config is None:
-        raise ConfigException("configuration not loaded")
-    return __config.get_str_list(section, option, token)
+        return _pre_load_config().get_str_list(section, option, token)
+    else:
+        return __config.get_str_list(section, option, token)
 
 
 def get_config_int(section: str, option: str) -> Optional[int]:
@@ -152,15 +143,10 @@ def get_config_int(section: str, option: str) -> Optional[int]:
     :return: The option value
     :rtype: int
     """
-    try:
-        if __config is not None:
-            return __config.get_int(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
     if __config is None:
-        raise ConfigException("configuration not loaded")
-    return __config.get_int(section, option)
+        return _pre_load_config().get_int(section, option)
+    else:
+        return __config.get_int(section, option)
 
 
 def get_config_float(section: str, option: str) -> Optional[float]:
@@ -172,15 +158,10 @@ def get_config_float(section: str, option: str) -> Optional[float]:
     :return: The option value.
     :rtype: float
     """
-    try:
-        if __config is not None:
-            return __config.get_float(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
     if __config is None:
-        raise ConfigException("configuration not loaded")
-    return __config.get_float(section, option)
+        return _pre_load_config().get_float(section, option)
+    else:
+        return __config.get_float(section, option)
 
 
 def get_config_bool(section: str, option: str) -> Optional[bool]:
@@ -192,15 +173,10 @@ def get_config_bool(section: str, option: str) -> Optional[bool]:
     :return: The option value.
     :rtype: bool
     """
-    try:
-        if __config is not None:
-            return __config.get_bool(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
     if __config is None:
-        raise ConfigException("configuration not loaded")
-    return __config.get_bool(section, option)
+        return _pre_load_config().get_bool(section, option)
+    else:
+        return __config.get_bool(section, option)
 
 
 def set_config(section: str, option: str, value: Optional[str]):
@@ -215,19 +191,9 @@ def set_config(section: str, option: str, value: Optional[str]):
     :raises ConfigException: If called unexpectedly
     """
     if __config is None:
-        if __unittest_mode:
-            load_config()
-        else:
-            # The actual error is that load_config should be called before
-            # set_config but this discourages the use outside of unittests
-            raise ConfigException(
-                "set_config should only be called by unittests "
-                "which should have called unittest_setup")
-        if __config is None:
-            raise ConfigException("configuration not loaded")
-    __config.set(section, option, value)
-    # Intentionally no try here to force tests that set to
-    # load_default_configs before AND after
+        _pre_load_config().set(section, option, value)
+    else:
+        __config.set(section, option, value)
 
 
 def has_config_option(section: str, option: str) -> bool:
@@ -241,12 +207,8 @@ def has_config_option(section: str, option: str) -> bool:
     """
     if __config is None:
         raise ConfigException("configuration not loaded")
-    try:
+    else:
         return __config.has_option(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    return __config.has_option(section, option)
 
 
 def config_options(section: str) -> List[str]:

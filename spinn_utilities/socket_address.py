@@ -14,6 +14,8 @@
 
 from typing import Optional
 from spinn_utilities.config_holder import get_config_int, get_config_str
+from spinn_utilities.config_holder import (
+    get_config_int, get_config_int_or_none, get_config_str)
 
 
 class SocketAddress(object):
@@ -54,7 +56,7 @@ class SocketAddress(object):
         else:
             notify_host_name = str(notify_host_name)
         if listen_port is None:
-            listen_port = get_config_int("Database", "listen_port")
+            listen_port = get_config_int_or_none("Database", "listen_port")
         else:
             listen_port = int(listen_port)
         self._notify_host_name = notify_host_name

@@ -101,7 +101,36 @@ def load_config() -> None:
             __config.read(default)
 
 
-def get_config_str(section: str, option: str) -> Optional[str]:
+def is_config_none(section, option):
+    """
+    Check if the value of a configuration option would be considered None
+
+    :param str section: What section to get the option from.
+    :param str option: What option to read.
+    :return: True if and only if the value would be considered None
+    :rtype: bool
+    """
+    value = get_config_str_or_none(section, option)
+    return value is None
+
+
+def get_config_str(section, option):
+    """
+    Get the string value of a configuration option.
+
+    :param str section: What section to get the option from.
+    :param str option: What option to read.
+    :return: The option value
+    :rtype: str
+    :raises ConfigException: if the Value would be None
+    """
+    value = get_config_str_or_none(section, option)
+    if value is None:
+        raise ConfigException(f"Unexpected None for {section=} {option=}")
+    return value
+
+
+def get_config_str_or_none(section, option):
     """
     Get the string value of a configuration option.
 
@@ -109,6 +138,7 @@ def get_config_str(section: str, option: str) -> Optional[str]:
     :param str option: What option to read.
     :return: The option value
     :rtype: str or None
+    :raises ConfigException: if the Value would be None
     """
     try:
         if __config is not None:
@@ -151,6 +181,23 @@ def get_config_int(section: str, option: str) -> Optional[int]:
     :param str option: What option to read.
     :return: The option value
     :rtype: int
+    :raises ConfigException: if the Value would be None
+    """
+    value = get_config_int_or_none(section, option)
+    if value is None:
+        raise ConfigException(f"Unexpected None for {section=} {option=}")
+    return value
+
+
+def get_config_int_or_none(section, option):
+    """
+    Get the integer value of a configuration option.
+
+    :param str section: What section to get the option from.
+    :param str option: What option to read.
+    :return: The option value
+    :rtype: int or None
+    :raises ConfigException: if the Value would be None
     """
     try:
         if __config is not None:
@@ -171,6 +218,22 @@ def get_config_float(section: str, option: str) -> Optional[float]:
     :param str option: What option to read.
     :return: The option value.
     :rtype: float
+    :raises ConfigException: if the Value would be None
+    """
+    value = get_config_float_or_none(section, option)
+    if value is None:
+        raise ConfigException(f"Unexpected None for {section=} {option=}")
+    return value
+
+
+def get_config_float_or_none(section, option):
+    """
+    Get the float value of a configuration option.
+
+    :param str section: What section to get the option from.
+    :param str option: What option to read.
+    :return: The option value.
+    :rtype: float or None
     """
     try:
         if __config is not None:
@@ -191,6 +254,23 @@ def get_config_bool(section: str, option: str) -> Optional[bool]:
     :param str option: What option to read.
     :return: The option value.
     :rtype: bool
+    :raises ConfigException: if the Value would be None
+    """
+    value = get_config_bool_or_none(section, option)
+    if value is None:
+        raise ConfigException(f"Unexpected None for {section=} {option=}")
+    return value
+
+
+def get_config_bool_or_none(section, option):
+    """
+    Get the boolean value of a configuration option.
+
+    :param str section: What section to get the option from.
+    :param str option: What option to read.
+    :return: The option value.
+    :rtype: bool
+    :raises ConfigException: if the Value would be None
     """
     try:
         if __config is not None:
@@ -303,13 +383,17 @@ def _check_python_file(py_path: str):
         lines = py_file.readlines()
         for index, line in enumerate(lines):
             if "get_config_bool(" in line:
-                _check_lines(py_path, line, lines, index, get_config_bool)
+                _check_lines(
+                    py_path, line, lines, index, get_config_bool_or_none)
             if "get_config_float(" in line:
-                _check_lines(py_path, line, lines, index, get_config_float)
+                _check_lines(
+                    py_path, line, lines, index, get_config_float_or_none)
             if "get_config_int(" in line:
-                _check_lines(py_path, line, lines, index, get_config_int)
+                _check_lines(
+                    py_path, line, lines, index, get_config_int_or_none)
             if "get_config_str(" in line:
-                _check_lines(py_path, line, lines, index, get_config_str)
+                _check_lines(
+                    py_path, line, lines, index, get_config_str_or_none)
             if "get_config_str_list(" in line:
                 _check_lines(py_path, line, lines, index, get_config_str_list)
 

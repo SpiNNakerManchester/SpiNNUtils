@@ -101,7 +101,7 @@ def load_config() -> None:
             __config.read(default)
 
 
-def is_config_none(section, option):
+def is_config_none(section, option) -> bool:
     """
     Check if the value of a configuration option would be considered None
 
@@ -114,7 +114,7 @@ def is_config_none(section, option):
     return value is None
 
 
-def get_config_str(section, option):
+def get_config_str(section, option) -> str:
     """
     Get the string value of a configuration option.
 
@@ -130,7 +130,7 @@ def get_config_str(section, option):
     return value
 
 
-def get_config_str_or_none(section, option):
+def get_config_str_or_none(section, option) -> Optional[str]:
     """
     Get the string value of a configuration option.
 
@@ -173,7 +173,7 @@ def get_config_str_list(
     return __config.get_str_list(section, option, token)
 
 
-def get_config_int(section: str, option: str) -> Optional[int]:
+def get_config_int(section: str, option: str) -> int:
     """
     Get the integer value of a configuration option.
 
@@ -189,7 +189,7 @@ def get_config_int(section: str, option: str) -> Optional[int]:
     return value
 
 
-def get_config_int_or_none(section, option):
+def get_config_int_or_none(section, option) -> Optional[int]:
     """
     Get the integer value of a configuration option.
 
@@ -210,7 +210,7 @@ def get_config_int_or_none(section, option):
     return __config.get_int(section, option)
 
 
-def get_config_float(section: str, option: str) -> Optional[float]:
+def get_config_float(section: str, option: str) -> float:
     """
     Get the float value of a configuration option.
 
@@ -226,7 +226,7 @@ def get_config_float(section: str, option: str) -> Optional[float]:
     return value
 
 
-def get_config_float_or_none(section, option):
+def get_config_float_or_none(section, option) -> Optional[float]:
     """
     Get the float value of a configuration option.
 
@@ -246,7 +246,7 @@ def get_config_float_or_none(section, option):
     return __config.get_float(section, option)
 
 
-def get_config_bool(section: str, option: str) -> Optional[bool]:
+def get_config_bool(section: str, option: str) -> bool:
     """
     Get the boolean value of a configuration option.
 
@@ -262,7 +262,7 @@ def get_config_bool(section: str, option: str) -> Optional[bool]:
     return value
 
 
-def get_config_bool_or_none(section, option):
+def get_config_bool_or_none(section, option) -> Optional[bool]:
     """
     Get the boolean value of a configuration option.
 

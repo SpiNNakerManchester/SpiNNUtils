@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from typing import Optional
-from spinn_utilities.config_holder import get_config_int, get_config_str
+from spinn_utilities.config_holder import (
+    get_config_int, get_config_int_or_none, get_config_str)
 
 
 class SocketAddress(object):
@@ -43,18 +44,16 @@ class SocketAddress(object):
         """
         if notify_port_no is None:
             notify_port_no = get_config_int("Database", "notify_port")
-            assert notify_port_no is not None
         else:
             notify_port_no = int(notify_port_no)
         if notify_host_name is None:
             notify_host_name = get_config_str("Database", "notify_hostname")
-            assert notify_host_name is not None
         elif notify_host_name == "0.0.0.0":
             notify_host_name = "localhost"
         else:
             notify_host_name = str(notify_host_name)
         if listen_port is None:
-            listen_port = get_config_int("Database", "listen_port")
+            listen_port = get_config_int_or_none("Database", "listen_port")
         else:
             listen_port = int(listen_port)
         self._notify_host_name = notify_host_name

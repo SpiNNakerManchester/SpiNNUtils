@@ -58,12 +58,6 @@ class DataNotMocked(DataNotYetAvialable):
         super().__init__(f"MOCK {data}")
 
 
-class IllegalState(DataNotYetAvialable):
-    """
-    Raised when trying to get data before a mocked simulator has created it.
-    """
-
-
 class ShutdownException(SpiNNUtilsException):
     """
     Raised when trying to get simulator data after it has been shut down.

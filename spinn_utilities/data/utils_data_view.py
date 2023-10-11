@@ -615,27 +615,19 @@ class UtilsDataView(object):
         cls.__data._requires_data_generation = False
         cls.__data._requires_mapping = False
 
-    def raise_skiptest(
-            self, reason: Optional[str] = None,
-            parent: Optional[Exception] = None) -> None:
+    def raise_skiptest(self, reason: str = None,
+                       parent: Optional[Exception] = None) -> None:
         """
         Sets the status as shutdown amd raises a SkipTest
 
-        :param reason: Message for the exception is any
-        :type reason: Str or None
+        :param Exception reason: Message for the exception is any
         :param parent: Exception which triggered the skip if any
-        :type reason: Exception or None
+        :type parent: Exception or None
         :raises: SkipTest very time called
         """
         self.__data._data_status = DataStatus.SHUTDOWN
         self.__data._run_status = RunStatus.SHUTDOWN
-        if reason is None:
-            if parent is None:
-                raise SkipTest()
-            else:
-                raise SkipTest() from parent
+        if parent is None:
+            raise SkipTest(reason)
         else:
-            if parent is None:
-                raise SkipTest(reason)
-            else:
-                raise SkipTest(reason) from parent
+            raise SkipTest(reason) from parent

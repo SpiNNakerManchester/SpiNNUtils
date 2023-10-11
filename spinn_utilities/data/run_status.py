@@ -33,9 +33,3 @@ class RunStatus(Enum):
     STOP_REQUESTED = (3)
     STOPPING = (4)
     SHUTDOWN = (5)
-
-    def __new__(cls, value):
-        # pylint: disable=protected-access
-        obj = object.__new__(cls)
-        obj._value_ = value
-        return obj

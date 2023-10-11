@@ -21,14 +21,8 @@ class ResetStatus(Enum):
 
     This class is design to used internally by UtilsDataView.
     """
-    NOT_SETUP = (0)
-    SETUP = (1)
-    HAS_RUN = (2)
-    SOFT_RESET = (3)
-    HARD_RESET = (4)
-
-    def __new__(cls, value):
-        # pylint: disable=protected-access
-        obj = object.__new__(cls)
-        obj._value_ = value
-        return obj
+    NOT_SETUP = 0
+    SETUP = 1
+    HAS_RUN = 2
+    SOFT_RESET = 3
+    HARD_RESET = 4

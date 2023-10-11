@@ -205,10 +205,11 @@ def load_config(filename, defaults, config_parsers=None):
         The list of files to get default configurations from.
     :param config_parsers:
         The parsers to parse the sections of the configuration file with, as
-        a list of (section name, parser); a configuration section will only
+        a list of (section name, parser) or a dictionary from section name to
+        parser; a configuration section will only
         be parsed if the section_name is found in the configuration files
         already loaded. The standard logging parser is appended to (a copy
-        of) this list.
+        of) this.
     :type config_parsers: list(tuple(str, ~configparser.RawConfigParser))
     :return: the fully-loaded and checked configuration
     :rtype: ~configparser.RawConfigParser
@@ -234,14 +235,12 @@ def load_config(filename, defaults, config_parsers=None):
     cfg_file = os.path.join(os.curdir, filename)
     _read_a_config(configs, cfg_file, default_configs, True)
 
-    parsers = list()
-    if config_parsers is not None:
-        parsers.extend(config_parsers)
-    parsers.append(("Logging", logging_parser))
+    parsers = dict(config_parsers)
+    parsers["Logging"] = logging_parser
 
-    for section, parser in parsers:
+    for section in parsers:
         if configs.has_section(section):
-            parser(configs)
+            parsers[section](configs)
 
     # Log which configs files we read
     print(configs.read_files)

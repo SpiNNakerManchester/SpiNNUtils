@@ -194,7 +194,7 @@ def _config_locations(filename):
             user_home_cfg_file]
 
 
-def load_config(filename, defaults, config_parsers=None):
+def load_config(filename, defaults, config_parsers=()):
     """
     Load the configuration.
 

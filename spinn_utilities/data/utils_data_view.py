@@ -616,7 +616,8 @@ class UtilsDataView(object):
         cls.__data._requires_mapping = False
 
     def raise_skiptest(
-            self, reason: str = None, parent: Exception = None) -> None:
+            self, reason: Optional[str] = None,
+            parent: Optional[Exception] = None) -> None:
         """
         Sets the status as shutdown amd raises a SkipTest
 

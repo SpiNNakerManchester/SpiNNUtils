@@ -50,26 +50,12 @@ class DataNotYetAvialable(SpiNNUtilsException):
         super().__init__(f"{data} has not yet been created.")
 
 
-class DataChanged(SpiNNUtilsException):
-    """
-    Raised when trying to get data after some changed.
-    """
-    def __init__(self, data):
-        super().__init__(f"{data} has been changed.")
-
-
 class DataNotMocked(DataNotYetAvialable):
     """
     Raised when trying to get data before a mocked simulator has created it.
     """
     def __init__(self, data):
         super().__init__(f"MOCK {data}")
-
-
-class IllegalState(DataNotYetAvialable):
-    """
-    Raised when trying to get data before a mocked simulator has created it.
-    """
 
 
 class ShutdownException(SpiNNUtilsException):

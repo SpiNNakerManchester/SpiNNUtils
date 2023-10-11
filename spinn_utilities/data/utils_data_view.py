@@ -618,9 +618,9 @@ class UtilsDataView(object):
     def raise_skiptest(self, reason: str = None,
                        parent: Optional[Exception] = None) -> None:
         """
-        Sets the status as shutdown amd raises a SkipTest
+        Sets the status as shutdown and raises a SkipTest
 
-        :param Exception reason: Message for the exception is any
+        :param str reason: Message for the Skip
         :param parent: Exception which triggered the skip if any
         :type parent: Exception or None
         :raises: SkipTest very time called

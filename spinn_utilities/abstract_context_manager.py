@@ -33,22 +33,10 @@ class AbstractContextManager(object, metaclass=AbstractBase):
         Called when the context is entered. The result is ignored.
         """
 
-    def _context_exception_occurred(self, exc_type, exc_val, exc_tb):
-        """
-        Called when an exception occurs during the `with` context, *after*
-        the context has been closed.
-
-        :param type exc_type:
-        :param object exc_val:
-        :param traceback exc_tb:
-        """
-
     def __enter__(self):
         self._context_entered()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
-        if exc_type:
-            self._context_exception_occurred(exc_type, exc_val, exc_tb)
         return False

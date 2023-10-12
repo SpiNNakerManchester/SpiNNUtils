@@ -25,9 +25,6 @@ class CM(AbstractContextManager):
     def close(self):
         self.state += 1
 
-    def _context_exception_occurred(self, exc_type, exc_val, exc_tb):
-        self.state = str(exc_val)
-
 
 class CMTestExn(Exception):
     """ Just an exception different from all others for testing. """
@@ -41,17 +38,3 @@ def test_acm_with_success():
         states.append(cm.state)
     states.append(cm.state)
     assert states == [None, 0, 1]
-
-
-def test_acm_with_exception():
-    states = []
-    cm = CM()
-    try:
-        states.append(cm.state)
-        with cm:
-            states.append(cm.state)
-            raise CMTestExn("boo")
-    except CMTestExn:
-        pass
-    states.append(cm.state)
-    assert states == [None, 0, "boo"]

@@ -53,17 +53,18 @@ class _UtilsDataModel(object):
         "_temporary_directory",
     ]
 
+    def __init__(self) -> None:
+        self._data_status = DataStatus.NOT_SETUP
+        self._executable_finder = ExecutableFinder()
+        self._reset_status = ResetStatus.NOT_SETUP
+        self._run_status = RunStatus.NOT_SETUP
+        self._clear()
+
     def __new__(cls):
-        if cls.__singleton:
+        if cls.__singleton is not None:
             return cls.__singleton
         obj = object.__new__(cls)
         cls.__singleton = obj
-        obj._clear()
-        obj._data_status = DataStatus.NOT_SETUP
-        obj._executable_finder = ExecutableFinder()
-        obj._reset_status = ResetStatus.NOT_SETUP
-        obj._run_status = RunStatus.NOT_SETUP
-
         return obj
 
     def _clear(self):

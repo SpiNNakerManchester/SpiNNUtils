@@ -377,7 +377,6 @@ init-import=no
 
 # List of method names used to declare (i.e. assign) instance attributes.
 defining-attr-methods=__init__,
-                      __new__,
                       __call__,
                       _hard_reset,
                       setUp

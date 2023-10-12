@@ -196,11 +196,14 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def set_log_store(cls, log_store):
-        if not isinstance(log_store, (type(None), LogStore)):
-            raise TypeError("log_store must be a LogStore")
-        cls.__log_store = log_store
-        for timestamp, level, message in cls._pop_not_stored_messages():
-            cls.__log_store.store_log(level, message, timestamp)
+        if log_store is None:
+            cls.__log_store = None
+        else:
+            if not isinstance(log_store, LogStore):
+                raise TypeError("log_store must be a LogStore")
+            cls.__log_store = log_store
+            for timestamp, level, message in cls._pop_not_stored_messages():
+                cls.__log_store.store_log(level, message, timestamp)
 
     def __init__(self, logger, extra=None):
         if extra is None:
@@ -219,17 +222,17 @@ class FormatAdapter(logging.LoggerAdapter):
             raise LogLevelTooHighException(_BraceMessage(msg, args, kwargs))
         if self.isEnabledFor(level):
             message = _BraceMessage(msg, args, kwargs)
-            if self.__log_store:
+            if FormatAdapter.__log_store:
                 try:
                     FormatAdapter.__log_store.store_log(level, str(message))
                 except Exception as ex:
                     # Avoid an endless loop of log store errors being logged
-                    self.__not_stored_messages.append((
+                    FormatAdapter.__not_stored_messages.append((
                         datetime.now(),
                         level,
                         f"Unable to store log messages in database due to"
                         f" {ex}"))
-                    self.__not_stored_messages.append(
+                    FormatAdapter.__not_stored_messages.append(
                         (datetime.now(), level, str(message)))
                     FormatAdapter.__log_store = None
                     raise

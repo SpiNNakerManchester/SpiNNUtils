@@ -129,8 +129,7 @@ class ExecutableFinder(object):
         return results
 
     def check_logs(self):
-        if not self._paths_log:
-            print("environ GLOBAL_REPORTS not set!")
+        if not self._paths_log or not self._binary_log:
             return
 
         folders = set()
@@ -165,8 +164,7 @@ class ExecutableFinder(object):
                 print(binary)
 
     def clear_logs(self):
-        if not self._paths_log:
-            print("environ GLOBAL_REPORTS not set!")
+        if not self._paths_log or not self._binary_log:
             return
         if os.path.isfile(self._paths_log):
             os.remove(self._paths_log)

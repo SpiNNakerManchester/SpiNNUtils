@@ -17,13 +17,10 @@ from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 class CM(AbstractContextManager):
     def __init__(self):
-        self.state = None
-
-    def _context_entered(self):
-        self.state = 0
+        self.state = "open"
 
     def close(self):
-        self.state += 1
+        self.state = "closed"
 
 
 class CMTestExn(Exception):
@@ -37,4 +34,4 @@ def test_acm_with_success():
     with cm:
         states.append(cm.state)
     states.append(cm.state)
-    assert states == [None, 0, 1]
+    assert states == ["open",  "open", "closed"]

@@ -28,13 +28,7 @@ class AbstractContextManager(object, metaclass=AbstractBase):
         How to actually close the underlying resources.
         """
 
-    def _context_entered(self):
-        """
-        Called when the context is entered. The result is ignored.
-        """
-
     def __enter__(self):
-        self._context_entered()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

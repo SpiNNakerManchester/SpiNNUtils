@@ -17,16 +17,10 @@ from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 class CM(AbstractContextManager):
     def __init__(self):
-        self.state = None
-
-    def _context_entered(self):
-        self.state = 0
+        self.state = "open"
 
     def close(self):
-        self.state += 1
-
-    def _context_exception_occurred(self, exc_val, exc_tb):
-        self.state = str(exc_val)
+        self.state = "closed"
 
 
 class CMTestExn(Exception):
@@ -40,18 +34,4 @@ def test_acm_with_success():
     with cm:
         states.append(cm.state)
     states.append(cm.state)
-    assert states == [None, 0, 1]
-
-
-def test_acm_with_exception():
-    states = []
-    cm = CM()
-    try:
-        states.append(cm.state)
-        with cm:
-            states.append(cm.state)
-            raise CMTestExn("boo")
-    except CMTestExn:
-        pass
-    states.append(cm.state)
-    assert states == [None, 0, "boo"]
+    assert states == ["open",  "open", "closed"]

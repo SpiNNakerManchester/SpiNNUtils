@@ -31,31 +31,10 @@ class AbstractContextManager(object, metaclass=AbstractBase):
         How to actually close the underlying resources.
         """
 
-    def _context_entered(self) -> None:
-        """
-        Called when the context is entered. The result is ignored.
-
-        :meta public:
-        """
-
-    def _context_exception_occurred(
-            self, exc_val: Exception, exc_tb: TracebackType):
-        """
-        Called when an exception occurs during the `with` context, *after*
-        the context has been closed.
-
-        :param Exception exc_val:
-        :param ~types.TracebackType exc_tb:
-        :meta public:
-        """
-
     def __enter__(self) -> Self:
-        self._context_entered()
         return self
 
     def __exit__(self, exc_type: Optional[Type], exc_val: Exception,
                  exc_tb: TracebackType) -> Literal[False]:
         self.close()
-        if exc_type:
-            self._context_exception_occurred(exc_val, exc_tb)
         return False

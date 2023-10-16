@@ -615,7 +615,7 @@ class UtilsDataView(object):
         cls.__data._requires_data_generation = False
         cls.__data._requires_mapping = False
 
-    def raise_skiptest(self, reason: str = None,
+    def raise_skiptest(self, reason: str,
                        parent: Optional[Exception] = None) -> None:
         """
         Sets the status as shutdown and raises a SkipTest

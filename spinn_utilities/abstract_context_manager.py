@@ -13,6 +13,9 @@
 # limitations under the License.
 
 from .abstract_base import AbstractBase, abstractmethod
+from types import TracebackType
+from typing import Optional, Type
+from typing_extensions import Literal, Self
 
 
 class AbstractContextManager(object, metaclass=AbstractBase):
@@ -20,17 +23,18 @@ class AbstractContextManager(object, metaclass=AbstractBase):
     Closable class that supports being used as a simple context manager.
     """
 
-    __slots__ = []
+    __slots__ = ()
 
     @abstractmethod
-    def close(self):
+    def close(self) -> None:
         """
         How to actually close the underlying resources.
         """
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[Type], exc_val: Exception,
+                 exc_tb: TracebackType) -> Literal[False]:
         self.close()
         return False

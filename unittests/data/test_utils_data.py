@@ -30,7 +30,7 @@ from spinn_utilities.exceptions import (
 
 class TestUtilsData(unittest.TestCase):
 
-    def setUp(cls):
+    def setUp(self):
         unittest_setup()
 
     def test_not_setup(self):

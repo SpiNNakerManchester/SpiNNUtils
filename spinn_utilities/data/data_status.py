@@ -13,8 +13,10 @@
 # limitations under the License.
 
 from enum import Enum
+from typing import Type
 from spinn_utilities.exceptions import (
-    DataNotMocked, DataNotYetAvialable, NotSetupException, ShutdownException)
+    DataNotMocked, DataNotYetAvialable, NotSetupException, ShutdownException,
+    SpiNNUtilsException)
 
 
 class DataStatus(Enum):
@@ -32,14 +34,16 @@ class DataStatus(Enum):
     #: The system has been shut down.
     SHUTDOWN = (3, ShutdownException)
 
-    def __new__(cls, value, exception):
-        # pylint: disable=protected-access
+    def __new__(cls, *args) -> 'DataStatus':
         obj = object.__new__(cls)
-        obj._value_ = value
-        obj._exception = exception
+        obj._value_ = args[0]
         return obj
 
-    def exception(self, data):
+    def __init__(self, value, exception: Type[SpiNNUtilsException]):
+        # pylint: disable=unused-argument
+        self._exception = exception
+
+    def exception(self, data) -> SpiNNUtilsException:
         """
         Returns an instance of the most suitable data-not-available exception.
 

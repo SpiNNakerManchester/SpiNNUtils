@@ -26,9 +26,3 @@ class ResetStatus(Enum):
     HAS_RUN = (2)
     SOFT_RESET = (3)
     HARD_RESET = (4)
-
-    def __new__(cls, value):
-        # pylint: disable=protected-access
-        obj = object.__new__(cls)
-        obj._value_ = value
-        return obj

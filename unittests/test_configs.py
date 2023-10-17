@@ -33,7 +33,7 @@ def test_configs_None():
     assert get_config_str_or_none("Mode", "bar") is None
     assert get_config_int_or_none("Mode", "Foo") is None
     try:
-        assert get_config_int("Mode", "Foo") is None
+        get_config_int("Mode", "Foo")
         raise SpiNNUtilsException("Expected ConfigException")
     except ConfigException:
         pass

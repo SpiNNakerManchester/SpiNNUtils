@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from datetime import datetime
+from typing import List, Optional, Tuple
 from .abstract_base import abstractmethod
 
 
@@ -21,7 +23,8 @@ class LogStore(object):
     """
 
     @abstractmethod
-    def store_log(self, level, message, timestamp=None):
+    def store_log(self, level: int, message: str,
+                  timestamp: Optional[datetime] = None):
         """
         Writes the log message for later retrieval.
 
@@ -30,9 +33,11 @@ class LogStore(object):
         :param timestamp: The time-stamp of the message.
         :type timestamp: ~datetime.datetime or None
         """
+        raise NotImplementedError
 
     @abstractmethod
-    def retreive_log_messages(self, min_level=0):
+    def retreive_log_messages(
+            self, min_level: int = 0) -> List[Tuple[int, str]]:
         """
         Retrieves all log messages at or above the `min_level`.
 
@@ -42,11 +47,13 @@ class LogStore(object):
             A list of messages that satisfy the constraint.
         :rtype: list(tuple(int, str))
         """
+        raise NotImplementedError
 
     @abstractmethod
-    def get_location(self):
+    def get_location(self) -> str:
         """
         Retrieves the location of the log store.
 
         :rtype: str
         """
+        raise NotImplementedError

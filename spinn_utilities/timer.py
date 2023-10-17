@@ -11,36 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
-import time
 from datetime import timedelta
+from time import perf_counter_ns
+from typing import Optional
+from typing_extensions import Literal
 
-if sys.version_info >= (3, 7):
-    # acquire the most accurate measurement available (perf_counter_ns)
-    _now = time.perf_counter_ns
-    # conversion factor
-    _NANO_TO_MICRO = 1000.0
-
-    def _convert_to_timedelta(time_diff):
-        """
-        Have to convert to a timedelta for rest of code to read.
-
-        As perf_counter_ns is nano seconds, and time delta lowest is micro,
-        need to convert.
-        """
-        return timedelta(microseconds=time_diff / _NANO_TO_MICRO)
-
-else:
-    # acquire the most accurate measurement available (perf_counter)
-    _now = time.perf_counter
-
-    def _convert_to_timedelta(time_diff):
-        """
-        Have to convert to a timedelta for rest of code to read.
-
-        As perf_counter is fractional seconds, put into correct time delta.
-        """
-        return timedelta(seconds=time_diff)
+# conversion factor
+_NANO_TO_MICRO = 1000.0
 
 
 class Timer(object):
@@ -73,37 +50,37 @@ class Timer(object):
         "_measured_section_interval"
     ]
 
-    def __init__(self):
-        self._start_time = None
-        self._measured_section_interval = None
+    def __init__(self) -> None:
+        self._start_time: Optional[int] = None
+        self._measured_section_interval: Optional[timedelta] = None
 
-    def start_timing(self):
+    def start_timing(self) -> None:
         """
         Start the timing. Use :py:meth:`take_sample` to get the end.
         """
-        self._start_time = _now()
+        self._start_time = perf_counter_ns()
 
-    def take_sample(self):
+    def take_sample(self) -> timedelta:
         """
         Describes how long has elapsed since the instance that the
         :py:meth:`start_timing` method was last called.
 
         :rtype: datetime.timedelta
         """
-        time_now = _now()
-        diff = time_now - self._start_time
-        return _convert_to_timedelta(diff)
+        time_now = perf_counter_ns()
+        diff = time_now - (self._start_time or 0)
+        return timedelta(microseconds=diff / _NANO_TO_MICRO)
 
-    def __enter__(self):
+    def __enter__(self) -> 'Timer':
         self.start_timing()
         return self
 
-    def __exit__(self, *_args):
+    def __exit__(self, *_args) -> Literal[False]:
         self._measured_section_interval = self.take_sample()
         return False
 
     @property
-    def measured_interval(self):
+    def measured_interval(self) -> Optional[timedelta]:
         """
         Get how long elapsed during the measured section.
 

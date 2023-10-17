@@ -12,21 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Our abbreviations/names
-CFF
-Zenodo
-LCM
+"""
+Types for JSON.
+"""
 
-# Python types
-RawConfigParser
-AbstractBase
-LogCapture
-ZipFile
+from typing import Dict, List, Union
+from typing_extensions import TypeAlias
 
-# Python packages
-# numpy
-# mypy
+#: The type of JSON values.
+JsonValue: TypeAlias = Union[int, float, str, None, "JsonObject", "JsonArray"]
+# NB: The above type is mutually recursive with the definitions below.
 
-# Misc
-haha
-X'th
+#: The tyoe of JSON objects.
+JsonObject: TypeAlias = Dict[str, JsonValue]
+
+#: The type of JSON arrays.
+JsonArray: TypeAlias = List[JsonValue]
+
+#: The type of JSON arrays of objects. Used for casting.
+JsonObjectArray: TypeAlias = List[JsonObject]

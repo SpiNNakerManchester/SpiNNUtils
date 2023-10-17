@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Callable
+_Check = Callable[[int], bool]
 
 
-def find_max_success(max_possible, check):
+def find_max_success(max_possible: int, check: _Check) -> int:
     """
     Finds the maximum value that will pass the check
 
@@ -32,7 +34,8 @@ def find_max_success(max_possible, check):
     return search_for_max_success(0, max_possible, check)
 
 
-def search_for_max_success(best_success, min_fail, check):
+def search_for_max_success(
+        best_success: int, min_fail: int, check: _Check) -> int:
     """
     Finds the maximum value in the range that pass the check
 

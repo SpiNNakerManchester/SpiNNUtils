@@ -11,24 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Generic
-from .abstract_matrix import AbstractMatrix
-from ._types import T, X, Y
 
-
-class YView(Generic[T, X, Y]):
-    """
-    A view along a particular y-slice of a 2D matrix.
-    """
-    __slots__ = (
-        "_matrix", "_y")
-
-    def __init__(self, y: Y, matrix: AbstractMatrix[T, X, Y]):
-        self._y = y
-        self._matrix = matrix
-
-    def __getitem__(self, key: X) -> T:
-        return self._matrix.get_data(x=key, y=self._y)
-
-    def __setitem__(self, key: X, value: T):
-        self._matrix.set_data(x=key, y=self._y, value=value)
+"""
+Bits and pieces of generic types.
+"""

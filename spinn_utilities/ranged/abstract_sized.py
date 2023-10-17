@@ -15,9 +15,29 @@
 import itertools
 import logging
 import sys
+from typing import Any, Optional, Sequence, Sized, SupportsInt, Tuple, Union
+from typing_extensions import TypeAlias, TypeGuard
 import numpy
 
 logger = logging.getLogger(__file__)
+
+#: Type of integers for selectors
+_Integer: TypeAlias = Union[int, numpy.integer, SupportsInt]
+#: The type of selectors; properly, SupportsInt should exclude numpy.ndarray
+#: because that's there just to handle special edge cases.
+Selector: TypeAlias = Union[
+    None, _Integer, slice, Sequence[Union[bool, numpy.bool_]],
+    Sequence[_Integer]]
+
+
+def _is_iterable_selector(selector: Selector) -> TypeGuard[
+        Union[Sequence[Union[bool, numpy.bool_]], Sequence[_Integer]]]:
+    # Check selector is an iterable using pythonic try
+    try:
+        iterator = iter(selector)  # type: ignore[arg-type]
+    except TypeError:
+        return False
+    return iterator is not None
 
 
 class AbstractSized(object):
@@ -27,16 +47,16 @@ class AbstractSized(object):
     """
 
     __slots__ = (
-        "_size")
+        "_size", )
 
-    def __init__(self, size):
+    def __init__(self, size: Union[int, float]):
         """
         :param int size: Fixed length of the list.
         """
         # Strictly doesn't need to be int, but really should be!
         self._size = max(int(round(size)), 0)
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         Size of the list, irrespective of actual values.
 
@@ -45,36 +65,45 @@ class AbstractSized(object):
         return self._size
 
     @staticmethod
-    def _is_id_type(the_id):
+    def _is_id_type(the_id: Any) -> TypeGuard[Union[int, SupportsInt]]:
         """
         Check if the given ID has a type acceptable for IDs.
         """
-        return isinstance(the_id, int)
+        return isinstance(the_id, (int, SupportsInt)) and (
+            not isinstance(the_id, (float, numpy.ndarray)))
 
-    def _check_id_in_range(self, the_id):
-        if the_id < 0:
-            if self._is_id_type(the_id):
-                raise IndexError(f"The index {the_id} is out of range.")
-            # pragma: no cover
+    def _check_id_in_range(self, the_id: Union[int, SupportsInt]) -> int:
+        if not self._is_id_type(the_id):
             raise TypeError(f"Invalid argument type {type(the_id)}.")
-        if the_id >= self._size:
-            if self._is_id_type(the_id):
-                raise IndexError(f"The index {the_id} is out of range.")
-            raise TypeError(f"Invalid argument type {type(the_id)}.")
+        the_id = int(the_id)
+        if not (0 <= the_id < self._size):
+            raise IndexError(f"The index {the_id} is out of range.")
+        return the_id
 
-    def _check_slice_in_range(self, slice_start, slice_stop):
+    def _check_slice_in_range(
+            self, slice_start: Optional[int],
+            slice_stop: Optional[int]) -> Tuple[int, int]:
+        # Fix types
         if slice_start is None:
             slice_start = 0
-        elif slice_start < 0:
+        elif not self._is_id_type(slice_start):
+            raise TypeError(f"Invalid argument type {type(slice_start)}.")
+        else:
+            slice_start = int(slice_start)
+        if slice_stop is None or slice_stop == sys.maxsize:
+            slice_stop = self._size
+        elif not self._is_id_type(slice_stop):
+            raise TypeError(f"Invalid argument type {type(slice_stop)}.")
+        else:
+            slice_stop = int(slice_stop)
+
+        if slice_start < 0:
             slice_start = self._size + slice_start
             if slice_start < 0:
-                if not self._is_id_type(slice_start):
-                    raise TypeError(
-                        f"Invalid argument type {type(slice_start)}.")
                 logger.warning(
                     "Specified slice start was %d while size is only %d. "
                     "Therefore slice will start at index 0",
-                    slice_start - self._size, self._size)
+                    int(slice_start) - self._size, self._size)
                 slice_start = 0
         elif slice_start >= len(self):
             logger.warning(
@@ -83,24 +112,16 @@ class AbstractSized(object):
                 slice_start - self._size, self._size)
             return (self._size, self._size)
 
-        if slice_stop is None or slice_stop == sys.maxsize:
-            slice_stop = self._size
-        elif slice_stop < 0:
+        if slice_stop < 0:
             slice_stop = self._size + slice_stop
 
         if slice_start > slice_stop:
-            if not self._is_id_type(slice_start):
-                raise TypeError(f"Invalid argument type {type(slice_start)}.")
-            if not self._is_id_type(slice_stop):
-                raise TypeError(f"Invalid argument type {type(slice_stop)}.")
             logger.warning(
                 "Specified slice has a start %d greater than its stop %d "
                 "(based on size %d). Therefore slice will be empty",
                 slice_start, slice_stop, self._size)
             return (self._size, self._size)
         if slice_stop > len(self):
-            if not self._is_id_type(slice_stop):
-                raise TypeError(f"Invalid argument type {type(slice_stop)}.")
             logger.warning(
                 "Specified slice has a start %d equal to its stop %d "
                 "(based on size %d). Therefore slice will be empty",
@@ -109,7 +130,7 @@ class AbstractSized(object):
             logger.warning(
                 "Specified slice stop was %d while size is only %d. "
                 "Therefore slice will be empty",
-                slice_stop - self._size, self._size)
+                int(slice_stop) - self._size, self._size)
             return (self._size, self._size)
         elif slice_start > slice_stop:
             logger.warning(
@@ -130,7 +151,7 @@ class AbstractSized(object):
             slice_stop = self._size
         return slice_start, slice_stop
 
-    def _check_mask_size(self, selector):
+    def _check_mask_size(self, selector: Sized) -> None:
         if len(selector) < self._size:
             logger.warning(
                 "The boolean mask is too short. The expected length was %d "
@@ -142,7 +163,7 @@ class AbstractSized(object):
                 "but the length was only %d. All the missing entries will be "
                 "ignored!", self._size, len(selector))
 
-    def selector_to_ids(self, selector, warn=False):
+    def selector_to_ids(self, selector: Selector, warn=False) -> Sequence[int]:
         """
         Gets the list of IDs covered by this selector.
         The types of selector currently supported are:
@@ -174,14 +195,8 @@ class AbstractSized(object):
             If True, this method will warn about problems with the selector.
         :return: a (possibly sorted) list of IDs
         """
-        # Check selector is an iterable using pythonic try
-        try:
-            iterator = iter(selector)
-        except TypeError:
-            iterator = None
-
-        if iterator is not None:
-            # bool is superclass of int so if any are bools all must be
+        if _is_iterable_selector(selector):
+            # bool is subclass of int so if any are bools all must be
             if any(isinstance(item, (bool, numpy.bool_)) for item in selector):
                 if all(isinstance(item, (bool, numpy.bool_))
                        for item in selector):
@@ -191,10 +206,12 @@ class AbstractSized(object):
                         range(self._size), selector))
                 raise TypeError(
                     "An iterable type must be all ints or all bools")
-            elif all(isinstance(item, (int, numpy.integer))
+            elif all(isinstance(item, (int, numpy.integer, SupportsInt))
                      for item in selector):
                 # list converts any specific numpy types
-                ids = list(selector)
+                # blows up if someone gives an iterable of ndarray;
+                # serves them right for being too smartass
+                ids = list(map(int, selector))
                 for _id in ids:
                     if _id < 0:
                         raise TypeError(
@@ -219,7 +236,19 @@ class AbstractSized(object):
             (slice_start, slice_stop, step) = selector.indices(self._size)
             return range(slice_start, slice_stop, step)
 
-        if isinstance(selector, int):
+        if isinstance(selector, (int, numpy.integer)):
+            selector = int(selector)  # De-numpy-fy
+            if selector < 0:
+                selector = self._size + selector
+            if selector < 0 or selector >= self._size:
+                raise TypeError(
+                    f"Selector {selector-self._size} is unsupported "
+                    f"for size {self._size}")
+            return [selector]
+
+        # Last throw of the dice...
+        if isinstance(selector, SupportsInt):
+            selector = int(selector)
             if selector < 0:
                 selector = self._size + selector
             if selector < 0 or selector >= self._size:

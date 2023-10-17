@@ -11,18 +11,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from __future__ import annotations
+from typing import (
+    Dict, Iterable, Iterator, Optional, Sequence, Tuple, Union,
+    Generic, overload, TYPE_CHECKING)
+from typing_extensions import TypeAlias
 from spinn_utilities.overrides import overrides
-from .abstract_dict import AbstractDict
-from .abstract_list import AbstractList
+from .abstract_dict import AbstractDict, T, _StrSeq
 from .abstract_sized import AbstractSized
+from .abstract_list import IdsType
 from .ids_view import _IdsView
 from .ranged_list import RangedList
 from .single_view import _SingleView
 from .slice_view import _SliceView
+if TYPE_CHECKING:
+    from .abstract_view import AbstractView
+
+_KeyType: TypeAlias = Union[int, slice, Iterable[int]]
+_Range: TypeAlias = Tuple[int, int, T]
+_SimpleRangeIter: TypeAlias = Iterator[_Range]
+_CompoundRangeIter: TypeAlias = Iterator[Tuple[int, int, Dict[str, T]]]
 
 
-class RangeDictionary(AbstractSized, AbstractDict):
+class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     """
     Main holding class for a range of similar Dictionary object.
     Keys in the dictionary must be str object and can not be removed.
@@ -32,7 +43,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
     __slots__ = [
         "_value_lists"]
 
-    def __init__(self, size, defaults=None):
+    def __init__(self, size: int, defaults: Optional[Dict[str, T]] = None):
         """
         The Object is set up initially where every ID in the range will share
         the same value for each key. All keys must be of type str. The
@@ -46,13 +57,13 @@ class RangeDictionary(AbstractSized, AbstractDict):
         :type defaults: dict(str,object)
         """
         super().__init__(size)
-        self._value_lists = dict()
+        self._value_lists: Dict[str, RangedList[T]] = dict()
         if defaults is not None:
             for key, value in defaults.items():
                 self._value_lists[key] = self.list_factory(
                     size=size, value=value, key=key)
 
-    def list_factory(self, size, value, key):
+    def list_factory(self, size: int, value: T, key: str) -> RangedList[T]:
         """
         Defines which class or subclass of :py:class:`RangedList` to use.
 
@@ -66,7 +77,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         return RangedList(size, value, key)
 
-    def view_factory(self, key):
+    def view_factory(self, key: _KeyType) -> AbstractView:
         """
         Main function for creating views.
         This is the preferred way of creating new views as it checks
@@ -84,7 +95,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         # Key is an int - return single view
         if isinstance(key, int):
-            self._check_id_in_range(key)
+            key = self._check_id_in_range(key)
             return _SingleView(range_dict=self, the_id=key)
 
         # Key is a slice - return a sliced view
@@ -127,6 +138,12 @@ class RangeDictionary(AbstractSized, AbstractDict):
         # Random jumble of ints - return an IDs view
         return _IdsView(range_dict=self, ids=key)
 
+    @overload
+    def __getitem__(self, key: str) -> RangedList[T]: ...
+
+    @overload
+    def __getitem__(self, key: _KeyType) -> AbstractView: ...
+
     def __getitem__(self, key):
         """
         Support for the view[x] based the type of the key
@@ -146,16 +163,28 @@ class RangeDictionary(AbstractSized, AbstractDict):
             return self._value_lists[key]
         return self.view_factory(key=key)
 
+    @overload
+    def get_value(self, key: str) -> T: ...
+
+    @overload
+    def get_value(self, key: Optional[_StrSeq]) -> Dict[str, T]: ...
+
     @overrides(AbstractDict.get_value, extend_defaults=True)
-    def get_value(self, key=None):
+    def get_value(self, key: Union[str, None, _StrSeq] = None):
         if isinstance(key, str):
             return self._value_lists[key].get_single_value_all()
         if key is None:
-            key = self.keys()
-        results = dict()
-        for a_key in key:
-            results[a_key] = self._value_lists[a_key].get_single_value_all()
-        return results
+            key = list(self.keys())
+        return {
+            a_key: self._value_lists[a_key].get_single_value_all()
+            for a_key in key}
+
+    @overload
+    def get_values_by_id(self, key: str, the_id: int) -> T: ...
+
+    @overload
+    def get_values_by_id(
+            self, key: Optional[_StrSeq], the_id: int) -> Dict[str, T]: ...
 
     def get_values_by_id(self, key, the_id):
         """
@@ -169,12 +198,11 @@ class RangeDictionary(AbstractSized, AbstractDict):
             return self._value_lists[key].get_value_by_id(the_id)
         if key is None:
             key = self.keys()
-        results = dict()
-        for a_key in key:
-            results[a_key] = self._value_lists[a_key].get_value_by_id(the_id)
-        return results
+        return {
+            a_key: self._value_lists[a_key].get_value_by_id(the_id)
+            for a_key in key}
 
-    def get_list(self, key):
+    def get_list(self, key: str) -> RangedList[T]:
         """
         Gets the storage unit for a single key.
 
@@ -187,61 +215,110 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         return self._value_lists[key]
 
-    def update_safe_iter_all_values(self, key, ids):
+    @overload
+    def update_safe_iter_all_values(
+            self, key: str, ids: IdsType) -> Iterator[T]: ...
+
+    @overload
+    def update_safe_iter_all_values(
+            self, key: Optional[_StrSeq],
+            ids: IdsType) -> Iterator[Dict[str, T]]: ...
+
+    def update_safe_iter_all_values(
+            self, key: Union[str, Optional[_StrSeq]], ids: IdsType):
         """
         Same as
         :py:meth:`iter_all_values`
         but limited to a collection of IDs and update-safe.
         """
-        for id_value in ids:
-            yield self.get_values_by_id(key=key, the_id=id_value)
+        return (
+            self.get_values_by_id(key=key, the_id=id_value)
+            for id_value in ids)
+
+    @overload
+    def iter_all_values(
+            self, key: str, update_safe: bool = False) -> Iterator[T]:
+        ...
+
+    @overload
+    def iter_all_values(self, key: Optional[_StrSeq],
+                        update_safe: bool = False) -> Iterator[Dict[str, T]]:
+        ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
-    def iter_all_values(self, key=None, update_save=False):
+    def iter_all_values(self, key=None, update_safe: bool = False):
         if isinstance(key, str):
-            if update_save:
+            if update_safe:
                 return self._value_lists[key].iter()
-            return self._value_lists[key].__iter__()
+            return iter(self._value_lists[key])
         else:  # Sub methods will check key type
-            if update_save:
+            if update_safe:
                 return self.update_safe_iter_all_values(
                     key, range(self._size))
-            return self._values_from_ranges(self.iter_ranges(key))
+            return iter(self._values_from_ranges(self.iter_ranges(key)))
+
+    @overload
+    def iter_values_by_slice(
+            self, slice_start: int, slice_stop: int, key: str,
+            update_safe: bool = False) -> Iterator[T]:
+        ...
+
+    @overload
+    def iter_values_by_slice(
+            self, slice_start: int, slice_stop: int,
+            key: Optional[_StrSeq] = None,
+            update_safe: bool = False) -> Iterator[Dict[str, T]]:
+        ...
 
     def iter_values_by_slice(
-            self, slice_start, slice_stop, key=None, update_save=False):
+            self, slice_start: int, slice_stop: int, key=None,
+            update_safe=False):
         """
         Same as :py:meth:`iter_all_values` but limited to a simple slice.
         """
-        if isinstance(key, str) and not update_save:
+        if isinstance(key, str) and not update_safe:
             return self._value_lists[key].iter_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop)
         # Sub methods will check key type
-        if update_save:
+        if update_safe:
             return self.update_safe_iter_all_values(
                 key, range(slice_start, slice_stop))
         return self._values_from_ranges(self.iter_ranges_by_slice(
             slice_start=slice_start, slice_stop=slice_stop, key=key))
 
-    def iter_values_by_ids(self, ids, key=None, update_save=False):
+    @overload
+    def iter_values_by_ids(self, ids: IdsType, key: str,
+                           update_safe: bool = False) -> Iterator[T]:
+        ...
+
+    @overload
+    def iter_values_by_ids(
+            self, ids: IdsType, key: Optional[_StrSeq] = None,
+            update_safe: bool = False) -> Iterator[Dict[str, T]]:
+        ...
+
+    def iter_values_by_ids(self, ids: IdsType, key=None, update_safe=False):
         """
         Same as :py:meth:`iter_all_values` but limited to a simple slice.
         """
-        if update_save:
+        if update_safe:
             return self.update_safe_iter_all_values(key, ids)
         return self._values_from_ranges(self.iter_ranges_by_ids(
             key=key, ids=ids))
 
-    def _values_from_ranges(self, ranges):
+    @staticmethod
+    def _values_from_ranges(ranges: _SimpleRangeIter) -> Iterable[T]:
         for (start, stop, value) in ranges:
             for _ in range(start, stop):
                 yield value
 
     @overrides(AbstractDict.set_value)
-    def set_value(self, key, value, use_list_as_value=False):
-        self._value_lists[key].set_value(value, use_list_as_value)
+    def set_value(
+            self, key: str, value: T, use_list_as_value: bool = False):
+        self._value_lists[key].set_value(
+            value, use_list_as_value=use_list_as_value)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: Union[T, RangedList[T]]):
         """
         Wrapper around set_value to support ``range["key"] =``
 
@@ -259,10 +336,12 @@ class RangeDictionary(AbstractSized, AbstractDict):
         """
         if isinstance(key, str):
             if key in self:
+                assert not isinstance(value, RangedList)
                 self.set_value(key=key, value=value)
-            elif isinstance(value, AbstractList):
+            elif isinstance(value, RangedList):
                 assert self._size == len(value)
                 self._value_lists[key] = value
+                # TODO Make work for other kinds of AbstractList
             else:
                 new_list = self.list_factory(
                     size=self._size, value=value, key=key)
@@ -273,7 +352,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
             raise KeyError(f"Unexpected key type: {type(key)}")
 
     @overrides(AbstractDict.ids)
-    def ids(self):
+    def ids(self) -> Sequence[int]:
         """
         Returns a list of the IDs in this Range
 
@@ -283,16 +362,18 @@ class RangeDictionary(AbstractSized, AbstractDict):
         return list(range(self._size))
 
     @overrides(AbstractDict.has_key)
-    def has_key(self, key):
+    def has_key(self, key: str) -> bool:
         return key in self._value_lists
 
     @overrides(AbstractDict.keys)
-    def keys(self):
+    def keys(self) -> Iterable[str]:
         return self._value_lists.keys()
 
-    def _merge_ranges(self, range_iters):
-        current = dict()
-        ranges = dict()
+    def _merge_ranges(
+            self, range_iters: Dict[str, Iterator[Tuple[int, int, T]]]
+            ) -> _CompoundRangeIter:
+        current: Dict[str, T] = dict()
+        ranges: Dict[str, Tuple[int, int, T]] = dict()
         start = 0
         stop = self._size
         keys = range_iters.keys()
@@ -324,10 +405,20 @@ class RangeDictionary(AbstractSized, AbstractDict):
             return self._value_lists[key].iter_ranges()
         if key is None:
             key = self.keys()
-        ranges = dict()
-        for a_key in key:
-            ranges[a_key] = self._value_lists[a_key].iter_ranges()
-        return self._merge_ranges(ranges)
+        return self._merge_ranges({
+            a_key: self._value_lists[a_key].iter_ranges()
+            for a_key in key})
+
+    @overload
+    def iter_ranges_by_id(
+            self, key: str, the_id: Optional[int] = None) -> _SimpleRangeIter:
+        ...
+
+    @overload
+    def iter_ranges_by_id(
+            self, key: Optional[_StrSeq] = None,
+            the_id: Optional[int] = None) -> _CompoundRangeIter:
+        ...
 
     def iter_ranges_by_id(self, key=None, the_id=None):
         """
@@ -342,13 +433,23 @@ class RangeDictionary(AbstractSized, AbstractDict):
             return self._value_lists[key].iter_ranges_by_id(the_id=the_id)
         if key is None:
             key = self.keys()
-        ranges = dict()
-        for a_key in key:
-            ranges[a_key] = self._value_lists[a_key].iter_ranges_by_id(
-                the_id=the_id)
-        return self._merge_ranges(ranges)
+        return self._merge_ranges({
+            a_key: self._value_lists[a_key].iter_ranges_by_id(the_id=the_id)
+            for a_key in key})
 
-    def iter_ranges_by_slice(self, key, slice_start, slice_stop):
+    @overload
+    def iter_ranges_by_slice(
+            self, key: str, slice_start: int,
+            slice_stop: int) -> _SimpleRangeIter:
+        ...
+
+    @overload
+    def iter_ranges_by_slice(
+            self, key: Optional[_StrSeq], slice_start: int,
+            slice_stop: int) -> _CompoundRangeIter:
+        ...
+
+    def iter_ranges_by_slice(self, key, slice_start: int, slice_stop: int):
         """
         Same as :py:meth:`iter_ranges` but limited to a simple slice.
 
@@ -366,13 +467,23 @@ class RangeDictionary(AbstractSized, AbstractDict):
                 slice_start=slice_start, slice_stop=slice_stop)
         if key is None:
             key = self.keys()
-        ranges = dict()
-        for a_key in key:
-            ranges[a_key] = self._value_lists[a_key].iter_ranges_by_slice(
+        return self._merge_ranges({
+            a_key: self._value_lists[a_key].iter_ranges_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop)
-        return self._merge_ranges(ranges)
+            for a_key in key})
 
-    def iter_ranges_by_ids(self, ids, key=None):
+    @overload
+    def iter_ranges_by_ids(
+            self, ids: IdsType, key: str) -> _SimpleRangeIter:
+        ...
+
+    @overload
+    def iter_ranges_by_ids(
+            self, ids: IdsType,
+            key: Optional[_StrSeq] = None) -> _CompoundRangeIter:
+        ...
+
+    def iter_ranges_by_ids(self, ids: IdsType, key=None):
         """
         Same as :py:meth:`iter_ranges` but limited to a collection of IDs.
 
@@ -386,13 +497,11 @@ class RangeDictionary(AbstractSized, AbstractDict):
             return self._value_lists[key].iter_ranges_by_ids(ids=ids)
         if key is None:
             key = self.keys()
-        ranges = dict()
-        for a_key in key:
-            ranges[a_key] = self._value_lists[a_key].\
-                iter_ranges_by_ids(ids=ids)
-        return self._merge_ranges(ranges)
+        return self._merge_ranges({
+            a_key: self._value_lists[a_key].iter_ranges_by_ids(ids=ids)
+            for a_key in key})
 
-    def set_default(self, key, default):
+    def set_default(self, key: str, default: T):
         """
         Sets the default value for a single key.
 
@@ -411,10 +520,10 @@ class RangeDictionary(AbstractSized, AbstractDict):
         self._value_lists[key].set_default(default)
 
     @overrides(AbstractDict.get_default)
-    def get_default(self, key):
+    def get_default(self, key: str) -> Optional[T]:
         return self._value_lists[key].get_default()
 
-    def copy_into(self, other):
+    def copy_into(self, other: RangeDictionary[T]):
         """
         Turns this dict into a copy of the other dict but keep its id.
 
@@ -433,7 +542,7 @@ class RangeDictionary(AbstractSized, AbstractDict):
                     len(value), key=key)
                 self._value_lists[key].copy_into(value)
 
-    def copy(self):
+    def copy(self) -> RangeDictionary[T]:
         """
         Make a copy of this dictionary. Inner ranged entities are deep copied,
         inner leaf values are shallow copied.
@@ -441,6 +550,6 @@ class RangeDictionary(AbstractSized, AbstractDict):
         :return: The copy.
         :rtype: RangeDictionary
         """
-        copy = RangeDictionary(self._size)
+        copy: RangeDictionary[T] = RangeDictionary(self._size)
         copy.copy_into(self)
         return copy

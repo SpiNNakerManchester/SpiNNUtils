@@ -11,13 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+from tempfile import TemporaryDirectory
+from typing import List, Optional
 
-import tempfile
 from unittest import SkipTest
 from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus
 from spinn_utilities.exceptions import (
+    SpiNNUtilsException,
     SimulatorNotSetupException, SimulatorRunningException,
     SimulatorShutdownException, UnexpectedStateChange)
 from spinn_utilities.executable_finder import ExecutableFinder
@@ -39,7 +42,7 @@ class _UtilsDataModel(object):
     What data is held where and how can change without notice.
     """
 
-    __singleton = None
+    __singleton: Optional[_UtilsDataModel] = None
 
     __slots__ = [
         "_data_status",
@@ -53,35 +56,36 @@ class _UtilsDataModel(object):
         "_temporary_directory",
     ]
 
-    def __new__(cls):
-        if cls.__singleton:
+    def __init__(self) -> None:
+        self._data_status: DataStatus = DataStatus.NOT_SETUP
+        self._executable_finder: ExecutableFinder = ExecutableFinder()
+        self._reset_status: ResetStatus = ResetStatus.NOT_SETUP
+        self._run_status: RunStatus = RunStatus.NOT_SETUP
+
+    def __new__(cls) -> _UtilsDataModel:
+        if cls.__singleton is not None:
             return cls.__singleton
         obj = object.__new__(cls)
         cls.__singleton = obj
         obj._clear()
-        obj._data_status = DataStatus.NOT_SETUP
-        obj._executable_finder = ExecutableFinder()
-        obj._reset_status = ResetStatus.NOT_SETUP
-        obj._run_status = RunStatus.NOT_SETUP
-
         return obj
 
-    def _clear(self):
+    def _clear(self) -> None:
         """
         Clears out all data.
         """
-        self._report_dir_path = None
+        self._report_dir_path: Optional[str] = None
         self._hard_reset()
 
-    def _hard_reset(self):
+    def _hard_reset(self) -> None:
         """
         Puts all data back into the state expected at graph changed and
         `sim.reset`.
         """
-        self._run_dir_path = None
+        self._run_dir_path: Optional[str] = None
         self._requires_data_generation = True
         self._requires_mapping = True
-        self._temporary_directory = None
+        self._temporary_directory: Optional[TemporaryDirectory] = None
         self._soft_reset()
 
     def _soft_reset(self):
@@ -169,10 +173,10 @@ class UtilsDataView(object):
     """
 
     __data = _UtilsDataModel()
-    __slots__ = []
+    __slots__ = ()
 
     @classmethod
-    def _exception(cls, data):
+    def _exception(cls, data: str) -> SpiNNUtilsException:
         """
         The most suitable no data Exception based on the status.
 
@@ -184,7 +188,7 @@ class UtilsDataView(object):
     # Status checks
 
     @classmethod
-    def _is_mocked(cls):
+    def _is_mocked(cls) -> bool:
         """
         Checks if the view is in mocked state.
 
@@ -193,7 +197,7 @@ class UtilsDataView(object):
         return cls.__data._data_status == DataStatus.MOCKED
 
     @classmethod
-    def is_hard_reset(cls):
+    def is_hard_reset(cls) -> bool:
         """
         Check if the system has been hard reset since the last run
         *finished*.
@@ -208,7 +212,7 @@ class UtilsDataView(object):
         return cls.__data._reset_status == ResetStatus.HARD_RESET
 
     @classmethod
-    def is_soft_reset(cls):
+    def is_soft_reset(cls) -> bool:
         """
         Check if the system has been soft reset since the last run *finished*.
 
@@ -222,7 +226,7 @@ class UtilsDataView(object):
         return cls.__data._reset_status == ResetStatus.SOFT_RESET
 
     @classmethod
-    def is_ran_ever(cls):
+    def is_ran_ever(cls) -> bool:
         """
         Check if the simulation has run at least once, ignoring resets.
 
@@ -241,7 +245,7 @@ class UtilsDataView(object):
             f"{cls.__data._reset_status}")
 
     @classmethod
-    def is_ran_last(cls):
+    def is_ran_last(cls) -> bool:
         """
         Checks if the simulation has run and not been reset.
 
@@ -260,7 +264,7 @@ class UtilsDataView(object):
             f"{cls.__data._reset_status}")
 
     @classmethod
-    def is_reset_last(cls):
+    def is_reset_last(cls) -> bool:
         """
         Reports if `sim.reset` called since the last `sim.run`.
 
@@ -294,7 +298,7 @@ class UtilsDataView(object):
             f"{cls.__data._run_status}")
 
     @classmethod
-    def is_no_stop_requested(cls):
+    def is_no_stop_requested(cls) -> bool:
         """
         Checks that a stop request has not been sent.
 
@@ -311,7 +315,7 @@ class UtilsDataView(object):
             f"{cls.__data._run_status}")
 
     @classmethod
-    def is_running(cls):
+    def is_running(cls) -> bool:
         """
         Checks if there is currently a simulation running.
 
@@ -323,7 +327,7 @@ class UtilsDataView(object):
             RunStatus.IN_RUN, RunStatus.STOP_REQUESTED]
 
     @classmethod
-    def check_valid_simulator(cls):
+    def check_valid_simulator(cls) -> None:
         """
         Throws an error if there is no simulator.
 
@@ -346,7 +350,7 @@ class UtilsDataView(object):
             f"Unexpected run state: {cls.__data._run_status}")
 
     @classmethod
-    def check_user_can_act(cls):
+    def check_user_can_act(cls) -> None:
         """
         Checks if the status is such that users can be making calls.
 
@@ -369,7 +373,7 @@ class UtilsDataView(object):
         cls.check_valid_simulator()
 
     @classmethod
-    def is_setup(cls):
+    def is_setup(cls) -> bool:
         """
         Checks to see if there is already a simulator.
 
@@ -388,7 +392,7 @@ class UtilsDataView(object):
             f"{cls.__data._run_status}")
 
     @classmethod
-    def is_user_mode(cls):
+    def is_user_mode(cls) -> bool:
         """
         Determines if simulator is currently not running so user is
         accessing data.
@@ -412,7 +416,7 @@ class UtilsDataView(object):
             f"Unexpected with RunStatus {cls.__data._run_status}")
 
     @classmethod
-    def is_stop_already_requested(cls):
+    def is_stop_already_requested(cls) -> bool:
         """
         Checks if there has already been a request stop.
 
@@ -439,7 +443,7 @@ class UtilsDataView(object):
                 "Calling stop before run does not make sense")
 
     @classmethod
-    def is_shutdown(cls):
+    def is_shutdown(cls) -> bool:
         """
         Determines if simulator has already been shutdown.
 
@@ -453,7 +457,7 @@ class UtilsDataView(object):
     # Remainder in FecDataView
 
     @classmethod
-    def _temporary_dir_path(cls):
+    def _temporary_dir_path(cls) -> str:
         """
         The path to an existing temporary directory, creating it if needed.
 
@@ -461,11 +465,11 @@ class UtilsDataView(object):
             if not in Mocked state
         """
         if cls.__data._temporary_directory is None:
-            cls.__data._temporary_directory = tempfile.TemporaryDirectory()
+            cls.__data._temporary_directory = TemporaryDirectory()
         return cls.__data._temporary_directory.name
 
     @classmethod
-    def get_run_dir_path(cls):
+    def get_run_dir_path(cls) -> str:
         """
         Returns the path to the directory that holds all the reports for run.
 
@@ -487,7 +491,7 @@ class UtilsDataView(object):
         raise cls._exception("run_dir_path")
 
     @classmethod
-    def get_executable_finder(cls):
+    def get_executable_finder(cls) -> ExecutableFinder:
         """
         The ExcutableFinder object created at time code is imported.
 
@@ -496,7 +500,7 @@ class UtilsDataView(object):
         return cls.__data._executable_finder
 
     @classmethod
-    def register_binary_search_path(cls, search_path):
+    def register_binary_search_path(cls, search_path: str):
         """
         Register an additional binary search path for executables.
 
@@ -507,7 +511,7 @@ class UtilsDataView(object):
         cls.__data._executable_finder.add_path(search_path)
 
     @classmethod
-    def get_executable_path(cls, executable_name):
+    def get_executable_path(cls, executable_name: str) -> str:
         """
         Finds an executable within the set of folders. The set of folders
         is searched sequentially and the first match is returned.
@@ -523,7 +527,7 @@ class UtilsDataView(object):
             executable_name)
 
     @classmethod
-    def get_executable_paths(cls, executable_names):
+    def get_executable_paths(cls, executable_names: str) -> List[str]:
         """
         Finds each executables within the set of folders.
 
@@ -546,7 +550,7 @@ class UtilsDataView(object):
             executable_names)
 
     @classmethod
-    def get_requires_data_generation(cls):
+    def get_requires_data_generation(cls) -> bool:
         """
         Reports if data generation is required.
 
@@ -560,7 +564,7 @@ class UtilsDataView(object):
         return cls.__data._requires_data_generation
 
     @classmethod
-    def set_requires_data_generation(cls):
+    def set_requires_data_generation(cls) -> None:
         """
         Sets `requires_data_generation` to True.
 
@@ -570,7 +574,7 @@ class UtilsDataView(object):
         cls.__data._requires_data_generation = True
 
     @classmethod
-    def get_requires_mapping(cls):
+    def get_requires_mapping(cls) -> bool:
         """
         Reports if mapping is required.
 
@@ -584,7 +588,7 @@ class UtilsDataView(object):
         return cls.__data._requires_mapping
 
     @classmethod
-    def set_requires_mapping(cls):
+    def set_requires_mapping(cls) -> None:
         """
         Sets `requires_mapping` and `requires_data_generation` to True.
 
@@ -595,7 +599,7 @@ class UtilsDataView(object):
         cls.__data._requires_data_generation = True
 
     @classmethod
-    def _mock_has_run(cls):
+    def _mock_has_run(cls) -> None:
         """
         Mock the status as if run has been called and finished!
 
@@ -611,7 +615,8 @@ class UtilsDataView(object):
         cls.__data._requires_data_generation = False
         cls.__data._requires_mapping = False
 
-    def raise_skiptest(self, reason, parent=None):
+    def raise_skiptest(self, reason: str,
+                       parent: Optional[Exception] = None) -> None:
         """
         Sets the status as shutdown and raises a SkipTest
 

@@ -21,7 +21,7 @@ ranged_view = rd[2, 3, 8]
 
 
 def test_ids():
-    assert [2, 3, 8] == ranged_view.ids()
+    assert [2, 3, 8] == list(ranged_view.ids())
 
 
 def test_value():
@@ -55,8 +55,8 @@ def test_set_range_direct():
 def test_iter_values():
     rd1 = RangeDictionary(10, defaults)
     ranged_view1 = rd1[2, 3, 8]
-    aware = ranged_view1.iter_all_values("a", update_save=False)
-    fast = ranged_view1.iter_all_values("a", update_save=True)
+    aware = ranged_view1.iter_all_values("a", update_safe=False)
+    fast = ranged_view1.iter_all_values("a", update_safe=True)
     assert ["alpha", "alpha", "alpha"] == list(fast)
     rd1["a"] = "Foo"
     assert rd1["a"][0] == "Foo"

@@ -13,6 +13,10 @@
 # limitations under the License.
 
 import inspect
+from types import FunctionType, MethodType
+from typing import Any, Callable, Iterable, Optional, TypeVar
+#: :meta private:
+Method = TypeVar("Method", bound=Callable[..., Any])
 
 
 class overrides(object):
@@ -39,8 +43,9 @@ class overrides(object):
     ]
 
     def __init__(
-            self, super_class_method, extend_doc=True,
-            additional_arguments=None, extend_defaults=False):
+            self, super_class_method, extend_doc: bool = True,
+            additional_arguments: Optional[Iterable[str]] = None,
+            extend_defaults: bool = False):
         """
         :param super_class_method: The method to override in the superclass
         :param bool extend_doc:
@@ -53,17 +58,20 @@ class overrides(object):
         :param bool extend_defaults:
             Whether the subclass may specify extra defaults for the parameters
         """
+        if isinstance(super_class_method, property):
+            super_class_method = super_class_method.fget
+        if not isinstance(super_class_method, (FunctionType, MethodType)):
+            raise TypeError("may only decorate method declarations; "
+                            f"this is a {type(super_class_method)}")
         self._superclass_method = super_class_method
         self._extend_doc = bool(extend_doc)
         self._extend_defaults = bool(extend_defaults)
         self._relax_name_check = False
         self._override_name = "super class method"
-        if additional_arguments is None:
-            self._additional_arguments = {}
-        else:
+        if additional_arguments is not None:
             self._additional_arguments = frozenset(additional_arguments)
-        if isinstance(super_class_method, property):
-            self._superclass_method = super_class_method.fget
+        else:
+            self._additional_arguments = frozenset()
 
     @staticmethod
     def __match_defaults(default_args, super_defaults, extend_ok):
@@ -75,7 +83,7 @@ class overrides(object):
             return len(default_args) >= len(super_defaults)
         return len(default_args) == len(super_defaults)
 
-    def __verify_method_arguments(self, method):
+    def __verify_method_arguments(self, method: Method):
         """
         Check that the arguments match.
         """
@@ -101,7 +109,7 @@ class overrides(object):
             raise AttributeError(
                 f"Default arguments don't match {self._override_name}")
 
-    def __call__(self, method):
+    def __call__(self, method: Method) -> Method:
         """
         Apply the decorator to the given method.
         """
@@ -131,5 +139,5 @@ class overrides(object):
         elif (self._extend_doc and
                 self._superclass_method.__doc__ is not None):
             method.__doc__ = (
-                self._superclass_method.__doc__ + method.__doc__)
+                self._superclass_method.__doc__ + (method.__doc__ or ""))
         return method

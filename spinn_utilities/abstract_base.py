@@ -14,9 +14,12 @@
 """
 A trimmed down version of standard Python Abstract Base classes.
 """
+from typing import TypeVar
+#: :meta private:
+T = TypeVar("T")
 
 
-def abstractmethod(funcobj):
+def abstractmethod(funcobj: T) -> T:
     """
     A decorator indicating abstract methods.
 
@@ -33,7 +36,7 @@ def abstractmethod(funcobj):
             def my_abstract_method(self, ...):
                 ...
     """
-    funcobj.__isabstractmethod__ = True
+    funcobj.__isabstractmethod__ = True  # type: ignore[attr-defined]
     return funcobj
 
 
@@ -66,6 +69,17 @@ class abstractproperty(property):
         When documenting abstract properties, remember to document them as if
         they are nouns, not verbs; they are things about the object that may
         be observed as many times as the user of the class desires.
+
+    .. warning::
+        This does *not* work with mypy type checking! When doing typed abstract
+        properties, you should instead do::
+
+            @property
+            @abstractmethod
+            def my_abstract_property(self) -> int:
+                ...
+
+        I assume that this is because ``@property`` is a special form in mypy.
 
     .. warning::
         Implementations should be idempotent; fetching the property twice in a

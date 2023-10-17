@@ -11,16 +11,34 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from __future__ import annotations
 import numbers
 import numpy
+from numpy.typing import NDArray
+from typing import (
+    Any, Callable, Generic, Iterator, Optional, Sequence, Tuple,
+    TypeVar, Union, cast)
+from typing_extensions import Self, TypeAlias
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides
-from .abstract_sized import AbstractSized
+from .abstract_sized import AbstractSized, Selector
 from .multiple_values_exception import MultipleValuesException
+#: :meta private:
+T = TypeVar("T")
+#: :meta private:
+IdsType: TypeAlias = Union[Sequence[int], NDArray[numpy.integer]]
 
 
-class AbstractList(AbstractSized, metaclass=AbstractBase):
+def _eq(x: Any, y: Any) -> bool:
+    # Lies!
+    return numpy.array_equal(cast(float, x), cast(float, y))
+
+
+def _is_zero(value: Any) -> bool:
+    return bool(numpy.isin(0, value))
+
+
+class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
     """
     A ranged implementation of list.
 
@@ -58,10 +76,9 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
     `//`
         element-wise floor division or floor division by a single scalar
     """
-    __slots__ = [
-        "_key"]
+    __slots__ = ("_key", )
 
-    def __init__(self, size, key=None):
+    def __init__(self, size: int, key=None):
         """
         :param int size: Fixed length of the list
         :param key: The dict key this list covers.
@@ -71,7 +88,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         self._key = key
 
     @abstractmethod
-    def range_based(self):
+    def range_based(self) -> bool:
         """
         Shows if the list is suited to deal with ranges or not.
 
@@ -84,8 +101,9 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :return: True if and only if Ranged based calls are recommended.
         :rtype: bool
         """
+        raise NotImplementedError
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         Size of the list, irrespective of actual values
 
@@ -93,24 +111,24 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         """
         return self._size
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, AbstractList):
-            if self.range_based and other.range_based:
-                return numpy.array_equal(list(self.iter_ranges()),
-                                         list(other.iter_ranges()))
-        return numpy.array_equal(list(self), list(other))
+            if self.range_based() and other.range_based():
+                return _eq(list(self.iter_ranges()),
+                           list(other.iter_ranges()))
+        return _eq(list(self), list(other))
 
-    def __ne__(self, other):
+    def __ne__(self, other: Any) -> bool:
         if not isinstance(other, AbstractList):
             return True
         return not self.__eq__(other)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(list(self))
 
     __repr__ = __str__
 
-    def get_single_value_all(self):
+    def get_single_value_all(self) -> T:
         """
         If possible, returns a single value shared by the whole list.
 
@@ -123,24 +141,22 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         """
         # This is not elegant code but as the ranges could be created on the
         # fly the best way.
-        have_item = False
-        only_range = None
+        only_range: Optional[Tuple[int, int, T]] = None
         for this_range in self.iter_ranges():
-            if have_item:
+            if only_range is not None:
                 # If we can get another range, there must be more than one
                 # value, so raise the exception
                 raise MultipleValuesException(
                     self._key, only_range[2], this_range[2])
-            have_item = True
             only_range = this_range
-        if not have_item:
+        if only_range is None:
             # Pretend we totally failed
             raise StopIteration()
         # There isn't another range, so return the value from the only range
         return only_range[2]
 
     @abstractmethod
-    def get_value_by_id(self, the_id):
+    def get_value_by_id(self, the_id: int) -> T:
         """
         Returns the value for one item in the list.
 
@@ -148,9 +164,11 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :type the_id: int
         :return: The value of that element
         """
+        raise NotImplementedError
 
     @abstractmethod
-    def get_single_value_by_slice(self, slice_start, slice_stop):
+    def get_single_value_by_slice(
+            self, slice_start: int, slice_stop: int) -> T:
         """
         If possible, returns a single value shared by the whole slice list.
 
@@ -162,12 +180,13 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             If even one elements has a different value.
             Not thrown if elements outside of the slice have a different value
         """
+        raise NotImplementedError
 
-    def __getslice__(self, start, stop):
+    def __getslice__(self, start: int, stop: int) -> Sequence[T]:
         return list(self.iter_by_slice(start, stop))
 
     @abstractmethod
-    def get_single_value_by_ids(self, ids):
+    def get_single_value_by_ids(self, ids: IdsType) -> T:
         """
         If possible, returns a single value shared by all the IDs.
 
@@ -180,8 +199,9 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             Not thrown if elements outside of the IDs have a different value,
             even if these elements are between the ones pointed to by IDs
         """
+        raise NotImplementedError
 
-    def __getitem__(self, selector):
+    def __getitem__(self, selector: Selector) -> Union[Self, T, Sequence[T]]:
         """
         Supports the `list[x]` to return an element or slice of the list.
 
@@ -202,19 +222,23 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
 
             # Otherwise get the items one by one using the start, stop, and
             # step from the slice
-            return [self[i] for i in range(*selector.indices(self._size))]
+            return [
+                cast(T, self[i])
+                for i in range(*selector.indices(self._size))]
 
         # If the key is an int, get the single value
-        elif isinstance(selector, (int, numpy.integer)):
+        elif self._is_id_type(selector):
+            selector = int(cast(int, selector))
 
             # Handle negative indices
             if selector < 0:
                 selector += len(self)
             return self.get_value_by_id(selector)
         else:
-            return [self.get_value_by_id(i) for i in selector]
+            return [self.get_value_by_id(i)
+                    for i in cast(Sequence[int], selector)]
 
-    def iter_by_id(self, the_id):
+    def iter_by_id(self, the_id: int) -> Iterator[T]:
         """
         Fast but *not* update-safe iterator by one ID.
 
@@ -226,7 +250,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         """
         yield self.get_value_by_id(the_id)
 
-    def iter_by_ids(self, ids):
+    def iter_by_ids(self, ids: IdsType) -> Iterator[T]:
         """
         Fast but *not* update-safe iterator by collection of IDs.
 
@@ -251,7 +275,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
 
             yield value
 
-    def iter(self):
+    def iter(self) -> Iterator[T]:
         """
         Update-safe iterator of all elements.
 
@@ -263,7 +287,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         for id_value in range(self._size):
             yield self.get_value_by_id(id_value)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[T]:
         """
         Fast but *not* update-safe iterator of all elements.
 
@@ -283,7 +307,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         except StopIteration:
             return
 
-    def iter_by_slice(self, slice_start, slice_stop):
+    def iter_by_slice(self, slice_start: int, slice_stop: int) -> Iterator[T]:
         """
         Fast but *not* update-safe iterator of all elements in the slice.
 
@@ -303,7 +327,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             for id_value in range(slice_start, slice_stop):
                 yield self.get_value_by_id(id_value)
 
-    def iter_by_selector(self, selector=None):
+    def iter_by_selector(self, selector: Selector = None) -> Iterator[T]:
         """
         Fast but *not* update-safe iterator of all elements in the slice.
 
@@ -333,7 +357,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         ids = self.selector_to_ids(selector)
         return self.iter_by_ids(ids)
 
-    def get_values(self, selector=None):
+    def get_values(self, selector: Selector = None) -> Sequence[T]:
         """
         Get the value all elements pointed to the selector.
 
@@ -348,11 +372,11 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         """
         return list(self.iter_by_selector(selector))
 
-    def __contains__(self, item):
-        return any(numpy.array_equal(value, item)
+    def __contains__(self, item: T) -> bool:
+        return any(_eq(value, item)
                    for (_, _, value) in self.iter_ranges())
 
-    def count(self, x):
+    def count(self, x: T) -> int:
         """
         Counts the number of elements in the list with value ``x``.
 
@@ -363,9 +387,9 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         return sum(
             stop - start
             for (start, stop, value) in self.iter_ranges()
-            if numpy.array_equal(value, x))
+            if _eq(value, x))
 
-    def index(self, x):
+    def index(self, x: T) -> int:
         """
         Finds the first ID of the first element in the list with the given
         value.
@@ -375,19 +399,20 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :raise ValueError: If the value is not found
         """
         for (start, _, value) in self.iter_ranges():
-            if numpy.array_equal(value, x):
+            if _eq(value, x):
                 return start
         raise ValueError(f"{x} is not in list")
 
     @abstractmethod
-    def iter_ranges(self):
+    def iter_ranges(self) -> Iterator[Tuple[int, int, T]]:
         """
         Fast but *not* update-safe iterator of the ranges.
 
         :return: yields each range one by one
         """
+        raise NotImplementedError
 
-    def iter_ranges_by_id(self, the_id):
+    def iter_ranges_by_id(self, the_id: int) -> Iterator[Tuple[int, int, T]]:
         """
         Iterator of the range for this ID.
 
@@ -400,14 +425,16 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         :return: yields the one range
         """
 
-        self._check_id_in_range(the_id)
+        the_id = self._check_id_in_range(the_id)
         for (_, stop, value) in self.iter_ranges():
             if the_id < stop:
                 yield (the_id, the_id + 1, value)
                 break
 
     @abstractmethod
-    def iter_ranges_by_slice(self, slice_start, slice_stop):
+    def iter_ranges_by_slice(
+            self, slice_start: int, slice_stop: int) -> Iterator[
+                Tuple[int, int, T]]:
         """
         Fast but *not* update-safe iterator of the ranges covered by this
         slice.
@@ -418,8 +445,10 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
 
         :return: yields each range one by one
         """
+        raise NotImplementedError
 
-    def iter_ranges_by_ids(self, ids):
+    def iter_ranges_by_ids(self, ids: IdsType) -> Iterator[
+            Tuple[int, int, T]]:
         """
         Fast but *not* update-safe iterator of the ranges covered by these IDs.
 
@@ -435,7 +464,8 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         range_pointer = 0
         result = None
         ranges = list(self.iter_ranges())
-        for id_value in ids:
+        for _id_value in ids:
+            id_value = int(_id_value)
 
             # check if ranges reset so too far ahead
             if id_value < ranges[range_pointer][0]:
@@ -447,24 +477,26 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             while id_value >= ranges[range_pointer][1]:
                 range_pointer += 1
             if result is not None:
-                if (result[1] == id_value and numpy.array_equal(
+                if (result[1] == id_value and _eq(
                         result[2], ranges[range_pointer][2])):
                     result = (result[0], id_value + 1, result[2])
                     continue
                 yield result
             result = (id_value, id_value + 1, ranges[range_pointer][2])
-        yield result
+        if result is not None:
+            yield result
 
     @abstractmethod
-    def get_default(self):
+    def get_default(self) -> Optional[T]:
         """
         Gets the default value of the list.
         Just in case we later allow to increase the number of elements.
 
         :return: Default value
         """
+        raise NotImplementedError
 
-    def __add__(self, other):
+    def __add__(self, other) -> AbstractList[float]:
         """
         Support for ``new_list = list1 + list2``.
         Applies the add operator over this and other to create a new list.
@@ -485,7 +517,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         raise TypeError("__add__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __sub__(self, other):
+    def __sub__(self, other) -> AbstractList[float]:
         """
         Support for ``new_list = list1 - list2``.
         Applies the subtract operator over this and other to create a new list.
@@ -506,7 +538,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         raise TypeError("__sub__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __mul__(self, other):
+    def __mul__(self, other) -> AbstractList[float]:
         """
         Support for ``new_list = list1 * list2``.
         Applies the multiply operator over this and other.
@@ -527,7 +559,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         raise TypeError("__mul__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __truediv__(self, other):
+    def __truediv__(self, other) -> AbstractList[float]:
         """
         Support for ``new_list = list1 / list2``.
         Applies the division operator over this and other to create a
@@ -545,13 +577,13 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x / y)
         if isinstance(other, numbers.Number):
-            if numpy.isin(0, other):
+            if _is_zero(other):
                 raise ZeroDivisionError()
             return SingleList(a_list=self, operation=lambda x: x / other)
         raise TypeError("__truediv__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __floordiv__(self, other):
+    def __floordiv__(self, other) -> AbstractList[int]:
         """
         Support for ``new_list = list1 // list2``.
         Applies the floor division operator over this and other.
@@ -566,13 +598,14 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
             return DualList(
                 left=self, right=other, operation=lambda x, y: x // y)
         if isinstance(other, numbers.Number):
-            if numpy.isin(0, other):
+            if _is_zero(other):
                 raise ZeroDivisionError()
             return SingleList(a_list=self, operation=lambda x: x // other)
         raise TypeError("__floordiv__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def apply_operation(self, operation):
+    def apply_operation(
+            self, operation: Callable[[T], T]) -> AbstractList[T]:
         """
         Applies a function on the list to create a new one.
         The values of the new list are created on the fly so any changes
@@ -587,7 +620,7 @@ class AbstractList(AbstractSized, metaclass=AbstractBase):
         return SingleList(a_list=self, operation=operation)
 
 
-class SingleList(AbstractList, metaclass=AbstractBase):
+class SingleList(AbstractList[T], Generic[T], metaclass=AbstractBase):
     """
     A List that performs an operation on the elements of another list.
     """
@@ -640,7 +673,7 @@ class SingleList(AbstractList, metaclass=AbstractBase):
             yield (start, stop, self._operation(value))
 
 
-class DualList(AbstractList, metaclass=AbstractBase):
+class DualList(AbstractList[T], Generic[T], metaclass=AbstractBase):
     """
     A list which combines two other lists with an operation.
     """

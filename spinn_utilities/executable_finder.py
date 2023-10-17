@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+from typing import List, Optional
 from spinn_utilities.ordered_set import OrderedSet
 
 
@@ -26,7 +27,7 @@ class ExecutableFinder(object):
         "_binary_log",
         "_paths_log"]
 
-    def __init__(self):
+    def __init__(self) -> None:
         global_reports = os.environ.get("GLOBAL_REPORTS", None)
         if global_reports:
             if not os.path.exists(global_reports):
@@ -35,18 +36,18 @@ class ExecutableFinder(object):
                     os.makedirs(global_reports)
                 except Exception:  # pylint: disable=broad-except
                     pass
-            self._paths_log = os.path.join(
+            self._paths_log: Optional[str] = os.path.join(
                 global_reports, "binary_paths_used.log")
-            self._binary_log = os.path.join(
+            self._binary_log: Optional[str] = os.path.join(
                 global_reports, "binary_files_used.log")
 
         else:
             self._paths_log = None
             self._binary_log = None
 
-        self._binary_search_paths = OrderedSet()
+        self._binary_search_paths: OrderedSet[str] = OrderedSet()
 
-    def add_path(self, path):
+    def add_path(self, path: str) -> None:
         """
         Adds a path to the set of folders to be searched.  The path is
         added to the end of the list, so it is searched after all the
@@ -64,7 +65,7 @@ class ExecutableFinder(object):
                 pass
 
     @property
-    def binary_paths(self):
+    def binary_paths(self) -> str:
         """
         The set of folders to search for binaries, as a printable
         colon-separated string.
@@ -73,7 +74,7 @@ class ExecutableFinder(object):
         """
         return " : ".join(self._binary_search_paths)
 
-    def get_executable_path(self, executable_name):
+    def get_executable_path(self, executable_name: str) -> str:
         """
         Finds an executable within the set of folders. The set of folders
         is searched sequentially and the first match is returned.
@@ -103,7 +104,7 @@ class ExecutableFinder(object):
         # No executable found
         raise KeyError(f"Executable {executable_name} not found in path")
 
-    def get_executable_paths(self, executable_names):
+    def get_executable_paths(self, executable_names: str) -> List[str]:
         """
         Finds each executables within the set of folders.
 
@@ -128,7 +129,7 @@ class ExecutableFinder(object):
                 pass
         return results
 
-    def check_logs(self):
+    def check_logs(self) -> None:
         if not self._paths_log:
             print("environ GLOBAL_REPORTS not set!")
             return
@@ -149,9 +150,10 @@ class ExecutableFinder(object):
                 pass
 
         used_binaries = set()
-        with open(self._binary_log, "r", encoding="utf-8") as log_file:
-            for line in log_file:
-                used_binaries.add(line.strip())
+        if self._binary_log:
+            with open(self._binary_log, "r", encoding="utf-8") as log_file:
+                for line in log_file:
+                    used_binaries.add(line.strip())
 
         missing = in_folders - used_binaries
         print(f"{len(used_binaries)} binaries asked for. "
@@ -164,13 +166,13 @@ class ExecutableFinder(object):
             for binary in (missing):
                 print(binary)
 
-    def clear_logs(self):
+    def clear_logs(self) -> None:
         if not self._paths_log:
             print("environ GLOBAL_REPORTS not set!")
             return
-        if os.path.isfile(self._paths_log):
+        if self._paths_log and os.path.isfile(self._paths_log):
             os.remove(self._paths_log)
-        if os.path.isfile(self._binary_log):
+        if self._binary_log and os.path.isfile(self._binary_log):
             os.remove(self._binary_log)
 
 

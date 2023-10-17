@@ -12,21 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Our abbreviations/names
-CFF
-Zenodo
-LCM
+"""
+Types for coordinates.
+"""
 
-# Python types
-RawConfigParser
-AbstractBase
-LogCapture
-ZipFile
+from typing import Tuple
+from typing_extensions import TypeAlias
 
-# Python packages
-# numpy
-# mypy
+#: The type of X,Y pairs.
+XY: TypeAlias = Tuple[int, int]
 
-# Misc
-haha
-X'th
+#: The type of X,Y,P triples.
+XYP: TypeAlias = Tuple[int, int, int]

@@ -14,6 +14,7 @@
 
 import logging
 import os
+from typing import Any, Callable, Collection, List, Optional, Union
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
@@ -22,13 +23,13 @@ from spinn_utilities.log import FormatAdapter
 # pylint: disable=global-statement
 logger = FormatAdapter(logging.getLogger(__file__))
 
-__config = None
-__default_config_files = []
-__config_file = None
-__unittest_mode = False
+__config: Optional[CamelCaseConfigParser] = None
+__default_config_files: List[str] = []
+__config_file: Optional[str] = None
+__unittest_mode: bool = False
 
 
-def add_default_cfg(default):
+def add_default_cfg(default: str):
     """
     Adds an extra default configuration file to be read after earlier ones.
 
@@ -38,7 +39,7 @@ def add_default_cfg(default):
         __default_config_files.append(default)
 
 
-def clear_cfg_files(unittest_mode):
+def clear_cfg_files(unittest_mode: bool):
     """
     Clears any previous set configurations and configuration files.
 
@@ -54,7 +55,7 @@ def clear_cfg_files(unittest_mode):
     __unittest_mode = unittest_mode
 
 
-def set_cfg_files(config_file, default):
+def set_cfg_files(config_file: str, default: str):
     """
     Adds the configuration files to be loaded.
 
@@ -69,7 +70,7 @@ def set_cfg_files(config_file, default):
     add_default_cfg(default)
 
 
-def _pre_load_config():
+def _pre_load_config() -> CamelCaseConfigParser:
     """
     Loads configurations due to early access to a configuration value.
 
@@ -79,10 +80,10 @@ def _pre_load_config():
     if not __unittest_mode:
         raise ConfigException(
             "Accessing config values before setup is not supported")
-    load_config()
+    return load_config()
 
 
-def load_config():
+def load_config() -> CamelCaseConfigParser:
     """
     Reads in all the configuration files, resetting all values.
 
@@ -98,9 +99,10 @@ def load_config():
         __config = CamelCaseConfigParser()
         for default in __default_config_files:
             __config.read(default)
+    return __config
 
 
-def is_config_none(section, option):
+def is_config_none(section, option) -> bool:
     """
     Check if the value of a configuration option would be considered None
 
@@ -113,7 +115,7 @@ def is_config_none(section, option):
     return value is None
 
 
-def get_config_str(section, option):
+def get_config_str(section, option) -> str:
     """
     Get the string value of a configuration option.
 
@@ -129,7 +131,7 @@ def get_config_str(section, option):
     return value
 
 
-def get_config_str_or_none(section, option):
+def get_config_str_or_none(section, option) -> Optional[str]:
     """
     Get the string value of a configuration option.
 
@@ -139,15 +141,14 @@ def get_config_str_or_none(section, option):
     :rtype: str or None
     :raises ConfigException: if the Value would be None
     """
-    try:
+    if __config is None:
+        return _pre_load_config().get_str(section, option)
+    else:
         return __config.get_str(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    return __config.get_str(section, option)
 
 
-def get_config_str_list(section, option, token=","):
+def get_config_str_list(
+        section: str, option: str, token: str = ",") -> List[str]:
     """
     Get the string value of a configuration option split into a list.
 
@@ -157,15 +158,13 @@ def get_config_str_list(section, option, token=","):
     :return: The list (possibly empty) of the option values
     :rtype: list(str)
     """
-    try:
+    if __config is None:
+        return _pre_load_config().get_str_list(section, option, token)
+    else:
         return __config.get_str_list(section, option, token)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    return __config.get_str_list(section, option, token)
 
 
-def get_config_int(section, option):
+def get_config_int(section: str, option: str) -> int:
     """
     Get the integer value of a configuration option.
 
@@ -181,7 +180,7 @@ def get_config_int(section, option):
     return value
 
 
-def get_config_int_or_none(section, option):
+def get_config_int_or_none(section, option) -> Optional[int]:
     """
     Get the integer value of a configuration option.
 
@@ -191,15 +190,13 @@ def get_config_int_or_none(section, option):
     :rtype: int or None
     :raises ConfigException: if the Value would be None
     """
-    try:
+    if __config is None:
+        return _pre_load_config().get_int(section, option)
+    else:
         return __config.get_int(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    return __config.get_int(section, option)
 
 
-def get_config_float(section, option):
+def get_config_float(section: str, option: str) -> float:
     """
     Get the float value of a configuration option.
 
@@ -215,7 +212,7 @@ def get_config_float(section, option):
     return value
 
 
-def get_config_float_or_none(section, option):
+def get_config_float_or_none(section, option) -> Optional[float]:
     """
     Get the float value of a configuration option.
 
@@ -224,15 +221,13 @@ def get_config_float_or_none(section, option):
     :return: The option value.
     :rtype: float or None
     """
-    try:
+    if __config is None:
+        return _pre_load_config().get_float(section, option)
+    else:
         return __config.get_float(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    return __config.get_float(section, option)
 
 
-def get_config_bool(section, option):
+def get_config_bool(section: str, option: str) -> bool:
     """
     Get the boolean value of a configuration option.
 
@@ -248,7 +243,7 @@ def get_config_bool(section, option):
     return value
 
 
-def get_config_bool_or_none(section, option):
+def get_config_bool_or_none(section, option) -> Optional[bool]:
     """
     Get the boolean value of a configuration option.
 
@@ -258,15 +253,13 @@ def get_config_bool_or_none(section, option):
     :rtype: bool
     :raises ConfigException: if the Value would be None
     """
-    try:
+    if __config is None:
+        return _pre_load_config().get_bool(section, option)
+    else:
         return __config.get_bool(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    return __config.get_bool(section, option)
 
 
-def set_config(section, option, value):
+def set_config(section: str, option: str, value: Optional[str]):
     """
     Sets the value of a configuration option.
 
@@ -278,20 +271,12 @@ def set_config(section, option, value):
     :raises ConfigException: If called unexpectedly
     """
     if __config is None:
-        if __unittest_mode:
-            load_config()
-        else:
-            # The actual error is that load_config should be called before
-            # set_config but this discourages the use outside of unittests
-            raise ConfigException(
-                "set_config should only be called by unittests "
-                "which should have called unittest_setup")
-    __config.set(section, option, value)
-    # Intentionally no try here to force tests that set to
-    # load_default_configs before AND after
+        _pre_load_config().set(section, option, value)
+    else:
+        __config.set(section, option, value)
 
 
-def has_config_option(section, option):
+def has_config_option(section: str, option: str) -> bool:
     """
     Check if the section has this configuration option.
 
@@ -300,24 +285,25 @@ def has_config_option(section, option):
     :rtype: bool
     :return: True if and only if the option is defined. It may be `None`
     """
-    try:
+    if __config is None:
+        raise ConfigException("configuration not loaded")
+    else:
         return __config.has_option(section, option)
-    except AttributeError:
-        pass
-    _pre_load_config()
-    return __config.has_option(section, option)
 
 
-def config_options(section):
+def config_options(section: str) -> List[str]:
     """
     Return a list of option names for the given section name.
 
     :param str section: What section to list options for.
     """
+    if __config is None:
+        raise ConfigException("configuration not loaded")
     return __config.options(section)
 
 
-def _check_lines(py_path, line, lines, index, method):
+def _check_lines(py_path: str, line: str, lines: List[str], index: int,
+                 method: Callable[[str, str], Any]):
     """
     Support for `_check_python_file`. Gets section and option name.
 
@@ -348,7 +334,7 @@ def _check_lines(py_path, line, lines, index, method):
             f"section:{section} option:{option}") from original
 
 
-def _check_python_file(py_path):
+def _check_python_file(py_path: str):
     """
     A testing function to check that all the `get_config` calls work.
 
@@ -374,7 +360,7 @@ def _check_python_file(py_path):
                 _check_lines(py_path, line, lines, index, get_config_str_list)
 
 
-def _check_python_files(directory):
+def _check_python_files(directory: str):
     for root, _, files in os.walk(directory):
         for file_name in files:
             if file_name.endswith(".py"):
@@ -382,13 +368,13 @@ def _check_python_files(directory):
                 _check_python_file(py_path)
 
 
-def _find_double_defaults(repeaters=None):
+def _find_double_defaults(repeaters: Optional[Collection[str]] = ()):
     """
     Testing function to identify any configuration options in multiple default
     files.
 
     :param repeaters: List of options that are expected to be repeated.
-    :type repeaters: None or list(str)
+    :type repeaters: list(str)
     :raises ConfigException:
         If two defaults configuration files set the same value
     """
@@ -400,7 +386,7 @@ def _find_double_defaults(repeaters=None):
     if repeaters is None:
         repeaters = []
     else:
-        repeaters = map(config2.optionxform, repeaters)
+        repeaters = frozenset(map(config2.optionxform, repeaters))
     for section in config2.sections():
         for option in config2.options(section):
             if config1.has_option(section, option):
@@ -410,7 +396,7 @@ def _find_double_defaults(repeaters=None):
                         f"repeats [{section}]{option}")
 
 
-def _check_cfg_file(config1, cfg_path):
+def _check_cfg_file(config1: CamelCaseConfigParser, cfg_path: str):
     """
     Support method for :py:func:`check_cfgs`.
 
@@ -431,7 +417,7 @@ def _check_cfg_file(config1, cfg_path):
                     f"has unexpected options [{section}]{option}")
 
 
-def _check_cfgs(path):
+def _check_cfgs(path: str):
     """
     A testing function check local configuration files against the defaults.
 
@@ -456,7 +442,9 @@ def _check_cfgs(path):
                 _check_cfg_file(config1, cfg_path)
 
 
-def run_config_checks(directories, *, exceptions=None, repeaters=None):
+def run_config_checks(directories: Union[str, Collection[str]], *,
+                      exceptions: Union[str, Collection[str]] = (),
+                      repeaters: Optional[Collection[str]] = ()):
     """
     Master test.
 

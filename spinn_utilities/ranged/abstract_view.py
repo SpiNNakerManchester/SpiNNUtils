@@ -11,12 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from __future__ import annotations
+from typing import Generic, Iterable, Optional, Union, TYPE_CHECKING
 from spinn_utilities.overrides import overrides
-from .abstract_dict import AbstractDict
+from .abstract_dict import AbstractDict, T
+if TYPE_CHECKING:
+    from .range_dictionary import RangeDictionary
 
 
-class AbstractView(AbstractDict):
+class AbstractView(  # pylint: disable=abstract-method
+        AbstractDict[T], Generic[T]):
     """
     A view over a ranged dictionary.
 
@@ -28,13 +32,13 @@ class AbstractView(AbstractDict):
     __slots__ = (
         "_range_dict")
 
-    def __init__(self, range_dict):
+    def __init__(self, range_dict: RangeDictionary[T]):
         """
         Use :py:meth:`RangeDictionary.view_factory` to create views
         """
         self._range_dict = range_dict
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Union[int, slice, Iterable[int]]):
         """
         Support for the view[x] based the type of the key
 
@@ -59,12 +63,9 @@ class AbstractView(AbstractDict):
         ids = self.ids()
         if isinstance(key, (slice, int)):
             return self._range_dict.view_factory(ids[key])
-        selected = []
-        for i in key:
-            selected.append(ids[i])
-        return self._range_dict.view_factory(selected)
+        return self._range_dict.view_factory([ids[i] for i in key])
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: T):
         """
         See :py:meth:`AbstractDict.set_value`
 
@@ -79,9 +80,9 @@ class AbstractView(AbstractDict):
         raise KeyError(f"Unexpected key type: {type(key)}")
 
     @overrides(AbstractDict.get_default)
-    def get_default(self, key):
+    def get_default(self, key: str) -> Optional[T]:
         return self._range_dict.get_default(key)
 
     @overrides(AbstractDict.keys)
-    def keys(self):
+    def keys(self) -> Iterable[str]:
         return self._range_dict.keys()

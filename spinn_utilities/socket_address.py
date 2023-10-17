@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Optional
 from spinn_utilities.config_holder import (
     get_config_int, get_config_int_or_none, get_config_str)
 
@@ -26,8 +27,9 @@ class SocketAddress(object):
         "_notify_port_no",
         "__hash"]
 
-    def __init__(self, notify_host_name=None, notify_port_no=None,
-                 listen_port=None):
+    def __init__(self, notify_host_name: Optional[str] = None,
+                 notify_port_no: Optional[int] = None,
+                 listen_port: Optional[int] = None):
         """
         :param notify_host_name:
             Host to talk to tell that the database (and application) is ready.
@@ -57,24 +59,24 @@ class SocketAddress(object):
         self._notify_host_name = notify_host_name
         self._notify_port_no = notify_port_no
         self._listen_port = listen_port
-        self.__hash = None
+        self.__hash: Optional[int] = None
 
     @property
-    def notify_host_name(self):
+    def notify_host_name(self) -> str:
         """
         The host name or IP address to send a notification message to.
         """
         return self._notify_host_name
 
     @property
-    def notify_port_no(self):
+    def notify_port_no(self) -> int:
         """
         The UDP port number to send a notification message to.
         """
         return self._notify_port_no
 
     @property
-    def listen_port(self):
+    def listen_port(self) -> Optional[int]:
         """
         The port to listen to for responses.
         """

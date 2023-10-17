@@ -77,7 +77,7 @@ class _SliceView(AbstractView[T], Generic[T]):
 
     @overload
     def iter_all_values(
-            self, key: Optional[_StrSeq] = None, *,
+            self, key: Optional[_StrSeq] = None,
             update_safe=False) -> Iterator[Dict[str, T]]:
         ...
 

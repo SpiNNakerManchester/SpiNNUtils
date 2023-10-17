@@ -25,6 +25,7 @@ ZipFile
 
 # Python packages
 # numpy
+# mypy
 
 # Misc
 haha

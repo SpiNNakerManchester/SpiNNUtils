@@ -615,7 +615,8 @@ class UtilsDataView(object):
         cls.__data._requires_data_generation = False
         cls.__data._requires_mapping = False
 
-    def raise_skiptest(self, reason: str,
+    @classmethod
+    def raise_skiptest(cls, reason: str,
                        parent: Optional[Exception] = None) -> None:
         """
         Sets the status as shutdown and raises a SkipTest
@@ -625,8 +626,8 @@ class UtilsDataView(object):
         :type parent: Exception or None
         :raises: SkipTest very time called
         """
-        self.__data._data_status = DataStatus.SHUTDOWN
-        self.__data._run_status = RunStatus.SHUTDOWN
+        cls.__data._data_status = DataStatus.SHUTDOWN
+        cls.__data._run_status = RunStatus.SHUTDOWN
         if parent is None:
             raise SkipTest(reason)
         else:

@@ -1055,3 +1055,9 @@ class TestUtilsData(unittest.TestCase):
         writer.set_requires_mapping()
         self.assertTrue(writer.get_requires_data_generation())
         self.assertTrue(writer.get_requires_mapping())
+
+    def test_skiptest(self):
+        with self.assertRaises(unittest.SkipTest):
+            UtilsDataView.raise_skiptest("Skip me")
+        with self.assertRaises(unittest.SkipTest):
+            UtilsDataView.raise_skiptest("Skip me", ValueError("nope"))

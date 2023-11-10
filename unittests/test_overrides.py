@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pytest
+from spinn_utilities.abstract_base import abstractmethod
 from spinn_utilities.overrides import overrides
 
 WRONG_ARGS = "Method has {} arguments but super class method has 4 arguments"
@@ -204,3 +205,95 @@ def test_property_overrides() -> None:
         def boo(self) -> int:
             return 1513
     assert Sub().boo == 1513
+
+
+def test_sister_overides() -> None:
+    class ParentOne(object):
+        @abstractmethod
+        def foo(self) -> int:
+            raise NotImplementedError
+
+    class ParentTwo(object):
+        @overrides(ParentOne.foo)
+        @abstractmethod
+        def foo(self) -> int:
+            raise NotImplementedError
+
+        def bar(self):
+            return self.foo()
+
+    class Child(ParentTwo, ParentOne):
+        @overrides(ParentTwo.foo)
+        @overrides(ParentOne.foo)
+        def foo(self) -> int:
+            return 1
+
+    a = Child()
+    assert 1 == a.bar()
+
+
+def test_sister_overides_bad() -> None:
+    class ParentOne(object):
+        @abstractmethod
+        def foo(self) -> int:
+            raise NotImplementedError
+
+    class ParentTwo(object):
+
+        try:
+            @overrides(ParentOne.foo)
+            @abstractmethod
+            def foo(self, check) -> int:
+                raise NotImplementedError
+
+            raise ValueError("Should not get here")
+        except AttributeError:
+            pass
+
+
+def test_sister_different1() -> None:
+    class ParentOne(object):
+        @abstractmethod
+        def foo(self) -> int:
+            raise NotImplementedError
+
+    class ParentTwo(object):
+        @abstractmethod
+        def foo(self, check) -> int:
+            raise NotImplementedError
+
+        def bar(self):
+            return self.foo()
+
+    try:
+        class Child(ParentTwo, ParentOne):
+            @overrides(ParentTwo.foo)
+            @overrides(ParentOne.foo)
+            def foo(self) -> int:
+                return 1
+    except AttributeError:
+        pass
+
+
+def test_sister_different1() -> None:
+    class ParentOne(object):
+        @abstractmethod
+        def foo(self) -> int:
+            raise NotImplementedError
+
+    class ParentTwo(object):
+        @abstractmethod
+        def foo(self, check) -> int:
+            raise NotImplementedError
+
+        def bar(self):
+            return self.foo()
+
+    try:
+        class Child(ParentTwo, ParentOne):
+            @overrides(ParentOne.foo)
+            @overrides(ParentTwo.foo)
+            def foo(self) -> int:
+                return 1
+    except AttributeError:
+        pass

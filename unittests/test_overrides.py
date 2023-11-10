@@ -275,7 +275,7 @@ def test_sister_different1() -> None:
         pass
 
 
-def test_sister_different1() -> None:
+def test_sister_different2() -> None:
     class ParentOne(object):
         @abstractmethod
         def foo(self) -> int:

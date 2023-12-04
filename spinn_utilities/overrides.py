@@ -15,6 +15,7 @@
 import inspect
 from types import FunctionType, MethodType
 from typing import Any, Callable, Iterable, Optional, TypeVar
+
 #: :meta private:
 Method = TypeVar("Method", bound=Callable[..., Any])
 
@@ -26,6 +27,8 @@ class overrides(object):
     copies the doc-string for the method, and enforces that the method
     overridden is specified, making maintenance easier.
     """
+    # This near constant is changed by unittests to check our code
+    __CHECK_TYPES = False
 
     __slots__ = [
         # The method in the superclass that this method overrides
@@ -39,13 +42,15 @@ class overrides(object):
         # True if the name check is relaxed
         "_relax_name_check",
         # The name of the thing being overridden for error messages
-        "_override_name"
+        "_override_name",
+        # True if this method adds typing info not in the original
+        "_adds_typing"
     ]
 
     def __init__(
-            self, super_class_method, extend_doc: bool = True,
+            self, super_class_method, *, extend_doc: bool = True,
             additional_arguments: Optional[Iterable[str]] = None,
-            extend_defaults: bool = False):
+            extend_defaults: bool = False, adds_typing: bool = False,):
         """
         :param super_class_method: The method to override in the superclass
         :param bool extend_doc:
@@ -57,6 +62,9 @@ class overrides(object):
             superclass method, e.g., that are to be injected
         :param bool extend_defaults:
             Whether the subclass may specify extra defaults for the parameters
+        :param adds_typing:
+            Allows more typing (of non additional) than in the subclass.
+            Should only be used for builtin super classes
         """
         if isinstance(super_class_method, property):
             super_class_method = super_class_method.fget
@@ -72,6 +80,7 @@ class overrides(object):
             self._additional_arguments = frozenset(additional_arguments)
         else:
             self._additional_arguments = frozenset()
+        self._adds_typing = adds_typing
 
     @staticmethod
     def __match_defaults(default_args, super_defaults, extend_ok):
@@ -82,6 +91,25 @@ class overrides(object):
         if extend_ok:
             return len(default_args) >= len(super_defaults)
         return len(default_args) == len(super_defaults)
+
+    def __verify_types(self, method_args, super_args, all_args):
+        """
+        Check that the arguments match.
+        """
+        if not self.__CHECK_TYPES:
+            return
+        all_args.remove("self")
+        method_types = method_args.annotations
+        super_types = super_args.annotations
+        for arg in all_args:
+            if arg not in super_types and not self._adds_typing:
+                raise AttributeError(
+                    f"Super Method {self._superclass_method.__name__} "
+                    f"has untyped arguments including {arg}")
+            if arg not in method_types:
+                raise AttributeError(
+                    f"Method {self._superclass_method.__name__} "
+                    f"has untyped arguments including {arg}")
 
     def __verify_method_arguments(self, method: Method):
         """
@@ -108,6 +136,7 @@ class overrides(object):
                 default_args, super_args.defaults, self._extend_defaults):
             raise AttributeError(
                 f"Default arguments don't match {self._override_name}")
+        self.__verify_types(method_args, super_args, all_args)
 
     def __call__(self, method: Method) -> Method:
         """
@@ -141,3 +170,7 @@ class overrides(object):
             method.__doc__ = (
                 self._superclass_method.__doc__ + (method.__doc__ or ""))
         return method
+
+    @classmethod
+    def check_types(cls):
+        cls.__CHECK_TYPES = True

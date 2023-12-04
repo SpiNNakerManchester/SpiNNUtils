@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Any
 from spinn_utilities.overrides import overrides
 from .abstract_grandparent import AbstractGrandParent
 from .abstract_has_constraints import AbstractHasConstraints
@@ -26,7 +27,7 @@ class GrandParent(AbstractGrandParent):
         pass
 
     @overrides(AbstractHasConstraints.add_constraint)
-    def add_constraint(self, constraint):
+    def add_constraint(self, constraint: Any):
         raise NotImplementedError("We set our own constrainst")
 
     @overrides(AbstractHasConstraints.constraints)

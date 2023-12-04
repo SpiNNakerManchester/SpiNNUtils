@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Any
 from spinn_utilities.abstract_base import (
     AbstractBase, abstractproperty, abstractmethod)
 
@@ -23,7 +24,7 @@ class AbstractHasConstraints(object, metaclass=AbstractBase):
     __slots__ = ()
 
     @abstractmethod
-    def add_constraint(self, constraint):
+    def add_constraint(self, constraint: Any):
         """ Add a new constraint to the collection of constraints
 
         :param constraint: constraint to add
@@ -33,7 +34,8 @@ class AbstractHasConstraints(object, metaclass=AbstractBase):
             If the constraint is not valid
         """
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def constraints(self):
         """ An iterable of constraints
 

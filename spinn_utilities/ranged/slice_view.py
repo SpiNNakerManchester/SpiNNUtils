@@ -82,7 +82,7 @@ class _SliceView(AbstractView[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
-    def iter_all_values(self, key=None, update_safe=False):
+    def iter_all_values(self, key: _Keys = None, update_safe: bool = False):
         if isinstance(key, str):
             if update_safe:
                 return self.update_safe_iter_all_values(key)
@@ -94,7 +94,7 @@ class _SliceView(AbstractView[T], Generic[T]):
 
     @overrides(AbstractDict.set_value)
     def set_value(
-            self, key: str, value: _ValueType, use_list_as_value=False):
+            self, key: str, value: _ValueType, use_list_as_value: bool = False):
         self._range_dict.get_list(key).set_value_by_slice(
             slice_start=self._start, slice_stop=self._stop, value=value,
             use_list_as_value=use_list_as_value)
@@ -109,6 +109,6 @@ class _SliceView(AbstractView[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_ranges)
-    def iter_ranges(self, key=None):
+    def iter_ranges(self, key: _Keys = None):
         return self._range_dict.iter_ranges_by_slice(
             key=key, slice_start=self._start, slice_stop=self._stop)

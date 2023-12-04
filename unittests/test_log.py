@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from datetime import datetime
 import logging
+from typing import List, Optional, Tuple
 from spinn_utilities.log import (
     _BraceMessage, ConfiguredFilter, ConfiguredFormatter, FormatAdapter,
     LogLevelTooHighException)
@@ -54,13 +56,15 @@ class MockLogStore(LogStore):
         self.data = []
 
     @overrides(LogStore.store_log)
-    def store_log(self, level, message, timestamp=None):
+    def store_log(self, level: int, message: str,
+                  timestamp: Optional[datetime] = None):
         if level == logging.CRITICAL:
             1/0
         self.data.append((level, message))
 
     @overrides(LogStore.retreive_log_messages)
-    def retreive_log_messages(self, min_level=0):
+    def retreive_log_messages(
+            self, min_level: int = 0) -> List[Tuple[int, str]]:
         result = []
         for (level, message) in self.data:
             if level >= min_level:

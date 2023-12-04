@@ -645,20 +645,21 @@ class SingleList(AbstractList[T], Generic[T], metaclass=AbstractBase):
         return self._a_list.range_based()
 
     @overrides(AbstractList.get_value_by_id)
-    def get_value_by_id(self, the_id):
+    def get_value_by_id(self, the_id: int) -> T:
         return self._operation(self._a_list.get_value_by_id(the_id))
 
     @overrides(AbstractList.get_single_value_by_slice)
-    def get_single_value_by_slice(self, slice_start, slice_stop):
+    def get_single_value_by_slice(
+            self, slice_start: int, slice_stop: int) -> T:
         return self._operation(self._a_list.get_single_value_by_slice(
             slice_start, slice_stop))
 
     @overrides(AbstractList.get_single_value_by_ids)
-    def get_single_value_by_ids(self, ids):
+    def get_single_value_by_ids(self, ids: IdsType) -> T:
         return self._operation(self._a_list.get_single_value_by_ids(ids))
 
     @overrides(AbstractList.iter_ranges)
-    def iter_ranges(self):
+    def iter_ranges(self) -> Iterator[Tuple[int, int, T]]:
         for (start, stop, value) in self._a_list.iter_ranges():
             yield (start, stop, self._operation(value))
 
@@ -667,7 +668,9 @@ class SingleList(AbstractList[T], Generic[T], metaclass=AbstractBase):
         return self._operation(self._a_list.get_default())
 
     @overrides(AbstractList.iter_ranges_by_slice)
-    def iter_ranges_by_slice(self, slice_start, slice_stop):
+    def iter_ranges_by_slice(
+            self, slice_start: int, slice_stop: int) -> Iterator[
+                Tuple[int, int, T]]:
         for (start, stop, value) in \
                 self._a_list.iter_ranges_by_slice(slice_start, slice_stop):
             yield (start, stop, self._operation(value))
@@ -704,25 +707,26 @@ class DualList(AbstractList[T], Generic[T], metaclass=AbstractBase):
         return self._left.range_based() and self._right.range_based()
 
     @overrides(AbstractList.get_value_by_id)
-    def get_value_by_id(self, the_id):
+    def get_value_by_id(self, the_id: int) -> T:
         return self._operation(
             self._left.get_value_by_id(the_id),
             self._right.get_value_by_id(the_id))
 
     @overrides(AbstractList.get_single_value_by_slice)
-    def get_single_value_by_slice(self, slice_start, slice_stop):
+    def get_single_value_by_slice(
+            self, slice_start: int, slice_stop: int) -> T:
         return self._operation(
             self._left.get_single_value_by_slice(slice_start, slice_stop),
             self._right.get_single_value_by_slice(slice_start, slice_stop))
 
     @overrides(AbstractList.get_single_value_by_ids)
-    def get_single_value_by_ids(self, ids):
+    def get_single_value_by_ids(self, ids: IdsType) -> T:
         return self._operation(
             self._left.get_single_value_by_ids(ids),
             self._right.get_single_value_by_ids(ids))
 
     @overrides(AbstractList.iter_by_slice)
-    def iter_by_slice(self, slice_start, slice_stop):
+    def iter_by_slice(self, slice_start: int, slice_stop: int) -> Iterator[T]:
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
         if self._left.range_based():
@@ -772,7 +776,9 @@ class DualList(AbstractList[T], Generic[T], metaclass=AbstractBase):
         return self._merge_ranges(left_iter, right_iter)
 
     @overrides(AbstractList.iter_ranges_by_slice)
-    def iter_ranges_by_slice(self, slice_start, slice_stop):
+    def iter_ranges_by_slice(
+            self, slice_start: int, slice_stop: int) -> Iterator[
+                Tuple[int, int, T]]:
         left_iter = self._left.iter_ranges_by_slice(slice_start, slice_stop)
         right_iter = self._right.iter_ranges_by_slice(slice_start, slice_stop)
         return self._merge_ranges(left_iter, right_iter)

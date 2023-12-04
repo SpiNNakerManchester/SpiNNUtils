@@ -28,6 +28,8 @@ if TYPE_CHECKING:
     from .abstract_view import AbstractView
 
 _KeyType: TypeAlias = Union[int, slice, Iterable[int]]
+_Keys: TypeAlias = Union[None, str, _StrSeq]
+
 _Range: TypeAlias = Tuple[int, int, T]
 _SimpleRangeIter: TypeAlias = Iterator[_Range]
 _CompoundRangeIter: TypeAlias = Iterator[Tuple[int, int, Dict[str, T]]]
@@ -246,7 +248,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
-    def iter_all_values(self, key=None, update_safe: bool = False):
+    def iter_all_values(self, key: _Keys, update_safe=False):
         if isinstance(key, str):
             if update_safe:
                 return self._value_lists[key].iter()

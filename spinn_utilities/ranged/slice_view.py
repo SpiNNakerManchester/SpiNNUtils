@@ -93,8 +93,8 @@ class _SliceView(AbstractView[T], Generic[T]):
             update_safe=update_safe)
 
     @overrides(AbstractDict.set_value)
-    def set_value(
-            self, key: str, value: _ValueType, use_list_as_value: bool = False):
+    def set_value(self, key: str, value: _ValueType,
+                  use_list_as_value: bool = False):
         self._range_dict.get_list(key).set_value_by_slice(
             slice_start=self._start, slice_stop=self._stop, value=value,
             use_list_as_value=use_list_as_value)

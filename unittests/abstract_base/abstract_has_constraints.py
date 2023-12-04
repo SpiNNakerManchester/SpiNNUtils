@@ -14,7 +14,7 @@
 
 from typing import Any
 from spinn_utilities.abstract_base import (
-    AbstractBase, abstractproperty, abstractmethod)
+    AbstractBase, abstractmethod)
 
 
 class AbstractHasConstraints(object, metaclass=AbstractBase):

@@ -92,7 +92,7 @@ class overrides(object):
             return len(default_args) >= len(super_defaults)
         return len(default_args) == len(super_defaults)
 
-    def __verify_types(self, method_args, super_args, all_args):
+    def _verify_types(self, method_args, super_args, all_args):
         """
         Check that the arguments match.
         """
@@ -136,7 +136,7 @@ class overrides(object):
                 default_args, super_args.defaults, self._extend_defaults):
             raise AttributeError(
                 f"Default arguments don't match {self._override_name}")
-        self.__verify_types(method_args, super_args, all_args)
+        self._verify_types(method_args, super_args, all_args)
 
     def __call__(self, method: Method) -> Method:
         """

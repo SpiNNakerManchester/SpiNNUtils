@@ -83,10 +83,10 @@ class ProgressBar(object):
         self._currently_completed += amount_to_add
         self._check_differences()
 
-    def _print_overwritten_line(self, string):
+    def _print_overwritten_line(self, string: str):
         print("\r" + string, end="", file=self._destination)
 
-    def _print_distance_indicator(self, description):
+    def _print_distance_indicator(self, description: str):
         if description is not None:
             print(description, file=self._destination)
 
@@ -113,7 +113,7 @@ class ProgressBar(object):
             self._end_character)
         print(line, end="", file=self._destination)
 
-    def _print_progress(self, length):
+    def _print_progress(self, length: int):
         chars_to_print = length
         if not self._in_bad_terminal:
             self._print_overwritten_line(self._end_character)
@@ -321,15 +321,15 @@ class DummyProgressBar(ProgressBar):
     fails in exactly the same way.
     """
     @overrides(ProgressBar._print_overwritten_line)
-    def _print_overwritten_line(self, string):
+    def _print_overwritten_line(self, string: str):
         pass
 
     @overrides(ProgressBar._print_distance_indicator)
-    def _print_distance_indicator(self, description):
+    def _print_distance_indicator(self, description: str):
         pass
 
     @overrides(ProgressBar._print_progress)
-    def _print_progress(self, length):
+    def _print_progress(self, length: int):
         pass
 
     @overrides(ProgressBar._print_progress_done)

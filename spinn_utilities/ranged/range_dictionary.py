@@ -403,14 +403,23 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             stop = next_stop
             yield (start, stop, current)
 
+    @overload
+    def iter_ranges(self, key: str) -> Iterator[Tuple[int, int, T]]:
+        ...
+
+    @overload
+    def iter_ranges(self, key: Optional[_StrSeq]) -> Iterator[Tuple[
+            int, int, Dict[str, T]]]:
+        ...
+
     @overrides(AbstractDict.iter_ranges)
     def iter_ranges(self, key: _Keys = None) -> \
             Iterator[Tuple[int, int, Dict[str, T]]]:
         if isinstance(key, str):
-            return self._value_lists[key].iter_ranges() # Iterator[Tuple[int, int, T]]
+            return self._value_lists[key].iter_ranges()
         if key is None:
             key = self.keys()
-        return self._merge_ranges({  # Iterator[Tuple[int, int, Dict[str, T]]]
+        return self._merge_ranges({
             a_key: self._value_lists[a_key].iter_ranges()
             for a_key in key})
 

@@ -172,7 +172,8 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     def get_value(self, key: Optional[_StrSeq]) -> Dict[str, T]: ...
 
     @overrides(AbstractDict.get_value, extend_defaults=True)
-    def get_value(self, key: Union[str, None, _StrSeq] = None):
+    def get_value(self, key: Union[str, None, _StrSeq] = None
+                  ) -> Union[T, Dict[str, T]]:
         if isinstance(key, str):
             return self._value_lists[key].get_single_value_all()
         if key is None:
@@ -227,7 +228,8 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             ids: IdsType) -> Iterator[Dict[str, T]]: ...
 
     def update_safe_iter_all_values(
-            self, key: Union[str, Optional[_StrSeq]], ids: IdsType):
+            self, key: Union[str, Optional[_StrSeq]],
+            ids: IdsType) -> Iterator[T]:
         """
         Same as
         :py:meth:`iter_all_values`
@@ -248,7 +250,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
-    def iter_all_values(self, key: _Keys, update_safe=False):
+    def iter_all_values(self, key: _Keys, update_safe: bool = False):
         if isinstance(key, str):
             if update_safe:
                 return self._value_lists[key].iter()
@@ -373,7 +375,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     def _merge_ranges(
             self, range_iters: Dict[str, Iterator[Tuple[int, int, T]]]
-            ) -> _CompoundRangeIter:
+            ) -> Iterator[Tuple[int, int, Dict[str, T]]]:
         current: Dict[str, T] = dict()
         ranges: Dict[str, Tuple[int, int, T]] = dict()
         start = 0
@@ -402,12 +404,13 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             yield (start, stop, current)
 
     @overrides(AbstractDict.iter_ranges)
-    def iter_ranges(self, key=None):
+    def iter_ranges(self, key: _Keys = None) -> \
+            Iterator[Tuple[int, int, Dict[str, T]]]:
         if isinstance(key, str):
-            return self._value_lists[key].iter_ranges()
+            return self._value_lists[key].iter_ranges() # Iterator[Tuple[int, int, T]]
         if key is None:
             key = self.keys()
-        return self._merge_ranges({
+        return self._merge_ranges({  # Iterator[Tuple[int, int, Dict[str, T]]]
             a_key: self._value_lists[a_key].iter_ranges()
             for a_key in key})
 

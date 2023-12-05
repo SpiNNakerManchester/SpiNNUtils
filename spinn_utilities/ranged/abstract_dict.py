@@ -181,7 +181,9 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         ...
 
     @abstractmethod
-    def iter_ranges(self, key: _Keys = None):
+    def iter_ranges(self, key: _Keys = None
+                    ) -> Union[Iterator[Tuple[int, int, T]],
+                               Iterator[Tuple[int, int, Dict[str, T]]]]:
         """
         Iterates over the ranges(s) for all IDs covered by this view.
         There will be one yield for each range which may cover one or

@@ -627,7 +627,8 @@ class SingleList(AbstractList[T], Generic[T], metaclass=AbstractBase):
     __slots__ = [
         "_a_list", "_operation"]
 
-    def __init__(self, a_list, operation, key=None):
+    def __init__(self, a_list: AbstractList[T], operation: Callable[[T], T],
+                 key: str = None):
         """
         :param AbstractList a_list: The list to perform the operation on
         :param callable operation:
@@ -641,7 +642,7 @@ class SingleList(AbstractList[T], Generic[T], metaclass=AbstractBase):
         self._operation = operation
 
     @overrides(AbstractList.range_based)
-    def range_based(self):
+    def range_based(self) -> bool:
         return self._a_list.range_based()
 
     @overrides(AbstractList.get_value_by_id)
@@ -664,7 +665,10 @@ class SingleList(AbstractList[T], Generic[T], metaclass=AbstractBase):
             yield (start, stop, self._operation(value))
 
     @overrides(AbstractList.get_default)
-    def get_default(self):
+    def get_default(self) -> Optional[T]:
+        default = self._a_list.get_default()
+        if default is None:
+            return None
         return self._operation(self._a_list.get_default())
 
     @overrides(AbstractList.iter_ranges_by_slice)
@@ -683,7 +687,8 @@ class DualList(AbstractList[T], Generic[T], metaclass=AbstractBase):
     __slots__ = [
         "_left", "_operation", "_right"]
 
-    def __init__(self, left, right, operation, key=None):
+    def __init__(self, left: AbstractList[T], right: AbstractList[T],
+                 operation: Callable[[T, T], T], key: str = None):
         """
         :param AbstractList left: The first list to combine
         :param AbstractList right: The second list to combine
@@ -703,7 +708,7 @@ class DualList(AbstractList[T], Generic[T], metaclass=AbstractBase):
         self._operation = operation
 
     @overrides(AbstractList.range_based)
-    def range_based(self):
+    def range_based(self) -> bool:
         return self._left.range_based() and self._right.range_based()
 
     @overrides(AbstractList.get_value_by_id)
@@ -770,7 +775,7 @@ class DualList(AbstractList[T], Generic[T], metaclass=AbstractBase):
                         return
 
     @overrides(AbstractList.iter_ranges)
-    def iter_ranges(self):
+    def iter_ranges(self) -> Iterator[Tuple[int, int, T]]:
         left_iter = self._left.iter_ranges()
         right_iter = self._right.iter_ranges()
         return self._merge_ranges(left_iter, right_iter)
@@ -783,7 +788,9 @@ class DualList(AbstractList[T], Generic[T], metaclass=AbstractBase):
         right_iter = self._right.iter_ranges_by_slice(slice_start, slice_stop)
         return self._merge_ranges(left_iter, right_iter)
 
-    def _merge_ranges(self, left_iter, right_iter):
+    def _merge_ranges(self, left_iter: Iterator[Tuple[int, int, T]],
+                      right_iter: Iterator[Tuple[int, int, T]]
+                      ) -> Iterator[Tuple[int, int, T]]:
         (left_start, left_stop, left_value) = next(left_iter)
         (right_start, right_stop, right_value) = next(right_iter)
         try:
@@ -802,6 +809,11 @@ class DualList(AbstractList[T], Generic[T], metaclass=AbstractBase):
             return
 
     @overrides(AbstractList.get_default)
-    def get_default(self):
-        return self._operation(
-            self._left.get_default(), self._right.get_default())
+    def get_default(self) -> Optional[T]:
+        l_default = self._left.get_default()
+        if l_default is None:
+            return None
+        r_default = self._right.get_default()
+        if r_default is None:
+            return None
+        return self._operation(l_default, r_default)

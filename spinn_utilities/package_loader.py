@@ -82,10 +82,10 @@ def load_modules(
         if module in exclusions:
             print("SKIPPING " + module)
             continue
-        print(module)
         try:
             __import__(module)
         except Exception:  # pylint: disable=broad-except
+            print(f"Error with {module}")
             if gather_errors:
                 errors.append((module, sys.exc_info()))
             else:

@@ -128,7 +128,7 @@ class ProgressBar(object):
         # pylint: disable=unused-argument
         print(self._step_character, end='', file=self._destination)
 
-    def _print_progress_done(self):
+    def _print_progress_done(self) -> None:
         self._print_progress(ProgressBar.MAX_LENGTH_IN_CHARS)
         if not self._in_bad_terminal:
             print(self._end_character, file=self._destination)
@@ -333,7 +333,7 @@ class DummyProgressBar(ProgressBar):
         pass
 
     @overrides(ProgressBar._print_progress_done)
-    def _print_progress_done(self):
+    def _print_progress_done(self) -> None:
         pass
 
     def __repr__(self):

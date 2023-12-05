@@ -122,7 +122,7 @@ class overrides(object):
                     f"Method {self._superclass_method.__name__} "
                     f"has no return type, while super does")
         else:
-            if "return" in method_types:
+            if "return" in method_types and not self._adds_typing:
                 raise AttributeError(
                     f"Super Method {self._superclass_method.__name__} "
                     f"has no return type, while this does")

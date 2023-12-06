@@ -515,11 +515,11 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
-            operation: Callable[[Number, Number], Number] = lambda x, y: x + y
+            operation: Callable[[float, float], float] = lambda x, y: x + y
             return DualList(
                 left=self, right=other, operation=operation)
         if isinstance(other, Number):
-            operation: Callable[[Number], Number] = lambda x: x + other
+            operation: Callable[[T], float] = lambda x: x + other
             return SingleList(a_list=self, operation=operation)
         raise TypeError("__add__ operation only supported for other "
                         "RangedLists and numerical Values")
@@ -539,8 +539,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
-            operation: Callable[[Number, Number],
-                                [Number]] = lambda x, y: x - y
+            operation: Callable[[Number, Number], Number] = lambda x, y: x - y
             return DualList(
                 left=self, right=other, operation=operation)
         if isinstance(other, Number):

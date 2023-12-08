@@ -17,7 +17,8 @@ import numpy
 from numpy.typing import NDArray
 from typing import (
     Any, Callable, Generic, Iterator, Optional, Sequence, Tuple,
-    TypeGuard, TypeVar, Union, cast)
+    TypeVar, Union, cast)
+from typing_extensions import TypeGuard
 from typing_extensions import Self, TypeAlias
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides

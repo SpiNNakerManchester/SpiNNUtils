@@ -98,7 +98,10 @@ class overrides(object):
         """
         if not self.__CHECK_TYPES:
             return
-        all_args.remove("self")
+        if "self" in all_args:
+            all_args.remove("self")
+        elif "cls" in all_args:
+            all_args.remove("cls")
         method_types = method_args.annotations
         super_types = super_args.annotations
         for arg in all_args:

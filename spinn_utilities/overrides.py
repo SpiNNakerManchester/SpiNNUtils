@@ -115,7 +115,8 @@ class overrides(object):
                     f"has untyped arguments including {arg}")
 
         if len(all_args) == 0:
-            if "return" not in super_types and not self._adds_typing:
+            if "return" not in super_types and not self._adds_typing and \
+                    not method_args.varkw and not method_args.varargs:
                 raise AttributeError(
                     f"Super Method {self._superclass_method.__name__} "
                     f"has no arguments so should declare a return type")

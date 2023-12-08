@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 from typing import (
-    Dict, Iterable, Iterator, Optional, Sequence, Tuple, Union,
+    Dict, Generator, Iterable, Iterator, Optional, Sequence, Tuple, Union,
     Generic, overload, TYPE_CHECKING)
 from typing_extensions import TypeAlias
 from spinn_utilities.overrides import overrides
@@ -189,7 +189,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     def get_values_by_id(
             self, key: Optional[_StrSeq], the_id: int) -> Dict[str, T]: ...
 
-    def get_values_by_id(self, key, the_id):
+    def get_values_by_id(self, key, the_id) -> Union[T, Dict[str, T]]:
         """
         Same as :py:meth:`get_value` but limited to a single ID.
 
@@ -220,16 +220,16 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     @overload
     def update_safe_iter_all_values(
-            self, key: str, ids: IdsType) -> Iterator[T]: ...
+            self, key: str, ids: IdsType) -> Generator[T, None, None]: ...
 
     @overload
     def update_safe_iter_all_values(
             self, key: Optional[_StrSeq],
-            ids: IdsType) -> Iterator[Dict[str, T]]: ...
+            ids: IdsType) -> Generator[Dict[str, T], None, None]: ...
 
     def update_safe_iter_all_values(
             self, key: Union[str, Optional[_StrSeq]],
-            ids: IdsType) -> Iterator[T]:
+            ids: IdsType) -> Generator[Union[T, Dict[str, T]], None, None]:
         """
         Same as
         :py:meth:`iter_all_values`
@@ -414,14 +414,17 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     @overrides(AbstractDict.iter_ranges)
     def iter_ranges(self, key: _Keys = None) -> \
-            Iterator[Tuple[int, int, Dict[str, T]]]:
+            Union[Iterator[Tuple[int, int, T]],
+            Iterator[Tuple[int, int, Dict[str, T]]]]:
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges()
         if key is None:
-            key = self.keys()
+            keys = self.keys()
+        else:
+            keys = key
         return self._merge_ranges({
             a_key: self._value_lists[a_key].iter_ranges()
-            for a_key in key})
+            for a_key in keys})
 
     @overload
     def iter_ranges_by_id(

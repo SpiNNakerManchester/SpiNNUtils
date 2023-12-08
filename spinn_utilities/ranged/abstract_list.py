@@ -17,7 +17,7 @@ import numpy
 from numpy.typing import NDArray
 from typing import (
     Any, Callable, Generic, Iterator, Optional, Sequence, Tuple,
-    TypeVar, Union, cast)
+    TypeGuard, TypeVar, Union, cast)
 from typing_extensions import Self, TypeAlias
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides
@@ -40,6 +40,13 @@ def _eq(x: Any, y: Any) -> bool:
 
 def _is_zero(value: Any) -> bool:
     return bool(numpy.isin(0, value))
+
+
+def is_number(value: T) -> TypeGuard[float]:
+    """
+    Is the Value a simple integer or float?
+    """
+    return isinstance(value, Number)
 
 
 class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
@@ -500,8 +507,8 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         raise NotImplementedError
 
-    def __add__(self, other: Union[Number, AbstractList[Number]]
-                ) -> AbstractList[Number]:
+    def __add__(self, other: Union[float, AbstractList[float]]
+                ) -> AbstractList[float]:
         """
         Support for ``new_list = list1 + list2``.
         Applies the add operator over this and other to create a new list.
@@ -515,17 +522,17 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
-            operation: Callable[[float, float], float] = lambda x, y: x + y
+            d_operation: Callable[[Any, float], float] = lambda x, y: x + y
             return DualList(
-                left=self, right=other, operation=operation)
-        if isinstance(other, Number):
-            operation: Callable[[T], float] = lambda x: x + other
-            return SingleList(a_list=self, operation=operation)
+                left=self, right=other, operation=d_operation)
+        if is_number(other):
+            s_operation: Callable[[Any], float] = lambda x: x + other
+            return SingleList(a_list=self, operation=s_operation)
         raise TypeError("__add__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __sub__(self, other: Union[Number, AbstractList[Number]]
-                ) -> AbstractList[Number]:
+    def __sub__(self, other: Union[float, AbstractList[float]]
+                ) -> AbstractList[float]:
         """
         Support for ``new_list = list1 - list2``.
         Applies the subtract operator over this and other to create a new list.
@@ -539,17 +546,17 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
-            operation: Callable[[Number, Number], Number] = lambda x, y: x - y
+            d_operation: Callable[[Any, float], float] = lambda x, y: x - y
             return DualList(
-                left=self, right=other, operation=operation)
-        if isinstance(other, Number):
-            operation: Callable[[Number], Number] = lambda x: x - other
-            return SingleList(a_list=self, operation=operation)
+                left=self, right=other, operation=d_operation)
+        if is_number(other):
+            s_operation: Callable[[Any], float] = lambda x: x - other
+            return SingleList(a_list=self, operation=s_operation)
         raise TypeError("__sub__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __mul__(self, other: Union[Number, AbstractList[Number]]
-                ) -> AbstractList[Number]:
+    def __mul__(self, other: Union[float, AbstractList[float]]
+                ) -> AbstractList[float]:
         """
         Support for ``new_list = list1 * list2``.
         Applies the multiply operator over this and other.
@@ -563,15 +570,17 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
+            d_operation: Callable[[Any, float], float] = lambda x, y: x * y
             return DualList(
-                left=self, right=other, operation=lambda x, y: x * y)
-        if isinstance(other, Number):
-            return SingleList(a_list=self, operation=lambda x: x * other)
+                left=self, right=other, operation=d_operation)
+        if is_number(other):
+            s_operation: Callable[[Any], float] = lambda x: x * other
+            return SingleList(a_list=self, operation=s_operation)
         raise TypeError("__mul__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __truediv__(self, other: Union[Number, AbstractList[Number]]
-                    ) -> AbstractList[Number]:
+    def __truediv__(self, other: Union[float, AbstractList[float]]
+                    ) -> AbstractList[float]:
         """
         Support for ``new_list = list1 / list2``.
         Applies the division operator over this and other to create a
@@ -586,16 +595,18 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
+            d_operation: Callable[[Any, float], float] = lambda x, y: x / y
             return DualList(
-                left=self, right=other, operation=lambda x, y: x / y)
-        if isinstance(other, Number):
+                left=self, right=other, operation=d_operation)
+        if is_number(other):
             if _is_zero(other):
                 raise ZeroDivisionError()
-            return SingleList(a_list=self, operation=lambda x: x / other)
+            s_operation: Callable[[Any], float] = lambda x: x / other
+            return SingleList(a_list=self, operation=s_operation)
         raise TypeError("__truediv__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __floordiv__(self, other: Union[Number, AbstractList[Number]]
+    def __floordiv__(self, other: Union[float, AbstractList[float]]
                      ) -> AbstractList[int]:
         """
         Support for ``new_list = list1 // list2``.
@@ -608,12 +619,14 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
+            d_operation: Callable[[Any, float], int] = lambda x, y: int(x // y)
             return DualList(
-                left=self, right=other, operation=lambda x, y: x // y)
-        if isinstance(other, Number):
+                left=self, right=other, operation=d_operation)
+        if is_number(other):
             if _is_zero(other):
                 raise ZeroDivisionError()
-            return SingleList(a_list=self, operation=lambda x: x // other)
+            s_operation: Callable[[Any], int] = lambda x: int(x / other)
+            return SingleList(a_list=self, operation=s_operation)
         raise TypeError("__floordiv__ operation only supported for other "
                         "RangedLists and numerical Values")
 
@@ -642,7 +655,8 @@ class SingleList(AbstractList[ResultType], Generic[T, ResultType],
         "_a_list", "_operation"]
 
     def __init__(self, a_list: AbstractList[T],
-                 operation: Callable[[T], ResultType], key: str = None):
+                 operation: Callable[[T], ResultType],
+                 key: Optional[str] = None):
         """
         :param AbstractList a_list: The list to perform the operation on
         :param callable operation:
@@ -683,7 +697,7 @@ class SingleList(AbstractList[ResultType], Generic[T, ResultType],
         default = self._a_list.get_default()
         if default is None:
             return None
-        return self._operation(self._a_list.get_default())
+        return self._operation(default)
 
     @overrides(AbstractList.iter_ranges_by_slice)
     def iter_ranges_by_slice(
@@ -703,7 +717,8 @@ class DualList(AbstractList[ResultType], Generic[T, U, ResultType],
         "_left", "_operation", "_right"]
 
     def __init__(self, left: AbstractList[T], right: AbstractList[U],
-                 operation: Callable[[T, U], ResultType], key: str = None):
+                 operation: Callable[[T, U], ResultType],
+                 key: Optional[str] = None):
         """
         :param AbstractList left: The first list to combine
         :param AbstractList right: The second list to combine
@@ -763,30 +778,31 @@ class DualList(AbstractList[ResultType], Generic[T, U, ResultType],
                 # Left list is range based, right is not
                 left_iter = self._left.iter_ranges_by_slice(
                     slice_start, slice_stop)
-                right_iter = self._right.iter_by_slice(slice_start, slice_stop)
+                right_values = self._right.iter_by_slice(
+                    slice_start, slice_stop)
                 for (start, stop, left_value) in left_iter:
                     for _ in range(start, stop):
-                        yield self._operation(left_value, next(right_iter))
+                        yield self._operation(left_value, next(right_values))
         else:
             if self._right.range_based():
 
                 # Right list is range based left is not
-                left_iter = self._left.iter_by_slice(
+                left_values = self._left.iter_by_slice(
                     slice_start, slice_stop)
                 right_iter = self._right.iter_ranges_by_slice(
                     slice_start, slice_stop)
                 for (start, stop, right_value) in right_iter:
                     for _ in range(start, stop):
-                        yield self._operation(next(left_iter), right_value)
+                        yield self._operation(next(left_values), right_value)
             else:
 
                 # Neither list is range based
-                left_iter = self._left.iter_by_slice(slice_start, slice_stop)
-                right_iter = self._right.iter_by_slice(slice_start, slice_stop)
+                left_values = self._left.iter_by_slice(slice_start, slice_stop)
+                right_values = self._right.iter_by_slice(slice_start, slice_stop)
                 while True:
                     try:
                         yield self._operation(
-                            next(left_iter), next(right_iter))
+                            next(left_values), next(right_values))
                     except StopIteration:
                         return
 
@@ -804,8 +820,8 @@ class DualList(AbstractList[ResultType], Generic[T, U, ResultType],
         right_iter = self._right.iter_ranges_by_slice(slice_start, slice_stop)
         return self._merge_ranges(left_iter, right_iter)
 
-    def _merge_ranges(self, left_iter: Iterator[Tuple[int, int, ResultType]],
-                      right_iter: Iterator[Tuple[int, int, ResultType]]
+    def _merge_ranges(self, left_iter: Iterator[Tuple[int, int, T]],
+                      right_iter: Iterator[Tuple[int, int, U]]
                       ) -> Iterator[Tuple[int, int, ResultType]]:
         (left_start, left_stop, left_value) = next(left_iter)
         (right_start, right_stop, right_value) = next(right_iter)

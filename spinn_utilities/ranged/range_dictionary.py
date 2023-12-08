@@ -415,7 +415,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     @overrides(AbstractDict.iter_ranges)
     def iter_ranges(self, key: _Keys = None) -> \
             Union[Iterator[Tuple[int, int, T]],
-            Iterator[Tuple[int, int, Dict[str, T]]]]:
+                  Iterator[Tuple[int, int, Dict[str, T]]]]:
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges()
         if key is None:

@@ -799,7 +799,8 @@ class DualList(AbstractList[ResultType], Generic[T, U, ResultType],
 
                 # Neither list is range based
                 left_values = self._left.iter_by_slice(slice_start, slice_stop)
-                right_values = self._right.iter_by_slice(slice_start, slice_stop)
+                right_values = self._right.iter_by_slice(
+                    slice_start, slice_stop)
                 while True:
                     try:
                         yield self._operation(

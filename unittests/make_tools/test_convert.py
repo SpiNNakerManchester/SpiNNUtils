@@ -28,7 +28,8 @@ class TestConverter(unittest.TestCase):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
-        os.environ["C_LOGS_DICT"] = str(os.path.join(path, "convert.sqlite3"))
+        os.environ["C_LOGS_DICT"] = str(os.path.join(path,
+                                                     "convert_1.sqlite3"))
         # Clear the database
         LogSqlLiteDatabase(True)
         src = "mock_src"

@@ -27,7 +27,8 @@ class TestConverter(unittest.TestCase):
     def test_convert(self):
         class_file = sys.modules[self.__module__].__file__
         path = os.path.dirname(os.path.abspath(class_file))
-        os.environ["C_LOGS_DICT"] = str(os.path.join(path, "convert_2.sqlite3"))
+        os.environ["C_LOGS_DICT"] = str(os.path.join(path,
+                                                     "convert_2.sqlite3"))
         file_name = "weird,file.c"
         src = os.path.join(path, "mock_src")
         dest = os.path.join(path, "modified_src")

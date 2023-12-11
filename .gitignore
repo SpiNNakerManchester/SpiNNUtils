@@ -12,3 +12,4 @@ __pycache__
 /.settings
 .DS_Store
 .idea/
+/.mypy_cache/

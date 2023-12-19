@@ -30,7 +30,7 @@ class overrides(object):
     """
     # This near constant is changed by unittests to check our code
     # Github actions sets CI as True
-    __CHECK_TYPES = os.getenv("CI")
+    __CHECK_TYPES = os.getenv("TYPE_OVERRIDES")
 
     __slots__ = [
         # The method in the superclass that this method overrides

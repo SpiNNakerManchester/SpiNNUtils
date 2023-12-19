@@ -28,5 +28,5 @@ class NoLabel(AbstractGrandParent):
         raise NotImplementedError("We set our own constraints")
 
     @overrides(AbstractHasConstraints.constraints)
-    def constraints(self):
+    def constraints(self) -> Any:
         return ["No night feeds", "No nappy changes"]

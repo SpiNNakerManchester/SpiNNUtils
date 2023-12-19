@@ -30,5 +30,5 @@ class UncheckedBadParam(AbstractGrandParent):
         raise NotImplementedError("We set our own constrainst")
 
     @overrides(AbstractHasConstraints.constraints)
-    def constraints(self):
+    def constraints(self) -> Any:
         return ["No night feeds", "No nappy changes"]

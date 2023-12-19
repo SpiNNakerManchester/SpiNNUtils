@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import inspect
+import os
 from types import FunctionType, MethodType
 from typing import Any, Callable, Iterable, Optional, TypeVar
 
@@ -28,7 +29,8 @@ class overrides(object):
     overridden is specified, making maintenance easier.
     """
     # This near constant is changed by unittests to check our code
-    __CHECK_TYPES = False
+    # Github actions sets CI as True
+    __CHECK_TYPES = os.getenv("CI")
 
     __slots__ = [
         # The method in the superclass that this method overrides

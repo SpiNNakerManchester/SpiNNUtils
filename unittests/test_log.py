@@ -72,7 +72,7 @@ class MockLogStore(LogStore):
         return result
 
     @overrides(LogStore.get_location)
-    def get_location(self):
+    def get_location(self) -> str:
         return "MOCK"
 
 

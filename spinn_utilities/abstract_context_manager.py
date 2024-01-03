@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .abstract_base import AbstractBase, abstractmethod
 from types import TracebackType
 from typing import Optional, Type
 from typing_extensions import Literal, Self
+from .abstract_base import AbstractBase, abstractmethod
 
 
 class AbstractContextManager(object, metaclass=AbstractBase):

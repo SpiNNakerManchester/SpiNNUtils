@@ -67,7 +67,7 @@ class Ping(object):
         if ip_address in Ping.unreachable:
             return False
         tries = 0
-        while (True):
+        while True:
             if Ping.ping(ip_address) == 0:
                 return True
             tries += 1

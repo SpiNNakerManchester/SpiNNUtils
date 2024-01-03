@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import appdirs
+
 from configparser import NoOptionError
 import logging
 import os
 from typing import Callable, Dict, List, Sequence, Tuple, Union
+
+import appdirs
 from typing_extensions import TypeAlias
+
 from spinn_utilities import log
 from spinn_utilities.configs import (
     CamelCaseConfigParser, ConfigTemplateException,

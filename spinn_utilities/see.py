@@ -16,7 +16,7 @@ import inspect
 from spinn_utilities.overrides import overrides
 _introspector = inspect.getfullargspec
 
-
+#  pylint: disable=invalid-name
 class see(overrides):
     """
     A decorator for indicating that the documentation of the method

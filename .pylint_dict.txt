@@ -27,6 +27,13 @@ ZipFile
 numpy
 mypy
 
+# Our "special" words
+configs
+metaclasses
+
+# Python bits
+UnusedVariable
+
 # Misc
 haha
 X'th

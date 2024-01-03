@@ -130,6 +130,11 @@ class ExecutableFinder(object):
         return results
 
     def check_logs(self) -> None:
+        """
+        Compares the aplx files used against the ones available for use
+
+        Reports the aplx files never used.
+        """
         if not self._paths_log:
             print("environ GLOBAL_REPORTS not set!")
             return
@@ -167,6 +172,9 @@ class ExecutableFinder(object):
                 print(binary)
 
     def clear_logs(self) -> None:
+        """
+        Deletes log files from previous runs
+        """
         if not self._paths_log:
             print("environ GLOBAL_REPORTS not set!")
             return

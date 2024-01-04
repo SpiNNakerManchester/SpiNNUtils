@@ -109,7 +109,7 @@ class ProgressBar(object):
 
     def _print_distance_line(self, first_space, second_space):
         line = f"{self._end_character}0%{' ' * first_space}50%" \
-               f"{' ' * second_space}100%{self._end_characte}"
+               f"{' ' * second_space}100%{self._end_character}"
         print(line, end="", file=self._destination)
 
     def _print_progress(self, length):

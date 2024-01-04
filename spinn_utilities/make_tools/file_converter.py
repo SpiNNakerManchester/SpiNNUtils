@@ -385,7 +385,7 @@ class FileConverter(object):
                 else:
                     # Not a String so look for function
                     count = self.bracket_count(part)
-                    if (count > 0):
+                    if count > 0:
                         # More opening and closing brackets so in function
                         new_part = parts.pop(i)
                         # Keep combining parts until you find the last closing

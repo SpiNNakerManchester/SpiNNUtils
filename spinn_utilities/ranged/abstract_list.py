@@ -13,11 +13,11 @@
 # limitations under the License.
 from __future__ import annotations
 import numbers
-import numpy
-from numpy.typing import NDArray
 from typing import (
     Any, Callable, Generic, Iterator, Optional, Sequence, Tuple,
     TypeVar, Union, cast)
+import numpy
+from numpy.typing import NDArray
 from typing_extensions import Self, TypeAlias
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides

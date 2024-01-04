@@ -185,7 +185,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
     def set_log_info(
             self, log_level: int, line_num: int, original: str, file_id: int):
         """
-        Saves the data needed to replace a short log back to the orininal.
+        Saves the data needed to replace a short log back to the original.
 
         :param int log_level:
         :param int line_num:
@@ -260,7 +260,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
 
     def get_max_log_id(self):
         """
-        Get the nax id of any log message.
+        Get the max id of any log message.
 
         :rtype: int
         """

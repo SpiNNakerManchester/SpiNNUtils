@@ -16,14 +16,14 @@ from tempfile import TemporaryDirectory
 from typing import List, Optional
 
 from unittest import SkipTest
-from .data_status import DataStatus
-from .reset_status import ResetStatus
-from .run_status import RunStatus
 from spinn_utilities.exceptions import (
     SpiNNUtilsException,
     SimulatorNotSetupException, SimulatorRunningException,
     SimulatorShutdownException, UnexpectedStateChange)
 from spinn_utilities.executable_finder import ExecutableFinder
+from .data_status import DataStatus
+from .reset_status import ResetStatus
+from .run_status import RunStatus
 # pylint: disable=protected-access
 
 

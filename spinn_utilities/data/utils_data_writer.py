@@ -18,12 +18,12 @@ from typing_extensions import Self
 from spinn_utilities.exceptions import (
     IllegalWriterException, InvalidDirectory, SimulatorNotRunException,
     UnexpectedStateChange)
+from spinn_utilities.executable_finder import ExecutableFinder
 from spinn_utilities.log import FormatAdapter
 from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus
 from .utils_data_view import UtilsDataView, _UtilsDataModel
-from spinn_utilities.executable_finder import ExecutableFinder
 
 logger = FormatAdapter(logging.getLogger(__file__))
 # pylint: disable=protected-access

@@ -221,11 +221,11 @@ class LogSqlLiteDatabase(AbstractContextManager):
                         """, (log_level, line_num, original, file_id)):
                     return row["log_id"]
 
-    def get_log_info(self, log_id: int) -> Tuple[int, str, int, str]:
+    def get_log_info(self, log_id: str) -> Tuple[int, str, int, str]:
         """
         Gets the data needed to replace a short log back to the original.
 
-        :param int log_id:
+        :param str log_id: The int id as a String
         :rtype: tuple(int, str, int, str)
         """
         with self._db:

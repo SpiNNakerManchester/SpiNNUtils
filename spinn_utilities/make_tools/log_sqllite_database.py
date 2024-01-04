@@ -239,7 +239,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 return (row["log_level"], row["file_name"], row["line_num"],
                         row["original"])
 
-    def check_original(self, original:str):
+    def check_original(self, original: str):
         """
         Checks that an original log line has been added to the database.
 

@@ -16,7 +16,7 @@ import os
 import sqlite3
 import sys
 import time
-from typing import Tuple
+from typing import Optional, Tuple
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
@@ -221,7 +221,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
                         """, (log_level, line_num, original, file_id)):
                     return row["log_id"]
 
-    def get_log_info(self, log_id: str) -> Tuple[int, str, int, str]:
+    def get_log_info(self, log_id: str) -> Optional[Tuple[int, str, int, str]]:
         """
         Gets the data needed to replace a short log back to the original.
 
@@ -238,6 +238,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
                     """, [log_id]):
                 return (row["log_level"], row["file_name"], row["line_num"],
                         row["original"])
+        return None
 
     def check_original(self, original: str):
         """

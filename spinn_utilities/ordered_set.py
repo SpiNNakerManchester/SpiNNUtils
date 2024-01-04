@@ -88,7 +88,7 @@ class OrderedSet(MutableSet, Generic[T]):
 
     def __repr__(self) -> str:
         if not self._map:  # i.e., is self._map empty?
-            return f'{self.__class__.__name_}'
+            return f'{self.__class__.__name__}()'
         return f'{self.__class__.__name__}({list(self)})'
 
     def __eq__(self, other: Any) -> bool:

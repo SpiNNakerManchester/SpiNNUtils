@@ -81,7 +81,7 @@ disable=consider-using-dict-items, missing-module-docstring, unsubscriptable-obj
 # either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once). See also the "--disable" option for examples.
-enable=c-extension-no-member,C0402,C0403
+enable=
 
 
 [REPORTS]

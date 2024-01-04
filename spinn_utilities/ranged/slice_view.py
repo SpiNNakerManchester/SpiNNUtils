@@ -66,6 +66,12 @@ class _SliceView(AbstractView[T], Generic[T]):
                 for k in key}
 
     def update_safe_iter_all_values(self, key: str) -> Iterable[T]:
+        """
+        Iterate over the Values in a way that will work even between updates
+
+        :param str key:
+        :rtype: iter
+        """
         ranged_list = self._range_dict.get_list(key)
         for the_id in self.ids():
             yield ranged_list.get_value_by_id(the_id=the_id)

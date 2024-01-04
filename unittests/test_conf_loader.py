@@ -243,7 +243,7 @@ def test_logging(tmpdir, not_there):
 def test_errors(not_there):
     name, place = not_there
     with pytest.raises(ConfigTemplateException):
-        conf_loader.install_cfg_and_IOError(
+        conf_loader.install_cfg_and_error(
             filename=name, defaults=[], config_locations=[])
 
 

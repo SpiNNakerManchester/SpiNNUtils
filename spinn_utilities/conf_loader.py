@@ -29,7 +29,7 @@ logger = log.FormatAdapter(logging.getLogger(__name__))
 _SectionParser: TypeAlias = Callable[[CamelCaseConfigParser], None]
 
 
-def install_cfg_and_IOError(
+def install_cfg_and_error(
         filename: str, defaults: List[str],
         config_locations: List[str]) -> NoConfigFoundException:
     """
@@ -235,7 +235,7 @@ def load_config(
     config_locations = _config_locations(filename)
     if not any(os.path.isfile(f) for f in config_locations):
         if defaults:
-            raise install_cfg_and_IOError(
+            raise install_cfg_and_error(
                 filename, defaults, config_locations)
         else:
             logger.error("No default cfg files provided")

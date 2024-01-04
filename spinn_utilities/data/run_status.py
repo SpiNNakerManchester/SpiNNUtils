@@ -27,9 +27,9 @@ class RunStatus(Enum):
 
     This class is design to used internally by :py:class:`UtilsDataView`.
     """
-    NOT_SETUP = (0)
-    NOT_RUNNING = (12)
-    IN_RUN = (2)
-    STOP_REQUESTED = (3)
-    STOPPING = (4)
-    SHUTDOWN = (5)
+    NOT_SETUP = 0
+    NOT_RUNNING = 1
+    IN_RUN = 2
+    STOP_REQUESTED = 3
+    STOPPING = 4
+    SHUTDOWN = 5

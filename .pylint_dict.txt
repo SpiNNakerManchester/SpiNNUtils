@@ -28,10 +28,13 @@ numpy
 mypy
 
 # Our "special" words
+aplx
+config
 configs
 metaclasses
 
 # Python bits
+iter
 UnusedVariable
 
 # Misc

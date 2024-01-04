@@ -16,6 +16,7 @@ import os
 import sqlite3
 import sys
 import time
+from typing import Tuple
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
@@ -127,7 +128,14 @@ class LogSqlLiteDatabase(AbstractContextManager):
             cursor.execute(
                 "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='directory'")
 
-    def get_directory_id(self, src_path, dest_path):
+    def get_directory_id(self, src_path: str, dest_path: str) -> int:
+        """
+        gets the Ids for this directory. Making a new one if needed
+
+        :param str src_path:
+        :param str dest_path:
+        :rtype: int
+        """
         with self._db:
             cursor = self._db.cursor()
             # reuse the existing if it exists
@@ -148,7 +156,14 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 """, (src_path, dest_path))
             return cursor.lastrowid
 
-    def get_file_id(self, directory_id, file_name):
+    def get_file_id(self, directory_id: int, file_name: str) -> int:
+        """
+        Gets the id for this file, making a new one if needed.
+
+        :param int directory_id:
+        :param str file_name:
+        :rtype: int
+        """
         with self._db:
             # Make previous one as not last
             with self._db:
@@ -167,7 +182,16 @@ class LogSqlLiteDatabase(AbstractContextManager):
                     """, (directory_id, file_name, _timestamp()))
                 return cursor.lastrowid
 
-    def set_log_info(self, log_level, line_num, original, file_id):
+    def set_log_info(
+            self, log_level: int, line_num: int, original: str, file_id: int):
+        """
+        Saves the data needed to replace a short log back to the orininal.
+
+        :param int log_level:
+        :param int line_num:
+        :param str original:
+        :param int file_id:
+        """
         with self._db:
             cursor = self._db.cursor()
             # reuse the existing number if nothing has changed
@@ -197,7 +221,13 @@ class LogSqlLiteDatabase(AbstractContextManager):
                         """, (log_level, line_num, original, file_id)):
                     return row["log_id"]
 
-    def get_log_info(self, log_id):
+    def get_log_info(self, log_id: int) -> Tuple[int, str, int, str]:
+        """
+        Gets the data needed to replace a short log back to the orininal.
+
+        :param int log_id:
+        :rtype: tuple(int, str, int, str)
+        """
         with self._db:
             for row in self._db.execute(
                     """
@@ -209,7 +239,15 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 return (row["log_level"], row["file_name"], row["line_num"],
                         row["original"])
 
-    def check_original(self, original):
+    def check_original(self, original:str):
+        """
+        Checks that an original log line has been added to the database.
+
+        Mainly used for testing
+
+        :param str original:
+        :raises ValueError: If the original is not in the database
+        """
         with self._db:
             for row in self._db.execute(
                     """
@@ -221,6 +259,11 @@ class LogSqlLiteDatabase(AbstractContextManager):
                     raise ValueError(f"{original} not found in database")
 
     def get_max_log_id(self):
+        """
+        Get the nax id of any log message.
+
+        :rtype: int
+        """
         with self._db:
             for row in self._db.execute(
                     """

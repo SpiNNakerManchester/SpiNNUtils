@@ -508,43 +508,43 @@ class FileConverter(object):
         :param str text: Text of that line including whitespace
         :raises UnexpectedCException:
         """
-        pos = 0
+        position = 0
         write_flag = 0
-        while text[pos] != "\n":
+        while text[position] != "\n":
             if self._status == State.COMMENT:
-                if text[pos] == "*" and text[pos+1] == "/":
-                    dest_f.write(text[write_flag:pos + 2])
-                    pos = pos + 2
-                    write_flag = pos
+                if text[position] == "*" and text[position+1] == "/":
+                    dest_f.write(text[write_flag:position + 2])
+                    position = position + 2
+                    write_flag = position
                     self._status = self._previous_status
                 else:
-                    pos = pos + 1
-            elif text[pos] == "/":
-                if text[pos+1] == "*":
+                    position = position + 1
+            elif text[position] == "/":
+                if text[position+1] == "*":
                     if self._status == State.IN_LOG:
-                        self._log_full += text[write_flag:pos].strip()
+                        self._log_full += text[write_flag:position].strip()
                         if self._log_full[-1] == ")":
                             self._status = State.IN_LOG_CLOSE_BRACKET
                         # NO change to self._log_lines as newline not removed
                     else:
-                        dest_f.write(text[write_flag:pos])
-                    write_flag = pos
-                    pos = pos + 2  # leave the /* as not written
+                        dest_f.write(text[write_flag:position])
+                    write_flag = position
+                    position = position + 2  # leave the /* as not written
                     self._previous_status = self._status
                     self._status = State.COMMENT
-                elif text[pos+1] == "/":
+                elif text[position+1] == "/":
                     if self._status == State.IN_LOG:
-                        self._log_full += text[write_flag:pos].strip()
+                        self._log_full += text[write_flag:position].strip()
                         # NO change to self._log_lines as newline not removed
-                        dest_f.write(text[pos:])
+                        dest_f.write(text[position:])
                     else:
                         dest_f.write(text[write_flag:])
                     return  # Finished line
                 else:
-                    pos += 1
+                    position += 1
 
-            elif text[pos] == '"':
-                str_pos = pos + 1
+            elif text[position] == '"':
+                str_pos = position + 1
                 while text[str_pos] != '"':
                     if text[str_pos] == "\n":
                         raise UnexpectedCException(
@@ -559,22 +559,22 @@ class FileConverter(object):
                             str_pos += 2  # ignore next char which may be a "
                     else:
                         str_pos += 1
-                pos = str_pos + 1
+                position = str_pos + 1
                 continue
 
             elif self._status == State.IN_LOG:
-                if text[pos] == ")":
-                    match = LOG_END_REGEX.match(text[pos:])
+                if text[position] == ")":
+                    match = LOG_END_REGEX.match(text[position:])
                     if match:
                         # include the end
-                        pos = pos + len(match.group(0))
-                        self._log_full += text[write_flag:pos].strip()
+                        position = position + len(match.group(0))
+                        self._log_full += text[write_flag:position].strip()
                         self._status = State.NORMAL_CODE
-                        if text[pos:].strip():  # Stuff left
-                            write_flag = pos
+                        if text[position:].strip():  # Stuff left
+                            write_flag = position
                             # self._log_lines not changed as no newline
                             # check for a \ after the log
-                            if text[pos:].strip() == "\\":
+                            if text[position:].strip() == "\\":
                                 self._write_log_method(dest_f, line_num, "\\")
                                 return
                             else:
@@ -585,43 +585,43 @@ class FileConverter(object):
                             return  # Finished line
                     else:
                         # not the require ); so continue
-                        pos += 1
+                        position += 1
                 else:
-                    pos += 1
+                    position += 1
 
             elif self._status == State.IN_LOG_CLOSE_BRACKET:
                 stripped = text.strip()
                 if stripped[0] == ";":
                     self._log_full += (";")
                     self._write_log_method(dest_f, line_num)
-                    pos = text.index(";") + 1
-                    write_flag = pos
+                    position = text.index(";") + 1
+                    write_flag = position
                     self._status = State.NORMAL_CODE
                 else:
                     # Save the ) as not part of the end
                     self._status = State.IN_LOG
 
-            elif text[pos] == "l":
-                match = LOG_START_REGEX.match(text[pos:])
+            elif text[position] == "l":
+                match = LOG_START_REGEX.match(text[position:])
                 if match:
                     self._log_start = text.index(match.group(0))
                     self._log = "".join(match.group(0).split())
                     self._status = State.IN_LOG
                     self._log_full = ""  # text saved after while
                     self._log_lines = 0
-                    dest_f.write(text[write_flag:pos])
+                    dest_f.write(text[write_flag:position])
                     # written up to not including log_start
                     # skip to end of log instruction
-                    pos = pos + len(match.group(0))
-                    write_flag = pos
+                    position = position + len(match.group(0))
+                    write_flag = position
                 else:
                     # Not a log start after all so treat as normal test
-                    pos += 1
+                    position += 1
 
             else:
-                pos += 1
+                position += 1
 
-        # after while text[pos] != "\n"
+        # after while text[position] != "\n"
         if self._status == State.IN_LOG:
             self._log_full += text[write_flag:].strip()
             self._log_lines += 1

@@ -76,7 +76,7 @@ class AbstractSized(object):
         if not self._is_id_type(the_id):
             raise TypeError(f"Invalid argument type {type(the_id)}.")
         the_id = int(the_id)
-        if not (0 <= the_id < self._size):
+        if not 0 <= the_id < self._size:
             raise IndexError(f"The index {the_id} is out of range.")
         return the_id
 
@@ -196,7 +196,7 @@ class AbstractSized(object):
         :return: a (possibly sorted) list of IDs
         """
         if _is_iterable_selector(selector):
-            # bool is subclass of int so if any are bools all must be
+            # bool is subclass of int so if any are bool all must be
             if any(isinstance(item, (bool, numpy.bool_)) for item in selector):
                 if all(isinstance(item, (bool, numpy.bool_))
                        for item in selector):
@@ -210,7 +210,7 @@ class AbstractSized(object):
                      for item in selector):
                 # list converts any specific numpy types
                 # blows up if someone gives an iterable of ndarray;
-                # serves them right for being too smartass
+                # serves them right for being too smart-ass
                 ids = list(map(int, selector))
                 for _id in ids:
                     if _id < 0:
@@ -237,7 +237,7 @@ class AbstractSized(object):
             return range(slice_start, slice_stop, step)
 
         if isinstance(selector, (int, numpy.integer)):
-            selector = int(selector)  # De-numpy-fy
+            selector = int(selector)  # make sure it is a simple int
             if selector < 0:
                 selector = self._size + selector
             if selector < 0 or selector >= self._size:

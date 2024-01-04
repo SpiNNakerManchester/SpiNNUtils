@@ -435,7 +435,7 @@ class RangedList(AbstractList[T], Generic[T]):
         """
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
-        if (slice_start == slice_stop):
+        if slice_start == slice_stop:
             return  # Empty list so do nothing
 
         # If the value to set is a list, set the values directly
@@ -509,6 +509,13 @@ class RangedList(AbstractList[T], Generic[T]):
 
     def set_value_by_ids(
             self, ids: IdsType, value: _ValueType, use_list_as_value=False):
+        """
+        Sets a already existing key to the new value. For the ids specified.
+
+        :param str key:
+        :type ids: iter(int) or numpy.array
+        :param value:
+        """
         if not use_list_as_value and self.is_list(value, len(ids)):
             self._set_values_list(ids, value)
         else:

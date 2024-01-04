@@ -336,7 +336,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         # No Selector so iter all fast
         if selector is None:
-            return self.__iter__()
+            return iter(self)
 
         if isinstance(selector, int):
             # Handle negative indices

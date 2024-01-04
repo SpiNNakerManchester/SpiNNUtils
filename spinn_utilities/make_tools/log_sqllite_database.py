@@ -223,7 +223,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
 
     def get_log_info(self, log_id: int) -> Tuple[int, str, int, str]:
         """
-        Gets the data needed to replace a short log back to the orininal.
+        Gets the data needed to replace a short log back to the original.
 
         :param int log_id:
         :rtype: tuple(int, str, int, str)

@@ -15,6 +15,7 @@
 import logging
 import struct
 import sys
+from typing import Optional, Tuple
 from spinn_utilities.log import FormatAdapter
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
@@ -44,7 +45,7 @@ class Replacer(LogSqlLiteDatabase):
     _FLT_FMT = struct.Struct("!f")
     _DBL_FMT = struct.Struct("!d")
 
-    def _replace(self, short: str) -> str:
+    def _replace(self, short: str) -> Optional[Tuple[int, str, int, str]]:
         """
         Apply the replacements to a short message.
 

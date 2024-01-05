@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+from collections.abc import Sized
 from typing import (
     Any, Callable, Generic, List, Iterable, Iterator, Optional, Sequence,
-    Sized, Tuple, Union, cast, final)
+    Tuple, Union, cast, final)
 from typing_extensions import TypeAlias, TypeGuard
 from spinn_utilities.overrides import overrides
 from spinn_utilities.helpful_functions import is_singleton

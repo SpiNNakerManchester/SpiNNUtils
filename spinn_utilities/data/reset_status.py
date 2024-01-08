@@ -21,8 +21,8 @@ class ResetStatus(Enum):
 
     This class is design to used internally by UtilsDataView.
     """
-    NOT_SETUP = (0)
-    SETUP = (1)
-    HAS_RUN = (2)
-    SOFT_RESET = (3)
-    HARD_RESET = (4)
+    NOT_SETUP = 0
+    SETUP = 1
+    HAS_RUN = 2
+    SOFT_RESET = 3
+    HARD_RESET = 4

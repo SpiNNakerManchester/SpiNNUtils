@@ -20,8 +20,10 @@ from ._types import T, X, Y
 
 
 class DemoMatrix(AbstractMatrix[T, X, Y], Generic[T, X, Y]):
-    __slots__ = (
-        "data")
+    """
+    Deprecated
+    """
+    __slots__ = ["data"]
 
     def __init__(self) -> None:
         self.data: Dict[X, Dict[Y, T]] = defaultdict(dict)

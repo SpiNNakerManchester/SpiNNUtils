@@ -23,7 +23,7 @@ from typing_extensions import TypeAlias
 JsonValue: TypeAlias = Union[int, float, str, None, "JsonObject", "JsonArray"]
 # NB: The above type is mutually recursive with the definitions below.
 
-#: The tyoe of JSON objects.
+#: The type of JSON objects.
 JsonObject: TypeAlias = Dict[str, JsonValue]
 
 #: The type of JSON arrays.

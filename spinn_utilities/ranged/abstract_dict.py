@@ -69,7 +69,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
     def set_value(
             self, key: str, value: T, use_list_as_value: bool = False):
         """
-        Resets a already existing key to the new value.
+        Sets a already existing key to the new value.
         All IDs in the whole range or view will have this key set.
 
         .. warning::

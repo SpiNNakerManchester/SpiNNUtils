@@ -22,6 +22,9 @@ T = TypeVar("T")
 
 
 class OrderedSet(MutableSet, Generic[T]):
+    """
+    A set like Object where peek, pop and iterate are in insert order
+    """
     __slots__ = (
         "_map",
     )
@@ -51,6 +54,11 @@ class OrderedSet(MutableSet, Generic[T]):
         return self._map.__reversed__()
 
     def peek(self, last: bool = True) -> T:
+        """
+        Retrieve the first element from the set without removing it
+        :param last:
+        :return:
+        """
         if not self._map:  # i.e., is self._map empty?
             raise KeyError('set is empty')
         if last:
@@ -65,6 +73,11 @@ class OrderedSet(MutableSet, Generic[T]):
         return key in self._map
 
     def update(self, iterable: Iterable[T]):
+        """
+        Updates the set by adding each item in order
+
+        :param iterable:
+        """
         for item in iterable:
             self.add(item)
 
@@ -75,8 +88,8 @@ class OrderedSet(MutableSet, Generic[T]):
 
     def __repr__(self) -> str:
         if not self._map:  # i.e., is self._map empty?
-            return '%s()' % (self.__class__.__name__,)
-        return '%s(%r)' % (self.__class__.__name__, list(self))
+            return f'{self.__class__.__name__}()'
+        return f'{self.__class__.__name__}({list(self)})'
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, OrderedSet):

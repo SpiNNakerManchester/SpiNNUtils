@@ -20,6 +20,9 @@ from ._types import T, X, Y
 
 
 class DoubleDict(Generic[T, X, Y]):
+    """
+    Deprecated
+    """
     __slots__ = [
         "_matrix", "_xtype", "_ytype"]
 

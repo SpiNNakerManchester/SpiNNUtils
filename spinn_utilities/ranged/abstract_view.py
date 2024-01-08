@@ -29,8 +29,7 @@ class AbstractView(  # pylint: disable=abstract-method
         indices, and only be written to with str indices. This may change to
         become more permissive in future versions.
     """
-    __slots__ = (
-        "_range_dict")
+    __slots__ = ["_range_dict"]
 
     def __init__(self, range_dict: RangeDictionary[T]):
         """

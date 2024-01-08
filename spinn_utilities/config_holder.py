@@ -76,7 +76,7 @@ def _pre_load_config() -> CamelCaseConfigParser:
 
     :raises ConfigException: Raise if called before setup
     """
-    # If you getthis error during a unittest then unittest_step was not called
+    # If you get this error during a unit test, unittest_step was not called
     if not __unittest_mode:
         raise ConfigException(
             "Accessing config values before setup is not supported")

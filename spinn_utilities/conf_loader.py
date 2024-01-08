@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import appdirs
+
 from configparser import NoOptionError
 import logging
 import os
 from typing import Callable, Dict, List, Sequence, Tuple, Union
+
+import appdirs
 from typing_extensions import TypeAlias
+
 from spinn_utilities import log
 from spinn_utilities.configs import (
     CamelCaseConfigParser, ConfigTemplateException,
@@ -26,7 +29,7 @@ logger = log.FormatAdapter(logging.getLogger(__name__))
 _SectionParser: TypeAlias = Callable[[CamelCaseConfigParser], None]
 
 
-def install_cfg_and_IOError(
+def install_cfg_and_error(
         filename: str, defaults: List[str],
         config_locations: List[str]) -> NoConfigFoundException:
     """
@@ -232,7 +235,7 @@ def load_config(
     config_locations = _config_locations(filename)
     if not any(os.path.isfile(f) for f in config_locations):
         if defaults:
-            raise install_cfg_and_IOError(
+            raise install_cfg_and_error(
                 filename, defaults, config_locations)
         else:
             logger.error("No default cfg files provided")

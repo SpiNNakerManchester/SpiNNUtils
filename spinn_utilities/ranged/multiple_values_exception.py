@@ -14,6 +14,9 @@
 
 
 class MultipleValuesException(Exception):
+    """
+    Raised when there more than one value found unexpectedly.
+    """
 
     def __init__(self, key=None, value1=None, value2=None):
         if key is None:

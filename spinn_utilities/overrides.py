@@ -21,6 +21,7 @@ from typing import Any, Callable, Iterable, Optional, TypeVar
 Method = TypeVar("Method", bound=Callable[..., Any])
 
 
+#  pylint: disable=invalid-name
 class overrides(object):
     """
     A decorator for indicating that a method overrides another method in

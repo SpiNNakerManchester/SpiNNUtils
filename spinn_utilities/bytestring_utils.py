@@ -46,4 +46,5 @@ def as_hex(byte_string: bytes, start: Optional[int] = None,
     :return: Comma-separated hex values
     :rtype: str
     """
+    # pylint: disable=consider-using-f-string
     return ','.join('%02x' % i for i in iter(byte_string[start:end]))

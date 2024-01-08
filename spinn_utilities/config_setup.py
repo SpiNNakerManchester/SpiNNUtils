@@ -37,5 +37,8 @@ def unittest_setup() -> None:
 
 
 def add_spinn_utilities_cfg() -> None:
+    """
+    Loads the default config values for spinn_utilities
+    """
     overrides.check_types()
     add_default_cfg(os.path.join(os.path.dirname(__file__), BASE_CONFIG_FILE))

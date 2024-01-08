@@ -15,6 +15,7 @@
 import logging
 import struct
 import sys
+from typing import Optional, Tuple
 from spinn_utilities.log import FormatAdapter
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
@@ -44,7 +45,7 @@ class Replacer(LogSqlLiteDatabase):
     _FLT_FMT = struct.Struct("!f")
     _DBL_FMT = struct.Struct("!d")
 
-    def _replace(self, short):
+    def _replace(self, short: str) -> Optional[Tuple[int, str, int, str]]:
         """
         Apply the replacements to a short message.
 
@@ -83,7 +84,13 @@ class Replacer(LogSqlLiteDatabase):
                 return None
         return (log_level, file_name, line_num, replaced)
 
-    def replace(self, short):
+    def replace(self, short: str) -> str:
+        """
+        Apply the replacements to a short message.
+
+        :param str short:
+        :rtype: str
+        """
         data = self._replace(short)
         if data is None:
             return short
@@ -102,6 +109,7 @@ class Replacer(LogSqlLiteDatabase):
 
 if __name__ == '__main__':
     encoded = sys.argv[1]
+    #  pylint: disable=invalid-name
     line = "".join([c if c.isalnum() else TOKEN for c in encoded])
     with Replacer() as replacer:
         print(replacer.replace(line))

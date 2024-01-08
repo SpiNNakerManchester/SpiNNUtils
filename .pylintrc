@@ -68,7 +68,12 @@ confidence=
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
-disable=R,C,unsubscriptable-object
+disable=consider-using-dict-items, missing-module-docstring, unsubscriptable-object
+
+# consider-using-dict-items "for x in foo:"  is fine!
+
+# missing-module-docstring expects a comment at import level which we don't do
+
 # False positives for unsubscriptable-object. Mypy better at this class of issue
 # See https://github.com/pylint-dev/pylint/issues/1498
 
@@ -76,7 +81,7 @@ disable=R,C,unsubscriptable-object
 # either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once). See also the "--disable" option for examples.
-enable=c-extension-no-member,C0402,C0403
+enable=
 
 
 [REPORTS]

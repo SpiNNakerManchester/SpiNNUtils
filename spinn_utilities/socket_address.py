@@ -99,6 +99,5 @@ class SocketAddress(object):
         return self.__hash
 
     def __repr__(self):
-        return "SocketAddress({}, {}, {})".format(
-            repr(self._notify_host_name), self._notify_port_no,
-            self._listen_port)
+        return (f"SocketAddress({repr(self._notify_host_name)}, "
+                f"{self._notify_port_no}, {self._listen_port})")

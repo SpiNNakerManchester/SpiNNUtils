@@ -108,9 +108,8 @@ class ProgressBar(object):
             print(" ", end="", file=self._destination)
 
     def _print_distance_line(self, first_space, second_space):
-        line = "{}0%{}50%{}100%{}".format(
-            self._end_character, " " * first_space, " " * second_space,
-            self._end_character)
+        line = f"{self._end_character}0%{' ' * first_space}50%" \
+               f"{' ' * second_space}100%{self._end_character}"
         print(line, end="", file=self._destination)
 
     def _print_progress(self, length: int):
@@ -271,6 +270,9 @@ class _EnhancedProgressBar(ProgressBar):
 
     @classmethod
     def init_once(cls):
+        """
+        At startup reads progress bar data from file to be used every time
+        """
         cls._enabled = False
         # read in the songs once for performance reasons
         path = os.path.join(
@@ -293,6 +295,7 @@ class _EnhancedProgressBar(ProgressBar):
             # clean up lines so that spaces are still visible
             for _seq_id in cls._step_characters:
                 step = cls._step_characters[_seq_id]
+                #  pylint: disable=consider-using-enumerate
                 for _line_no in range(len(step)):
                     step[_line_no] = step[_line_no].replace(" ", "_")
 

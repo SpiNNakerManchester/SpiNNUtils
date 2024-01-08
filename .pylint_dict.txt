@@ -18,14 +18,24 @@ Zenodo
 LCM
 
 # Python types
-RawConfigParser
 AbstractBase
 LogCapture
+RawConfigParser
 ZipFile
 
 # Python packages
-# numpy
-# mypy
+numpy
+mypy
+
+# Our "special" words
+aplx
+config
+configs
+metaclasses
+
+# Python bits
+iter
+UnusedVariable
 
 # Misc
 haha

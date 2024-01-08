@@ -41,6 +41,8 @@ REFERENCES_SOFTWARE_TYPE = "software"
 
 CITATION_DOI_TYPE = 'identifier'
 
+# pylint: skip-file
+
 
 class CitationAggregator(object):
     """

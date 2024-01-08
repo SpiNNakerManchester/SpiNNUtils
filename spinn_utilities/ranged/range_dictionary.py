@@ -120,7 +120,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             # Slice is really a list of integers - change it and continue below
             key = range(self._size)[key]
 
-        # Key can only now be an iterable of ints so make it a list and check
+        # Key can only now be an int iterable so make it a list and check
         key = list(key)
         if not all(isinstance(x, int) for x in key):
             raise KeyError("Only list/tuple of int are supported")
@@ -137,7 +137,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
                 return _SliceView(
                     range_dict=self, start=key[0], stop=key[-1] + 1)
 
-        # Random jumble of ints - return an IDs view
+        # Random jumble of int values - return an IDs view
         return _IdsView(range_dict=self, ids=key)
 
     @overload

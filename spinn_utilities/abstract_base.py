@@ -40,6 +40,7 @@ def abstractmethod(funcobj: T) -> T:
     return funcobj
 
 
+#  pylint: disable=invalid-name
 class abstractproperty(property):
     """
     A decorator indicating abstract properties.
@@ -110,9 +111,9 @@ class AbstractBase(type):
                 ...
     """
 
-    def __new__(cls, name, bases, namespace, **kwargs):
+    def __new__(mcs, name, bases, namespace, **kwargs):
         # Actually make the class
-        abs_cls = super().__new__(cls, name, bases, namespace, **kwargs)
+        abs_cls = super().__new__(mcs, name, bases, namespace, **kwargs)
 
         # Get set of abstract methods from namespace
         abstracts = set(nm for nm, val in namespace.items()

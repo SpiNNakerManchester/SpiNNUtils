@@ -44,6 +44,8 @@ AUTHOR_AFFILIATION = "affiliation"
 AUTHOR_ORCID = "orcid"
 IDENTIFIER = 'identifier'
 
+# pylint: skip-file
+
 
 class _ZenodoException(Exception):
     """

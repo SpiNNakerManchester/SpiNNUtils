@@ -59,7 +59,7 @@ class ConfiguredFormatter(logging.Formatter):
     """
     Defines the logging format for the SpiNNaker host software.
     """
-    # Precompile this RE; it gets used quite a few times
+    # Pre-compile this RE; it gets used quite a few times
     __last_component = re.compile(r'\.[^.]+$')
 
     def __init__(self, conf):
@@ -197,6 +197,10 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def set_log_store(cls, log_store: Optional[LogStore]):
+        """
+        Sets a Object to write the log messages to
+        :param LogStore log_store:
+        """
         if log_store is not None and not isinstance(log_store, LogStore):
             raise TypeError("log_store must be a LogStore")
         cls.__log_store = log_store
@@ -259,6 +263,9 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def atexit_handler(cls) -> None:
+        """
+        Adds code to print out high level log messages python run ends
+        """
         messages = []
         if cls.__log_store:
             try:

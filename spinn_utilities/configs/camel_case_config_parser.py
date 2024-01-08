@@ -22,6 +22,9 @@ FALSES = ('n', 'no', 'f', 'false', 'off', '0')
 
 
 class CamelCaseConfigParser(configparser.RawConfigParser):
+    """
+    Extends the Parser to allow for differences in case and underscores
+    """
     __slots__ = ["_read_files"]
 
     def optionxform(self, optionstr: str) -> str:

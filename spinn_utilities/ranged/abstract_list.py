@@ -13,12 +13,11 @@
 # limitations under the License.
 from __future__ import annotations
 from numbers import Number
-import numpy
-from numpy.typing import NDArray
 from typing import (
     Any, Callable, Generic, Iterator, Optional, Sequence, Tuple,
-    TypeVar, Union, cast)
-from typing_extensions import TypeGuard
+    TypeGuard, TypeVar, Union, cast)
+import numpy
+from numpy.typing import NDArray
 from typing_extensions import Self, TypeAlias
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides
@@ -348,7 +347,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         # No Selector so iter all fast
         if selector is None:
-            return self.__iter__()
+            return iter(self)
 
         if isinstance(selector, int):
             # Handle negative indices

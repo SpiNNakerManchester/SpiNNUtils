@@ -196,4 +196,9 @@ class overrides(object):
 
     @classmethod
     def check_types(cls):
+        """
+        If called will trigger check that all params are checked.
+
+        Used for testing, to avoid users being affected by teh strick checks
+        """
         cls.__CHECK_TYPES = True

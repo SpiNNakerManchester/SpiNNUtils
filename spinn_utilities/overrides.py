@@ -199,6 +199,6 @@ class overrides(object):
         """
         If called will trigger check that all parameters are checked.
 
-        Used for testing, to avoid users being affected by the strick checks
+        Used for testing, to avoid users being affected by the strict checks
         """
         cls.__CHECK_TYPES = True

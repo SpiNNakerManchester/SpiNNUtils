@@ -29,8 +29,8 @@ class overrides(object):
     copies the doc-string for the method, and enforces that the method
     overridden is specified, making maintenance easier.
     """
-    # This near constant is changed by unittests to check our code
-    # Github actions sets CI as True
+    # This near constant is changed by unit tests to check our code
+    # Github actions sets TYPE_OVERRIDES as True
     __CHECK_TYPES = os.getenv("TYPE_OVERRIDES")
 
     __slots__ = [
@@ -67,7 +67,7 @@ class overrides(object):
             Whether the subclass may specify extra defaults for the parameters
         :param adds_typing:
             Allows more typing (of non additional) than in the subclass.
-            Should only be used for builtin super classes
+            Should only be used for built in super classes
         """
         if isinstance(super_class_method, property):
             super_class_method = super_class_method.fget

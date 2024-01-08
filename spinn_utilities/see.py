@@ -57,5 +57,5 @@ class see(overrides):
         self._override_name = "documentation method"
 
     def _verify_types(self, method_args, super_args, all_args):
-        # dont check types for see
+        # don't check types for see
         pass

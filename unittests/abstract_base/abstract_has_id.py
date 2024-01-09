@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from spinn_utilities.abstract_base import AbstractBase, abstractproperty
+from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 
 class AbstractHasId(object, metaclass=AbstractBase):
@@ -24,7 +24,8 @@ class AbstractHasId(object, metaclass=AbstractBase):
     def has_id(self):
         return True
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def id(self):
         """ The id of the item
 

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from spinn_utilities.abstract_base import (
-    AbstractBase, abstractproperty, abstractmethod)
+    AbstractBase, abstractmethod)
 
 
 class AbstractHasConstraints(object, metaclass=AbstractBase):
@@ -33,7 +33,8 @@ class AbstractHasConstraints(object, metaclass=AbstractBase):
             If the constraint is not valid
         """
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def constraints(self):
         """ An iterable of constraints
 

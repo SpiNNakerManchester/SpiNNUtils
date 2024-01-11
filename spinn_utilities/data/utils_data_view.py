@@ -163,7 +163,7 @@ class UtilsDataView(object):
     `has...` methods have been added where found needed.
     More can easily be added if required.
 
-    The `is...` methods will return a boolean value to say the simulator is in
+    The `is...` methods will return a Boolean value to say the simulator is in
     the expected state.
     They may throw an exception if called at an unexpected time.
     For example if called before `sim.setup` or after `sim.end`.

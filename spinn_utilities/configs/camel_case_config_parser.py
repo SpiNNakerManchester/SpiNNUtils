@@ -117,7 +117,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
 
     def get_bool(self, section: str, option: str) -> Optional[bool]:
         """
-        Get the boolean value of an option.
+        Get the Boolean value of an option.
 
         :param str section: What section to get the option from.
         :param str option: What option to read.

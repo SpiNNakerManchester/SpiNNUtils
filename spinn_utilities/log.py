@@ -59,7 +59,7 @@ class ConfiguredFormatter(logging.Formatter):
     """
     Defines the logging format for the SpiNNaker host software.
     """
-    # Pre-compile this RE; it gets used quite a few times
+    # Precompile this RE; it gets used quite a few times
     __last_component = re.compile(r'\.[^.]+$')
 
     def __init__(self, conf):

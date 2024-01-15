@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Any
 from spinn_utilities.overrides import overrides
 from .abstract_grandparent import AbstractGrandParent
 from .abstract_has_constraints import AbstractHasConstraints
@@ -23,9 +24,9 @@ class NoLabel(AbstractGrandParent):
         pass
 
     @overrides(AbstractHasConstraints.add_constraint)
-    def add_constraint(self, constraint):
+    def add_constraint(self, constraint: Any):
         raise NotImplementedError("We set our own constraints")
 
     @overrides(AbstractHasConstraints.constraints)
-    def constraints(self):
+    def constraints(self) -> Any:
         return ["No night feeds", "No nappy changes"]

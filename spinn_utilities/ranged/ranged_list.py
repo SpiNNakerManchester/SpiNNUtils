@@ -132,7 +132,8 @@ class RangedList(AbstractList[T], Generic[T]):
         return self.__the_values[the_id]
 
     @overrides(AbstractList.get_single_value_by_slice)
-    def get_single_value_by_slice(self, slice_start: int, slice_stop: int):
+    def get_single_value_by_slice(
+            self, slice_start: int, slice_stop: int) -> T:
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
 

@@ -13,12 +13,14 @@
 # limitations under the License.
 
 import pytest
-from typing import Any, List, Tuple
+from typing import Any, List
 from spinn_utilities.abstract_base import abstractmethod
 from spinn_utilities.overrides import overrides
 
 WRONG_ARGS = "Method has {} arguments but super class method has 4 arguments"
 BAD_DEFS = "Default arguments don't match super class method"
+
+overrides.check_types()
 
 
 class Base(object):
@@ -321,6 +323,8 @@ def test_add_return():
             @overrides(Base.bad)
             def bad(self, x: int, y: int, z: int) -> List[int]:
                 return super().foo(z, y, x)
+    assert str(e.value) == "Super Method bad has no return type, " \
+                           "while this does"
 
 
 def test_dont_add_return():
@@ -340,6 +344,8 @@ def test_missing_return_type():
             @overrides(Base.boo)
             def boo(self):
                 return 2
+    assert str(e.value) == "Method boo has no arguments " \
+                           "so should declare a return type"
 
 
 def test_with_missing_return():
@@ -369,4 +375,6 @@ def test_no_param_missing_return():
             @overrides(Base.no_param_no_return)
             def no_param_no_return(self):
                 pass
+    assert str(e.value) == "Super Method no_param_no_return has " \
+                           "no arguments so should declare a return type"
 

@@ -377,4 +377,3 @@ def test_no_param_missing_return():
                 pass
     assert str(e.value) == "Super Method no_param_no_return has " \
                            "no arguments so should declare a return type"
-

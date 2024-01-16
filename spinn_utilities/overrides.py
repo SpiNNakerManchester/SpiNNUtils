@@ -123,16 +123,24 @@ class overrides(object):
                 raise AttributeError(
                     f"Super Method {self._superclass_method.__name__} "
                     f"has no arguments so should declare a return type")
-        if "return" in super_types:
-            if "return" not in method_types:
+            if "return" not in method_types and \
+                    not method_args.varkw and not method_args.varargs:
                 raise AttributeError(
                     f"Method {self._superclass_method.__name__} "
-                    f"has no return type, while super does")
+                    f"has no arguments so should declare a return type")
+
+        if "return" in super_types:
+            if "return" not in method_types:
+                if super_types["return"] is not None:
+                    raise AttributeError(
+                        f"Method {self._superclass_method.__name__} "
+                        f"has no return type, while super does")
         else:
             if "return" in method_types and not self._adds_typing:
-                raise AttributeError(
-                    f"Super Method {self._superclass_method.__name__} "
-                    f"has no return type, while this does")
+                if method_types["return"] is not None:
+                    raise AttributeError(
+                        f"Super Method {self._superclass_method.__name__} "
+                        f"has no return type, while this does")
 
     def __verify_method_arguments(self, method: Method):
         """

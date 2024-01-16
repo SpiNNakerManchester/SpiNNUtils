@@ -22,7 +22,7 @@ T = TypeVar("T")
 # Can't be Iterable[str] or Sequence[str] because that includes str itself
 _StrSeq: TypeAlias = Union[
     MutableSequence[str], Tuple[str, ...], FrozenSet[str], Set[str]]
-_Keys: TypeAlias = Union[None, str, _StrSeq]
+_Keys: TypeAlias = Optional[Union[str, _StrSeq]]
 
 
 class AbstractDict(Generic[T], metaclass=AbstractBase):
@@ -117,7 +117,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         ...
 
     @abstractmethod
-    def iter_all_values(self, key, update_safe=False):
+    def iter_all_values(self, key: _Keys, update_safe: bool = False):
         """
         Iterates over the value(s) for all IDs covered by this view.
         There will be one yield for each ID even if values are repeated.
@@ -181,7 +181,9 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         ...
 
     @abstractmethod
-    def iter_ranges(self, key=None):
+    def iter_ranges(self, key: _Keys = None
+                    ) -> Union[Iterator[Tuple[int, int, T]],
+                               Iterator[Tuple[int, int, Dict[str, T]]]]:
         """
         Iterates over the ranges(s) for all IDs covered by this view.
         There will be one yield for each range which may cover one or

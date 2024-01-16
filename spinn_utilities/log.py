@@ -17,7 +17,7 @@ from datetime import datetime
 import logging
 import re
 import sys
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 from inspect import getfullargspec
 from .log_store import LogStore
 from .overrides import overrides
@@ -214,7 +214,7 @@ class FormatAdapter(logging.LoggerAdapter):
         super().__init__(logger, extra)
         self.do_log = logger._log  # pylint: disable=protected-access
 
-    @overrides(logging.LoggerAdapter.log, extend_doc=False)
+    @overrides(logging.LoggerAdapter.log, extend_doc=False, adds_typing=True)
     def log(self, level: int, msg: object, *args, **kwargs):
         """
         Delegate a log call to the underlying logger, applying appropriate
@@ -247,8 +247,9 @@ class FormatAdapter(logging.LoggerAdapter):
                 log_kwargs["exc_info"] = kwargs["exc_info"]
             self.do_log(level, message, (), **log_kwargs)
 
-    @overrides(logging.LoggerAdapter.process, extend_doc=False)
-    def process(self, msg: object, kwargs) -> Tuple[object, dict]:
+    @overrides(logging.LoggerAdapter.process, extend_doc=False,
+               adds_typing=True)
+    def process(self, msg: object, kwargs: Any) -> Tuple[object, dict]:
         """
         Process the logging message and keyword arguments passed in to a
         logging call to insert contextual information. You can either

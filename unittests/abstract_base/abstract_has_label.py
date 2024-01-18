@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from spinn_utilities.abstract_base import (
-    AbstractBase, abstractproperty, abstractmethod)
+from spinn_utilities.abstract_base import (AbstractBase, abstractmethod)
 
 
 class AbstractHasLabel(object, metaclass=AbstractBase):
@@ -22,7 +21,8 @@ class AbstractHasLabel(object, metaclass=AbstractBase):
 
     __slots__ = ()
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def label(self):
         """ The label of the item
 

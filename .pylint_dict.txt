@@ -24,13 +24,9 @@ RawConfigParser
 ZipFile
 
 # Python packages
-numpy
 mypy
 
 # Our "special" words
-aplx
-config
-configs
 metaclasses
 
 # Python bits

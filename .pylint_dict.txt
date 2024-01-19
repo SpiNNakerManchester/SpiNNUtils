@@ -31,7 +31,6 @@ metaclasses
 
 # Python bits
 iter
-UnusedVariable
 
 # Misc
 Github

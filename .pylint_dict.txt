@@ -24,7 +24,6 @@ RawConfigParser
 ZipFile
 
 # Python packages
-mypy
 
 # Our "special" words
 metaclasses

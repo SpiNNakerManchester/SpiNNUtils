@@ -133,21 +133,21 @@ def test_use_one_default(tmpdir, not_there):
         assert config.get("sect", "foobob") == "bar"
 
 
-def test_no_templates(tmpdir, default_config, not_there):  # @UnusedVariable
+def test_no_templates(tmpdir, default_config, not_there):
     name, place = not_there
     with tmpdir.as_cwd():
         with pytest.raises(ConfigTemplateException):
             conf_loader.load_config(name, [THREEPATH, FOURPATH])
 
 
-def test_one_templates(tmpdir, default_config, not_there):  # @UnusedVariable
+def test_one_templates(tmpdir, default_config, not_there):
     name, place = not_there
     with tmpdir.as_cwd():
         with pytest.raises(NoConfigFoundException):
             conf_loader.load_config(name, [FOURPATH, ONEPATH, THREEPATH])
 
 
-def test_two_templates(tmpdir, default_config, not_there):  # @UnusedVariable
+def test_two_templates(tmpdir, default_config, not_there):
     name, place = not_there
     with tmpdir.as_cwd():
         with pytest.raises(ConfigTemplateException):

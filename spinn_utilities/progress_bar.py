@@ -186,7 +186,7 @@ class ProgressBar(object):
         """
         return self
 
-    def __exit__(self, exty, exval, traceback):  # @UnusedVariable
+    def __exit__(self, exty, exval, traceback):
         self.end()
         return False
 
@@ -213,7 +213,7 @@ class ProgressBar(object):
             if finish_at_end:
                 self.end()
 
-    def __new__(cls, *args, **kwargs):  # @UnusedVariable
+    def __new__(cls, *args, **kwargs):
         # pylint: disable=unused-argument
         c = cls
         if _EnhancedProgressBar._enabled:

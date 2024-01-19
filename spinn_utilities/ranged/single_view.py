@@ -14,7 +14,7 @@
 from __future__ import annotations
 from typing import (
     Dict, Generic, Iterator, Optional, Sequence, Tuple, overload,
-    TYPE_CHECKING)
+    TYPE_CHECKING, Union)
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, T, _StrSeq, _Keys
 from .abstract_view import AbstractView
@@ -48,7 +48,7 @@ class _SingleView(AbstractView[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.get_value)
-    def get_value(self, key: _Keys):
+    def get_value(self, key: _Keys) -> Union[T, Dict[str, T]]:
         if isinstance(key, str):
             return self._range_dict.get_list(key).get_value_by_id(
                 the_id=self._id)
@@ -74,7 +74,7 @@ class _SingleView(AbstractView[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_all_values)
-    def iter_all_values(self, key, update_safe=False):
+    def iter_all_values(self, key: _Keys, update_safe: bool = False):
         if isinstance(key, str):
             yield self._range_dict.get_list(key).get_value_by_id(
                 the_id=self._id)
@@ -82,7 +82,7 @@ class _SingleView(AbstractView[T], Generic[T]):
             yield self._range_dict.get_values_by_id(key=key, the_id=self._id)
 
     @overrides(AbstractDict.set_value)
-    def set_value(self, key: str, value: T, use_list_as_value=False):
+    def set_value(self, key: str, value: T, use_list_as_value: bool = False):
         return self._range_dict.get_list(key).set_value_by_id(
             value=value, the_id=self._id)
 
@@ -96,5 +96,7 @@ class _SingleView(AbstractView[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_ranges)
-    def iter_ranges(self, key=None):
+    def iter_ranges(self, key: _Keys = None
+                    ) -> Union[Iterator[Tuple[int, int, T]],
+                               Iterator[Tuple[int, int, Dict[str, T]]]]:
         return self._range_dict.iter_ranges_by_id(key=key, the_id=self._id)

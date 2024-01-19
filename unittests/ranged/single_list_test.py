@@ -99,6 +99,28 @@ def test_iter_by_slice():
     assert [2, 4, 8] == list(single.iter_by_slice(2, 5))
 
 
+def test_plus_minus():
+    a_list = RangedList(5, 12, "twelve")
+    b_list = a_list + 2
+    c_list = b_list - 2
+    assert a_list == c_list
+    d_list = RangedList(5, 8, "eight")
+    e_list = a_list + d_list
+    f_list = e_list - d_list
+    assert a_list == f_list
+
+
+def test_multi_divide():
+    a_list = RangedList(5, 12, "twelve")
+    b_list = a_list * 2
+    c_list = b_list / 2
+    assert a_list == c_list
+    d_list = RangedList(5, 4, "four")
+    e_list = a_list / d_list
+    f_list = e_list * d_list
+    assert a_list == f_list
+
+
 def test_equals():
     a_list = RangedList(5, 12, "twelve")
     double = SingleList(a_list=a_list, operation=lambda x: x * 2)

@@ -40,59 +40,6 @@ def abstractmethod(funcobj: T) -> T:
     return funcobj
 
 
-#  pylint: disable=invalid-name
-class abstractproperty(property):
-    """
-    A decorator indicating abstract properties.
-
-    Requires that the metaclass is :py:class:`AbstractBase` or derived from
-    it. A class that has a metaclass derived from :py:class:`AbstractBase`
-    cannot be instantiated unless all of its abstract properties are
-    overridden. The abstract properties can be called using any of the normal
-    'super' call mechanisms.
-
-    Usage::
-
-        class C(object, metaclass=AbstractBase):
-            @abstractproperty
-            def my_abstract_property(self):
-                ...
-
-    This defines a read-only property; you can also define a read-write
-    abstract property using the 'long' form of property declaration::
-
-        class C(object, metaclass=AbstractBase):
-            def getx(self): ...
-            def setx(self, value): ...
-            x = abstractproperty(getx, setx)
-
-    .. note::
-        When documenting abstract properties, remember to document them as if
-        they are nouns, not verbs; they are things about the object that may
-        be observed as many times as the user of the class desires.
-
-    .. warning::
-        This does *not* work with mypy type checking! When doing typed abstract
-        properties, you should instead do::
-
-            @property
-            @abstractmethod
-            def my_abstract_property(self) -> int:
-                ...
-
-        I assume that this is because ``@property`` is a special form in mypy.
-
-    .. warning::
-        Implementations should be idempotent; fetching the property twice in a
-        row should get an equivalent value with no (meaningful) change to the
-        state of the object (assuming no other non-property methods of the
-        object are invoked between).
-
-        This is an assumption that debuggers make. *Do not violate it!*
-    """
-    __isabstractmethod__ = True
-
-
 class AbstractBase(type):
     """
     Metaclass for defining Abstract Base Classes (AbstractBases).

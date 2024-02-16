@@ -80,7 +80,6 @@ def _mkdir(destination):
 if __name__ == '__main__':
     _src = sys.argv[1]
     _dest = sys.argv[2]
-    #  pylint: disable=invalid-name
     if len(sys.argv) > 3:
         _new_dict = bool(sys.argv[3])
     else:

@@ -49,7 +49,7 @@ def require_subclass(required_class):
     # The use of __class__ to enable super() to work is from:
     #     https://stackoverflow.com/a/43779009/301832
     # The need to do this as a functional decorator is my own discovery;
-    # without it, some very weird interactions with metaclasses happen and I
+    # without it, some very weird interactions with meta classes happen and I
     # really don't want to debug that stuff.
 
     def decorate(target_class):

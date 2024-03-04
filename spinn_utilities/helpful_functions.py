@@ -60,10 +60,12 @@ def lcm(*numbers) -> int:
     GIGO: If any of the values are anything except positive `int` values
     this function will either produce incorrect results or raise an exception.
 
-    :param numbers: The Positive integers to get the LCM for.
+    :param numbers:
+        The Positive integers to get the Lowest common multiple for.
         This can be zero, one or more int values or
         a singleton which is an iterator (possibly empty) of `int`\\s.
-    :return: the LCM, or 1 if `numbers` is empty or an empty iterator
+    :return: the  Lowest common multiple,
+        or 1 if `numbers` is empty or an empty iterator
     :rtype: int
     :raises TypeError: If any value cannot be interpreted as an integer
     :raises ZeroDivisionError: May be raised if one of the values is zero

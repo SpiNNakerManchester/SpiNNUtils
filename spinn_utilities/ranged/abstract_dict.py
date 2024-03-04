@@ -98,7 +98,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         to create the view is maintained.
 
         .. note::
-            If indexing into a view, you are picking the X'th ID.
+            If indexing into a view, you are picking the Nth ID.
             So if the IDs are `[2,3,4,5]` the `view[2]` will be the data for
             ID `4` and not `2`
 

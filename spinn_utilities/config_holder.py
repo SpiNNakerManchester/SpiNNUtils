@@ -229,7 +229,7 @@ def get_config_float_or_none(section, option) -> Optional[float]:
 
 def get_config_bool(section: str, option: str) -> bool:
     """
-    Get the boolean value of a configuration option.
+    Get the Boolean value of a configuration option.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.
@@ -245,7 +245,7 @@ def get_config_bool(section: str, option: str) -> bool:
 
 def get_config_bool_or_none(section, option) -> Optional[bool]:
     """
-    Get the boolean value of a configuration option.
+    Get the Boolean value of a configuration option.
 
     :param str section: What section to get the option from.
     :param str option: What option to read.

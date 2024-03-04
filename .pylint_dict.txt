@@ -12,31 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Our abbreviations/names
-CFF
-Zenodo
-LCM
-
-# Python types
-AbstractBase
-LogCapture
-RawConfigParser
-ZipFile
-
-# Python packages
-numpy
-mypy
-
-# Our "special" words
-aplx
-config
-configs
-metaclasses
-
-# Python bits
-iter
-
-# Misc
-Github
-haha
-X'th
+# We use a single exception files for all the main repsitories
+# It can be found at:
+# https://github.com/SpiNNakerManchester/SupportScripts/blob/master/actions/pylint/default_dict.txt

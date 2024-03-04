@@ -66,6 +66,7 @@ jobs:
         package: ${{ env.ROOT_PKG }}
         exitcheck: 31 # Action fails on any message
         language: en_GB
+        rcfile: global_strict
     - name: Lint with mypy
       run: mypy $ROOT_PKG
 

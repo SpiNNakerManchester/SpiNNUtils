@@ -29,24 +29,22 @@ jobs:
         python-version: [3.8, 3.9, '3.10', '3.11', '3.12']
 
     steps:
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Checkout
-      uses: actions/checkout@v4
     - name: Checkout SupportScripts
       uses: actions/checkout@v4
       with:
         repository: SpiNNakerManchester/SupportScripts
         path: support
+
+    - name: Shared preparation actions
+      uses: ./support/actions/prepare
+      with:
+        dependencies:
+
     - name: Install pip, etc.
       uses: ./support/actions/python-tools
     - name: Install mypy
       run: pip install mypy
 
-    - name: Run Install
-      uses: ./support/actions/run-install
     - name: Test with pytest
       uses: ./support/actions/pytest
       with:

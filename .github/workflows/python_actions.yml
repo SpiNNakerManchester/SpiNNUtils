@@ -38,7 +38,8 @@ jobs:
     - name: Shared preparation actions
       uses: ./support/actions/prepare
       with:
-        dependencies:
+        python-version: ${{ matrix.python-version }}
+        dependencies: []
 
     - name: Install pip, etc.
       uses: ./support/actions/python-tools

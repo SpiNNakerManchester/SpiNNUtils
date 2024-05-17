@@ -49,6 +49,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         cover-packages: $ROOT_PKG
+        coveralls-token: ${{ secrets.GITHUB_TOKEN }}
         pylint_package: $ROOT_PKG unittests
 
   validate:

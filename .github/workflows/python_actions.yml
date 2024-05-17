@@ -39,7 +39,7 @@ jobs:
       uses: ./support/actions/prepare
       with:
         python-version: ${{ matrix.python-version }}
-        dependencies: []
+        dependencies:
 
     - name: Install pip, etc.
       uses: ./support/actions/python-tools

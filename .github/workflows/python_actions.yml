@@ -23,5 +23,6 @@ jobs:
     with:
       base-package: spinn_utilities
       dependencies:
+      test_directories: unittests
       flake8-packages: spinn_utilities unittests
     secrets: inherit

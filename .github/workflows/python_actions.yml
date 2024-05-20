@@ -17,73 +17,10 @@
 
 name: Python Actions
 on: [push]
-env:
-  ROOT_PKG: spinn_utilities
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    strategy:
-      matrix:
-        python-version: [3.8, 3.9, '3.10', '3.11', '3.12']
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Checkout SupportScripts
-      uses: actions/checkout@v4
-      with:
-        repository: SpiNNakerManchester/SupportScripts
-        path: support
-
-    - name: Preparation actions
-      uses: ./support/actions/prepare
-      with:
-        python-version: ${{ matrix.python-version }}
-        dependencies:
-
-    - name: Unittests and style checks
-      uses: ./support/actions/test-and-check
-      with:
-        python-version: ${{ matrix.python-version }}
-        cover-packages: $ROOT_PKG
-        coveralls-token: ${{ secrets.GITHUB_TOKEN }}
-        pylint_package: $ROOT_PKG unittests
-
-  validate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    strategy:
-      matrix:
-        python-version: [3.12]
-
-    steps:
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Checkout SupportScripts
-      uses: actions/checkout@v4
-      with:
-        repository: SpiNNakerManchester/SupportScripts
-        path: support
-    - name: Install pip, etc.
-      uses: ./support/actions/python-tools
-    - name: Setup
-      uses: ./support/actions/run-install
-
-    # Actual valiation steps
-    - name: Run rat copyright enforcement
-      uses: ./support/actions/check-copyrights
-      with:
-        config_file: rat_asl20.xml
-    - name: Build documentation with sphinx
-      uses: ./support/actions/sphinx
-      with:
-        directory: doc/source
-    - name: Validate CITATION.cff
-      uses: dieghernan/cff-validator@main
+  call-python-checks:
+    uses: SpiNNakerManchester/SupportScripts/.github/workflows/python_checks.yml@main
+    with:
+      base-package: spinn_utilities
+      dependencies:
+    secrets: inherit

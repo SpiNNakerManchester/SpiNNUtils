@@ -18,7 +18,7 @@
 name: Python Actions
 on: [push]
 jobs:
-  call-python-checks:
+  call:
     uses: SpiNNakerManchester/SupportScripts/.github/workflows/python_checks.yml@main
     with:
       base-package: spinn_utilities

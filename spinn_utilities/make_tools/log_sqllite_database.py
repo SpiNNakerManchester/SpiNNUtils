@@ -14,6 +14,7 @@
 
 import os
 import sqlite3
+import shutil
 import sys
 import time
 from typing import Optional, Tuple
@@ -62,6 +63,13 @@ class LogSqlLiteDatabase(AbstractContextManager):
             script = sys.modules[self.__module__].__file__
             directory = os.path.dirname(script)
             database_file = os.path.join(directory, DB_FILE_NAME)
+
+        if not new_dict and not os.path.exists(database_file):
+            external_files = os.environ.get('EXTERNAL_BINARIES', None)
+            if external_files is not None:
+                source_file = os.path.join(external_files, external_files)
+                if os.path.exists(source_file):
+                    shutil.copyfile(source_file, database_file)
 
         if not new_dict and not os.path.exists(database_file):
             message = f"Unable to locate c_logs_dict at {database_file}. "

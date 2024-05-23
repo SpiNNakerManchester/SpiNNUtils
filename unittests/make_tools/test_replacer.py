@@ -29,6 +29,9 @@ Note: if weird,file.c changes you may have to manually fix the tests
 import math
 import unittest
 import os
+import shutil
+import tempfile
+from spinn_utilities.make_tools.log_sqllite_database import DB_FILE_NAME
 from spinn_utilities.make_tools.replacer import Replacer
 from spinn_utilities.make_tools.file_converter import TOKEN
 
@@ -52,6 +55,18 @@ class TestReplacer(unittest.TestCase):
             raise NotImplementedError("Should not work!")
         except Exception as ex:
             assert ("Unable to locate c_logs_dict" in str(ex))
+
+    def test_external_directory(self):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            trg = os.path.join(tmpdirname, DB_FILE_NAME)
+            src = os.path.join(PATH, "replacer.sqlite3")
+            shutil.copyfile(src, trg)
+            os.environ["EXTERNAL_BINARIES"] = tmpdirname
+            os.environ["C_LOGS_DICT"] = str(
+                os.path.join(tmpdirname, "copied.sqlite3"))
+            with Replacer() as replacer:
+                new = replacer.replace("5")
+            assert ("[INFO] (weird,file.c: 37): this is ok" == new)
 
     def test_not_there_new(self):
         # Point C_LOGS_DICT to somewhere that does not exist

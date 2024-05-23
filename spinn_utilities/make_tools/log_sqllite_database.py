@@ -65,7 +65,8 @@ class LogSqlLiteDatabase(AbstractContextManager):
             database_file = os.path.join(directory, DB_FILE_NAME)
 
         if not new_dict and not os.path.exists(database_file):
-            external_files = os.environ.get('EXTERNAL_BINARIES', None)
+            external_files = os.environ.get(
+                'SPINNAKER_EXTERNAL_BINARIES', None)
             if external_files is not None:
                 #source_file = os.path.join(
                 #    os.path.expanduser("~"), external_files, DB_FILE_NAME)

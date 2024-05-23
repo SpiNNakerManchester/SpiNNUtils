@@ -67,7 +67,8 @@ class LogSqlLiteDatabase(AbstractContextManager):
         if not new_dict and not os.path.exists(database_file):
             external_files = os.environ.get('EXTERNAL_BINARIES', None)
             if external_files is not None:
-                source_file = os.path.join(external_files, DB_FILE_NAME)
+                source_file = os.path.join(
+                    os.path.expanduser("~"), external_files, DB_FILE_NAME)
                 if os.path.exists(source_file):
                     shutil.copyfile(source_file, database_file)
 

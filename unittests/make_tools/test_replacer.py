@@ -57,11 +57,12 @@ class TestReplacer(unittest.TestCase):
             assert ("Unable to locate c_logs_dict" in str(ex))
 
     def test_external_directory(self):
-        with tempfile.TemporaryDirectory() as tmpdirname:
+        home = os.path.expanduser("~")
+        with tempfile.TemporaryDirectory(dir=home) as tmpdirname:
             trg = os.path.join(tmpdirname, DB_FILE_NAME)
             src = os.path.join(PATH, "replacer.sqlite3")
             shutil.copyfile(src, trg)
-            os.environ["EXTERNAL_BINARIES"] = tmpdirname
+            os.environ["EXTERNAL_BINARIES"] = os.path.basename(tmpdirname)
             os.environ["C_LOGS_DICT"] = str(
                 os.path.join(tmpdirname, "copied.sqlite3"))
             with Replacer() as replacer:

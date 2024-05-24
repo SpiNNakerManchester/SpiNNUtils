@@ -95,6 +95,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
             return str(os.environ['C_LOGS_DICT'])
 
         script = sys.modules[self.__module__].__file__
+        assert script is not None
         directory = os.path.dirname(script)
         return os.path.join(directory, DB_FILE_NAME)
 

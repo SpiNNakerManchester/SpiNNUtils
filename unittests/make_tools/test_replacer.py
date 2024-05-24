@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """
-These test depend on unittests/make_tools/replacer_dict/logs.sqlite3
+These test depend on unittests/make_tools/replacer.sqlite3
 
 The replacer.sqlite3 file in this directory is created by
 unittests/make_tools/test_file_convert.py method test_convert
@@ -60,16 +60,26 @@ class TestReplacer(unittest.TestCase):
 
     def test_external_directory(self):
         unittest_setup()
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            trg = os.path.join(tmpdirname, DB_FILE_NAME)
-            src = os.path.join(PATH, "replacer.sqlite3")
-            shutil.copyfile(src, trg)
-            set_config("Mapping", "external_binaries", tmpdirname)
-            os.environ["C_LOGS_DICT"] = str(
-                os.path.join(tmpdirname, "copied.sqlite3"))
-            with Replacer() as replacer:
-                new = replacer.replace("5")
+        external_binaries = os.path.join(PATH, "external_binaries")
+        c_log_dict = os.path.join(external_binaries, "copied.sqlite3")
+        try:
+            if os.path.exists(c_log_dict):
+               os.remove(c_log_dict)
+        except Exception as ex:
+            if os.path.exists(c_log_dict):
+                raise ex
+        set_config("Mapping", "external_binaries", external_binaries )
+        os.environ["C_LOGS_DICT"] = c_log_dict
+        with Replacer() as replacer:
+            new = replacer.replace("5")
             assert ("[INFO] (weird,file.c: 37): this is ok" == new)
+        self.assertTrue(os.path.exists(c_log_dict))
+        try:
+            if os.path.exists(c_log_dict):
+               os.remove(c_log_dict)
+        except Exception as ex:
+            if os.path.exists(c_log_dict):
+                raise ex
 
     def test_external_empty(self):
         unittest_setup()

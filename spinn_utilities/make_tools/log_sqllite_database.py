@@ -92,7 +92,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         :rtype: str
         """
         if 'C_LOGS_DICT' in os.environ:
-            return os.environ['C_LOGS_DICT']
+            return str(os.environ['C_LOGS_DICT'])
 
         script = sys.modules[self.__module__].__file__
         directory = os.path.dirname(script)

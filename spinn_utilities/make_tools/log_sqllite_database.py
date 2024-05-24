@@ -85,7 +85,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         """
         Finds the database file path.
 
-        If environment variable C_LOGS_DICT exixts that is used,
+        If environment variable C_LOGS_DICT exists that is used,
         otherwise the default path in this directory is used.
 
         :return: Absolute path to where the database file is or will be
@@ -103,13 +103,13 @@ class LogSqlLiteDatabase(AbstractContextManager):
         Adds a possible extra part to the error message.
 
         :return: A likely empty string
-        :rtpye: str
+        :rtype: str
         """
         return ""
 
     def _check_database_file(self, database_file: str) -> None:
         """
-        Checks the databse file exists:
+        Checks the database file exists:
 
         :param str database_file: Absolute path to the database file
         :raises FileNotFoundErrorL If the file does not exists

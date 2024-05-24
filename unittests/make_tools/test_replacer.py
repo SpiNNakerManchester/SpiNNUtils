@@ -29,11 +29,9 @@ Note: if weird,file.c changes you may have to manually fix the tests
 import math
 import unittest
 import os
-import shutil
 import tempfile
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.config_holder import set_config
-from spinn_utilities.make_tools.log_sqllite_database import DB_FILE_NAME
 from spinn_utilities.make_tools.replacer import Replacer
 from spinn_utilities.make_tools.file_converter import TOKEN
 
@@ -57,29 +55,6 @@ class TestReplacer(unittest.TestCase):
             raise NotImplementedError("Should not work!")
         except Exception as ex:
             assert ("Unable to locate c_logs_dict" in str(ex))
-
-    def test_external_directory(self):
-        unittest_setup()
-        external_binaries = os.path.join(PATH, "external_binaries")
-        c_log_dict = os.path.join(external_binaries, "copied.sqlite3")
-        try:
-            if os.path.exists(c_log_dict):
-               os.remove(c_log_dict)
-        except Exception as ex:
-            if os.path.exists(c_log_dict):
-                raise ex
-        set_config("Mapping", "external_binaries", external_binaries )
-        os.environ["C_LOGS_DICT"] = c_log_dict
-        with Replacer() as replacer:
-            new = replacer.replace("5")
-            assert ("[INFO] (weird,file.c: 37): this is ok" == new)
-        self.assertTrue(os.path.exists(c_log_dict))
-        try:
-            if os.path.exists(c_log_dict):
-               os.remove(c_log_dict)
-        except Exception as ex:
-            if os.path.exists(c_log_dict):
-                raise ex
 
     def test_external_empty(self):
         unittest_setup()

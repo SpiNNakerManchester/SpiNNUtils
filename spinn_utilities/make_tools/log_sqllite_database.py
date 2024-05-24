@@ -14,7 +14,6 @@
 
 import os
 import sqlite3
-import shutil
 import sys
 import time
 from typing import Optional, Tuple
@@ -58,30 +57,9 @@ class LogSqlLiteDatabase(AbstractContextManager):
         """
         # To Avoid an Attribute error on close after an exception
         self._db = None
-        database_file = os.environ.get('C_LOGS_DICT', None)
-        if database_file is None:
-            script = sys.modules[self.__module__].__file__
-            directory = os.path.dirname(script)
-            database_file = os.path.join(directory, DB_FILE_NAME)
-
-        if not new_dict and not os.path.exists(database_file):
-            external_files = os.environ.get(
-                'SPINNAKER_EXTERNAL_BINARIES', None)
-            if external_files is not None:
-                #source_file = os.path.join(
-                #    os.path.expanduser("~"), external_files, DB_FILE_NAME)
-                source_file = os.path.join(external_files, DB_FILE_NAME)
-
-                if os.path.exists(source_file):
-                    shutil.copyfile(source_file, database_file)
-
-        if not new_dict and not os.path.exists(database_file):
-            message = f"Unable to locate c_logs_dict at {database_file}. "
-            if 'C_LOGS_DICT' in os.environ:
-                message += (
-                    "This came from the environment variable 'C_LOGS_DICT'. ")
-            message += "Please rebuild the C code."
-            raise FileNotFoundError(message)
+        database_file = self._database_file()
+        if not new_dict:
+            self._check_database_file(database_file)
 
         try:
             self._db = sqlite3.connect(database_file)
@@ -102,6 +80,49 @@ class LogSqlLiteDatabase(AbstractContextManager):
             else:
                 message += "Please rebuild the C code."
             raise FileNotFoundError(message) from ex
+
+    def _database_file(self) -> str:
+        """
+        Finds the database file path.
+
+        If environment variable C_LOGS_DICT exixts that is used,
+        otherwise the default path in this directory is used.
+
+        :return: Absolute path to where the database file is or will be
+        :rtype: str
+        """
+        if 'C_LOGS_DICT' in os.environ:
+            return os.environ['C_LOGS_DICT']
+
+        script = sys.modules[self.__module__].__file__
+        directory = os.path.dirname(script)
+        return os.path.join(directory, DB_FILE_NAME)
+
+    def _extra_database_error_message(self) -> str:
+        """
+        Adds a possible extra part to the error message.
+
+        :return: A likely empty string
+        :rtpye: str
+        """
+        return ""
+
+    def _check_database_file(self, database_file: str) -> None:
+        """
+        Checks the databse file exists:
+
+        :param str database_file: Absolute path to the database file
+        :raises FileNotFoundErrorL If the file does not exists
+        """
+        if os.path.exists(database_file):
+            return
+        message = f"Unable to locate c_logs_dict at {database_file}. "
+        if 'C_LOGS_DICT' in os.environ:
+            message += (
+                "This came from the environment variable 'C_LOGS_DICT'. ")
+        message += self._extra_database_error_message()
+        message += "Please rebuild the C code."
+        raise FileNotFoundError(message)
 
     def __del__(self):
         self.close()

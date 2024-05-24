@@ -13,13 +13,17 @@
 # limitations under the License.
 
 import logging
+import os
+import shutil
 import struct
 import sys
 from typing import Optional, Tuple
+from spinn_utilities.overrides import overrides
+from spinn_utilities.config_holder import get_config_str_or_none
 from spinn_utilities.log import FormatAdapter
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
-from .log_sqllite_database import LogSqlLiteDatabase
+from .log_sqllite_database import DB_FILE_NAME, LogSqlLiteDatabase
 
 logger = FormatAdapter(logging.getLogger(__name__))
 
@@ -33,6 +37,29 @@ class Replacer(LogSqlLiteDatabase):
     """
     Performs replacements.
     """
+
+    @overrides(LogSqlLiteDatabase._database_file)
+    def _database_file(self) -> str:
+        database_file = super()._database_file()
+        if not os.path.isfile(database_file):
+            external_binaries = get_config_str_or_none(
+                "Mapping", "external_binaries")
+            if external_binaries is not None:
+                source_file = os.path.join(external_binaries, DB_FILE_NAME)
+                if os.path.exists(source_file):
+
+                    shutil.copyfile(source_file, database_file)
+        return database_file
+
+    @overrides(LogSqlLiteDatabase._extra_database_error_message)
+    def _extra_database_error_message(self) -> str:
+        extra__binaries = get_config_str_or_none(
+            "Mapping", "external_binaries")
+        if extra__binaries is None:
+            return ""
+        else:
+            return (f"The cfg {extra__binaries=} "
+                    f"also does not contain a {DB_FILE_NAME}. ")
 
     def __enter__(self):
         return self

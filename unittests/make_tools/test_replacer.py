@@ -31,6 +31,8 @@ import unittest
 import os
 import shutil
 import tempfile
+from spinn_utilities.config_setup import unittest_setup
+from spinn_utilities.config_holder import set_config
 from spinn_utilities.make_tools.log_sqllite_database import DB_FILE_NAME
 from spinn_utilities.make_tools.replacer import Replacer
 from spinn_utilities.make_tools.file_converter import TOKEN
@@ -57,19 +59,29 @@ class TestReplacer(unittest.TestCase):
             assert ("Unable to locate c_logs_dict" in str(ex))
 
     def test_external_directory(self):
-        #home = os.path.expanduser("~")
-        #with tempfile.TemporaryDirectory(dir=home) as tmpdirname:
+        unittest_setup()
         with tempfile.TemporaryDirectory() as tmpdirname:
             trg = os.path.join(tmpdirname, DB_FILE_NAME)
             src = os.path.join(PATH, "replacer.sqlite3")
             shutil.copyfile(src, trg)
-            #os.environ["EXTERNAL_BINARIES"] = os.path.basename(tmpdirname)
-            os.environ["EXTERNAL_BINARIES"] = tmpdirname
+            set_config("Mapping", "external_binaries", tmpdirname)
             os.environ["C_LOGS_DICT"] = str(
                 os.path.join(tmpdirname, "copied.sqlite3"))
             with Replacer() as replacer:
                 new = replacer.replace("5")
             assert ("[INFO] (weird,file.c: 37): this is ok" == new)
+
+    def test_external_empty(self):
+        unittest_setup()
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            set_config("Mapping", "external_binaries", tmpdirname)
+            os.environ["C_LOGS_DICT"] = str(
+                os.path.join(tmpdirname, "missing.sqlite3"))
+            try:
+                Replacer()
+                raise ValueError("Should not get here")
+            except FileNotFoundError as ex:
+                self.assertIn(tmpdirname, str(ex))
 
     def test_not_there_new(self):
         # Point C_LOGS_DICT to somewhere that does not exist

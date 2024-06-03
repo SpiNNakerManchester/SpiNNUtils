@@ -47,6 +47,7 @@ class TestReplacer(unittest.TestCase):
         assert ("[INFO] (weird,file.c: 37): this is ok" == new)
 
     def test_not_there_existing(self):
+        unittest_setup()
         # Point C_LOGS_DICT to somewhere that does not exist
         os.environ["C_LOGS_DICT"] = str(
             os.path.join(PATH, "foo", "not_there.sqlite3"))

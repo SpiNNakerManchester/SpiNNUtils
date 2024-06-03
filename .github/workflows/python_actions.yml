@@ -25,6 +25,6 @@ jobs:
       test_directories: unittests
       coverage-package: spinn_utilities
       flake8-packages: spinn_utilities unittests
-      pylint_packages: spinn_utilities
+      pylint-packages: spinn_utilities
       mypy-packages: spinn_utilities
     secrets: inherit

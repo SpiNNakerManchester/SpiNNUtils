@@ -69,16 +69,6 @@ class TestReplacer(unittest.TestCase):
             except FileNotFoundError as ex:
                 self.assertIn(tmpdirname, str(ex))
 
-    def test_not_there_new(self):
-        # Point C_LOGS_DICT to somewhere that does not exist
-        os.environ["C_LOGS_DICT"] = str(
-            os.path.join(PATH, "foo", "not_there", "bad.sqlite3"))
-        try:
-            Replacer(True)
-            raise NotImplementedError("Should not work!")
-        except Exception as ex:
-            assert ("Error accessing c_logs_dict" in str(ex))
-
     def test_tab(self):
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:

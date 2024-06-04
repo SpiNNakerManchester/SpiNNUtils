@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """
-These test depend on unittests/make_tools/replacer_dict/logs.sqlite3
+These test depend on unittests/make_tools/replacer.sqlite3
 
 The replacer.sqlite3 file in this directory is created by
 unittests/make_tools/test_file_convert.py method test_convert
@@ -29,6 +29,9 @@ Note: if weird,file.c changes you may have to manually fix the tests
 import math
 import unittest
 import os
+import tempfile
+from spinn_utilities.config_setup import unittest_setup
+from spinn_utilities.config_holder import set_config
 from spinn_utilities.make_tools.replacer import Replacer
 from spinn_utilities.make_tools.file_converter import TOKEN
 
@@ -44,6 +47,7 @@ class TestReplacer(unittest.TestCase):
         assert ("[INFO] (weird,file.c: 37): this is ok" == new)
 
     def test_not_there_existing(self):
+        unittest_setup()
         # Point C_LOGS_DICT to somewhere that does not exist
         os.environ["C_LOGS_DICT"] = str(
             os.path.join(PATH, "foo", "not_there.sqlite3"))
@@ -53,15 +57,17 @@ class TestReplacer(unittest.TestCase):
         except Exception as ex:
             assert ("Unable to locate c_logs_dict" in str(ex))
 
-    def test_not_there_new(self):
-        # Point C_LOGS_DICT to somewhere that does not exist
-        os.environ["C_LOGS_DICT"] = str(
-            os.path.join(PATH, "foo", "not_there", "bad.sqlite3"))
-        try:
-            Replacer(True)
-            raise NotImplementedError("Should not work!")
-        except Exception as ex:
-            assert ("Error accessing c_logs_dict" in str(ex))
+    def test_external_empty(self):
+        unittest_setup()
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            set_config("Mapping", "external_binaries", tmpdirname)
+            os.environ["C_LOGS_DICT"] = str(
+                os.path.join(tmpdirname, "missing.sqlite3"))
+            try:
+                Replacer()
+                raise ValueError("Should not get here")
+            except FileNotFoundError as ex:
+                self.assertIn(tmpdirname, str(ex))
 
     def test_tab(self):
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))

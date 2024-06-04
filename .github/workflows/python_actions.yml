@@ -21,8 +21,10 @@ jobs:
   call:
     uses: SpiNNakerManchester/SupportScripts/.github/workflows/python_checks.yml@main
     with:
-      base-package: spinn_utilities
       dependencies:
       test_directories: unittests
+      coverage-package: spinn_utilities
       flake8-packages: spinn_utilities unittests
+      pylint-packages: spinn_utilities
+      mypy-packages: spinn_utilities
     secrets: inherit

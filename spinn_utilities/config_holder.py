@@ -342,18 +342,24 @@ def _check_python_file(py_path: str):
     :raises ConfigException: If an unexpected or uncovered `get_config` found
     """
     with open(py_path, 'r', encoding="utf-8") as py_file:
-        lines = py_file.readlines()
+        lines = list(py_file)
         for index, line in enumerate(lines):
-            if "get_config_bool(" in line:
+            if not "get_config" in line:
+                continue
+            if (("get_config_bool(" in line) or
+                    ("get_config_bool_or_none(" in line)):
                 _check_lines(
-                    py_path, line, lines, index, get_config_bool_or_none)
-            if "get_config_float(" in line:
+                        py_path, line, lines, index, get_config_bool_or_none)
+            if (("get_config_float(" in line) or
+                    ("get_config_float_or_none(" in line)):
                 _check_lines(
                     py_path, line, lines, index, get_config_float_or_none)
-            if "get_config_int(" in line:
+            if (("get_config_int(" in line) or
+                    ("get_config_int_or_none(" in line)):
                 _check_lines(
                     py_path, line, lines, index, get_config_int_or_none)
-            if "get_config_str(" in line:
+            if (("get_config_str(" in line) or
+                    ("get_config_str_or_none(" in line)):
                 _check_lines(
                     py_path, line, lines, index, get_config_str_or_none)
             if "get_config_str_list(" in line:

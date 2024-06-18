@@ -366,14 +366,6 @@ def _check_python_file(py_path: str):
                 _check_lines(py_path, line, lines, index, get_config_str_list)
 
 
-def _check_python_files(directory: str):
-    for root, _, files in os.walk(directory):
-        for file_name in files:
-            if file_name.endswith(".py"):
-                py_path = os.path.join(root, file_name)
-                _check_python_file(py_path)
-
-
 def _find_double_defaults(repeaters: Optional[Collection[str]] = ()):
     """
     Testing function to identify any configuration options in multiple default

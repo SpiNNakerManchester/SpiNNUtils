@@ -338,7 +338,7 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
             return
         try:
             method(section, option)
-        except Exception as original:
+        except Exception:
             raise ConfigException(
                 f"failed in line:{index} of file: {py_path} with "
                 f"section:{section} option:{option}")

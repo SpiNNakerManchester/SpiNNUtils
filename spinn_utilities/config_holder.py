@@ -326,9 +326,10 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
     for i in range(1, len(parts)):
         try:
             option = parts[i].strip()
-        except IndexError:
+        except IndexError as original:
             raise ConfigException(
-                f"failed in line:{index} of file: {py_path} with {line}")
+                f"failed in line:{index} of file: {py_path} with {line}") \
+                from original
         if option[0] == "'":
             option = option.replace("'", "")
         elif option[0] == '"':
@@ -338,10 +339,10 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
             return
         try:
             method(section, option)
-        except Exception:
+        except Exception as original:
             raise ConfigException(
                 f"failed in line:{index} of file: {py_path} with "
-                f"section:{section} option:{option}")
+                f"section:{section} option:{option}") from original
         used_cfgs[section].add(option)
 
 

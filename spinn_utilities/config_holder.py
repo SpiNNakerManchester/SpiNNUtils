@@ -344,41 +344,6 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
                 f"section:{section} option:{option}")
         used_cfgs[section].add(option)
 
-def _check_get_lines(py_path: str, line: str, lines: List[str], index: int,
-                 method: Callable[[str, str], Any],
-                 used_cfgs: Dict[str, Set[str]]):
-    """
-    Support for `_check_python_file`. Gets section and option name.
-
-    :param str line: Line with get_config call
-    :param list(str) lines: All lines in the file
-    :param int index: index of line with `get_config` call
-    :param method: Method to call to check cfg
-    :param dict(str), set(str) used_cfgs:
-        Dict of used cfg options to be added to
-    :raises ConfigException: If an unexpected or uncovered `get_config` found
-    """
-    while ")" not in line:
-        index += 1
-        line += lines[index]
-    parts = line[line.find("(", line.find("get_config")) + 1:
-                 line.find(")")].split(",")
-    section = parts[0].strip().replace("'", "").replace('"', '')
-    option = parts[1].strip()
-    if option[0] == "'":
-        option = option.replace("'", "")
-    elif option[0] == '"':
-        option = option.replace('"', '')
-    else:
-        print(line)
-        return
-    try:
-        method(section, option)
-    except Exception as original:
-        raise ConfigException(
-            f"failed in line:{index} of file: {py_path} with "
-            f"section:{section} option:{option}") from original
-    used_cfgs[section].add(option)
 
 def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]]):
     """
@@ -391,14 +356,14 @@ def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]]):
     with open(py_path, 'r', encoding="utf-8") as py_file:
         lines = list(py_file)
         for index, line in enumerate(lines):
-            if (("skip_if_cfg_false" in line) or
-                   ("skip_if_cfgs_false" in line)):
+            if ("skip_if_cfg" in line):
                 _check_lines(py_path, line, lines, index,
                              get_config_bool_or_none, used_cfgs, "skip_if_cfg")
             if ("configuration.get" in line):
                 _check_lines(py_path, line, lines, index,
-                             get_config_bool_or_none, used_cfgs, "configuration.get")
-            if not "get_config" in line:
+                             get_config_bool_or_none, used_cfgs,
+                             "configuration.get")
+            if "get_config" not in line:
                 continue
             if (("get_config_bool(" in line) or
                     ("get_config_bool_or_none(" in line)):
@@ -550,4 +515,3 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
             if option not in found_options:
                 raise ConfigException(
                     f"cfg {section=} {option=} was never used")
-

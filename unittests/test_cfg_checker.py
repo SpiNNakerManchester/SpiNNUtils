@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import unittest
 import spinn_utilities
 from spinn_utilities.config_holder import run_config_checks

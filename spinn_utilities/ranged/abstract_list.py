@@ -35,7 +35,8 @@ IdsType: TypeAlias = Union[Sequence[int], NDArray[numpy.integer]]
 
 def _eq(x: Any, y: Any) -> bool:
     # Lies!
-    return numpy.array_equal(cast(float, x), cast(float, y))
+    return numpy.array_equal(numpy.atleast_1d(cast(float, x)),
+                             numpy.atleast_1d(cast(float, y)))
 
 
 def _is_zero(value: Any) -> bool:

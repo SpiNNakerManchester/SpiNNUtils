@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections import defaultdict
 import logging
 import os
-from typing import Any, Callable, Collection, List, Optional, Union
+from typing import Any, Callable, Collection, Dict, List, Optional, Set, Union
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
@@ -303,13 +304,58 @@ def config_options(section: str) -> List[str]:
 
 
 def _check_lines(py_path: str, line: str, lines: List[str], index: int,
-                 method: Callable[[str, str], Any]):
+                 method: Callable[[str, str], Any],
+                 used_cfgs: Dict[str, Set[str]], start):
     """
     Support for `_check_python_file`. Gets section and option name.
 
     :param str line: Line with get_config call
     :param list(str) lines: All lines in the file
     :param int index: index of line with `get_config` call
+    :param method: Method to call to check cfg
+    :param dict(str), set(str) used_cfgs:
+        Dict of used cfg options to be added to
+    :raises ConfigException: If an unexpected or uncovered `get_config` found
+    """
+    while ")" not in line:
+        index += 1
+        line += lines[index]
+    parts = line[line.find("(", line.find(start)) + 1:
+                 line.find(")")].split(",")
+    section = parts[0].strip().replace("'", "").replace('"', '')
+    for i in range(1, len(parts)):
+        try:
+            option = parts[i].strip()
+        except IndexError:
+            raise ConfigException(
+                f"failed in line:{index} of file: {py_path} with {line}")
+        if option[0] == "'":
+            option = option.replace("'", "")
+        elif option[0] == '"':
+            option = option.replace('"', '')
+        else:
+            print(line)
+            return
+        try:
+            method(section, option)
+        except Exception as original:
+            raise ConfigException(
+                f"failed in line:{index} of file: {py_path} with "
+                f"section:{section} option:{option}")
+        used_cfgs[section].add(option)
+
+def _check_get_lines(py_path: str, line: str, lines: List[str], index: int,
+                 method: Callable[[str, str], Any],
+                 used_cfgs: Dict[str, Set[str]]):
+    """
+    Support for `_check_python_file`. Gets section and option name.
+
+    :param str line: Line with get_config call
+    :param list(str) lines: All lines in the file
+    :param int index: index of line with `get_config` call
+    :param method: Method to call to check cfg
+    :param dict(str), set(str) used_cfgs:
+        Dict of used cfg options to be added to
     :raises ConfigException: If an unexpected or uncovered `get_config` found
     """
     while ")" not in line:
@@ -332,38 +378,47 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
         raise ConfigException(
             f"failed in line:{index} of file: {py_path} with "
             f"section:{section} option:{option}") from original
+    used_cfgs[section].add(option)
 
-
-def _check_python_file(py_path: str):
+def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]]):
     """
     A testing function to check that all the `get_config` calls work.
 
     :param str py_path: path to file to be checked
+    :param used_cfgs: dict of cfg options found
     :raises ConfigException: If an unexpected or uncovered `get_config` found
     """
     with open(py_path, 'r', encoding="utf-8") as py_file:
         lines = list(py_file)
         for index, line in enumerate(lines):
+            if (("skip_if_cfg_false" in line) or
+                   ("skip_if_cfgs_false" in line)):
+                _check_lines(py_path, line, lines, index,
+                             get_config_bool_or_none, used_cfgs, "skip_if_cfg")
+            if ("configuration.get" in line):
+                _check_lines(py_path, line, lines, index,
+                             get_config_bool_or_none, used_cfgs, "configuration.get")
             if not "get_config" in line:
                 continue
             if (("get_config_bool(" in line) or
                     ("get_config_bool_or_none(" in line)):
-                _check_lines(
-                        py_path, line, lines, index, get_config_bool_or_none)
+                _check_lines(py_path, line, lines, index,
+                             get_config_bool_or_none, used_cfgs, "get_config")
             if (("get_config_float(" in line) or
                     ("get_config_float_or_none(" in line)):
-                _check_lines(
-                    py_path, line, lines, index, get_config_float_or_none)
+                _check_lines(py_path, line, lines, index,
+                             get_config_float_or_none, used_cfgs, "get_config")
             if (("get_config_int(" in line) or
                     ("get_config_int_or_none(" in line)):
-                _check_lines(
-                    py_path, line, lines, index, get_config_int_or_none)
+                _check_lines(py_path, line, lines, index,
+                             get_config_int_or_none, used_cfgs, "get_config")
             if (("get_config_str(" in line) or
                     ("get_config_str_or_none(" in line)):
-                _check_lines(
-                    py_path, line, lines, index, get_config_str_or_none)
+                _check_lines(py_path, line, lines, index,
+                             get_config_str_or_none, used_cfgs, "get_config")
             if "get_config_str_list(" in line:
-                _check_lines(py_path, line, lines, index, get_config_str_list)
+                _check_lines(py_path, line, lines, index,
+                             get_config_str_list, used_cfgs, "get_config")
 
 
 def _find_double_defaults(repeaters: Optional[Collection[str]] = ()):
@@ -464,6 +519,7 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
     config1 = CamelCaseConfigParser()
     config1.read(__default_config_files)
 
+    used_cfgs: Dict[str, Set[str]] = defaultdict(set)
     for directory in directories:
         if not os.path.isdir(directory):
             raise ConfigException(f"Unable find {directory}")
@@ -479,4 +535,19 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
                     _check_cfg_file(config1, cfg_path)
                 elif file_name.endswith(".py"):
                     py_path = os.path.join(root, file_name)
-                    _check_python_file(py_path)
+                    _check_python_file(py_path, used_cfgs)
+
+    config2 = CamelCaseConfigParser()
+    config2.read(__default_config_files[-1])
+    for section in config2:
+        if section not in used_cfgs:
+            if section == config1.default_section:
+                continue
+            raise ConfigException(f"cfg {section=} was never used")
+        found_options = used_cfgs[section]
+        found_options = set(map(config2.optionxform, found_options))
+        for option in config2.options(section):
+            if option not in found_options:
+                raise ConfigException(
+                    f"cfg {section=} {option=} was never used")
+

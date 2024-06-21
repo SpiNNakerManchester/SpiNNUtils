@@ -463,13 +463,21 @@ def _check_cfgs(path: str):
 
 def run_config_checks(directories: Union[str, Collection[str]], *,
                       exceptions: Union[str, Collection[str]] = (),
-                      repeaters: Optional[Collection[str]] = ()):
+                      repeaters: Optional[Collection[str]] = (),
+                      check_all_used:bool = True):
     """
     Master test.
+
+    Checks that all cfg options read have a default value in one of the
+    default files.
+
+    Checks that all default options declared in the current repository
+    are used in that repository.
 
     :param module:
     :param exceptions:
     :param repeaters:
+    :param bool check_all_used: Toggle for the used test.
     :raises ConfigException: If an incorrect directory passed in
     """
     if isinstance(directories, str):
@@ -502,6 +510,9 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
                 elif file_name.endswith(".py"):
                     py_path = os.path.join(root, file_name)
                     _check_python_file(py_path, used_cfgs)
+
+    if not check_all_used:
+        return
 
     config2 = CamelCaseConfigParser()
     config2.read(__default_config_files[-1])

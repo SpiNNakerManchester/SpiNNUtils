@@ -464,7 +464,7 @@ def _check_cfgs(path: str):
 def run_config_checks(directories: Union[str, Collection[str]], *,
                       exceptions: Union[str, Collection[str]] = (),
                       repeaters: Optional[Collection[str]] = (),
-                      check_all_used:bool = True):
+                      check_all_used: bool = True):
     """
     Master test.
 

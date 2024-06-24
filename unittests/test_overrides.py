@@ -151,7 +151,7 @@ def test_undefaults_super_param():
         class Sub(Base):
             @overrides(Base.foodef)
             def foodef(self, x: Any, y: Any, z: Any) -> List[Any]:
-                return (z, y, x)
+                return [z, y, x]
     assert str(e.value) == BAD_DEFS
 
 

@@ -18,7 +18,7 @@ import pytest
 import random
 import configparser
 import unittests  # CRITICAL: *THIS* package!
-from testfixtures import LogCapture
+from testfixtures import LogCapture  # type: ignore[import]
 import spinn_utilities.conf_loader as conf_loader
 import spinn_utilities.config_holder as config_holder
 from spinn_utilities.configs import (

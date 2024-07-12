@@ -151,7 +151,7 @@ def test_undefaults_super_param():
         class Sub(Base):
             @overrides(Base.foodef)
             def foodef(self, x: Any, y: Any, z: Any) -> List[Any]:
-                return (z, y, x)
+                return [z, y, x]
     assert str(e.value) == BAD_DEFS
 
 
@@ -287,7 +287,7 @@ def test_sister_different1() -> None:
         class Child(ParentTwo, ParentOne):
             @overrides(ParentTwo.foo)
             @overrides(ParentOne.foo)
-            def foo(self) -> int:
+            def foo(self) -> int:  # type: ignore
                 return 1
     except AttributeError:
         pass
@@ -311,7 +311,7 @@ def test_sister_different2() -> None:
         class Child(ParentTwo, ParentOne):
             @overrides(ParentOne.foo)
             @overrides(ParentTwo.foo)
-            def foo(self) -> int:
+            def foo(self) -> int:  # type: ignore
                 return 1
     except AttributeError:
         pass

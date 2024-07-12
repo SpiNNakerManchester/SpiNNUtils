@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from testfixtures import LogCapture
+from testfixtures import LogCapture  # type: ignore[import]
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.progress_bar import (
     ProgressBar, DummyProgressBar, _EnhancedProgressBar as

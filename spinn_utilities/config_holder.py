@@ -119,12 +119,13 @@ def load_config() -> CamelCaseConfigParser:
         raise ConfigException("No default configs set")
     if __config_file:
         __config = conf_loader.load_config(
-            filename=__config_file, defaults=__default_config_files,
-            config_parsers=[("Logging", logging_parser)])
+            filename=__config_file, defaults=__default_config_files)
     else:
         __config = CamelCaseConfigParser()
         for default in __default_config_files:
             __config.read(default)
+
+    logging_parser(__config)
     return __config
 
 

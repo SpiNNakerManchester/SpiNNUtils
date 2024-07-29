@@ -95,7 +95,7 @@ def logging_parser(config: CamelCaseConfigParser):
     try:
         if (has_config_option("Logging", "instantiate") and
                 get_config_bool("Logging", "instantiate")):
-            level = logging.INFO
+            level = "INFO"
             if has_config_option("Logging", "default"):
                 level = get_config_str("Logging", "default").upper()
             logging.basicConfig(level=level)

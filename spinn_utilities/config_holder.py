@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from collections import defaultdict
+from configparser import NoOptionError
 import logging
 import os
 from typing import Any, Callable, Collection, Dict, List, Optional, Set, Union
@@ -21,7 +22,6 @@ from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import (
     FormatAdapter, ConfiguredFilter, ConfiguredFormatter)
-from configparser import NoOptionError
 
 # pylint: disable=global-statement
 logger = FormatAdapter(logging.getLogger(__file__))

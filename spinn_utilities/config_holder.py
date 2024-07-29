@@ -91,14 +91,13 @@ def logging_parser(config: CamelCaseConfigParser):
     Create the root logger with the given level.
 
     Create filters based on logging levels
-
-    .. note::
-        You do not normally need to call this function; it is used
-        automatically to parse Logging configuration sections.
     """
     try:
-        if get_config_bool("Logging", "instantiate"):
-            level = get_config_str("Logging", "default").upper()
+        if (has_config_option("Logging", "instantiate") and
+                get_config_bool("Logging", "instantiate")):
+            level = logging.INFO
+            if has_config_option("Logging", "default"):
+                level = get_config_str("Logging", "default").upper()
             logging.basicConfig(level=level)
         for handler in logging.root.handlers:
             handler.addFilter(

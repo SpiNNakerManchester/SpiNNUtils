@@ -13,7 +13,6 @@
 # limitations under the License.
 
 
-from configparser import NoOptionError
 import logging
 import os
 from typing import Callable, Dict, List, Sequence, Tuple, Union
@@ -25,6 +24,7 @@ from spinn_utilities import log
 from spinn_utilities.configs import (
     CamelCaseConfigParser, ConfigTemplateException,
     NoConfigFoundException, UnexpectedConfigException)
+
 logger = log.FormatAdapter(logging.getLogger(__name__))
 _SectionParser: TypeAlias = Callable[[CamelCaseConfigParser], None]
 
@@ -96,28 +96,6 @@ def install_cfg_and_error(
            f'***********************************************************\n')
     print(msg)
     return NoConfigFoundException(msg)
-
-
-def logging_parser(config: CamelCaseConfigParser):
-    """
-    Create the root logger with the given level.
-
-    Create filters based on logging levels
-
-    .. note::
-        You do not normally need to call this function; it is used
-        automatically to parse Logging configuration sections.
-    """
-    try:
-        if config.getboolean("Logging", "instantiate"):
-            level = config.get("Logging", "default").upper()
-            logging.basicConfig(level=level)
-        for handler in logging.root.handlers:
-            handler.addFilter(
-                log.ConfiguredFilter(config))  # type: ignore[arg-type]
-            handler.setFormatter(log.ConfiguredFormatter(config))
-    except NoOptionError:
-        pass
 
 
 def _check_config(
@@ -251,7 +229,6 @@ def load_config(
     _read_a_config(configs, cfg_file, default_configs, True)
 
     parsers = dict(config_parsers)
-    parsers["Logging"] = logging_parser
 
     for section in parsers:
         if configs.has_section(section):

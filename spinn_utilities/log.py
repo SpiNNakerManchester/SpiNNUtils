@@ -40,7 +40,9 @@ class ConfiguredFilter(object):
 
     def __init__(self, conf):
         self._levels = ConfiguredFormatter.construct_logging_parents(conf)
-        self._default_level = _LEVELS[conf.get("Logging", "default")]
+        self._default_level = logging.INFO
+        if conf.has_option("Logging", "default"):
+            self._default_level = _LEVELS[conf.get("Logging", "default")]
 
     def filter(self, record):
         """
@@ -63,7 +65,8 @@ class ConfiguredFormatter(logging.Formatter):
     __last_component = re.compile(r'\.[^.]+$')
 
     def __init__(self, conf):
-        if conf.get("Logging", "default") == "debug":
+        if (conf.has_option("Logging", "default") and
+                conf.get("Logging", "default") == "debug"):
             fmt = "%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s"
         else:
             fmt = "%(asctime)-15s %(levelname)s: %(message)s"

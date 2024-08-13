@@ -144,6 +144,9 @@ class MockConfig1(object):
     def has_section(self, section):
         return False
 
+    def has_option(self, section, option):
+        return False
+
 
 def test_weird_config1():
     ConfiguredFormatter(MockConfig1())

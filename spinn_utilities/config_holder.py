@@ -13,13 +13,15 @@
 # limitations under the License.
 
 from collections import defaultdict
+from configparser import NoOptionError
 import logging
 import os
 from typing import Any, Callable, Collection, Dict, List, Optional, Set, Union
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
-from spinn_utilities.log import FormatAdapter
+from spinn_utilities.log import (
+    FormatAdapter, ConfiguredFilter, ConfiguredFormatter)
 
 # pylint: disable=global-statement
 logger = FormatAdapter(logging.getLogger(__file__))
@@ -84,6 +86,27 @@ def _pre_load_config() -> CamelCaseConfigParser:
     return load_config()
 
 
+def logging_parser(config: CamelCaseConfigParser):
+    """
+    Create the root logger with the given level.
+
+    Create filters based on logging levels
+    """
+    try:
+        if (has_config_option("Logging", "instantiate") and
+                get_config_bool("Logging", "instantiate")):
+            level = "INFO"
+            if has_config_option("Logging", "default"):
+                level = get_config_str("Logging", "default").upper()
+            logging.basicConfig(level=level)
+        for handler in logging.root.handlers:
+            handler.addFilter(
+                ConfiguredFilter(config))  # type: ignore[arg-type]
+            handler.setFormatter(ConfiguredFormatter(config))
+    except NoOptionError:
+        pass
+
+
 def load_config() -> CamelCaseConfigParser:
     """
     Reads in all the configuration files, resetting all values.
@@ -100,6 +123,8 @@ def load_config() -> CamelCaseConfigParser:
         __config = CamelCaseConfigParser()
         for default in __default_config_files:
             __config.read(default)
+
+    logging_parser(__config)
     return __config
 
 

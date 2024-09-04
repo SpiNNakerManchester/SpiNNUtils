@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import configparser
-from typing import Optional
+from typing import Optional, Union
 
 
 NONES = ("none", )
@@ -37,9 +37,10 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
 
     def __init__(self):
         super().__init__()
-        self._read_files = list()
+        self._read_files: list(str) = list()
 
-    def read(self, filenames, encoding=None):
+    def read(self, filenames: Union[str, list[str]],
+             encoding: Optional[str]=None):
         """
         Read and parse a filename or a list of filenames.
         """
@@ -48,7 +49,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return new_files
 
     @property
-    def read_files(self):
+    def read_files(self) -> list[str]:
         """
         The configuration files that have been actually read.
         """

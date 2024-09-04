@@ -551,7 +551,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     __setitem__ = set_value_by_selector
 
-    def get_ranges(self) -> List[_RangeType]:
+    def get_ranges(self) -> list[_RangeType]:
         """
         Returns a copy of the list of ranges.
 

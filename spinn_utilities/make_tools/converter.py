@@ -14,7 +14,7 @@
 
 import os
 import sys
-from typing import NoReturn, Optional
+from typing import Optional
 
 from .file_converter import FileConverter
 from .log_sqllite_database import LogSqlLiteDatabase

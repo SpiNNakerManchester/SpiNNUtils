@@ -35,8 +35,8 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         lower = optionstr.lower()
         return lower.replace("_", "")
 
-    def __init__(self, defaults=None):
-        super().__init__(defaults)
+    def __init__(self):
+        super().__init__()
         self._read_files = list()
 
     def read(self, filenames, encoding=None):

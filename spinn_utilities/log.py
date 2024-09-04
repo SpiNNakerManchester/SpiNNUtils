@@ -17,7 +17,7 @@ from datetime import datetime
 import logging
 import re
 import sys
-from typing import Any, List, Optional, Tuple
+from typing import Any, Optional, Tuple
 from inspect import getfullargspec
 from .log_store import LogStore
 from .overrides import overrides
@@ -178,7 +178,7 @@ class FormatAdapter(logging.LoggerAdapter):
     """
     __kill_level = logging.CRITICAL + 1
     __repeat_at_end = logging.WARNING
-    __not_stored_messages: List[Tuple[datetime, int, str]] = []
+    __not_stored_messages: list[Tuple[datetime, int, str]] = []
     __log_store: Optional[LogStore] = None
 
     @classmethod

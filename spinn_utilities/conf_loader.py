@@ -15,7 +15,7 @@
 
 import logging
 import os
-from typing import Callable, Dict, List, Sequence, Tuple, Union
+from typing import Callable, Dict, Sequence, Tuple, Union
 
 import appdirs
 from typing_extensions import TypeAlias
@@ -30,8 +30,8 @@ _SectionParser: TypeAlias = Callable[[CamelCaseConfigParser], None]
 
 
 def install_cfg_and_error(
-        filename: str, defaults: List[str],
-        config_locations: List[str]) -> NoConfigFoundException:
+        filename: str, defaults: list[str],
+        config_locations: list[str]) -> NoConfigFoundException:
     """
     Installs a local configuration file based on the templates and raises
     an exception.
@@ -163,7 +163,7 @@ def _read_a_config(
         configuration.remove_option("Machine", "machine_spec_file")
 
 
-def _config_locations(filename: str) -> List[str]:
+def _config_locations(filename: str) -> list[str]:
     """
     Defines the list of places we can get configuration files from.
 
@@ -185,7 +185,7 @@ def _config_locations(filename: str) -> List[str]:
 
 
 def load_config(
-        filename: str, defaults: List[str], config_parsers: Union[
+        filename: str, defaults: list[str], config_parsers: Union[
             Sequence[Tuple[str, _SectionParser]],
             Dict[str, _SectionParser]] = ()) -> CamelCaseConfigParser:
     """

@@ -16,7 +16,7 @@ from collections import defaultdict
 from configparser import NoOptionError
 import logging
 import os
-from typing import Any, Callable, Collection, Dict, List, Optional, Set, Union
+from typing import Any, Callable, Collection, Dict, Optional, Set, Union
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
@@ -27,7 +27,7 @@ from spinn_utilities.log import (
 logger = FormatAdapter(logging.getLogger(__file__))
 
 __config: Optional[CamelCaseConfigParser] = None
-__default_config_files: List[str] = []
+__default_config_files: list[str] = []
 __config_file: Optional[str] = None
 __unittest_mode: bool = False
 
@@ -174,7 +174,7 @@ def get_config_str_or_none(section, option) -> Optional[str]:
 
 
 def get_config_str_list(
-        section: str, option: str, token: str = ",") -> List[str]:
+        section: str, option: str, token: str = ",") -> list[str]:
     """
     Get the string value of a configuration option split into a list.
 
@@ -317,7 +317,7 @@ def has_config_option(section: str, option: str) -> bool:
         return __config.has_option(section, option)
 
 
-def config_options(section: str) -> List[str]:
+def config_options(section: str) -> list[str]:
     """
     Return a list of option names for the given section name.
 
@@ -328,7 +328,7 @@ def config_options(section: str) -> List[str]:
     return __config.options(section)
 
 
-def _check_lines(py_path: str, line: str, lines: List[str], index: int,
+def _check_lines(py_path: str, line: str, lines: list[str], index: int,
                  method: Callable[[str, str], Any],
                  used_cfgs: Dict[str, Set[str]], start):
     """

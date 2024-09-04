@@ -16,7 +16,7 @@
 Types for JSON.
 """
 
-from typing import Dict, List, Union
+from typing import Dict, Union
 from typing_extensions import TypeAlias
 
 #: The type of JSON values.
@@ -27,7 +27,7 @@ JsonValue: TypeAlias = Union[int, float, str, None, "JsonObject", "JsonArray"]
 JsonObject: TypeAlias = Dict[str, JsonValue]
 
 #: The type of JSON arrays.
-JsonArray: TypeAlias = List[JsonValue]
+JsonArray: TypeAlias = list[JsonValue]
 
 #: The type of JSON arrays of objects. Used for casting.
-JsonObjectArray: TypeAlias = List[JsonObject]
+JsonObjectArray: TypeAlias = list[JsonObject]

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 from .abstract_base import abstractmethod
 
 
@@ -37,7 +37,7 @@ class LogStore(object):
 
     @abstractmethod
     def retreive_log_messages(
-            self, min_level: int = 0) -> List[Tuple[int, str]]:
+            self, min_level: int = 0) -> list[Tuple[int, str]]:
         """
         Retrieves all log messages at or above the `min_level`.
 

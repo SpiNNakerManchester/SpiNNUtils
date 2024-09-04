@@ -14,7 +14,7 @@
 from __future__ import annotations
 from collections.abc import Sized
 from typing import (
-    Any, Callable, Generic, List, Iterable, Iterator, Optional, Sequence,
+    Any, Callable, Generic, Iterable, Iterator, Optional, Sequence,
     Tuple, Union, cast, final)
 from typing_extensions import TypeAlias, TypeGuard
 from spinn_utilities.overrides import overrides
@@ -90,7 +90,7 @@ class RangedList(AbstractList[T], Generic[T]):
             self._default: Optional[T] = cast(Optional[T], value)
         else:
             self._default = None
-        self._ranges: Union[List[T], List[_RangeType]]
+        self._ranges: Union[list[T], list[_RangeType]]
         self._ranged_based: Optional[bool] = None
         self.set_value(value, use_list_as_value=use_list_as_value)
 
@@ -106,14 +106,14 @@ class RangedList(AbstractList[T], Generic[T]):
         return self._ranged_based or False
 
     @property
-    def __the_ranges(self) -> List[_RangeType]:
+    def __the_ranges(self) -> list[_RangeType]:
         assert self._ranged_based
-        return cast(List[_RangeType], self._ranges)
+        return cast(list[_RangeType], self._ranges)
 
     @property
-    def __the_values(self) -> List[T]:
+    def __the_values(self) -> list[T]:
         assert not self._ranged_based
-        return cast(List[T], self._ranges)
+        return cast(list[T], self._ranges)
 
     @overrides(AbstractList.get_value_by_id)
     def get_value_by_id(self, the_id: int) -> T:
@@ -317,7 +317,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     def as_list(
             self, value: _ListType, size: int,
-            ids: Optional[IdsType] = None) -> List[T]:
+            ids: Optional[IdsType] = None) -> list[T]:
         """
         Converts (if required) the value into a list of a given size.
         An exception is raised if value cannot be given size elements.

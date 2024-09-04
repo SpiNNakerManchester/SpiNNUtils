@@ -14,7 +14,7 @@
 
 from datetime import datetime
 import logging
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 from spinn_utilities.log import (
     _BraceMessage, ConfiguredFilter, ConfiguredFormatter, FormatAdapter,
     LogLevelTooHighException)
@@ -64,7 +64,7 @@ class MockLogStore(LogStore):
 
     @overrides(LogStore.retreive_log_messages)
     def retreive_log_messages(
-            self, min_level: int = 0) -> List[Tuple[int, str]]:
+            self, min_level: int = 0) -> list[Tuple[int, str]]:
         result = []
         for (level, message) in self.data:
             if level >= min_level:

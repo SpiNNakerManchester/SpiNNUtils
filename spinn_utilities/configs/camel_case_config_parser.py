@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import configparser
-from typing import List, Optional
+from typing import Optional
 
 
 NONES = ("none", )
@@ -69,7 +69,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return value
 
     def get_str_list(
-            self, section: str, option: str, token: str = ",") -> List[str]:
+            self, section: str, option: str, token: str = ",") -> list[str]:
         """
         Get the string value of an option split into a list.
 

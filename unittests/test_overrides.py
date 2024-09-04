@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from typing import Any, List
+from typing import Any
 from spinn_utilities.abstract_base import abstractmethod
 from spinn_utilities.overrides import overrides
 
@@ -24,11 +24,11 @@ overrides.check_types()
 
 
 class Base(object):
-    def foo(self, x: int, y: int, z: int) -> List[int]:
+    def foo(self, x: int, y: int, z: int) -> list[int]:
         """this is the doc"""
         return [x, y, z]
 
-    def foodef(self, x: Any, y: int, z: Any = True) -> List[Any]:
+    def foodef(self, x: Any, y: int, z: Any = True) -> list[Any]:
         """this is the doc"""
         return [x, y, z]
 
@@ -54,7 +54,7 @@ class Base(object):
 def test_basic_use():
     class Sub(Base):
         @overrides(Base.foo)
-        def foo(self, x: int, y: int, z: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int) -> list[int]:
             return super().foo(z, y, x)
     assert Sub().foo(1, 2, 3) == [3, 2, 1]
 
@@ -62,7 +62,7 @@ def test_basic_use():
 def test_doc_no_sub_extend():
     class Sub(Base):
         @overrides(Base.foo, extend_doc=True)
-        def foo(self, x: int, y: int, z: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int) -> list[int]:
             return [z, y, x]
     assert Sub.foo.__doc__ == "this is the doc"
 
@@ -70,7 +70,7 @@ def test_doc_no_sub_extend():
 def test_doc_no_sub_no_extend():
     class Sub(Base):
         @overrides(Base.foo, extend_doc=False)
-        def foo(self, x: int, y: int, z: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int) -> list[int]:
             return [z, y, x]
     assert Sub.foo.__doc__ == "this is the doc"
 
@@ -78,7 +78,7 @@ def test_doc_no_sub_no_extend():
 def test_doc_sub_no_extend():
     class Sub(Base):
         @overrides(Base.foo, extend_doc=False)
-        def foo(self, x: int, y: int, z: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int) -> list[int]:
             """(abc)"""
             return [z, y, x]
     assert Sub.foo.__doc__ == "(abc)"
@@ -87,7 +87,7 @@ def test_doc_sub_no_extend():
 def test_doc_sub_extend():
     class Sub(Base):
         @overrides(Base.foo, extend_doc=True)
-        def foo(self, x: int, y: int, z: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int) -> list[int]:
             """(abc)"""
             return [z, y, x]
     assert Sub.foo.__doc__ == "this is the doc(abc)"
@@ -97,7 +97,7 @@ def test_removes_param():
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo)
-            def foo(self, x: int, y: int) -> List[int]:
+            def foo(self, x: int, y: int) -> list[int]:
                 return [y, x]
     assert str(e.value) == WRONG_ARGS.format(3)
 
@@ -106,7 +106,7 @@ def test_adds_param():
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo)
-            def foo(self, x: int, y: int, z: int, w: int) -> List[int]:
+            def foo(self, x: int, y: int, z: int, w: int) -> list[int]:
                 return [w, z, y, x]
     assert str(e.value) == WRONG_ARGS.format(5)
 
@@ -114,7 +114,7 @@ def test_adds_param():
 def test_adds_expected_param():
     class Sub(Base):
         @overrides(Base.foo, additional_arguments=["w"])
-        def foo(self, x: int, y: int, z: int, w: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int, w: int) -> list[int]:
             return [w, z, y, x]
     assert Sub().foo(1, 2, 3, 4) == [4, 3, 2, 1]
 
@@ -123,7 +123,7 @@ def test_renames_param():
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo)
-            def foo(self, x: int, y: int, w: int) -> List[int]:
+            def foo(self, x: int, y: int, w: int) -> list[int]:
                 return [w, y, x]
     assert str(e.value) == "Missing argument z"
 
@@ -132,7 +132,7 @@ def test_renames_param_expected():
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo, additional_arguments=["w"])
-            def foo(self, x: int, y: int, w: int) -> List[int]:
+            def foo(self, x: int, y: int, w: int) -> list[int]:
                 return [w, y, x]
     assert str(e.value) == WRONG_ARGS.format(4)
     # TODO: Fix the AWFUL error message in this case!
@@ -141,7 +141,7 @@ def test_renames_param_expected():
 def test_changes_params_defaults():
     class Sub(Base):
         @overrides(Base.foodef)
-        def foodef(self, x: Any, y: Any, z: Any = False) -> List[Any]:
+        def foodef(self, x: Any, y: Any, z: Any = False) -> list[Any]:
             return [z, y, x]
     assert Sub().foodef(1, 2) == [False, 2, 1]
 
@@ -150,7 +150,7 @@ def test_undefaults_super_param():
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foodef)
-            def foodef(self, x: Any, y: Any, z: Any) -> List[Any]:
+            def foodef(self, x: Any, y: Any, z: Any) -> list[Any]:
                 return [z, y, x]
     assert str(e.value) == BAD_DEFS
 
@@ -159,7 +159,7 @@ def test_defaults_super_param():
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foodef)
-            def foodef(self, x: Any, y: Any = 1, z: Any = 2) -> List[Any]:
+            def foodef(self, x: Any, y: Any = 1, z: Any = 2) -> list[Any]:
                 return [z, y, x]
     assert str(e.value) == BAD_DEFS
     # TODO: Should this case fail at all?
@@ -168,7 +168,7 @@ def test_defaults_super_param():
 def test_defaults_super_param_expected():
     class Sub(Base):
         @overrides(Base.foodef, extend_defaults=True)
-        def foodef(self, x: Any, y: Any = 1, z: Any = 2) -> List[Any]:
+        def foodef(self, x: Any, y: Any = 1, z: Any = 2) -> list[Any]:
             return [z, y, x]
     assert Sub().foodef(7) == [2, 1, 7]
 
@@ -178,7 +178,7 @@ def test_defaults_extra_param():
         class Sub(Base):
             @overrides(Base.foodef, additional_arguments=['pdq'])
             def foodef(self, x: Any, y: Any, z: Any = 1, pdq: Any = 2
-                       ) -> List[Any]:
+                       ) -> list[Any]:
                 return [z, y, x, pdq]
     assert str(e.value) == BAD_DEFS
 
@@ -187,7 +187,7 @@ def test_defaults_super_param_no_super_defaults():
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo)
-            def foo(self, x: int, y: int, z: int = 7) -> List[int]:
+            def foo(self, x: int, y: int, z: int = 7) -> list[int]:
                 return [z, y, x]
     assert str(e.value) == BAD_DEFS
     # TODO: Should this case fail at all?
@@ -321,7 +321,7 @@ def test_add_return():
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.bad)
-            def bad(self, x: int, y: int, z: int) -> List[int]:
+            def bad(self, x: int, y: int, z: int) -> list[int]:
                 return super().foo(z, y, x)
     assert str(e.value) == "Super Method bad has no return type, " \
                            "while this does"

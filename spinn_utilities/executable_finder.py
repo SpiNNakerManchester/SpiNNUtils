@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import os
-from typing import List, Optional
+from typing import Optional
 from spinn_utilities.ordered_set import OrderedSet
 
 
@@ -105,7 +105,7 @@ class ExecutableFinder(object):
         raise KeyError(f"Executable {executable_name} not found in paths "
                        f"f{list(self._binary_search_paths)}")
 
-    def get_executable_paths(self, executable_names: str) -> List[str]:
+    def get_executable_paths(self, executable_names: str) -> list[str]:
         """
         Finds each executables within the set of folders.
 

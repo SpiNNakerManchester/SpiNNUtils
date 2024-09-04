@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 from tempfile import TemporaryDirectory
-from typing import List, Optional
+from typing import Optional
 
 from unittest import SkipTest
 from spinn_utilities.exceptions import (
@@ -527,7 +527,7 @@ class UtilsDataView(object):
             executable_name)
 
     @classmethod
-    def get_executable_paths(cls, executable_names: str) -> List[str]:
+    def get_executable_paths(cls, executable_names: str) -> list[str]:
         """
         Finds each executables within the set of folders.
 

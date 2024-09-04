@@ -14,7 +14,7 @@
 
 from collections.abc import Sized
 from typing import (
-    Callable, Generic, List, Optional, Sequence, TypeVar, Union)
+    Callable, Generic, Optional, Sequence, TypeVar, Union)
 from typing_extensions import TypeAlias
 from spinn_utilities.helpful_functions import is_singleton
 from spinn_utilities.overrides import overrides
@@ -23,10 +23,10 @@ from .ranged_list import RangedList
 T = TypeVar("T")
 # ranged_list._ValueType but specialised for how we use it here
 _ValueType: TypeAlias = Optional[Union[
-    List[T], Callable[[int], List[T]], Sequence[List[T]]]]
+    list[T], Callable[[int], list[T]], Sequence[list[T]]]]
 
 
-class RangedListOfList(RangedList[List[T]], Generic[T]):
+class RangedListOfList(RangedList[list[T]], Generic[T]):
     """
     A Ranged object for lists of list.
     """

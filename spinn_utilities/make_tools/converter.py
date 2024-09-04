@@ -26,7 +26,7 @@ SKIPPABLE_FILES = frozenset([
     "neural_build.mk", "Makefile.neural_build"])
 
 
-def convert(src: str, dest: str, new_dict: bool) -> NoReturn:
+def convert(src: str, dest: str, new_dict: bool):
     """
     Converts a whole directory including sub-directories.
 
@@ -48,7 +48,7 @@ def convert(src: str, dest: str, new_dict: bool) -> NoReturn:
 
 
 def _convert_dir(src_path: str, dest_path: str,
-                 make_directories: Optional[bool] = False) -> None:
+                 make_directories: Optional[bool] = False):
     """
     Converts a whole directory including sub directories.
 
@@ -73,7 +73,7 @@ def _convert_dir(src_path: str, dest_path: str,
                 print(f"Unexpected file {source}")
 
 
-def _mkdir(destination: str) -> NoReturn:
+def _mkdir(destination: str):
     if not os.path.exists(destination):
         os.mkdir(destination)
     if not os.path.exists(destination):

@@ -48,7 +48,7 @@ def convert(src: str, dest: str, new_dict: bool) -> NoReturn:
 
 
 def _convert_dir(src_path: str, dest_path: str,
-                 make_directories: Optional[bool] = False) -> NoReturn:
+                 make_directories: Optional[bool] = False) -> None:
     """
     Converts a whole directory including sub directories.
 

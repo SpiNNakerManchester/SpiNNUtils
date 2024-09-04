@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from enum import Enum
-from typing import Type
 from spinn_utilities.exceptions import (
     DataNotMocked, DataNotYetAvialable, NotSetupException, ShutdownException,
     SpiNNUtilsException)
@@ -39,7 +38,7 @@ class DataStatus(Enum):
         obj._value_ = args[0]
         return obj
 
-    def __init__(self, value, exception: Type[SpiNNUtilsException]):
+    def __init__(self, value: int, exception: SpiNNUtilsException):
         # pylint: disable=unused-argument
         self._exception = exception
 

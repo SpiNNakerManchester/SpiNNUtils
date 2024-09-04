@@ -14,7 +14,7 @@
 
 import os
 import sys
-from typing import Optional
+from typing import NoReturn, Optional
 
 from .file_converter import FileConverter
 from .log_sqllite_database import LogSqlLiteDatabase
@@ -26,7 +26,7 @@ SKIPPABLE_FILES = frozenset([
     "neural_build.mk", "Makefile.neural_build"])
 
 
-def convert(src: str, dest: str, new_dict: bool):
+def convert(src: str, dest: str, new_dict: bool) -> NoReturn:
     """
     Converts a whole directory including sub-directories.
 
@@ -48,7 +48,7 @@ def convert(src: str, dest: str, new_dict: bool):
 
 
 def _convert_dir(src_path: str, dest_path: str,
-                 make_directories:Optional[bool]=False):
+                 make_directories: Optional[bool] = False) -> NoReturn:
     """
     Converts a whole directory including sub directories.
 
@@ -73,7 +73,7 @@ def _convert_dir(src_path: str, dest_path: str,
                 print(f"Unexpected file {source}")
 
 
-def _mkdir(destination: str):
+def _mkdir(destination: str) -> NoReturn:
     if not os.path.exists(destination):
         os.mkdir(destination)
     if not os.path.exists(destination):

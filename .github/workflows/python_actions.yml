@@ -19,7 +19,7 @@ name: Python Actions
 on: [push]
 jobs:
   call:
-    uses: SpiNNakerManchester/SupportScripts/.github/workflows/python_checks.yml@main
+    uses: SpiNNakerManchester/SupportScripts/.github/workflows/python_checks.yml@pep585
     with:
       dependencies:
       test_directories: unittests
@@ -27,4 +27,5 @@ jobs:
       flake8-packages: spinn_utilities unittests
       pylint-packages: spinn_utilities
       mypy-packages: spinn_utilities unittests
+      check_prereleases: true
     secrets: inherit

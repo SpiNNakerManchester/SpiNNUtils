@@ -259,7 +259,6 @@ class UtilsDataWriter(UtilsDataView):
         As it is only accessed to create `timestamp` directories and
         remove old reports, this is not a view method.
 
-        :rtype: str
         :raises SpiNNUtilsException:
             If the `simulation_time_step` is currently unavailable
         """
@@ -271,7 +270,6 @@ class UtilsDataWriter(UtilsDataView):
         """
         Checks and sets the `run_dir_path`.
 
-        :param str run_dir_path:
         :raises InvalidDirectory: if the `run_dir_path` is not a directory
         """
         if os.path.isdir(run_dir_path):
@@ -284,7 +282,6 @@ class UtilsDataWriter(UtilsDataView):
         """
         Checks and sets the `reports_dir_path`.
 
-        :param str reports_dir_path:
         :raises InvalidDirectory: if the `reports_dir_path` is not a directory
         """
         if os.path.isdir(reports_dir_path):
@@ -297,7 +294,6 @@ class UtilsDataWriter(UtilsDataView):
         """
         Only usable by unit tests!
 
-        :param ExecutableFinder executable_finder:
         """
         if not self._is_mocked():
             raise NotImplementedError("Only valid in Mocked state!")

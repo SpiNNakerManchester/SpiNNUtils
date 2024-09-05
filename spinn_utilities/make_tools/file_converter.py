@@ -100,7 +100,7 @@ class FileConverter(object):
         #: Number of c lines the log method takes
         self._log_lines: int = -9999999
         #: Any other stuff found before the log method but on same line
-        self._log_start: int = -9999999  # Bogus value to avoid Optional
+        self._log_start: int = -9999999
         # variable created when a comment found
         #: The previous state
         self._previous_status: Optional[State] = None

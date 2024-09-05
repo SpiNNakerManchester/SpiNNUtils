@@ -402,8 +402,8 @@ class FileConverter(object):
         :rtype: str
         """
         try:
-            match = LOG_END_REGEX.search(self._log_full)
-            main = self._log_full[:-len(match.group(0))]
+            full_match = LOG_END_REGEX.search(self._log_full)
+            main = self._log_full[:-len(full_match.group(0))]
         except Exception as e:
             raise UnexpectedCException(
                 f"Unexpected line {self._log_full} at "

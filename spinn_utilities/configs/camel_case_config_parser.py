@@ -15,17 +15,15 @@
 from collections.abc import Iterable
 import configparser
 from os import PathLike
-from typing import Optional, TypeAlias, Union
+from typing import Optional, Union
 
 
 NONES = ("none", )
 TRUES = ('y', 'yes', 't', 'true', 'on', '1')
 FALSES = ('n', 'no', 'f', 'false', 'off', '0')
 
-#: The type of JSON objects.
-FileNames: TypeAlias = Union[str, bytes, PathLike[str], PathLike[bytes],
-                             Iterable[str], bytes, PathLike[str],
-                             PathLike[bytes]]
+# Type support
+_Path = Union[str, bytes, PathLike[str], PathLike[bytes]]
 
 
 class CamelCaseConfigParser(configparser.RawConfigParser):
@@ -42,11 +40,12 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         lower = optionstr.lower()
         return lower.replace("_", "")
 
-    def __init__(self) -> 'CamelCaseConfigParser':
+    def __init__(self) -> None:
         super().__init__()
-        self._read_files: list(str) = list()
+        self._read_files: list[str] = list()
 
-    def read(self, filenames: FileNames,  encoding: Optional[str] = None):
+    def read(self, filenames: Union[_Path, Iterable[_Path]],
+             encoding: Optional[str] = None):
         """
         Read and parse a filename or a list of filenames.
         """

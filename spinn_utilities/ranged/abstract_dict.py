@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import (
-    Dict, FrozenSet, Iterable, Iterator, MutableSequence, Optional, Sequence,
+    FrozenSet, Iterable, Iterator, MutableSequence, Optional, Sequence,
     Set, Tuple, Union,
     Generic, TypeVar, overload)
 from typing_extensions import TypeAlias
@@ -37,11 +37,11 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         ...
 
     @overload
-    def get_value(self, key: Optional[_StrSeq]) -> Dict[str, T]:
+    def get_value(self, key: Optional[_StrSeq]) -> dict[str, T]:
         ...
 
     @abstractmethod
-    def get_value(self, key: _Keys) -> Union[T, Dict[str, T]]:
+    def get_value(self, key: _Keys) -> Union[T, dict[str, T]]:
         """
         Gets a single shared value for all IDs covered by this view.
 
@@ -113,7 +113,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
 
     @overload
     def iter_all_values(self, key: Optional[_StrSeq],
-                        update_safe: bool = False) -> Iterator[Dict[str, T]]:
+                        update_safe: bool = False) -> Iterator[dict[str, T]]:
         ...
 
     @abstractmethod
@@ -137,7 +137,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
 
     @overload
     def get_ranges(self, key: None = None) -> Sequence[Tuple[
-            int, int, Dict[str, T]]]:
+            int, int, dict[str, T]]]:
         ...
 
     @overload
@@ -146,11 +146,11 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
 
     @overload
     def get_ranges(self, key: _StrSeq) -> Sequence[Tuple[
-            int, int, Dict[str, T]]]:
+            int, int, dict[str, T]]]:
         ...
 
     def get_ranges(self, key: _Keys = None) -> Sequence[Tuple[
-            int, int, Union[T, Dict[str, T]]]]:
+            int, int, Union[T, dict[str, T]]]]:
         """
         Lists the ranges(s) for all IDs covered by this view.
         There will be one yield for each range which may cover one or
@@ -177,13 +177,13 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
 
     @overload
     def iter_ranges(self, key: Optional[_StrSeq]) -> Iterator[Tuple[
-            int, int, Dict[str, T]]]:
+            int, int, dict[str, T]]]:
         ...
 
     @abstractmethod
     def iter_ranges(self, key: _Keys = None
                     ) -> Union[Iterator[Tuple[int, int, T]],
-                               Iterator[Tuple[int, int, Dict[str, T]]]]:
+                               Iterator[Tuple[int, int, dict[str, T]]]]:
         """
         Iterates over the ranges(s) for all IDs covered by this view.
         There will be one yield for each range which may cover one or

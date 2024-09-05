@@ -16,7 +16,7 @@ from collections import defaultdict
 from configparser import NoOptionError
 import logging
 import os
-from typing import Any, Callable, Collection, Dict, Optional, Set, Union
+from typing import Any, Callable, Collection, Optional, Set, Union
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
@@ -330,7 +330,7 @@ def config_options(section: str) -> list[str]:
 
 def _check_lines(py_path: str, line: str, lines: list[str], index: int,
                  method: Callable[[str, str], Any],
-                 used_cfgs: Dict[str, Set[str]], start):
+                 used_cfgs: dict[str, Set[str]], start):
     """
     Support for `_check_python_file`. Gets section and option name.
 
@@ -371,7 +371,7 @@ def _check_lines(py_path: str, line: str, lines: list[str], index: int,
         used_cfgs[section].add(option)
 
 
-def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]]):
+def _check_python_file(py_path: str, used_cfgs: dict[str, Set[str]]):
     """
     A testing function to check that all the `get_config` calls work.
 
@@ -518,7 +518,7 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
     config1 = CamelCaseConfigParser()
     config1.read(__default_config_files)
 
-    used_cfgs: Dict[str, Set[str]] = defaultdict(set)
+    used_cfgs: dict[str, Set[str]] = defaultdict(set)
     for directory in directories:
         if not os.path.isdir(directory):
             raise ConfigException(f"Unable find {directory}")

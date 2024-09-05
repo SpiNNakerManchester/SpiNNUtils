@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 from typing import (
-    Dict, Generic, Iterable, Iterator, Optional, Sequence, Tuple, overload,
+    Generic, Iterable, Iterator, Optional, Sequence, Tuple, overload,
     TYPE_CHECKING, Union)
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, T, _StrSeq, _Keys
@@ -46,11 +46,11 @@ class _SliceView(AbstractView[T], Generic[T]):
         ...
 
     @overload
-    def get_value(self, key: Optional[_StrSeq]) -> Dict[str, T]:
+    def get_value(self, key: Optional[_StrSeq]) -> dict[str, T]:
         ...
 
     @overrides(AbstractDict.get_value)
-    def get_value(self, key: _Keys) -> Union[T, Dict[str, T]]:
+    def get_value(self, key: _Keys) -> Union[T, dict[str, T]]:
         if isinstance(key, str):
             return self._range_dict.get_list(key).get_single_value_by_slice(
                 slice_start=self._start, slice_stop=self._stop)
@@ -84,7 +84,7 @@ class _SliceView(AbstractView[T], Generic[T]):
     @overload
     def iter_all_values(
             self, key: Optional[_StrSeq] = None,
-            update_safe=False) -> Iterator[Dict[str, T]]:
+            update_safe=False) -> Iterator[dict[str, T]]:
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
@@ -111,12 +111,12 @@ class _SliceView(AbstractView[T], Generic[T]):
 
     @overload
     def iter_ranges(self, key: Optional[_StrSeq] = None) -> Iterator[
-            Tuple[int, int, Dict[str, T]]]:
+            Tuple[int, int, dict[str, T]]]:
         ...
 
     @overrides(AbstractDict.iter_ranges)
     def iter_ranges(self, key: _Keys = None
                     ) -> Union[Iterator[Tuple[int, int, T]],
-                               Iterator[Tuple[int, int, Dict[str, T]]]]:
+                               Iterator[Tuple[int, int, dict[str, T]]]]:
         return self._range_dict.iter_ranges_by_slice(
             key=key, slice_start=self._start, slice_stop=self._stop)

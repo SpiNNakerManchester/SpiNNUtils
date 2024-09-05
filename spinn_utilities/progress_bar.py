@@ -18,7 +18,7 @@ import logging
 import math
 import os
 import sys
-from typing import Dict, Iterable, TypeVar
+from typing import Iterable, TypeVar
 from spinn_utilities.config_holder import get_config_bool
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.overrides import overrides
@@ -231,7 +231,7 @@ class _EnhancedProgressBar(ProgressBar):
 
     _line_no = 0
     _seq_id = 0
-    _step_characters: Dict[int, list[str]] = defaultdict(list)
+    _step_characters: dict[int, list[str]] = defaultdict(list)
     _enabled = False
     _DATA_FILE = "progress_bar.txt"
 

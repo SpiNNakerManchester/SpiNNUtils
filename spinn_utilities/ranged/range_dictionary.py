@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 from typing import (
-    Dict, Generator, Iterable, Iterator, Optional, Sequence, Tuple, Union,
+    Generator, Iterable, Iterator, Optional, Sequence, Tuple, Union,
     Generic, overload, TYPE_CHECKING)
 from typing_extensions import TypeAlias
 from spinn_utilities.overrides import overrides
@@ -32,7 +32,7 @@ _Keys: TypeAlias = Union[None, str, _StrSeq]
 
 _Range: TypeAlias = Tuple[int, int, T]
 _SimpleRangeIter: TypeAlias = Iterator[_Range]
-_CompoundRangeIter: TypeAlias = Iterator[Tuple[int, int, Dict[str, T]]]
+_CompoundRangeIter: TypeAlias = Iterator[Tuple[int, int, dict[str, T]]]
 
 
 class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
@@ -45,7 +45,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     __slots__ = [
         "_value_lists"]
 
-    def __init__(self, size: int, defaults: Optional[Dict[str, T]] = None):
+    def __init__(self, size: int, defaults: Optional[dict[str, T]] = None):
         """
         The Object is set up initially where every ID in the range will share
         the same value for each key. All keys must be of type str. The
@@ -59,7 +59,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         :type defaults: dict(str,object)
         """
         super().__init__(size)
-        self._value_lists: Dict[str, RangedList[T]] = dict()
+        self._value_lists: dict[str, RangedList[T]] = dict()
         if defaults is not None:
             for key, value in defaults.items():
                 self._value_lists[key] = self.list_factory(
@@ -169,11 +169,11 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     def get_value(self, key: str) -> T: ...
 
     @overload
-    def get_value(self, key: Optional[_StrSeq]) -> Dict[str, T]: ...
+    def get_value(self, key: Optional[_StrSeq]) -> dict[str, T]: ...
 
     @overrides(AbstractDict.get_value, extend_defaults=True)
     def get_value(self, key: Union[str, None, _StrSeq] = None
-                  ) -> Union[T, Dict[str, T]]:
+                  ) -> Union[T, dict[str, T]]:
         if isinstance(key, str):
             return self._value_lists[key].get_single_value_all()
         if key is None:
@@ -187,9 +187,9 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     @overload
     def get_values_by_id(
-            self, key: Optional[_StrSeq], the_id: int) -> Dict[str, T]: ...
+            self, key: Optional[_StrSeq], the_id: int) -> dict[str, T]: ...
 
-    def get_values_by_id(self, key, the_id) -> Union[T, Dict[str, T]]:
+    def get_values_by_id(self, key, the_id) -> Union[T, dict[str, T]]:
         """
         Same as :py:meth:`get_value` but limited to a single ID.
 
@@ -225,11 +225,11 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     @overload
     def update_safe_iter_all_values(
             self, key: Optional[_StrSeq],
-            ids: IdsType) -> Generator[Dict[str, T], None, None]: ...
+            ids: IdsType) -> Generator[dict[str, T], None, None]: ...
 
     def update_safe_iter_all_values(
             self, key: Union[str, Optional[_StrSeq]],
-            ids: IdsType) -> Generator[Union[T, Dict[str, T]], None, None]:
+            ids: IdsType) -> Generator[Union[T, dict[str, T]], None, None]:
         """
         Same as
         :py:meth:`iter_all_values`
@@ -246,7 +246,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     @overload
     def iter_all_values(self, key: Optional[_StrSeq],
-                        update_safe: bool = False) -> Iterator[Dict[str, T]]:
+                        update_safe: bool = False) -> Iterator[dict[str, T]]:
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
@@ -271,7 +271,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     def iter_values_by_slice(
             self, slice_start: int, slice_stop: int,
             key: Optional[_StrSeq] = None,
-            update_safe: bool = False) -> Iterator[Dict[str, T]]:
+            update_safe: bool = False) -> Iterator[dict[str, T]]:
         ...
 
     def iter_values_by_slice(
@@ -298,7 +298,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     @overload
     def iter_values_by_ids(
             self, ids: IdsType, key: Optional[_StrSeq] = None,
-            update_safe: bool = False) -> Iterator[Dict[str, T]]:
+            update_safe: bool = False) -> Iterator[dict[str, T]]:
         ...
 
     def iter_values_by_ids(self, ids: IdsType, key=None, update_safe=False):
@@ -374,10 +374,10 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         return self._value_lists.keys()
 
     def _merge_ranges(
-            self, range_iters: Dict[str, Iterator[Tuple[int, int, T]]]
-            ) -> Iterator[Tuple[int, int, Dict[str, T]]]:
-        current: Dict[str, T] = dict()
-        ranges: Dict[str, Tuple[int, int, T]] = dict()
+            self, range_iters: dict[str, Iterator[Tuple[int, int, T]]]
+            ) -> Iterator[Tuple[int, int, dict[str, T]]]:
+        current: dict[str, T] = dict()
+        ranges: dict[str, Tuple[int, int, T]] = dict()
         start = 0
         stop = self._size
         keys = range_iters.keys()
@@ -409,13 +409,13 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     @overload
     def iter_ranges(self, key: Optional[_StrSeq]) -> Iterator[Tuple[
-            int, int, Dict[str, T]]]:
+            int, int, dict[str, T]]]:
         ...
 
     @overrides(AbstractDict.iter_ranges)
     def iter_ranges(self, key: _Keys = None) -> \
             Union[Iterator[Tuple[int, int, T]],
-                  Iterator[Tuple[int, int, Dict[str, T]]]]:
+                  Iterator[Tuple[int, int, dict[str, T]]]]:
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges()
         if key is None:

@@ -15,7 +15,7 @@
 
 import logging
 import os
-from typing import Callable, Dict, Sequence, Tuple, Union
+from typing import Callable, Sequence, Tuple, Union
 
 import appdirs
 from typing_extensions import TypeAlias
@@ -187,7 +187,7 @@ def _config_locations(filename: str) -> list[str]:
 def load_config(
         filename: str, defaults: list[str], config_parsers: Union[
             Sequence[Tuple[str, _SectionParser]],
-            Dict[str, _SectionParser]] = ()) -> CamelCaseConfigParser:
+            dict[str, _SectionParser]] = ()) -> CamelCaseConfigParser:
     """
     Load the configuration.
 

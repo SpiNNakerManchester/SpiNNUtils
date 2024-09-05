@@ -96,26 +96,16 @@ class FileConverter(object):
         #: Number of extra lines written to modified not yet recovered
         #: Extra lines are caused by the header and possibly log comment
         #: Extra lines are recovered by omitting blank lines
-        #:
-        #: :type: int
-        self._too_many_lines = None
+        self._too_many_lines: int = -9999999
         #: Variables created each time a log method found
         #: original c log method found
-        #:
-        #: :type: str
-        self._log = None
+        self._log: str = "Not yet defined!"
         #: Log methods found so far
-        #:
-        #: :type: str
-        self._log_full = None
+        self._log_full: str = "Not yet defined!"
         #: Number of c lines the log method takes
-        #:
-        #: :type: int
-        self._log_lines = None
+        self._log_lines: int = -9999999
         #: Any other stuff found before the log method but on same line
-        #:
-        #: :type: str
-        self._log_start = None
+        self._log_start: int = -9999999
         # variable created when a comment found
         #: The previous state
         #:

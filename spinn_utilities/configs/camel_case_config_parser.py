@@ -79,11 +79,10 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         """
         Get the string value of an option split into a list.
 
-        :param str section: What section to get the option from.
-        :param str option: What option to read.
+        :param section: What section to get the option from.
+        :param option: What option to read.
         :param token: The token to split the string into a list
         :return: The list (possibly empty) of the option values
-        :rtype: list(str)
         """
         value = self.get(section, option)
         if value.lower() in NONES:
@@ -97,10 +96,9 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         """
         Get the integer value of an option.
 
-        :param str section: What section to get the option from.
-        :param str option: What option to read.
+        :param section: What section to get the option from.
+        :param option: What option to read.
         :return: The option value
-        :rtype: int
         """
         value = self.get(section, option)
         if str(value).lower() in NONES:
@@ -111,10 +109,9 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         """
         Get the float value of an option.
 
-        :param str section: What section to get the option from.
-        :param str option: What option to read.
+        :param section: What section to get the option from.
+        :param option: What option to read.
         :return: The option value.
-        :rtype: float
         """
         value = self.get(section, option)
         if str(value).lower() in NONES:
@@ -125,10 +122,9 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         """
         Get the Boolean value of an option.
 
-        :param str section: What section to get the option from.
-        :param str option: What option to read.
+        :param section: What section to get the option from.
+        :param option: What option to read.
         :return: The option value.
-        :rtype: bool
         """
         value = self.get(section, option)
         lower = str(value).lower()

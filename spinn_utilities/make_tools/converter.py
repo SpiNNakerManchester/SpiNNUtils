@@ -52,8 +52,8 @@ def _convert_dir(src_path: str, dest_path: str,
     """
     Converts a whole directory including sub directories.
 
-    :param str src_path: Full source directory
-    :param str dest_path: Full destination directory
+    :param src_path: Full source directory
+    :param dest_path: Full destination directory
     :param bool make_directories: Whether to do `mkdir()` first
     """
     if make_directories:

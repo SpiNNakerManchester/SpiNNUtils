@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from io import TextIOBase
 import enum
 import os
 import re
+from typing import cast, Optional
 from spinn_utilities.exceptions import UnexpectedCException
 from .log_sqllite_database import LogSqlLiteDatabase
 
@@ -66,61 +68,42 @@ class FileConverter(object):
         "_too_many_lines"
     ]
 
-    def __call__(self, src, dest, log_file_id, log_database):
+    def __call__(self, src: str, dest: str, log_file_id: int,
+                 log_database: LogSqlLiteDatabase):
         """
         Creates the file_convertor to convert one file.
 
-        :param str src: Absolute path to source file
-        :param str dest: Absolute path to destination file
-        :param int log_file_id:
+        :param src: Absolute path to source file
+        :param dest: Absolute path to destination file
+        :param log_file_id:
             Id in the database for this file
-        :param LogSqlLiteDatabase log_database:
+        :param log_database:
             The database which handles the mapping of id to log messages.
         """
         #: Absolute path to source file
-        #:
-        #: :type: str
         self._src = src
         #: Database which handles the mapping of id to log messages
-        #:
-        #: :type: .log_sqllite_database.LogSqlLiteDatabase
         self._log_database = log_database
         #: Id in the database for this file
-        #:
-        #: :type: int
         self._log_file_id = log_file_id
         #: Current status of state machine
-        #:
-        #: :type: State
-        self._status = None
+        self. _status: Optional[State] = None
         #: Number of extra lines written to modified not yet recovered
         #: Extra lines are caused by the header and possibly log comment
         #: Extra lines are recovered by omitting blank lines
-        #:
-        #: :type: int
-        self._too_many_lines = None
+        self._too_many_lines: int = -9999999
         #: Variables created each time a log method found
         #: original c log method found
-        #:
-        #: :type: str
-        self._log = None
+        self._log: str = "Not yet defined!"
         #: Log methods found so far
-        #:
-        #: :type: str
-        self._log_full = None
+        self._log_full: str = "Not yet defined!"
         #: Number of c lines the log method takes
-        #:
-        #: :type: int
-        self._log_lines = None
+        self._log_lines: int = -9999999
         #: Any other stuff found before the log method but on same line
-        #:
-        #: :type: str
-        self._log_start = None
+        self._log_start: int = -9999999  # Bogus value to avoid Optional
         # variable created when a comment found
         #: The previous state
-        #:
-        #: :type: State
-        self._previous_status = None
+        self._previous_status: Optional[State] = None
 
         with open(src, encoding="utf-8") as src_f:
             with open(dest, 'w', encoding="utf-8") as dest_f:
@@ -142,7 +125,7 @@ class FileConverter(object):
                         self._process_chars(dest_f, line_num, text)
         self._check_end_status()
 
-    def _check_end_status(self):
+    def _check_end_status(self) -> None:
         if self._status == State.NORMAL_CODE:
             return
         if self._status == State.IN_LOG:
@@ -157,15 +140,15 @@ class FileConverter(object):
                 f"Unclosed block comment in {self._src}")
         raise NotImplementedError(f"Unexpected status {self._status}")
 
-    def _process_line(self, dest_f, line_num, text):
+    def _process_line(
+            self, dest_f: TextIOBase, line_num: int, text: str) -> bool:
         """
         Process a single line.
 
         :param dest_f: Open file like Object to write modified source to
-        :param int line_num: Line number in the source c file
-        :param str text: Text of that line including whitespace
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
         :return: True if and only if the whole line was processed
-        :rtype: bool
         """
         if self._status == State.COMMENT:
             return self._process_line_in_comment(dest_f, text)
@@ -182,18 +165,17 @@ class FileConverter(object):
         assert self._status == State.NORMAL_CODE
         return self._process_line_normal_code(dest_f, line_num, text)
 
-    def _process_line_in_comment(self, dest_f, text):
+    def _process_line_in_comment(self, dest_f: TextIOBase, text: str) -> bool:
         """
         Process a single line when in a multi-line comment: ``/* .. */``
 
         :param dest_f: Open file like Object to write modified source to
-        :param str text: Text of that line including whitespace
+        :param text: Text of that line including whitespace
         :return: True if and only if the whole line was processed
-        :rtype: bool
         """
         if "*/" in text:
             stripped = text.strip()
-            match = END_COMMENT_REGEX.search(stripped)
+            match = cast(re.Match[str], END_COMMENT_REGEX.search(stripped))
             if match.end(0) == len(stripped):
                 # OK Comment until end of line
                 dest_f.write(text)
@@ -204,17 +186,17 @@ class FileConverter(object):
         dest_f.write(text)
         return True
 
-    def _process_line_comment_start(self, dest_f, line_num, text):
+    def _process_line_comment_start(
+            self, dest_f: TextIOBase, line_num: int, text: str) -> bool:
         """
         Processes a line known assumed to contain a ``/*`` but not know where.
 
         There is also the assumption that the start status is not ``COMMENT``.
 
         :param dest_f: Open file like Object to write modified source to
-        :param int line_num: Line number in the source c file
-        :param str text: Text of that line including whitespace
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
         :return: True if and only if the whole line was processed
-        :rtype: bool
         """
         stripped = text.strip()
         if stripped.startswith("/*"):
@@ -225,15 +207,15 @@ class FileConverter(object):
         # Stuff before comment so check by char
         return False  # More than one possible end so check by char
 
-    def _process_line_in_log(self, dest_f, line_num, text):
+    def _process_line_in_log(
+            self, dest_f: TextIOBase, line_num: int, text: str) -> bool:
         """
         Process a line when the status is a log call has been started.
 
         :param dest_f: Open file like Object to write modified source to
-        :param int line_num: Line number in the source c file
-        :param str text: Text of that line including whitespace
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
         :return: True if and only if the whole line was processed
-        :rtype: bool
         """
         stripped = text.strip()
         if stripped.startswith("//"):
@@ -259,15 +241,15 @@ class FileConverter(object):
         self._status = State.NORMAL_CODE
         return True
 
-    def _process_line_in_log_close_bracket(self, dest_f, line_num, text):
+    def _process_line_in_log_close_bracket(
+            self, dest_f: TextIOBase, line_num: int, text: str) -> bool:
         """
         Process where the last log line has the ``)`` but not the ``;``
 
         :param dest_f: Open file like Object to write modified source to
-        :param int line_num: Line number in the source c file
-        :param str text: Text of that line including whitespace
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
         :return: True if and only if the whole line was processed
-        :rtype: bool
         """
         stripped = text.strip()
         if len(stripped) == 0:
@@ -293,15 +275,15 @@ class FileConverter(object):
             self._status = State.IN_LOG
             return self._process_line_in_log(dest_f, line_num, text)
 
-    def _process_line_normal_code(self, dest_f, line_num, text):
+    def _process_line_normal_code(
+            self, dest_f: TextIOBase, line_num: int, text: str) -> bool:
         """
         Process a line where the status is normal code.
 
         :param dest_f: Open file like Object to write modified source to
-        :param int line_num: Line number in the source c file
-        :param str text: Text of that line including whitespace
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
         :return: True if and only if the whole line was processed
-        :rtype: bool
         """
         stripped = text.strip()
         match = LOG_START_REGEX.search(stripped)
@@ -333,31 +315,22 @@ class FileConverter(object):
         # Now check for the end of log command
         return self._process_line_in_log(dest_f, line_num, text[start_len:])
 
-    def quote_part(self, text):
+    def quote_part(self, text: str) -> int:
         """
         Net count of double quotes in line.
-
-        :param str text:
-        :rtype: int
         """
         return (text.count('"') - text.count('\\"')) % 2 > 0
 
-    def bracket_count(self, text):
+    def bracket_count(self, text: str) -> int:
         """
         Net count of open brackets in line.
-
-        :param str text:
-        :rtype: int
         """
         return (text.count('(') - text.count(')'))
 
-    def split_by_comma_plus(self, main, line_num):
+    def split_by_comma_plus(self, main: str, line_num: int) -> list[str]:
         """
         Split line by comma and partially parse.
 
-        :param str main:
-        :param int line_num:
-        :rtype: list(str)
         :raises UnexpectedCException:
         """
         try:
@@ -403,17 +376,17 @@ class FileConverter(object):
             raise UnexpectedCException(f"Unexpected line {self._log_full} "
                                        f"at {line_num} in {self._src}") from e
 
-    def _short_log(self, line_num):
+    def _short_log(self, line_num: int) -> str:
         """
         Shortens the log string message and adds the ID.
 
-        :param int line_num: Current line number
+        :param line_num: Current line number
         :return: shorten form
-        :rtype: str
         """
         try:
-            match = LOG_END_REGEX.search(self._log_full)
-            main = self._log_full[:-len(match.group(0))]
+            full_match = cast(
+                re.Match[str], LOG_END_REGEX.search(self._log_full))
+            main = self._log_full[:-len(full_match.group(0))]
         except Exception as e:
             raise UnexpectedCException(
                 f"Unexpected line {self._log_full} at "
@@ -459,7 +432,8 @@ class FileConverter(object):
         back += ");"
         return front + back
 
-    def _write_log_method(self, dest_f, line_num, tail=""):
+    def _write_log_method(
+            self, dest_f: TextIOBase, line_num: int, tail: str = "") -> None:
         """
         Writes the log message and the dict value.
 
@@ -470,8 +444,8 @@ class FileConverter(object):
         - Old log message with full text added as comment
 
         :param dest_f: Open file like Object to write modified source to
-        :param int line_num: Line number in the source C file
-        :param str text: Text of that line including whitespace
+        :param line_num: Line number in the source C file
+        :param text: Text of that line including whitespace
         """
         self._log_full = self._log_full.replace('""', '')
         short_log = self._short_log(line_num)
@@ -499,13 +473,13 @@ class FileConverter(object):
             dest_f.write("*/")
             dest_f.write(end * (self._log_lines - 1))
 
-    def _process_chars(self, dest_f, line_num, text):
+    def _process_chars(self, dest_f: TextIOBase, line_num: int, text: str):
         """
         Deals with complex lines that can not be handled in one go.
 
         :param dest_f: Open file like Object to write modified source to
-        :param int line_num: Line number in the source c file
-        :param str text: Text of that line including whitespace
+        :param line_num: Line number in the source c file
+        :param text: Text of that line including whitespace
         :raises UnexpectedCException:
         """
         position = 0
@@ -629,13 +603,13 @@ class FileConverter(object):
             dest_f.write(text[write_flag:])
 
     @staticmethod
-    def convert(src_dir, dest_dir, file_name):
+    def convert(src_dir: str, dest_dir: str, file_name: str):
         """
         Static method to create Object and do the conversion.
 
-        :param str src_dir: Source directory
-        :param str dest_dir: Destination directory
-        :param str file_name:
+        :param src_dir: Source directory
+        :param dest_dir: Destination directory
+        :param file_name:
             The name of the file to convert within the source directory; it
             will be made with the same name in the destination directory.
         """

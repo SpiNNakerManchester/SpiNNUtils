@@ -18,7 +18,7 @@ import shutil
 import struct
 import sys
 from types import TracebackType
-from typing import Literal, Optional, Tuple, Type
+from typing import Optional, Tuple, Type
 from typing_extensions import Self
 from spinn_utilities.overrides import overrides
 from spinn_utilities.config_holder import get_config_str_or_none
@@ -68,7 +68,7 @@ class Replacer(LogSqlLiteDatabase):
 
     def __exit__(self, exc_type: Optional[Type], exc_val: Exception,
                  exc_tb: TracebackType):
-       # nothing yet
+        # nothing yet
         pass
 
     _INT_FMT = struct.Struct("!I")

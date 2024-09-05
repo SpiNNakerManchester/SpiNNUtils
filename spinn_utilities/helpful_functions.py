@@ -13,9 +13,10 @@
 # limitations under the License.
 
 from functools import reduce
+from collections.abc import Sequence
 import logging
 import math
-from typing import Any, Sequence, Union, overload
+from typing import Any, Union, overload
 from typing_extensions import TypeGuard
 from spinn_utilities.log import FormatAdapter
 

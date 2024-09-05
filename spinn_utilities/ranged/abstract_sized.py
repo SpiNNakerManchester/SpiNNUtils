@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections.abc import Sized
+from collections.abc import Sequence, Sized
 import itertools
 import logging
 import sys
-from typing import Any, Optional, Sequence, SupportsInt, Tuple, Union
+from typing import Any, Optional, SupportsInt, Tuple, Union
 from typing_extensions import TypeAlias, TypeGuard
 import numpy
 

@@ -13,9 +13,8 @@
 # limitations under the License.
 
 from collections import OrderedDict
-from collections.abc import MutableSet
-from typing import (
-    Any, Iterable, Iterator, Optional, Generic, TypeVar)
+from collections.abc import Iterable, Iterator, MutableSet
+from typing import Any, Generic, Optional, TypeVar
 
 #: :meta private:
 T = TypeVar("T")

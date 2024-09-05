@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+from collections.abc import Iterator, Sequence
 from numbers import Number
 from typing import (
-    Any, Callable, Generic, Iterator, Optional, Sequence, Tuple,
+    Any, Callable, Generic, Optional, Tuple,
     TypeVar, Union, cast)
 import numpy
 from numpy.typing import NDArray

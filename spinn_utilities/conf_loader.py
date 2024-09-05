@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from collections.abc import Sequence
 import logging
 import os
-from typing import Callable, Sequence, Tuple, Union
+from typing import Callable, Tuple, Union
 
 import appdirs
 from typing_extensions import TypeAlias

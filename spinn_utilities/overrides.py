@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections.abc import Iterable
 import inspect
 import os
 from types import FunctionType, MethodType
-from typing import Any, Callable, Iterable, Optional, TypeVar
+from typing import Any, Callable, Optional, TypeVar
 
 #: :meta private:
 Method = TypeVar("Method", bound=Callable[..., Any])

@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from collections.abc import Iterable, Iterator, MutableSequence, Sequence
 from typing import (
-    FrozenSet, Iterable, Iterator, MutableSequence, Optional, Sequence,
+    Optional,
     Set, Tuple, Union,
     Generic, TypeVar, overload)
 from typing_extensions import TypeAlias
@@ -21,7 +22,7 @@ from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 T = TypeVar("T")
 # Can't be Iterable[str] or Sequence[str] because that includes str itself
 _StrSeq: TypeAlias = Union[
-    MutableSequence[str], Tuple[str, ...], FrozenSet[str], Set[str]]
+    MutableSequence[str], Tuple[str, ...], frozenset[str], Set[str]]
 _Keys: TypeAlias = Optional[Union[str, _StrSeq]]
 
 

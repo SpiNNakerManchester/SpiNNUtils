@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
-from typing import Generic, Iterable, Optional, Union, TYPE_CHECKING
+from collections.abc import Iterable
+from typing import Generic, Optional, Union, TYPE_CHECKING
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, T
 if TYPE_CHECKING:

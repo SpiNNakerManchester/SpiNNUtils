@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+from collections.abc import Iterable, Iterator, Sequence
 from typing import (
-    Generic, Iterable, Iterator, Optional, Sequence, Tuple,
+    Generic, Optional, Tuple,
     overload, TYPE_CHECKING, Union)
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, _StrSeq, _Keys

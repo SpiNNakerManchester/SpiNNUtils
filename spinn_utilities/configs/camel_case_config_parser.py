@@ -27,6 +27,7 @@ FileNames: TypeAlias = Union[str, bytes, PathLike[str], PathLike[bytes],
                              Iterable[str], bytes, PathLike[str],
                              PathLike[bytes]]
 
+
 class CamelCaseConfigParser(configparser.RawConfigParser):
     """
     Extends the Parser to allow for differences in case and underscores

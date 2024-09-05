@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from enum import Enum
+from typing import Tuple
 from spinn_utilities.exceptions import (
     DataNotMocked, DataNotYetAvialable, NotSetupException, ShutdownException,
     SpiNNUtilsException)
@@ -33,7 +34,7 @@ class DataStatus(Enum):
     #: The system has been shut down.
     SHUTDOWN = (3, ShutdownException)
 
-    def __new__(cls, *args) -> 'DataStatus':
+    def __new__(cls, *args: Tuple[int, SpiNNUtilsException]) -> 'DataStatus':
         obj = object.__new__(cls)
         obj._value_ = args[0]
         return obj
@@ -42,11 +43,10 @@ class DataStatus(Enum):
         # pylint: disable=unused-argument
         self._exception = exception
 
-    def exception(self, data) -> SpiNNUtilsException:
+    def exception(self, data: str) -> SpiNNUtilsException:
         """
         Returns an instance of the most suitable data-not-available exception.
 
         :param data: Parameter to pass to the relevant constructor.
-        :rtype: ~spinn_utilities.exceptions.SpiNNUtilsException
         """
         return self._exception(data)

@@ -93,7 +93,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
 
     def __init__(self, size: int, key=None):
         """
-        :param int size: Fixed length of the list
+        :param size: Fixed length of the list
         :param key: The dict key this list covers.
             This is used only for better Exception messages
         """

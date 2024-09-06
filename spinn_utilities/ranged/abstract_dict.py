@@ -22,8 +22,7 @@ from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 #: :meta private:
 T = TypeVar("T")
 # Can't be Iterable[str] or Sequence[str] because that includes str itself
-_StrSeq: TypeAlias = Union[
-    MutableSequence[str], Tuple[str, ...], frozenset[str], Set[str]]
+_StrSeq: TypeAlias = list[str]
 _Keys: TypeAlias = Optional[Union[str, _StrSeq]]
 
 

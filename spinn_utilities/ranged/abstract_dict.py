@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections.abc import Iterable, Iterator, MutableSequence, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from typing import (
-    Optional,
-    Set, Tuple, Union,
+    Optional, Tuple, Union,
     Generic, TypeVar, overload)
 from typing_extensions import TypeAlias
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod

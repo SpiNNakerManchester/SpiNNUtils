@@ -1,0 +1,16 @@
+/.project
+/.settings
+/.pydevproject
+*.pyc
+/.cache
+__pycache__
+/SpiNNUtilities.egg-info/
+/dist/
+/.coverage
+/.pytest_cache
+/doc/build
+/.settings
+.DS_Store
+.idea/
+/.mypy_cache/
+/build

@@ -1,0 +1,6 @@
+[sect]
+a_string=from template
+string_list=alpha,beta,gamma
+a_int=123
+a_float=44.56
+a_bool=TRUE

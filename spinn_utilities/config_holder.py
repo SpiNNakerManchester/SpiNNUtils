@@ -330,11 +330,11 @@ def config_options(section: str) -> List[str]:
         raise ConfigException("configuration not loaded")
     return __config.options(section)
 
-
+# Typiying method more exactly fails
+# Union[Callable[[str, str], Any],
+# Callable[[str, str, Optional[List[str]]], Any]]
 def _check_lines(py_path: str, line: str, lines: List[str], index: int,
-                 method: Union[Callable[[str, str], Any],
-                 Callable[[str, str, Optional[str]], Any]],
-                 used_cfgs: Dict[str, Set[str]], start,
+                 method: Callable, used_cfgs: Dict[str, Set[str]], start,
                  special_nones: Optional[List[str]] = None):
     """
     Support for `_check_python_file`. Gets section and option name.

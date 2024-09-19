@@ -331,7 +331,7 @@ def config_options(section: str) -> List[str]:
     return __config.options(section)
 
 
-# Typiying method more exactly fails
+# Tried to give method a more exact type but expects method to handle both!
 # Union[Callable[[str, str], Any],
 # Callable[[str, str, Optional[List[str]]], Any]]
 def _check_lines(py_path: str, line: str, lines: List[str], index: int,

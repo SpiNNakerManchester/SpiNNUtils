@@ -16,7 +16,7 @@ from collections import defaultdict
 from configparser import NoOptionError
 import logging
 import os
-from typing import Any, Callable, Collection, Dict, List, Optional, Set, Union
+from typing import Callable, Collection, Dict, List, Optional, Set, Union
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
@@ -329,6 +329,7 @@ def config_options(section: str) -> List[str]:
     if __config is None:
         raise ConfigException("configuration not loaded")
     return __config.options(section)
+
 
 # Typiying method more exactly fails
 # Union[Callable[[str, str], Any],

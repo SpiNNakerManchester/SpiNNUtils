@@ -115,12 +115,14 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
             return None
         return float(value)
 
-    def get_bool(self, section: str, option: str) -> Optional[bool]:
+    def get_bool(self, section: str, option: str,
+                 special_nones: Optional[List[str]]) -> Optional[bool]:
         """
         Get the Boolean value of an option.
 
         :param str section: What section to get the option from.
         :param str option: What option to read.
+        :param special_nones: What special values to except as None
         :return: The option value.
         :rtype: bool
         """
@@ -131,5 +133,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         if lower in FALSES:
             return False
         if lower in NONES:
+            return None
+        if special_nones and lower in special_nones:
             return None
         raise ValueError(f"invalid truth value {value}")

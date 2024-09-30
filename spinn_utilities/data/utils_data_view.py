@@ -88,7 +88,7 @@ class _UtilsDataModel(object):
         self._temporary_directory: Optional[TemporaryDirectory] = None
         self._soft_reset()
 
-    def _soft_reset(self):
+    def _soft_reset(self) -> None:
         """
         Puts all data back into the state expected at `sim.reset` but not
         graph changed.
@@ -180,8 +180,7 @@ class UtilsDataView(object):
         """
         The most suitable no data Exception based on the status.
 
-        :param str data: Name of the data not found
-        :rtype: ~spinn_utilities.exceptions.SpiNNUtilsException
+        :param data: Name of the data not found
         """
         return cls.__data._data_status.exception(data)
 
@@ -206,8 +205,6 @@ class UtilsDataView(object):
             During the first run after reset this continues to return True!
 
         Returns False after a reset that was considered soft.
-
-        :rtype: bool
         """
         return cls.__data._reset_status == ResetStatus.HARD_RESET
 
@@ -230,7 +227,6 @@ class UtilsDataView(object):
         """
         Check if the simulation has run at least once, ignoring resets.
 
-        :rtype: bool
         :raises NotImplementedError:
             If this is called from an unexpected state
         """
@@ -249,7 +245,6 @@ class UtilsDataView(object):
         """
         Checks if the simulation has run and not been reset.
 
-        :rtype: bool
         :raises NotImplementedError:
             If this is called from an unexpected state
         """
@@ -273,7 +268,6 @@ class UtilsDataView(object):
 
         It also returns False after a `sim.stop` or `sim.end` call starts
 
-        :rtype: bool
         :raises NotImplementedError:
             If this is called from an unexpected state
         """
@@ -302,7 +296,6 @@ class UtilsDataView(object):
         """
         Checks that a stop request has not been sent.
 
-        :rtype: bool
         :raises NotImplementedError:
             If this is called from an unexpected state
         """
@@ -321,7 +314,6 @@ class UtilsDataView(object):
 
         That is a call to run has started but not yet stopped.
 
-        :rtype: bool
         """
         return cls.__data._run_status in [
             RunStatus.IN_RUN, RunStatus.STOP_REQUESTED]
@@ -377,7 +369,6 @@ class UtilsDataView(object):
         """
         Checks to see if there is already a simulator.
 
-        :rtype: bool
         :raises NotImplementedError:
             If this is called from an unexpected state
         """
@@ -399,7 +390,6 @@ class UtilsDataView(object):
 
         This returns False in the Mocked state.
 
-        :rtype: bool
         :raises NotImplementedError:
             If the data has not yet been set up or on an unexpected run_status
         """
@@ -425,7 +415,6 @@ class UtilsDataView(object):
         :return: True if the stop has already been requested
             or if the system is stopping or has already stopped
             False if the stop request makes sense.
-        :rtype: bool
         :raises NotImplementedError:
             If this is called from an unexpected state
         :raises SpiNNUtilsException:
@@ -480,7 +469,6 @@ class UtilsDataView(object):
             In unit test mode this returns a temporary directory
             shared by all path methods.
 
-        :rtype: str
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the run_dir_path is currently unavailable
         """
@@ -495,7 +483,6 @@ class UtilsDataView(object):
         """
         The ExcutableFinder object created at time code is imported.
 
-        :rtype: ExcutableFinder
         """
         return cls.__data._executable_finder
 
@@ -506,7 +493,7 @@ class UtilsDataView(object):
 
         Syntactic sugar for `get_executable_finder().add_path()`
 
-        :param str search_path: absolute search path for binaries
+        :param search_path: absolute search path for binaries
         """
         cls.__data._executable_finder.add_path(search_path)
 

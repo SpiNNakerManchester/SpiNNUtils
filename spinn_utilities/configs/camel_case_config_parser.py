@@ -12,13 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections.abc import Iterable
 import configparser
-from typing import List, Optional
+from os import PathLike
+from typing import List, Optional, Union
 
 
 NONES = ("none", )
 TRUES = ('y', 'yes', 't', 'true', 'on', '1')
 FALSES = ('n', 'no', 'f', 'false', 'off', '0')
+
+# Type support
+_Path = Union[str, bytes, PathLike[str], PathLike[bytes]]
 
 
 class CamelCaseConfigParser(configparser.RawConfigParser):
@@ -35,11 +40,12 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         lower = optionstr.lower()
         return lower.replace("_", "")
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self._read_files = list()
+        self._read_files: List[str] = list()
 
-    def read(self, filenames, encoding=None):
+    def read(self, filenames: Union[_Path, Iterable[_Path]],
+             encoding: Optional[str] = None):
         """
         Read and parse a filename or a list of filenames.
         """
@@ -48,7 +54,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return new_files
 
     @property
-    def read_files(self):
+    def read_files(self) -> List[str]:
         """
         The configuration files that have been actually read.
         """
@@ -58,10 +64,9 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         """
         Get the string value of an option.
 
-        :param str section: What section to get the option from.
-        :param str option: What option to read.
+        :param section: What section to get the option from.
+        :param option: What option to read.
         :return: The option value
-        :rtype: str or None
         """
         value = self.get(section, option)
         if value.lower() in NONES:
@@ -73,11 +78,10 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         """
         Get the string value of an option split into a list.
 
-        :param str section: What section to get the option from.
-        :param str option: What option to read.
+        :param section: What section to get the option from.
+        :param option: What option to read.
         :param token: The token to split the string into a list
         :return: The list (possibly empty) of the option values
-        :rtype: list(str)
         """
         value = self.get(section, option)
         if value.lower() in NONES:

@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 
 from collections.abc import Iterable
 import configparser
-from os import PathLike
 from typing import List, Optional, Union
 
 
@@ -23,7 +23,8 @@ TRUES = ('y', 'yes', 't', 'true', 'on', '1')
 FALSES = ('n', 'no', 'f', 'false', 'off', '0')
 
 # Type support
-_Path = Union[str, bytes, PathLike[str], PathLike[bytes]]
+_Path = Union[Union[str, bytes, os.PathLike],
+    Iterable[Union[str, bytes, os.PathLike]]]
 
 
 class CamelCaseConfigParser(configparser.RawConfigParser):
@@ -44,7 +45,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         super().__init__()
         self._read_files: List[str] = list()
 
-    def read(self, filenames: Union[_Path, Iterable[_Path]],
+    def read(self, filenames: _Path,
              encoding: Optional[str] = None):
         """
         Read and parse a filename or a list of filenames.

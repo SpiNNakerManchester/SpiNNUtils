@@ -63,8 +63,7 @@ class UtilsDataWriter(UtilsDataView):
 
     def __init__(self, state: DataStatus):
         """
-        :param ~spinn_utilities.data.DataStatus state:
-            State writer should be in
+        :param state: State writer should be in
         """
         if state == DataStatus.MOCKED:
             self._mock()
@@ -92,7 +91,6 @@ class UtilsDataWriter(UtilsDataView):
         then set that value.
 
         :return: A Data Writer
-        :rtype: UtilsDataWriter
         """
         return cls(DataStatus.MOCKED)
 
@@ -104,7 +102,6 @@ class UtilsDataWriter(UtilsDataView):
         All previous data will be cleared
 
         :return: A Data Writer
-        :rtype: UtilsDataWriter
         """
         return cls(DataStatus.SETUP)
 
@@ -259,7 +256,6 @@ class UtilsDataWriter(UtilsDataView):
         As it is only accessed to create `timestamp` directories and
         remove old reports, this is not a view method.
 
-        :rtype: str
         :raises SpiNNUtilsException:
             If the `simulation_time_step` is currently unavailable
         """
@@ -271,7 +267,7 @@ class UtilsDataWriter(UtilsDataView):
         """
         Checks and sets the `run_dir_path`.
 
-        :param str run_dir_path:
+        :param run_dir_path:
         :raises InvalidDirectory: if the `run_dir_path` is not a directory
         """
         if os.path.isdir(run_dir_path):
@@ -284,7 +280,7 @@ class UtilsDataWriter(UtilsDataView):
         """
         Checks and sets the `reports_dir_path`.
 
-        :param str reports_dir_path:
+        :param reports_dir_path:
         :raises InvalidDirectory: if the `reports_dir_path` is not a directory
         """
         if os.path.isdir(reports_dir_path):

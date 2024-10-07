@@ -190,8 +190,6 @@ class UtilsDataView(object):
     def _is_mocked(cls) -> bool:
         """
         Checks if the view is in mocked state.
-
-        :rtype: bool
         """
         return cls.__data._data_status == DataStatus.MOCKED
 
@@ -217,8 +215,6 @@ class UtilsDataView(object):
             During the first run after reset this continues to return True!
 
         Returns False after a reset that was considered hard.
-
-        :rtype: bool
         """
         return cls.__data._reset_status == ResetStatus.SOFT_RESET
 
@@ -437,8 +433,6 @@ class UtilsDataView(object):
         Determines if simulator has already been shutdown.
 
         This returns False in the Mocked state
-
-        :rtype: bool
         """
         return cls.__data._run_status == RunStatus.SHUTDOWN
 
@@ -505,9 +499,8 @@ class UtilsDataView(object):
 
         Syntactic sugar for `get_executable_finder().get_executable_path()`
 
-        :param str executable_name: The name of the executable to find
+        :param executable_name: The name of the executable to find
         :return: The full path of the discovered executable
-        :rtype: str
         :raises KeyError: If no executable was found in the set of folders
         """
         return cls.__data._executable_finder.get_executable_path(
@@ -526,12 +519,11 @@ class UtilsDataView(object):
 
         Syntactic sugar for `get_executable_finder().get_executable_paths()`
 
-        :param str executable_names: The name of the executable to find.
+        :param executable_names: The name of the executable to find.
             Assumed to be comma separated.
         :return:
             The full path of the discovered executable, or ``None`` if no
             executable was found in the set of folders
-        :rtype: list(str)
         """
         return cls.__data._executable_finder.get_executable_paths(
             executable_names)
@@ -546,7 +538,6 @@ class UtilsDataView(object):
         Remains True during the first run after a data change
         Only set to False at the *end* of the first run
 
-        :rtype: bool
         """
         return cls.__data._requires_data_generation
 
@@ -569,8 +560,6 @@ class UtilsDataView(object):
         any mapping stage to be called
         Remains True during the first run after a requires mapping.
         Only set to False at the *end* of the first run
-
-        :rtype: bool
         """
         return cls.__data._requires_mapping
 
@@ -608,7 +597,7 @@ class UtilsDataView(object):
         """
         Sets the status as shutdown and raises a SkipTest
 
-        :param str reason: Message for the Skip
+        :param reason: Message for the Skip
         :param parent: Exception which triggered the skip if any
         :type parent: Exception or None
         :raises: SkipTest very time called

@@ -25,10 +25,11 @@ FALSES = ('n', 'no', 'f', 'false', 'off', '0')
 # Type support
 if TYPE_CHECKING:
     _Path = Union[Union[str, bytes, os.PathLike],
-        Iterable[Union[str, bytes, os.PathLike]]]
+                  Iterable[Union[str, bytes, os.PathLike]]]
 else:
     # Python 3.8 does not support above typing
     _Path = str
+
 
 class CamelCaseConfigParser(configparser.RawConfigParser):
     """

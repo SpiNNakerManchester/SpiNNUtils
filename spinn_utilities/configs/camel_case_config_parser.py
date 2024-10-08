@@ -15,7 +15,7 @@ import os
 
 from collections.abc import Iterable
 import configparser
-from typing import List, Optional, Union
+from typing import List, Optional, TYPE_CHECKING, Union
 
 
 NONES = ("none", )
@@ -23,9 +23,12 @@ TRUES = ('y', 'yes', 't', 'true', 'on', '1')
 FALSES = ('n', 'no', 'f', 'false', 'off', '0')
 
 # Type support
-_Path = Union[Union[str, bytes, os.PathLike],
-    Iterable[Union[str, bytes, os.PathLike]]]
-
+if TYPE_CHECKING:
+    _Path = Union[Union[str, bytes, os.PathLike],
+        Iterable[Union[str, bytes, os.PathLike]]]
+else:
+    # Python 3.8 does not support above typing
+    _Path = str
 
 class CamelCaseConfigParser(configparser.RawConfigParser):
     """

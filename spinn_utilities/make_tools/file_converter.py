@@ -619,13 +619,13 @@ class FileConverter(object):
             dest_f.write(text[write_flag:])
 
     @staticmethod
-    def convert(src_dir, dest_dir, file_name):
+    def convert(src_dir: str, dest_dir: str, file_name: str):
         """
         Static method to create Object and do the conversion.
 
-        :param str src_dir: Source directory
-        :param str dest_dir: Destination directory
-        :param str file_name:
+        :param src_dir: Source directory
+        :param dest_dir: Destination directory
+        :param file_name:
             The name of the file to convert within the source directory; it
             will be made with the same name in the destination directory.
         """

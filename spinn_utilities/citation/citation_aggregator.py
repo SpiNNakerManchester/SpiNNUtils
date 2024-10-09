@@ -299,6 +299,8 @@ class CitationAggregator(object):
         reference_entry = dict()
         reference_entry[REFERENCES_TYPE_TYPE] = REFERENCES_SOFTWARE_TYPE
         reference_entry[REFERENCES_TITLE_TYPE] = module_name
+        if imported_module is None:
+            return reference_entry
         if (hasattr(imported_module, "__version_day__") and
                 hasattr(imported_module, "__version_month__") and
                 hasattr(imported_module, "__version_year__")):

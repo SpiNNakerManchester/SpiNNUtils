@@ -513,7 +513,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_ids(ids=ids)
         if key is None:
-            key = self.keys()
+            key = list(self.keys())
         return self._merge_ranges({
             a_key: self._value_lists[a_key].iter_ranges_by_ids(ids=ids)
             for a_key in key})

@@ -66,7 +66,7 @@ class Replacer(LogSqlLiteDatabase):
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         # nothing yet
-        pass
+        return False
 
     _INT_FMT = struct.Struct("!I")
     _FLT_FMT = struct.Struct("!f")

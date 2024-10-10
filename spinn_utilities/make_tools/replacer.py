@@ -18,11 +18,14 @@ import shutil
 import struct
 import sys
 from types import TracebackType
-from typing_extensions import Literal, Self
 from typing import Optional, Type, Tuple
+
+from typing_extensions import Literal, Self
+
 from spinn_utilities.overrides import overrides
 from spinn_utilities.config_holder import get_config_str_or_none
 from spinn_utilities.log import FormatAdapter
+
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
 from .log_sqllite_database import DB_FILE_NAME, LogSqlLiteDatabase

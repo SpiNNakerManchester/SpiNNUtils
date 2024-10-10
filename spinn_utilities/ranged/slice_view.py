@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 from typing import (
-    Dict, Generic, Iterable, Iterator, Optional, Sequence, Tuple, overload,
+    Dict, Generic, Iterator, Optional, Sequence, Tuple, overload,
     TYPE_CHECKING, Union)
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, T, _StrSeq, _Keys
@@ -65,7 +65,7 @@ class _SliceView(AbstractView[T], Generic[T]):
                     slice_start=self._start, slice_stop=self._stop)
                 for k in key}
 
-    def update_safe_iter_all_values(self, key: str) -> Iterable[T]:
+    def update_safe_iter_all_values(self, key: str) -> Iterator[T]:
         """
         Iterate over the Values in a way that will work even between updates
 
@@ -88,7 +88,8 @@ class _SliceView(AbstractView[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
-    def iter_all_values(self, key: _Keys = None, update_safe: bool = False):
+    def iter_all_values(self, key: _Keys = None, update_safe: bool = False
+                        ) -> Union[Iterator[T], Iterator[Dict[str, T]]]:
         if isinstance(key, str):
             if update_safe:
                 return self.update_safe_iter_all_values(key)
@@ -100,7 +101,7 @@ class _SliceView(AbstractView[T], Generic[T]):
 
     @overrides(AbstractDict.set_value)
     def set_value(self, key: str, value: _ValueType,
-                  use_list_as_value: bool = False):
+                  use_list_as_value: bool = False) -> None:
         self._range_dict.get_list(key).set_value_by_slice(
             slice_start=self._start, slice_stop=self._stop, value=value,
             use_list_as_value=use_list_as_value)

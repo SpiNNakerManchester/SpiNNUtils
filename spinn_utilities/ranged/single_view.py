@@ -74,7 +74,9 @@ class _SingleView(AbstractView[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_all_values)
-    def iter_all_values(self, key: _Keys, update_safe: bool = False):
+    def iter_all_values(
+            self, key: _Keys, update_safe: bool = False
+            ) -> Union[Iterator[T], Iterator[Dict[str, T]]]:
         if isinstance(key, str):
             yield self._range_dict.get_list(key).get_value_by_id(
                 the_id=self._id)
@@ -82,7 +84,8 @@ class _SingleView(AbstractView[T], Generic[T]):
             yield self._range_dict.get_values_by_id(key=key, the_id=self._id)
 
     @overrides(AbstractDict.set_value)
-    def set_value(self, key: str, value: T, use_list_as_value: bool = False):
+    def set_value(self, key: str, value: T, use_list_as_value: bool = False
+                  ) -> None:
         return self._range_dict.get_list(key).set_value_by_id(
             value=value, the_id=self._id)
 

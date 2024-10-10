@@ -146,8 +146,8 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     @overload
     def __getitem__(self, key: _KeyType) -> AbstractView: ...
 
-    def __getitem__(self, key: Union[str, _KeyType]) -> Union[
-            RangedList[T], AbstractView]:
+    def __getitem__(self, key: Union[str, _KeyType]
+                    ) -> Union[RangedList[T], AbstractView]:
         """
         Support for the view[x] based the type of the key
 
@@ -253,9 +253,8 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
-    def iter_all_values(
-            self, key: _Keys, update_safe:
-            bool = False) -> Union[Iterator[T], Iterator[Dict[str, T]]]:
+    def iter_all_values(self, key: _Keys, update_safe: bool = False
+                        ) -> Union[Iterator[T], Iterator[Dict[str, T]]]:
         if isinstance(key, str):
             if update_safe:
                 return self._value_lists[key].iter()
@@ -425,8 +424,8 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_ranges)
-    def iter_ranges(self, key: _Keys = None) -> \
-            Union[Iterator[Tuple[int, int, T]],
+    def iter_ranges(self, key: _Keys = None
+                    ) -> Union[Iterator[Tuple[int, int, T]],
                   Iterator[Tuple[int, int, Dict[str, T]]]]:
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges()

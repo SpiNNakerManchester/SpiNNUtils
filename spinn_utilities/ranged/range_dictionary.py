@@ -311,7 +311,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     def iter_values_by_ids(
             self, ids: IdsType, key: Union[str, _StrSeq, None] = None,
-            update_safe: bool = False) ->  Union[
+            update_safe: bool = False) -> Union[
             Generator[T, None, None], Generator[Dict[str, T], None, None]]:
         """
         Same as :py:meth:`iter_all_values` but limited to a simple slice.

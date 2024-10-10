@@ -45,7 +45,7 @@ CITATION_DOI_TYPE = 'identifier'
 
 # pylint: skip-file
 
-_SEEN_TYPE =  Set[Union[ModuleType, str, None]]
+_SEEN_TYPE = Set[Union[ModuleType, str, None]]
 
 
 class CitationAggregator(object):
@@ -148,7 +148,7 @@ class CitationAggregator(object):
         return pypi_to_import_map
 
     def _handle_c_dependency(
-            self, top_citation_file:  Dict[str, Any] , module: str,
+            self, top_citation_file:  Dict[str, Any], module: str,
             modules_seen_so_far: _SEEN_TYPE) -> None:
         """
         Handle a C code dependency.

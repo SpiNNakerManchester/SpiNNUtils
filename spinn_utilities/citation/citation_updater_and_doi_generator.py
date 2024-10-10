@@ -56,7 +56,7 @@ class _ZenodoException(Exception):
     """
 
     def __init__(
-            self, operation: str, expected: int , request: requests.Response):
+            self, operation: str, expected: int, request: requests.Response):
         super().__init__(
             "don't know what went wrong. got wrong status code when trying "
             f"to {operation}. Got error code {request.status_code} "
@@ -96,7 +96,8 @@ class _Zenodo(object):
         except Exception:  # pylint: disable=broad-except
             return None
 
-    def get_verify(self, related: List[Dict[str, str]]) -> Optional[JsonObject]:
+    def get_verify(
+            self, related: List[Dict[str, str]]) -> Optional[JsonObject]:
         r = requests.get(
             self._DEPOSIT_GET_URL, timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
@@ -119,8 +120,9 @@ class _Zenodo(object):
                 "get an empty upload", self._VALID_STATUS_REQUEST_POST, r)
         return self._json(r)
 
-    def post_upload(self, deposit_id: str, data: Dict[str, Any],
-                    files: Dict[str, io.BufferedReader]) -> Optional[JsonObject]:
+    def post_upload(
+            self, deposit_id: str, data: Dict[str, Any],
+            files: Dict[str, io.BufferedReader]) -> Optional[JsonObject]:
         r = requests.post(
             self._DEPOSIT_PUT_URL.format(deposit_id), timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token},
@@ -328,8 +330,8 @@ class CitationUpdaterAndDoiGenerator(object):
 
     @staticmethod
     def convert_text_date_to_date(
-            version_month: Union[int, str] , version_year: Union[int, str],
-            version_day:Union[int, str]) -> str:
+            version_month: Union[int, str], version_year: Union[int, str],
+            version_day: Union[int, str]) -> str:
         """
         Convert the 3 components of a date into a CFF date.
 

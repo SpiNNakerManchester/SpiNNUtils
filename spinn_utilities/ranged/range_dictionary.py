@@ -146,7 +146,8 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     @overload
     def __getitem__(self, key: _KeyType) -> AbstractView: ...
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Union[str, _KeyType]) -> Union[
+            RangedList[T], AbstractView]:
         """
         Support for the view[x] based the type of the key
 
@@ -189,7 +190,9 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     def get_values_by_id(
             self, key: Optional[_StrSeq], the_id: int) -> Dict[str, T]: ...
 
-    def get_values_by_id(self, key, the_id) -> Union[T, Dict[str, T]]:
+    def get_values_by_id(
+            self, key: Union[str, _StrSeq, None],
+            the_id: int) -> Union[T, Dict[str, T]]:
         """
         Same as :py:meth:`get_value` but limited to a single ID.
 
@@ -200,7 +203,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         if isinstance(key, str):
             return self._value_lists[key].get_value_by_id(the_id)
         if key is None:
-            key = self.keys()
+            key = list(self.keys())
         return {
             a_key: self._value_lists[a_key].get_value_by_id(the_id)
             for a_key in key}
@@ -250,7 +253,9 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)
-    def iter_all_values(self, key: _Keys, update_safe: bool = False):
+    def iter_all_values(
+            self, key: _Keys, update_safe:
+            bool = False) -> Union[Iterator[T], Iterator[Dict[str, T]]]:
         if isinstance(key, str):
             if update_safe:
                 return self._value_lists[key].iter()
@@ -275,8 +280,10 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         ...
 
     def iter_values_by_slice(
-            self, slice_start: int, slice_stop: int, key=None,
-            update_safe=False):
+            self, slice_start: int, slice_stop: int,
+            key: Union[str, _StrSeq, None] = None,
+            update_safe: bool = False) -> Union[
+            Iterator[T], Iterator[Dict[str, T]]]:
         """
         Same as :py:meth:`iter_all_values` but limited to a simple slice.
         """
@@ -291,17 +298,21 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             slice_start=slice_start, slice_stop=slice_stop, key=key))
 
     @overload
-    def iter_values_by_ids(self, ids: IdsType, key: str,
-                           update_safe: bool = False) -> Iterator[T]:
+    def iter_values_by_ids(
+            self, ids: IdsType, key: str,
+            update_safe: bool = False) -> Generator[T, None, None]:
         ...
 
     @overload
     def iter_values_by_ids(
             self, ids: IdsType, key: Optional[_StrSeq] = None,
-            update_safe: bool = False) -> Iterator[Dict[str, T]]:
+            update_safe: bool = False) -> Generator[Dict[str, T], None, None]:
         ...
 
-    def iter_values_by_ids(self, ids: IdsType, key=None, update_safe=False):
+    def iter_values_by_ids(
+            self, ids: IdsType, key: Union[str, _StrSeq, None] = None,
+            update_safe: bool = False) ->  Union[
+            Generator[T, None, None], Generator[Dict[str, T], None, None]]:
         """
         Same as :py:meth:`iter_all_values` but limited to a simple slice.
         """
@@ -311,18 +322,19 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             key=key, ids=ids))
 
     @staticmethod
-    def _values_from_ranges(ranges: _SimpleRangeIter) -> Iterable[T]:
+    def _values_from_ranges(
+            ranges: _SimpleRangeIter) -> Generator[T, None, None]:
         for (start, stop, value) in ranges:
             for _ in range(start, stop):
                 yield value
 
     @overrides(AbstractDict.set_value)
     def set_value(
-            self, key: str, value: T, use_list_as_value: bool = False):
+            self, key: str, value: T, use_list_as_value: bool = False) -> None:
         self._value_lists[key].set_value(
             value, use_list_as_value=use_list_as_value)
 
-    def __setitem__(self, key: str, value: Union[T, RangedList[T]]):
+    def __setitem__(self, key: str, value: Union[T, RangedList[T]]) -> None:
         """
         Wrapper around set_value to support ``range["key"] =``
 
@@ -428,16 +440,18 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     @overload
     def iter_ranges_by_id(
-            self, key: str, the_id: Optional[int] = None) -> _SimpleRangeIter:
+            self, *, the_id: int, key: str) -> _SimpleRangeIter:
         ...
 
     @overload
-    def iter_ranges_by_id(
-            self, key: Optional[_StrSeq] = None,
-            the_id: Optional[int] = None) -> _CompoundRangeIter:
+    def iter_ranges_by_id(self, *, the_id: int,
+                          key: Optional[_StrSeq] = None) -> _CompoundRangeIter:
         ...
 
-    def iter_ranges_by_id(self, key=None, the_id=None):
+    def iter_ranges_by_id(
+            self, *, the_id: int,
+            key: Union[str, _StrSeq, None] = None) -> Union[
+            _SimpleRangeIter, _CompoundRangeIter]:
         """
         Same as :py:meth:`iter_ranges` but limited to one ID.
 
@@ -449,7 +463,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_id(the_id=the_id)
         if key is None:
-            key = self.keys()
+            key = list(self.keys())
         return self._merge_ranges({
             a_key: self._value_lists[a_key].iter_ranges_by_id(the_id=the_id)
             for a_key in key})
@@ -466,7 +480,9 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             slice_stop: int) -> _CompoundRangeIter:
         ...
 
-    def iter_ranges_by_slice(self, key, slice_start: int, slice_stop: int):
+    def iter_ranges_by_slice(
+            self, key: Union[str, _StrSeq, None], slice_start: int,
+            slice_stop: int) -> Union[_SimpleRangeIter, _CompoundRangeIter]:
         """
         Same as :py:meth:`iter_ranges` but limited to a simple slice.
 
@@ -483,7 +499,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             return self._value_lists[key].iter_ranges_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop)
         if key is None:
-            key = self.keys()
+            key = list(self.keys())
         return self._merge_ranges({
             a_key: self._value_lists[a_key].iter_ranges_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop)

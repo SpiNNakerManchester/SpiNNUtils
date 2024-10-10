@@ -428,23 +428,24 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     @overload
     def iter_ranges_by_id(
-            self, key: str, the_id: Optional[int] = None) -> _SimpleRangeIter:
+            self, *, the_id: int, key: str) -> _SimpleRangeIter:
         ...
 
     @overload
-    def iter_ranges_by_id(
-            self, key: Optional[_StrSeq] = None,
-            the_id: Optional[int] = None) -> _CompoundRangeIter:
+    def iter_ranges_by_id(self, *, the_id: int,
+                          key: Optional[_StrSeq] = None) -> _CompoundRangeIter:
         ...
 
-    def iter_ranges_by_id(self, key=None, the_id=None):
+    def iter_ranges_by_id(
+            self, *, the_id: int,
+            key: Union[str, _StrSeq, None] = None) -> Union[
+            _SimpleRangeIter, _CompoundRangeIter]:
         """
         Same as :py:meth:`iter_ranges` but limited to one ID.
 
         :param key: see :py:meth:`iter_ranges` parameter key
         :param the_id:
             single ID which is the actual ID and not an index into IDs
-        :type the_id: int
         """
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_id(the_id=the_id)

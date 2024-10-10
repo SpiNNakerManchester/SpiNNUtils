@@ -200,7 +200,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         if isinstance(key, str):
             return self._value_lists[key].get_value_by_id(the_id)
         if key is None:
-            key = self.keys()
+            key = list(self.keys())
         return {
             a_key: self._value_lists[a_key].get_value_by_id(the_id)
             for a_key in key}
@@ -450,7 +450,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_id(the_id=the_id)
         if key is None:
-            key = self.keys()
+            key = list(self.keys())
         return self._merge_ranges({
             a_key: self._value_lists[a_key].iter_ranges_by_id(the_id=the_id)
             for a_key in key})
@@ -484,7 +484,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             return self._value_lists[key].iter_ranges_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop)
         if key is None:
-            key = self.keys()
+            key = list(self.keys())
         return self._merge_ranges({
             a_key: self._value_lists[a_key].iter_ranges_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop)

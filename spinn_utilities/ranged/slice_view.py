@@ -78,13 +78,13 @@ class _SliceView(AbstractView[T], Generic[T]):
 
     @overload
     def iter_all_values(
-            self, key: str, update_safe=False) -> Iterator[T]:
+            self, key: str, update_safe: bool = False) -> Iterator[T]:
         ...
 
     @overload
     def iter_all_values(
             self, key: Optional[_StrSeq] = None,
-            update_safe=False) -> Iterator[Dict[str, T]]:
+            update_safe: bool = False) -> Iterator[Dict[str, T]]:
         ...
 
     @overrides(AbstractDict.iter_all_values, extend_defaults=True)

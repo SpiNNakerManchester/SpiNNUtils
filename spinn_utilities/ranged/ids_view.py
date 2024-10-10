@@ -71,7 +71,7 @@ class _IdsView(AbstractView[T], Generic[T]):
         for _id in self._ids:
             ranged_list.set_value_by_id(the_id=_id, value=value)
 
-    def set_value_by_ids(self, key: str, ids: Iterable[int], value: T):
+    def set_value_by_ids(self, key: str, ids: Iterable[int], value: T) -> None:
         """
         Sets a already existing key to the new value. For the view specified.
 
@@ -84,7 +84,8 @@ class _IdsView(AbstractView[T], Generic[T]):
             rl.set_value_by_id(the_id=_id, value=value)
 
     @overload
-    def iter_all_values(self, key: str, update_safe=False) -> Iterator[T]:
+    def iter_all_values(
+            self, key: str, update_safe: bool = False) -> Iterator[T]:
         ...
 
     @overload

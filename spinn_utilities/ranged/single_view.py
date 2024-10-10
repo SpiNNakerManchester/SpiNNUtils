@@ -64,13 +64,14 @@ class _SingleView(AbstractView[T], Generic[T]):
                 for k in key}
 
     @overload
-    def iter_all_values(self, key: str, update_safe=False) -> Iterator[T]:
+    def iter_all_values(self, key: str, update_safe: bool = False
+                        ) -> Iterator[T]:
         ...
 
     @overload
     def iter_all_values(
-            self, key: Optional[_StrSeq], update_safe=False) -> Iterator[
-                Dict[str, T]]:
+            self, key: Optional[_StrSeq], update_safe: bool = False
+            ) -> Iterator[Dict[str, T]]:
         ...
 
     @overrides(AbstractDict.iter_all_values)

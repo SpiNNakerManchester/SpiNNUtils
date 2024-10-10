@@ -55,7 +55,8 @@ class _ZenodoException(Exception):
     Exception from a call to Zenodo.
     """
 
-    def __init__(self, operation, expected, request):
+    def __init__(
+            self, operation: str, expected: int , request: requests.Response):
         super().__init__(
             "don't know what went wrong. got wrong status code when trying "
             f"to {operation}. Got error code {request.status_code} (when "

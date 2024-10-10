@@ -59,8 +59,9 @@ class _ZenodoException(Exception):
             self, operation: str, expected: int , request: requests.Response):
         super().__init__(
             "don't know what went wrong. got wrong status code when trying "
-            f"to {operation}. Got error code {request.status_code} (when "
-            f"expecting {expected}) with response content {request.content}")
+            f"to {operation}. Got error code {request.status_code} "
+            f"(when expecting {expected}) "
+            f"with response content {request.content!r}")
         self.request = request
         self.expected = expected
 

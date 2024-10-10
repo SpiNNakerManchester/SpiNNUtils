@@ -17,7 +17,9 @@ import os
 import shutil
 import struct
 import sys
-from typing import Optional, Tuple
+from types import TracebackType
+from typing_extensions import Literal, Self
+from typing import Optional, Type, Tuple
 from spinn_utilities.overrides import overrides
 from spinn_utilities.config_holder import get_config_str_or_none
 from spinn_utilities.log import FormatAdapter
@@ -61,12 +63,12 @@ class Replacer(LogSqlLiteDatabase):
             return (f"The cfg {extra__binaries=} "
                     f"also does not contain a {DB_FILE_NAME}. ")
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        # nothing yet
-        pass
+    def __exit__(self, exc_type: Optional[Type], exc_val: Exception,
+                 exc_tb: TracebackType) -> Literal[False]:
+        return False
 
     _INT_FMT = struct.Struct("!I")
     _FLT_FMT = struct.Struct("!f")
@@ -124,11 +126,11 @@ class Replacer(LogSqlLiteDatabase):
         (log_level, file_name, line_num, replaced) = data
         return f"{LEVELS[log_level]} ({file_name}: {line_num}): {replaced}"
 
-    def _hex_to_float(self, hex_str):
+    def _hex_to_float(self, hex_str: str) -> str:
         return self._FLT_FMT.unpack(
             self._INT_FMT.pack(int(hex_str, 16)))[0]
 
-    def _hexes_to_double(self, upper, lower):
+    def _hexes_to_double(self, upper: str, lower: str) -> str:
         return self._DBL_FMT.unpack(
             self._INT_FMT.pack(int(upper, 16)) +
             self._INT_FMT.pack(int(lower, 16)))[0]

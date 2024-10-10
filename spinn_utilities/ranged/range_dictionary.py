@@ -500,7 +500,10 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             key: Optional[_StrSeq] = None) -> _CompoundRangeIter:
         ...
 
-    def iter_ranges_by_ids(self, ids: IdsType, key=None):
+    def iter_ranges_by_ids(
+            self, ids: IdsType,
+            key: Union[str, _StrSeq, None] = None) -> Union[
+                _SimpleRangeIter, _CompoundRangeIter]:
         """
         Same as :py:meth:`iter_ranges` but limited to a collection of IDs.
 
@@ -518,7 +521,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             a_key: self._value_lists[a_key].iter_ranges_by_ids(ids=ids)
             for a_key in key})
 
-    def set_default(self, key: str, default: T):
+    def set_default(self, key: str, default: T) -> None:
         """
         Sets the default value for a single key.
 
@@ -540,7 +543,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     def get_default(self, key: str) -> Optional[T]:
         return self._value_lists[key].get_default()
 
-    def copy_into(self, other: RangeDictionary[T]):
+    def copy_into(self, other: RangeDictionary[T]) -> None:
         """
         Turns this dict into a copy of the other dict but keep its id.
 

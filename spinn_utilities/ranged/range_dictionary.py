@@ -457,7 +457,6 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         :param key: see :py:meth:`iter_ranges` parameter key
         :param the_id:
             single ID which is the actual ID and not an index into IDs
-        :type the_id: int
         """
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_id(the_id=the_id)

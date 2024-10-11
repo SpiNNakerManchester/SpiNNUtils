@@ -18,8 +18,10 @@ import logging
 import math
 import os
 import sys
-from typing import Dict, Iterable, List, TypeVar
+from typing import Dict, Iterable, List, TypeVar, Sized, Union
+
 from spinn_utilities.config_holder import get_config_bool
+from spinn_utilities.exceptions import SpiNNUtilsException
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.overrides import overrides
 from spinn_utilities import logger_utils
@@ -46,16 +48,18 @@ class ProgressBar(object):
         "_step_character", "_end_character", "_in_bad_terminal",
     )
 
-    def __init__(self, total_number_of_things_to_do,
+    def __init__(self, total_number_of_things_to_do: Union[int, Sized],
                  string_describing_what_being_progressed,
                  step_character="=", end_character="|"):
-        try:
-            self._number_of_things = int(total_number_of_things_to_do)
-        except TypeError:
-
-            # Might be dealing with general iterable; better not be infinite
-            self._number_of_things = len(list(total_number_of_things_to_do))
-
+        if isinstance(total_number_of_things_to_do, Sized):
+            self._number_of_things = len(total_number_of_things_to_do)
+        else:
+            try:
+                self._number_of_things = int(total_number_of_things_to_do)
+            except TypeError as ex:
+                raise SpiNNUtilsException(
+                    f"{total_number_of_things_to_do=} "
+                    f"should be an int or Sized") from ex
         self._currently_completed = 0
         self._chars_per_thing = None
         self._chars_done = 0

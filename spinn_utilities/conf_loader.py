@@ -41,13 +41,13 @@ def install_cfg_and_error(
     It will create a file in the users home directory based on the defaults.
     Then it prints a helpful message and throws an error with the same message.
 
-    :param str filename:
+    :param filename:
         Name under which to save the new configuration file
-    :param list(str) defaults:
+    :param defaults:
         List of full paths to the default configuration files.
         Each of which *must* have an associated template file with exactly the
         same path plus `.template`.
-    :param list(str) config_locations:
+    :param config_locations:
         List of paths where the user configuration files
         were looked for. Only used for the message
     :raise spinn_utilities.configs.NoConfigFoundException:
@@ -98,8 +98,8 @@ def install_cfg_and_error(
     return NoConfigFoundException(msg)
 
 
-def _check_config(
-        cfg_file: str, default_configs: CamelCaseConfigParser, strict: bool):
+def _check_config(cfg_file: str, default_configs: CamelCaseConfigParser,
+                  strict: bool) -> None:
     """
     Checks the configuration read up to this point to see if it is outdated.
 
@@ -115,10 +115,10 @@ def _check_config(
     These are specific values in specific options no longer supported.
     For example old algorithm names.
 
-    :param str cfg_file: Path of last file read in
-    :param CamelCaseConfigParser default_configs:
+    :param cfg_file: Path of last file read in
+    :param default_configs:
         configuration with just the default files in
-    :param bool strict: Flag to say an exception should be raised
+    :param strict: Flag to say an exception should be raised
     """
     if not default_configs.sections():  # empty
         logger.warning("Can not validate cfg files as no default.")
@@ -143,16 +143,16 @@ def _check_config(
 
 def _read_a_config(
         configuration: CamelCaseConfigParser, cfg_file: str,
-        default_configs: CamelCaseConfigParser, strict: bool):
+        default_configs: CamelCaseConfigParser, strict: bool) -> None:
     """
     Reads in a configuration file and then directly its `machine_spec_file`.
 
-    :param CamelCaseConfigParser configuration:
+    :param configuration:
         configuration to be updated by the reading of a file
-    :param str cfg_file: path to file which should be read in
-    :param CamelCaseConfigParser default_configs:
+    :param cfg_file: path to file which should be read in
+    :param default_configs:
         configuration with just the default files in
-    :param bool strict: Flag to say checker should raise an exception
+    :param strict: Flag to say checker should raise an exception
     """
     _check_config(cfg_file, default_configs, strict)
     configuration.read(cfg_file)
@@ -167,10 +167,9 @@ def _config_locations(filename: str) -> List[str]:
     """
     Defines the list of places we can get configuration files from.
 
-    :param str filename:
+    :param filename:
         The local name of the configuration file, e.g., 'spynnaker.cfg'
     :return: list of fully-qualified filenames
-    :rtype: list(str)
     """
     dotname = "." + filename
 
@@ -191,10 +190,10 @@ def load_config(
     """
     Load the configuration.
 
-    :param str filename:
+    :param filename:
         The base name of the configuration file(s).
         Should not include any path components.
-    :param list(str) defaults:
+    :param defaults:
         The list of files to get default configurations from.
     :param config_parsers:
         The parsers to parse the sections of the configuration file with, as
@@ -203,9 +202,7 @@ def load_config(
         be parsed if the section_name is found in the configuration files
         already loaded. The standard logging parser is appended to (a copy
         of) this.
-    :type config_parsers: list(tuple(str, ~configparser.RawConfigParser))
     :return: the fully-loaded and checked configuration
-    :rtype: ~configparser.RawConfigParser
     """
     configs = CamelCaseConfigParser()
 

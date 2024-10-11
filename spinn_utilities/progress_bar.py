@@ -54,8 +54,8 @@ class ProgressBar(object):
     )
 
     def __init__(self, total_number_of_things_to_do: Union[int, Sized],
-                 string_describing_what_being_progressed,
-                 step_character="=", end_character="|"):
+                 string_describing_what_being_progressed: str,
+                 step_character: str = "=", end_character: str = "|"):
         if isinstance(total_number_of_things_to_do, Sized):
             self._number_of_things = len(total_number_of_things_to_do)
         else:
@@ -80,7 +80,7 @@ class ProgressBar(object):
         self._create_initial_progress_bar(
             string_describing_what_being_progressed)
 
-    def update(self, amount_to_add=1):
+    def update(self, amount_to_add: int = 1) -> None:
         """
         Update the progress bar by a given amount.
 
@@ -92,10 +92,10 @@ class ProgressBar(object):
         self._currently_completed += amount_to_add
         self._check_differences()
 
-    def _print_overwritten_line(self, string: str):
+    def _print_overwritten_line(self, string: str) -> None:
         print("\r" + string, end="", file=self._destination)
 
-    def _print_distance_indicator(self, description: str):
+    def _print_distance_indicator(self, description: str) -> None:
         if description is not None:
             print(description, file=self._destination)
 
@@ -116,12 +116,13 @@ class ProgressBar(object):
             print("", file=self._destination)
             print(" ", end="", file=self._destination)
 
-    def _print_distance_line(self, first_space, second_space):
+    def _print_distance_line(
+            self, first_space: int, second_space: int) -> None:
         line = f"{self._end_character}0%{' ' * first_space}50%" \
                f"{' ' * second_space}100%{self._end_character}"
         print(line, end="", file=self._destination)
 
-    def _print_progress(self, length: int):
+    def _print_progress(self, length: int) -> None:
         chars_to_print = length
         if not self._in_bad_terminal:
             self._print_overwritten_line(self._end_character)

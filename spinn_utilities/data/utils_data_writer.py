@@ -263,7 +263,7 @@ class UtilsDataWriter(UtilsDataView):
             return self.__data._report_dir_path
         raise self._exception("report_dir_path")
 
-    def set_run_dir_path(self, run_dir_path: str):
+    def set_run_dir_path(self, run_dir_path: str) -> None:
         """
         Checks and sets the `run_dir_path`.
 
@@ -276,7 +276,7 @@ class UtilsDataWriter(UtilsDataView):
             self.__data._run_dir_path = None
             raise InvalidDirectory("run_dir_path", run_dir_path)
 
-    def set_report_dir_path(self, reports_dir_path: str):
+    def set_report_dir_path(self, reports_dir_path: str) -> None:
         """
         Checks and sets the `reports_dir_path`.
 
@@ -289,7 +289,8 @@ class UtilsDataWriter(UtilsDataView):
             self.__data._report_dir_path = None
             raise InvalidDirectory("run_dir_path", reports_dir_path)
 
-    def _set_executable_finder(self, executable_finder: ExecutableFinder):
+    def _set_executable_finder(
+            self, executable_finder: ExecutableFinder) -> None:
         """
         Only usable by unit tests!
 

@@ -69,7 +69,7 @@ class FileConverter(object):
     ]
 
     def __call__(self, src: str, dest: str, log_file_id: int,
-                 log_database: LogSqlLiteDatabase):
+                 log_database: LogSqlLiteDatabase) -> None:
         """
         Creates the file_convertor to convert one file.
 
@@ -134,7 +134,7 @@ class FileConverter(object):
                         self._process_chars(dest_f, line_num, text)
         self._check_end_status()
 
-    def _check_end_status(self):
+    def _check_end_status(self) -> None:
         if self._status == State.NORMAL_CODE:
             return
         if self._status == State.IN_LOG:
@@ -489,7 +489,8 @@ class FileConverter(object):
             dest_f.write("*/")
             dest_f.write(end * (self._log_lines - 1))
 
-    def _process_chars(self, dest_f: TextIOBase, line_num: int, text: str):
+    def _process_chars(
+            self, dest_f: TextIOBase, line_num: int, text: str) -> None:
         """
         Deals with complex lines that can not be handled in one go.
 
@@ -619,7 +620,7 @@ class FileConverter(object):
             dest_f.write(text[write_flag:])
 
     @staticmethod
-    def convert(src_dir: str, dest_dir: str, file_name: str):
+    def convert(src_dir: str, dest_dir: str, file_name: str) -> None:
         """
         Static method to create Object and do the conversion.
 

@@ -13,12 +13,13 @@
 # limitations under the License.
 
 from collections import defaultdict
+from collections.abc import Sized
 from datetime import date
 import logging
 import math
 import os
 import sys
-from typing import Dict, Iterable, List, TypeVar, Sized, Union
+from typing import Dict, Iterable, List, TypeVar, Union
 
 from spinn_utilities.config_holder import get_config_bool
 from spinn_utilities.exceptions import SpiNNUtilsException

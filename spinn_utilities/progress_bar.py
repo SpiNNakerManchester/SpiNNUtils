@@ -13,12 +13,18 @@
 # limitations under the License.
 
 from collections import defaultdict
+from collections.abc import Sized
 from datetime import date
 import logging
 import math
 import os
 import sys
-from typing import Dict, Iterable, List, TypeVar
+from types import TracebackType
+from typing import (cast, Dict, Iterable, List, Optional, Tuple, Type,
+                    TypeVar, Union)
+
+from typing_extensions import Literal, Self
+
 from spinn_utilities.config_holder import get_config_bool
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.overrides import overrides
@@ -52,12 +58,11 @@ class ProgressBar(object):
         try:
             self._number_of_things = int(total_number_of_things_to_do)
         except TypeError:
-
             # Might be dealing with general iterable; better not be infinite
             self._number_of_things = len(list(total_number_of_things_to_do))
 
         self._currently_completed = 0
-        self._chars_per_thing = None
+        self._chars_per_thing = 1.0
         self._chars_done = 0
         self._string = string_describing_what_being_progressed
         self._destination = sys.stderr
@@ -123,7 +128,7 @@ class ProgressBar(object):
             self._print_progress_unit(chars_to_print)
         self._destination.flush()
 
-    def _print_progress_unit(self, chars_to_print):
+    def _print_progress_unit(self, chars_to_print: int) -> None:
         # pylint: disable=unused-argument
         print(self._step_character, end='', file=self._destination)
 
@@ -134,7 +139,7 @@ class ProgressBar(object):
         else:
             print("", file=self._destination)
 
-    def _create_initial_progress_bar(self, description):
+    def _create_initial_progress_bar(self, description: str) -> None:
         if self._number_of_things == 0:
             self._chars_per_thing = ProgressBar.MAX_LENGTH_IN_CHARS
         else:
@@ -144,7 +149,7 @@ class ProgressBar(object):
         self._print_progress(0)
         self._check_differences()
 
-    def _check_differences(self):
+    def _check_differences(self) -> None:
         expected_chars_done = int(math.floor(
             self._currently_completed * self._chars_per_thing))
         if self._currently_completed == self._number_of_things:
@@ -152,7 +157,7 @@ class ProgressBar(object):
         self._print_progress(expected_chars_done)
         self._chars_done = expected_chars_done
 
-    def end(self):
+    def end(self) -> None:
         """
         Close the progress bar, updating whatever is left if needed.
         """
@@ -161,10 +166,10 @@ class ProgressBar(object):
         self._check_differences()
         self._print_progress_done()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ProgressBar:{self._string}>"
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         """
         Support method to use the progress bar as a context manager::
 
@@ -186,7 +191,8 @@ class ProgressBar(object):
         """
         return self
 
-    def __exit__(self, exty, exval, traceback):
+    def __exit__(self, exc_type: Optional[Type], exc_val: Exception,
+                 exc_tb: TracebackType) -> Literal[False]:
         self.end()
         return False
 
@@ -213,7 +219,7 @@ class ProgressBar(object):
             if finish_at_end:
                 self.end()
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args: Tuple[int, str], **kwargs: Dict) -> "ProgressBar":
         # pylint: disable=unused-argument
         c = cls
         if _EnhancedProgressBar._enabled:
@@ -230,12 +236,12 @@ class _EnhancedProgressBar(ProgressBar):
     """
 
     _line_no = 0
-    _seq_id = 0
-    _step_characters: Dict[int, List[str]] = defaultdict(list)
+    _seq_id = "Unset"
+    _step_characters: Dict[str, List[str]] = defaultdict(list)
     _enabled = False
     _DATA_FILE = "progress_bar.txt"
 
-    def _print_progress_unit(self, chars_to_print):
+    def _print_progress_unit(self, chars_to_print: int) -> None:
         song_line = self.__line
         if not self._in_bad_terminal:
             print(song_line[0:self._chars_done + chars_to_print],
@@ -245,7 +251,7 @@ class _EnhancedProgressBar(ProgressBar):
                   end='', file=self._destination)
             self._chars_done += 1
 
-    def _print_progress_done(self):
+    def _print_progress_done(self) -> None:
         self._print_progress(ProgressBar.MAX_LENGTH_IN_CHARS)
         if not self._in_bad_terminal:
             self._print_overwritten_line(self._end_character)
@@ -257,19 +263,19 @@ class _EnhancedProgressBar(ProgressBar):
         self.__next_line()
 
     @property
-    def __line(self):
+    def __line(self) -> str:
         return _EnhancedProgressBar._step_characters[
             _EnhancedProgressBar._seq_id][_EnhancedProgressBar._line_no]
 
     @classmethod
-    def __next_line(cls):
+    def __next_line(cls) -> None:
         if cls._line_no + 1 >= len(cls._step_characters[cls._seq_id]):
             cls._line_no = 0
         else:
             cls._line_no += 1
 
     @classmethod
-    def init_once(cls):
+    def init_once(cls) -> None:
         """
         At startup reads progress bar data from file to be used every time
         """
@@ -303,7 +309,8 @@ class _EnhancedProgressBar(ProgressBar):
             cls._enabled = (
                     date.today().strftime("%m%d") in cls._step_characters)
         except IOError:
-            cls._seq_id = 0
+            pass
+            cls._seq_id = "error"
         finally:
             cls._line_no = 0
             if cls._enabled:
@@ -324,22 +331,22 @@ class DummyProgressBar(ProgressBar):
     fails in exactly the same way.
     """
     @overrides(ProgressBar._print_overwritten_line)
-    def _print_overwritten_line(self, string: str):
+    def _print_overwritten_line(self, string: str) -> None:
         pass
 
     @overrides(ProgressBar._print_distance_indicator)
-    def _print_distance_indicator(self, description: str):
+    def _print_distance_indicator(self, description: str) -> None:
         pass
 
     @overrides(ProgressBar._print_progress)
-    def _print_progress(self, length: int):
+    def _print_progress(self, length: int) -> None:
         pass
 
     @overrides(ProgressBar._print_progress_done)
     def _print_progress_done(self) -> None:
         pass
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<DummyProgressBar:{self._string}>"
 
 
@@ -358,6 +365,6 @@ if __name__ == "__main__":  # pragma: no cover
     demo.end()
 
     _collection = [2, 3, 5, 7, 11, 13, 17]
-    demo = ProgressBar(_collection, "Demo over a few primes")
+    demo = ProgressBar(len(_collection), "Demo over a few primes")
     for prime in demo.over(_collection):
         sleep(0.1)

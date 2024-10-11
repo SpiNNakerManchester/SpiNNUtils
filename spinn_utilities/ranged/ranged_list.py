@@ -66,7 +66,8 @@ class RangedList(AbstractList[T], Generic[T]):
 
     def __init__(
             self, size: Optional[int] = None, value: _ValueType = None,
-            key=None, use_list_as_value=False):
+            key: Optional[str] = None, use_list_as_value: bool = False
+            ) -> None:
         """
         :param size:
             Fixed length of the list;
@@ -339,7 +340,8 @@ class RangedList(AbstractList[T], Generic[T]):
                              f"does not equal the size:{size}")
         return values
 
-    def set_value(self, value: _ValueType, use_list_as_value=False):
+    def set_value(
+            self, value: _ValueType, use_list_as_value: bool = False) -> None:
         """
         Sets *all* elements in the list to this value.
 
@@ -361,7 +363,7 @@ class RangedList(AbstractList[T], Generic[T]):
             self._ranges = [(0, self._size, value)]
             self._ranged_based = True
 
-    def set_value_by_id(self, the_id: int, value: T):
+    def set_value_by_id(self, the_id: int, value: T) -> None:
         """
         Sets the value for a single ID to the new value.
 
@@ -422,7 +424,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     def set_value_by_slice(
             self, slice_start: int, slice_stop: int, value: _ValueType,
-            use_list_as_value=False):
+            use_list_as_value: bool = False) -> None:
         """
         Sets the value for a single range to the new value.
 
@@ -504,13 +506,14 @@ class RangedList(AbstractList[T], Generic[T]):
         # set the value in case missed elsewhere
         ranges[index] = (ranges[index][0], ranges[index][1], value)
 
-    def _set_values_list(self, ids: IdsType, value: _ListType):
+    def _set_values_list(self, ids: IdsType, value: _ListType) -> None:
         values = self.as_list(value=value, size=len(ids), ids=ids)
         for id_value, val in zip(ids, values):
             self.set_value_by_id(id_value, val)
 
     def set_value_by_ids(
-            self, ids: IdsType, value: _ValueType, use_list_as_value=False):
+            self, ids: IdsType, value: _ValueType,
+            use_list_as_value: bool = False) -> None:
         """
         Sets a already existing key to the new value. For the ids specified.
 
@@ -526,7 +529,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     def set_value_by_selector(
             self, selector: Selector, value: _ValueType,
-            use_list_as_value=False):
+            use_list_as_value: bool =False) -> None:
         """
         Support for the ``list[x] =`` format.
 
@@ -564,7 +567,7 @@ class RangedList(AbstractList[T], Generic[T]):
             return list(self.__the_ranges)
         return list(self.iter_ranges())
 
-    def set_default(self, default: Optional[T]):
+    def set_default(self, default: Optional[T]) -> None:
         """
         Sets the default value.
 
@@ -588,7 +591,7 @@ class RangedList(AbstractList[T], Generic[T]):
         except AttributeError as e:
             raise AttributeError("Default value not set.") from e
 
-    def copy_into(self, other: RangedList[T]):
+    def copy_into(self, other: RangedList[T]) -> None:
         """
         Turns this List into a of the other list but keep its ID.
 

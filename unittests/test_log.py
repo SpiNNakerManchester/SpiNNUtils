@@ -14,7 +14,7 @@
 
 from datetime import datetime
 import logging
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from spinn_utilities.log import (
     _BraceMessage, ConfiguredFilter, ConfiguredFormatter, FormatAdapter,
     LogLevelTooHighException)

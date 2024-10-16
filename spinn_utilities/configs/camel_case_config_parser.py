@@ -50,7 +50,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         self._read_files: List[str] = list()
 
     def read(self, filenames: _Path,
-             encoding: Optional[str] = None):
+             encoding: Optional[str] = None) -> List[str]:
         """
         Read and parse a filename or a list of filenames.
         """

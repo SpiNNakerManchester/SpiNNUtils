@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Any, Optional
+
 
 class MultipleValuesException(Exception):
     """
     Raised when there more than one value found unexpectedly.
     """
 
-    def __init__(self, key, value1, value2):
+    def __init__(self, key: Optional[str], value1: Any, value2: Any):
         if key is None:
             msg = "Multiple values found"
         else:

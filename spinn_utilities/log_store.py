@@ -24,7 +24,7 @@ class LogStore(object):
 
     @abstractmethod
     def store_log(self, level: int, message: str,
-                  timestamp: Optional[datetime] = None):
+                  timestamp: Optional[datetime] = None) -> None:
         """
         Writes the log message for later retrieval.
 

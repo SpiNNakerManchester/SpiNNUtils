@@ -50,7 +50,7 @@ class ProgressBar(object):
     def __init__(self, total_number_of_things_to_do: Union[int, Sized],
                  string_describing_what_being_progressed,
                  step_character="=", end_character="|"):
-        if isinstance(total_number_of_things_to_do, Sized)
+        if isinstance(total_number_of_things_to_do, Sized):
             self._number_of_things = len(total_number_of_things_to_do)
         else:
             self._number_of_things = int(total_number_of_things_to_do)

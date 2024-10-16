@@ -37,7 +37,7 @@ class LogStore(object):
 
     @abstractmethod
     def retreive_log_messages(
-            self, min_level: int = 0) -> List[Tuple[int, str]]:
+            self, min_level: int = 0) -> List[str]:
         """
         Retrieves all log messages at or above the `min_level`.
 
@@ -45,7 +45,6 @@ class LogStore(object):
             Constraint on the minimum logging level to retrieve.
         :return:
             A list of messages that satisfy the constraint.
-        :rtype: list(tuple(int, str))
         """
         raise NotImplementedError
 

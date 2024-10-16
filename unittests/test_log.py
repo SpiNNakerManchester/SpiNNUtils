@@ -64,11 +64,11 @@ class MockLogStore(LogStore):
 
     @overrides(LogStore.retreive_log_messages)
     def retreive_log_messages(
-            self, min_level: int = 0) -> List[Tuple[int, str]]:
+            self, min_level: int = 0) -> List[str]:
         result = []
         for (level, message) in self.data:
             if level >= min_level:
-                result.append((level, message))
+                result.append(message)
         return result
 
     @overrides(LogStore.get_location)
@@ -193,9 +193,8 @@ def test_log_store():
     # an error disables the logstore for safety
     # includes the ones before setting the log
     assert store.retreive_log_messages() == \
-           [(30, 'This is early'), (20, 'Pre info'),
-            (30, 'This is a warning'), (40, 'And an Error'),
-            (20, 'This is an info')]
+           ['This is early', 'Pre info', 'This is a warning', 'And an Error',
+            'This is an info']
 
     assert 3 == len(store.retreive_log_messages(logging.WARNING))
     # Only the ones from after the log store turned off

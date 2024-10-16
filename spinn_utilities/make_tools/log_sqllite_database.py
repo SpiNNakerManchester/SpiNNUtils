@@ -261,6 +261,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
                         LIMIT 1
                         """, (log_level, line_num, original, file_id)):
                     return row["log_id"]
+        raise ValueError("unexpected no return")
 
     def get_log_info(self, log_id: str) -> Optional[Tuple[int, str, int, str]]:
         """
@@ -313,3 +314,4 @@ class LogSqlLiteDatabase(AbstractContextManager):
                     FROM log
                      """):
                 return row["max_id"]
+        raise ValueError("unexpected no return")

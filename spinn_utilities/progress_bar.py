@@ -54,17 +54,12 @@ class ProgressBar(object):
     )
 
     def __init__(self, total_number_of_things_to_do: Union[int, Sized],
-                 string_describing_what_being_progressed: str,
-                 step_character: str = "=", end_character: str = "|"):
+                 string_describing_what_being_progressed,
+                 step_character="=", end_character="|"):
         if isinstance(total_number_of_things_to_do, Sized):
             self._number_of_things = len(total_number_of_things_to_do)
         else:
-            try:
-                self._number_of_things = int(total_number_of_things_to_do)
-            except TypeError as ex:
-                raise SpiNNUtilsException(
-                    f"{total_number_of_things_to_do=} "
-                    f"should be an int or Sized") from ex
+            self._number_of_things = int(total_number_of_things_to_do)
         self._currently_completed = 0
         self._chars_per_thing = 1.0
         self._chars_done = 0

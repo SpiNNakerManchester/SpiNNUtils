@@ -24,7 +24,7 @@ _SECONDS_TO_MICRO_SECONDS_CONVERSION = 1000
 DB_FILE_NAME = "logs.sqlite3"
 
 
-def _timestamp():
+def _timestamp() -> int:
     return int(time.time() * _SECONDS_TO_MICRO_SECONDS_CONVERSION)
 
 
@@ -56,6 +56,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
             If False, makes sure the dict exists.
         """
         # To Avoid an Attribute error on close after an exception
+        self._db = None
         database_file = self._database_file()
         if not new_dict:
             self._check_database_file(database_file)
@@ -140,6 +141,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         """
         Set up the database if required.
         """
+        assert self._db is not None
         self._db.row_factory = sqlite3.Row
         # Don't use memoryview / buffer as hard to deal with difference
         self._db.text_factory = str
@@ -148,7 +150,8 @@ class LogSqlLiteDatabase(AbstractContextManager):
         self._db.executescript(sql)
 
     def __clear_db(self) -> None:
-        with self._db:
+        assert self._db is not None
+        with self._db as db:
             cursor = self._db.cursor()
             cursor.execute("DELETE FROM log")
             cursor.execute("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='log'")
@@ -166,6 +169,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         :param src_path:
         :param dest_path:
         """
+        assert self._db is not None
         with self._db:
             cursor = self._db.cursor()
             # reuse the existing if it exists
@@ -184,7 +188,9 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 INSERT INTO directory(src_path, dest_path)
                 VALUES(?, ?)
                 """, (src_path, dest_path))
-            return cursor.lastrowid
+            directory_id = cursor.lastrowid
+            assert directory_id is not None
+            return directory_id
 
     def get_file_id(self, directory_id: int, file_name: str) -> int:
         """
@@ -193,6 +199,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         :param directory_id:
         :param file_name:
         """
+        assert self._db is not None
         with self._db:
             # Make previous one as not last
             with self._db:
@@ -209,7 +216,9 @@ class LogSqlLiteDatabase(AbstractContextManager):
                         directory_id, file_name, convert_time, last_build)
                     VALUES(?, ?, ?, 1)
                     """, (directory_id, file_name, _timestamp()))
-                return cursor.lastrowid
+                file_id = cursor.lastrowid
+                assert file_id is not None
+                return file_id
 
     def set_log_info(self, log_level: int, line_num: int,
                      original: str, file_id: int) -> int:
@@ -221,6 +230,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         :param original:
         :param file_id:
         """
+        assert self._db is not None
         with self._db:
             cursor = self._db.cursor()
             # reuse the existing number if nothing has changed
@@ -238,7 +248,9 @@ class LogSqlLiteDatabase(AbstractContextManager):
                     INSERT INTO log(log_level, line_num, original, file_id)
                     VALUES(?, ?, ?, ?)
                     """, (log_level, line_num, original, file_id))
-                return cursor.lastrowid
+                log_id = cursor.lastrowid
+                assert log_id is not None
+                return log_id
             else:
                 for row in self._db.execute(
                         """
@@ -256,6 +268,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
 
         :param log_id: The int id as a String
         """
+        assert self._db is not None
         with self._db:
             for row in self._db.execute(
                     """
@@ -277,6 +290,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         :param original:
         :raises ValueError: If the original is not in the database
         """
+        assert self._db is not None
         with self._db:
             for row in self._db.execute(
                     """
@@ -287,10 +301,11 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 if row["counts"] == 0:
                     raise ValueError(f"{original} not found in database")
 
-    def get_max_log_id(self) -> int:
+    def get_max_log_id(self) -> Optional[int]:
         """
         Get the max id of any log message.
         """
+        assert self._db is not None
         with self._db:
             for row in self._db.execute(
                     """

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from .abstract_base import abstractmethod
 
 

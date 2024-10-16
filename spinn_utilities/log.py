@@ -218,7 +218,8 @@ class FormatAdapter(logging.LoggerAdapter):
         self.do_log = logger._log  # pylint: disable=protected-access
 
     @overrides(logging.LoggerAdapter.log, extend_doc=False, adds_typing=True)
-    def log(self, level: int, msg: object, *args, **kwargs):
+    def log(self, level: int, msg: object,
+            *args: object, **kwargs: object) -> None:
         """
         Delegate a log call to the underlying logger, applying appropriate
         transformations to allow the log message to be written using

@@ -278,7 +278,8 @@ class FormatAdapter(logging.LoggerAdapter):
             except Exception:  # pylint: disable=broad-except
                 pass
 
-        messages.extend(cls._pop_not_stored_messages(cls.__repeat_at_end))
+        messages.extend(map(lambda x: x[2],
+                            cls._pop_not_stored_messages(cls.__repeat_at_end)))
         if messages:
             level = logging.getLevelName(cls.__repeat_at_end)
             print(f"\n!WARNING: {len(messages)} log messages were "

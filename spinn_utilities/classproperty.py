@@ -12,22 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Any, Optional, Type
 
 class _ClassPropertyDescriptor(object):
     """
     A class to handle the management of class properties.
     """
 
-    def __init__(self, fget):
+    def __init__(self, fget: classmethod) -> None:
         self.fget = fget
 
-    def __get__(self, obj, klass=None):
+    def __get__(
+            self, obj: Optional[Any], klass: Optional[Type] = None) -> Any:
         if klass is None:
             klass = type(obj)
         return self.fget.__get__(obj, klass)()
 
 
-def classproperty(func):
+def classproperty(func: classmethod) -> _ClassPropertyDescriptor:
     """
     Defines a property at the class-level.
 

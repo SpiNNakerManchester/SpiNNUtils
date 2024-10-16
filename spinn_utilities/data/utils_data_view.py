@@ -481,7 +481,7 @@ class UtilsDataView(object):
         return cls.__data._executable_finder
 
     @classmethod
-    def register_binary_search_path(cls, search_path: str):
+    def register_binary_search_path(cls, search_path: str) -> None:
         """
         Register an additional binary search path for executables.
 

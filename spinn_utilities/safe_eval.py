@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from types import CodeType, ModuleType
-from typing import Any, Dict, Union
+from typing import Any, Callable, Dict, Union
 from typing_extensions import Buffer
 
 
@@ -46,7 +46,7 @@ class SafeEval(object):
     """
     __slots__ = ["_environment"]
 
-    def __init__(self, *args: ModuleType, **kwargs: Dict[str, Any]):
+    def __init__(self, *args: Union[Callable, ModuleType], **kwargs: Any) -> None:
         """
         :param args:
             The symbols to use to populate the global reference table.
@@ -63,14 +63,12 @@ class SafeEval(object):
             otherwise look up easily.
         """
         env: Dict[Any, Any] = {}
-        item: ModuleType
         for item in args:
             env[item.__name__] = item
         env.update(kwargs)
         self._environment = env
 
-    def eval(self, expression: Union[str, Buffer, CodeType],
-             **kwargs: Dict[str, Any]) -> Any:
+    def eval(self, expression: str, **kwargs: Any) -> Any:
         """
         Evaluate an expression and return the result.
 

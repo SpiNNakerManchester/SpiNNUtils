@@ -26,7 +26,6 @@ from typing import (cast, Dict, Iterable, List, Optional, Tuple, Type,
 from typing_extensions import Literal, Self
 
 from spinn_utilities.config_holder import get_config_bool
-from spinn_utilities.exceptions import SpiNNUtilsException
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.overrides import overrides
 from spinn_utilities import logger_utils

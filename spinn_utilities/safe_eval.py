@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from types import CodeType, ModuleType
+from types import ModuleType
 from typing import Any, Callable, Dict, Union
-from typing_extensions import Buffer
 
 
 class SafeEval(object):
@@ -46,7 +45,8 @@ class SafeEval(object):
     """
     __slots__ = ["_environment"]
 
-    def __init__(self, *args: Union[Callable, ModuleType], **kwargs: Any) -> None:
+    def __init__(self, *args: Union[Callable, ModuleType],
+                 **kwargs: Any) -> None:
         """
         :param args:
             The symbols to use to populate the global reference table.

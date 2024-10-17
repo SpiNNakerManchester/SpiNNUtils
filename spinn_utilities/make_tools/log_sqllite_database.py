@@ -151,7 +151,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
 
     def __clear_db(self) -> None:
         assert self._db is not None
-        with self._db as db:
+        with self._db:
             cursor = self._db.cursor()
             cursor.execute("DELETE FROM log")
             cursor.execute("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='log'")

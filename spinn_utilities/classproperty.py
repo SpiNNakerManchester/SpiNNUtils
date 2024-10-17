@@ -14,6 +14,7 @@
 
 from typing import Any, Optional, Type
 
+
 class _ClassPropertyDescriptor(object):
     """
     A class to handle the management of class properties.

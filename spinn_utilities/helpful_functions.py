@@ -15,7 +15,7 @@
 from functools import reduce
 import logging
 import math
-from typing import Any, cast, Sequence, Tuple, Union, overload
+from typing import Any, Sequence, Union, overload
 from typing_extensions import TypeGuard
 from spinn_utilities.log import FormatAdapter
 

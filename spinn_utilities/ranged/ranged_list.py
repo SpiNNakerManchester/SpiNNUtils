@@ -529,7 +529,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     def set_value_by_selector(
             self, selector: Selector, value: _ValueType,
-            use_list_as_value: bool =False) -> None:
+            use_list_as_value: bool = False) -> None:
         """
         Support for the ``list[x] =`` format.
 

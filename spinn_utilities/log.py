@@ -307,7 +307,7 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def _pop_not_stored_messages(
-            cls, min_level: int = 0) ->  List[Tuple[datetime, int, str]]:
+            cls, min_level: int = 0) -> List[Tuple[datetime, int, str]]:
         """
         Returns the log of messages to print on exit and
         *clears that log*.

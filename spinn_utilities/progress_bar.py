@@ -20,7 +20,7 @@ import math
 import os
 import sys
 from types import TracebackType
-from typing import (cast, Dict, Iterable, List, Optional, Tuple, Type,
+from typing import (Dict, Iterable, List, Optional, Tuple, Type,
                     TypeVar, Union)
 
 from typing_extensions import Literal, Self

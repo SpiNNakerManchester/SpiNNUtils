@@ -108,7 +108,8 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         raise NotImplementedError
 
     @overload
-    def iter_all_values(self, key: str, update_safe: bool = False) -> Iterator[T]:
+    def iter_all_values(
+            self, key: str, update_safe: bool = False) -> Iterator[T]:
         ...
 
     @overload

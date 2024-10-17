@@ -14,8 +14,6 @@
 
 from typing import Any, Callable, Dict, Type
 
-from spinn_utilities.abstract_base import AbstractBase
-
 
 class _RequiresSubclassTypeError(TypeError):
     """
@@ -26,8 +24,7 @@ class _RequiresSubclassTypeError(TypeError):
     """
 
 
-def require_subclass(required_class: Type[AbstractBase]
-                     ) -> Callable[[Type[AbstractBase]], Type[AbstractBase]]:
+def require_subclass(required_class: Type) -> Callable[[Type], Type]:
     """
     Decorator that arranges for subclasses of the decorated class to
     require that they are also subclasses of the given class.
@@ -57,12 +54,12 @@ def require_subclass(required_class: Type[AbstractBase]
     # without it, some very weird interactions with meta classes happen and I
     # really don't want to debug that stuff.
 
-    def decorate(target_class: Type[AbstractBase]) -> Type[AbstractBase]:
+    def decorate(target_class: Type) -> Type:
         # pylint: disable=unused-variable
         __class__ = target_class  # @ReservedAssignment # noqa: F841
 
         def __init_subclass__(
-                cls: Type[AbstractBase], allow_derivation: bool = False,
+                cls: Type, allow_derivation: bool = False,
                 **kwargs: Dict[str, Any]) -> None:
             if not issubclass(cls, required_class) and not allow_derivation:
                 raise _RequiresSubclassTypeError(

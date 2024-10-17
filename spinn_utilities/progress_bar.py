@@ -308,7 +308,6 @@ class _EnhancedProgressBar(ProgressBar):
             cls._enabled = (
                     date.today().strftime("%m%d") in cls._step_characters)
         except IOError:
-            pass
             cls._seq_id = "error"
         finally:
             cls._line_no = 0

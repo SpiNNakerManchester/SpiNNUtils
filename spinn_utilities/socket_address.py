@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Optional
+from typing import Any, Optional
 from spinn_utilities.config_holder import (
     get_config_int, get_config_int_or_none, get_config_str)
 
@@ -82,22 +82,22 @@ class SocketAddress(object):
         """
         return self._listen_port
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, SocketAddress):
             return False
         return (self._notify_host_name == other.notify_host_name and
                 self._notify_port_no == other.notify_port_no and
                 self._listen_port == other.listen_port)
 
-    def __ne__(self, other):
+    def __ne__(self, other: Any) -> bool:
         return not self.__eq__(other)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         if self.__hash is None:
             self.__hash = hash((self._listen_port, self._notify_host_name,
                                 self._notify_port_no))
         return self.__hash
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (f"SocketAddress({repr(self._notify_host_name)}, "
                 f"{self._notify_port_no}, {self._listen_port})")

@@ -1,4 +1,6 @@
-# Copyright (c) 2018 The University of Manchester
+#!/bin/bash
+
+# Copyright (c) 2024 The University of Manchester
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,21 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
+# This bash assumes that other repositories are installed in paralled
+
+# requires the latest mypy
+# pip install --upgrade mypy
 
 
-class IndexIsValue(object):
-    """
-    Tiny support class that implements ``object[x]`` by just returning
-    ``x`` itself.
-
-    Used for where you want a range from 1 to *N* but you don't know *N*.
-
-    Clearly, operations that assume a finite list are *not* supported.
-    """
-
-    def __getitem__(self, key):
-        return key
-
-    def __len__(self):
-        return sys.maxsize
+mypy --python-version 3.8 --disallow-untyped-defs spinn_utilities

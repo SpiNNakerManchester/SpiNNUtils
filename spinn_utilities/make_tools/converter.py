@@ -14,6 +14,7 @@
 
 import os
 import sys
+from typing import Optional
 from .file_converter import FileConverter
 from .log_sqllite_database import LogSqlLiteDatabase
 
@@ -24,13 +25,13 @@ SKIPPABLE_FILES = frozenset([
     "neural_build.mk", "Makefile.neural_build"])
 
 
-def convert(src, dest, new_dict):
+def convert(src: str, dest: str, new_dict: bool) -> None:
     """
     Converts a whole directory including sub-directories.
 
-    :param str src: Full source directory
-    :param str dest: Full destination directory
-    :param bool new_dict:
+    :param src: Full source directory
+    :param dest: Full destination directory
+    :param new_dict:
         Whether we should generate a new dictionary/DB.
         If not, we add to the existing one.
     """
@@ -45,13 +46,14 @@ def convert(src, dest, new_dict):
     _convert_dir(src_path, dest_path)
 
 
-def _convert_dir(src_path, dest_path, make_directories=False):
+def _convert_dir(src_path: str, dest_path: str,
+                 make_directories: Optional[bool] = False) -> None:
     """
     Converts a whole directory including sub directories.
 
-    :param str src_path: Full source directory
-    :param str dest_path: Full destination directory
-    :param bool make_directories: Whether to do `mkdir()` first
+    :param src_path: Full source directory
+    :param dest_path: Full destination directory
+    :param make_directories: Whether to do `mkdir()` first
     """
     if make_directories:
         _mkdir(dest_path)
@@ -70,7 +72,7 @@ def _convert_dir(src_path, dest_path, make_directories=False):
                 print(f"Unexpected file {source}")
 
 
-def _mkdir(destination):
+def _mkdir(destination: str) -> None:
     if not os.path.exists(destination):
         os.mkdir(destination)
     if not os.path.exists(destination):

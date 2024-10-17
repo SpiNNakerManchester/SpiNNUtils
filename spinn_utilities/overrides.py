@@ -15,7 +15,7 @@
 import inspect
 import os
 from types import FunctionType, MethodType
-from typing import Any, Callable, Iterable, Optional, TypeVar
+from typing import Any, Callable, Iterable, Optional, List, Tuple, TypeVar
 
 #: :meta private:
 Method = TypeVar("Method", bound=Callable[..., Any])
@@ -31,7 +31,7 @@ class overrides(object):
     """
     # This near constant is changed by unit tests to check our code
     # Github actions sets TYPE_OVERRIDES as True
-    __CHECK_TYPES = os.getenv("TYPE_OVERRIDES")
+    __CHECK_TYPES: Optional[Any] = os.getenv("TYPE_OVERRIDES")
 
     __slots__ = [
         # The method in the superclass that this method overrides
@@ -51,7 +51,7 @@ class overrides(object):
     ]
 
     def __init__(
-            self, super_class_method, *, extend_doc: bool = True,
+            self, super_class_method: Callable, *, extend_doc: bool = True,
             additional_arguments: Optional[Iterable[str]] = None,
             extend_defaults: bool = False, adds_typing: bool = False,):
         """
@@ -86,7 +86,9 @@ class overrides(object):
         self._adds_typing = adds_typing
 
     @staticmethod
-    def __match_defaults(default_args, super_defaults, extend_ok):
+    def __match_defaults(default_args: Optional[List[Any]],
+                         super_defaults: Optional[Tuple[Any]],
+                         extend_ok: bool) -> bool:
         if default_args is None:
             return super_defaults is None
         elif super_defaults is None:
@@ -95,7 +97,9 @@ class overrides(object):
             return len(default_args) >= len(super_defaults)
         return len(default_args) == len(super_defaults)
 
-    def _verify_types(self, method_args, super_args, all_args):
+    def _verify_types(self, method_args: inspect.FullArgSpec,
+                      super_args: inspect.FullArgSpec,
+                      all_args: List[str]) -> None:
         """
         Check that the arguments match.
         """
@@ -142,7 +146,7 @@ class overrides(object):
                         f"Super Method {self._superclass_method.__name__} "
                         f"has no return type, while this does")
 
-    def __verify_method_arguments(self, method: Method):
+    def __verify_method_arguments(self, method: Method) -> None:
         """
         Check that the arguments match.
         """
@@ -203,7 +207,7 @@ class overrides(object):
         return method
 
     @classmethod
-    def check_types(cls):
+    def check_types(cls) -> None:
         """
         If called will trigger check that all parameters are checked.
 

@@ -67,7 +67,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
 
     @abstractmethod
     def set_value(
-            self, key: str, value: T, use_list_as_value: bool = False):
+            self, key: str, value: T, use_list_as_value: bool = False) -> None:
         """
         Sets a already existing key to the new value.
         All IDs in the whole range or view will have this key set.
@@ -108,7 +108,8 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         raise NotImplementedError
 
     @overload
-    def iter_all_values(self, key: str, update_safe=False) -> Iterator[T]:
+    def iter_all_values(
+            self, key: str, update_safe: bool = False) -> Iterator[T]:
         ...
 
     @overload
@@ -117,7 +118,9 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         ...
 
     @abstractmethod
-    def iter_all_values(self, key: _Keys, update_safe: bool = False):
+    def iter_all_values(
+            self, key: _Keys, update_safe: bool = False
+            ) -> Union[Iterator[T], Iterator[Dict[str, T]]]:
         """
         Iterates over the value(s) for all IDs covered by this view.
         There will be one yield for each ID even if values are repeated.
@@ -329,7 +332,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         """
         return key in self.keys()
 
-    def reset(self, key: str):
+    def reset(self, key: str) -> None:
         """
         Sets the value(s) for a single key back to the default value.
 

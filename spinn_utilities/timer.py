@@ -13,7 +13,7 @@
 # limitations under the License.
 from datetime import timedelta
 from time import perf_counter_ns
-from typing import Optional
+from typing import Any, Optional, Tuple
 from typing_extensions import Literal
 
 # conversion factor
@@ -75,7 +75,7 @@ class Timer(object):
         self.start_timing()
         return self
 
-    def __exit__(self, *_args) -> Literal[False]:
+    def __exit__(self, *_args: Tuple[Any, ...]) -> Literal[False]:
         self._measured_section_interval = self.take_sample()
         return False
 

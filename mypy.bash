@@ -1,4 +1,6 @@
-# Copyright (c) 2017 The University of Manchester
+#!/bin/bash
+
+# Copyright (c) 2024 The University of Manchester
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from spinn_utilities.index_is_value import IndexIsValue
+# This bash assumes that other repositories are installed in paralled
+
+# requires the latest mypy
+# pip install --upgrade mypy
 
 
-def test_index_is_value():
-    a = IndexIsValue()
-    assert a[10] == 10
-    assert len(a) > 1000
+mypy --python-version 3.8 --disallow-untyped-defs spinn_utilities unittests

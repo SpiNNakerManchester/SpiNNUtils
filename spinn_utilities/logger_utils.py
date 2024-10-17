@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from spinn_utilities.log import FormatAdapter
+
 _already_issued = set()
 
 
-def warn_once(logger, msg):
+def warn_once(logger: FormatAdapter, msg: str) -> None:
     """
     Write a warning message to the given logger where that message should only
     be written to the logger once.
@@ -32,7 +34,7 @@ def warn_once(logger, msg):
     logger.warning(msg)
 
 
-def error_once(logger, msg):
+def error_once(logger: FormatAdapter, msg: str) -> None:
     """
     Write an error message to the given logger where that message should only
     be written to the logger once.
@@ -49,7 +51,7 @@ def error_once(logger, msg):
     logger.error(msg)
 
 
-def reset():
+def reset() -> None:
     """
     Clear the store of what messages have already been seen.
 

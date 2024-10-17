@@ -90,7 +90,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
     """
     __slots__ = ("_key", )
 
-    def __init__(self, size: int, key=None):
+    def __init__(self, size: int, key: Optional[str] = None) -> None:
         """
         :param int size: Fixed length of the list
         :param key: The dict key this list covers.

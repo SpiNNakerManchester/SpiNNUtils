@@ -14,7 +14,7 @@
 """
 A trimmed down version of standard Python Abstract Base classes.
 """
-from typing import TypeVar
+from typing import Any, Dict, Type, TypeVar, Tuple
 #: :meta private:
 T = TypeVar("T")
 
@@ -58,7 +58,8 @@ class AbstractBase(type):
                 ...
     """
 
-    def __new__(mcs, name, bases, namespace, **kwargs):
+    def __new__(mcs, name: str, bases: Tuple[Type, ...],
+                namespace: Dict[str, Any], **kwargs: Any) -> "AbstractBase":
         # Actually make the class
         abs_cls = super().__new__(mcs, name, bases, namespace, **kwargs)
 
@@ -74,5 +75,6 @@ class AbstractBase(type):
                     abstracts.add(nm)
 
         # Lock down the set
-        abs_cls.__abstractmethods__ = frozenset(abstracts)
+        abs_cls.__abstractmethods__ = frozenset(  # type: ignore[attr-defined]
+            abstracts)
         return abs_cls

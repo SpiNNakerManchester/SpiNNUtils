@@ -164,7 +164,8 @@ class AbstractSized(object):
                 "but the length was only %d. All the missing entries will be "
                 "ignored!", self._size, len(selector))
 
-    def selector_to_ids(self, selector: Selector, warn=False) -> Sequence[int]:
+    def selector_to_ids(
+            self, selector: Selector, warn: bool = False) -> Sequence[int]:
         """
         Gets the list of IDs covered by this selector.
         The types of selector currently supported are:

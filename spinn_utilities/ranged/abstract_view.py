@@ -37,7 +37,8 @@ class AbstractView(  # pylint: disable=abstract-method
         """
         self._range_dict = range_dict
 
-    def __getitem__(self, key: Union[int, slice, Iterable[int]]):
+    def __getitem__(self, key: Union[int, slice, Iterable[int]]
+                    ) -> AbstractView[T]:
         """
         Support for the view[x] based the type of the key
 
@@ -64,7 +65,7 @@ class AbstractView(  # pylint: disable=abstract-method
             return self._range_dict.view_factory(ids[key])
         return self._range_dict.view_factory([ids[i] for i in key])
 
-    def __setitem__(self, key: str, value: T):
+    def __setitem__(self, key: str, value: T) -> None:
         """
         See :py:meth:`AbstractDict.set_value`
 

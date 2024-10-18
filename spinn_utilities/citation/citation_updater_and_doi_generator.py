@@ -55,8 +55,9 @@ class _ZenodoException(Exception):
     def __init__(self, operation, expected, request):
         super().__init__(
             "don't know what went wrong. got wrong status code when trying "
-            f"to {operation}. Got error code {request.status_code} (when "
-            f"expecting {expected}) with response content {request.content}")
+            f"to {operation}. Got error code {request.status_code} "
+            f"(when expecting {expected}) "
+            f"with response content {request.content!r}")
         self.request = request
         self.expected = expected
 
@@ -95,7 +96,7 @@ class _Zenodo(object):
         r = requests.get(
             self._DEPOSIT_GET_URL, timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
-                    self._RELATED_IDENTIFIERS: related},
+                    self._RELATED_IDENTIFIERS: str(related)},
             json={}, headers={self._CONTENT_TYPE: self._JSON})
         if r.status_code != self._VALID_STATUS_REQUEST_GET:
             raise _ZenodoException(
@@ -106,7 +107,7 @@ class _Zenodo(object):
         r = requests.post(
             self._DEPOSIT_GET_URL, timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
-                    self._RELATED_IDENTIFIERS: related},
+                    self._RELATED_IDENTIFIERS: str(related)},
             json={}, headers={self._CONTENT_TYPE: self._JSON})
         if r.status_code != self._VALID_STATUS_REQUEST_POST:
             raise _ZenodoException(

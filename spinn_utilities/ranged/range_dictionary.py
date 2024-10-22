@@ -200,7 +200,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         if isinstance(key, str):
             return self._value_lists[key].get_value_by_id(the_id)
         if key is None:
-            key = self.keys()
+            key = list(self.keys())
         return {
             a_key: self._value_lists[a_key].get_value_by_id(the_id)
             for a_key in key}
@@ -428,28 +428,29 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
     @overload
     def iter_ranges_by_id(
-            self, key: str, the_id: Optional[int] = None) -> _SimpleRangeIter:
+            self, *, the_id: int, key: str) -> _SimpleRangeIter:
         ...
 
     @overload
-    def iter_ranges_by_id(
-            self, key: Optional[_StrSeq] = None,
-            the_id: Optional[int] = None) -> _CompoundRangeIter:
+    def iter_ranges_by_id(self, *, the_id: int,
+                          key: Optional[_StrSeq] = None) -> _CompoundRangeIter:
         ...
 
-    def iter_ranges_by_id(self, key=None, the_id=None):
+    def iter_ranges_by_id(
+            self, *, the_id: int,
+            key: Union[str, _StrSeq, None] = None) -> Union[
+            _SimpleRangeIter, _CompoundRangeIter]:
         """
         Same as :py:meth:`iter_ranges` but limited to one ID.
 
         :param key: see :py:meth:`iter_ranges` parameter key
         :param the_id:
             single ID which is the actual ID and not an index into IDs
-        :type the_id: int
         """
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_id(the_id=the_id)
         if key is None:
-            key = self.keys()
+            key = list(self.keys())
         return self._merge_ranges({
             a_key: self._value_lists[a_key].iter_ranges_by_id(the_id=the_id)
             for a_key in key})
@@ -483,7 +484,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             return self._value_lists[key].iter_ranges_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop)
         if key is None:
-            key = self.keys()
+            key = list(self.keys())
         return self._merge_ranges({
             a_key: self._value_lists[a_key].iter_ranges_by_slice(
                 slice_start=slice_start, slice_stop=slice_stop)
@@ -513,7 +514,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_ids(ids=ids)
         if key is None:
-            key = self.keys()
+            key = list(self.keys())
         return self._merge_ranges({
             a_key: self._value_lists[a_key].iter_ranges_by_ids(ids=ids)
             for a_key in key})

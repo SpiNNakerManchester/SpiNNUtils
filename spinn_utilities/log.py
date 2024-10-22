@@ -106,7 +106,7 @@ class ConfiguredFormatter(logging.Formatter):
 
         # If no match then return None, there is no deepest parent
         if match not in parents:
-            match = None
+            return None
 
         return match
 

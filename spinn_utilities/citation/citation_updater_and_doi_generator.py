@@ -19,6 +19,9 @@ import zipfile
 import unicodedata
 import os
 from time import strptime
+from typing import Any, cast, Dict, List, Optional, Tuple, Union
+
+from spinn_utilities.typing.json import JsonObject
 
 CITATION_FILE_VERSION_FIELD = "version"
 CITATION_FILE_DATE_FIELD = "date-released"
@@ -52,7 +55,8 @@ class _ZenodoException(Exception):
     Exception from a call to Zenodo.
     """
 
-    def __init__(self, operation, expected, request):
+    def __init__(
+            self, operation: str, expected: int, request: requests.Response):
         super().__init__(
             "don't know what went wrong. got wrong status code when trying "
             f"to {operation}. Got error code {request.status_code} "
@@ -82,17 +86,18 @@ class _Zenodo(object):
     _VALID_STATUS_REQUEST_POST = 201
     _VALID_STATUS_REQUEST_PUBLISH = 202
 
-    def __init__(self, token):
+    def __init__(self, token: str):
         self.__zenodo_token = token
 
     @staticmethod
-    def _json(r):
+    def _json(r: requests.Response) -> Optional[JsonObject]:
         try:
             return r.json()
         except Exception:  # pylint: disable=broad-except
             return None
 
-    def get_verify(self, related):
+    def get_verify(
+            self, related: List[Dict[str, str]]) -> Optional[JsonObject]:
         r = requests.get(
             self._DEPOSIT_GET_URL, timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
@@ -103,7 +108,8 @@ class _Zenodo(object):
                 "request a DOI", self._VALID_STATUS_REQUEST_GET, r)
         return self._json(r)
 
-    def post_create(self, related):
+    def post_create(
+            self, related: List[Dict[str, str]]) -> Optional[JsonObject]:
         r = requests.post(
             self._DEPOSIT_GET_URL, timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
@@ -114,7 +120,9 @@ class _Zenodo(object):
                 "get an empty upload", self._VALID_STATUS_REQUEST_POST, r)
         return self._json(r)
 
-    def post_upload(self, deposit_id, data, files):
+    def post_upload(
+            self, deposit_id: str, data: Dict[str, Any],
+            files: Dict[str, io.BufferedReader]) -> Optional[JsonObject]:
         r = requests.post(
             self._DEPOSIT_PUT_URL.format(deposit_id), timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token},
@@ -125,7 +133,7 @@ class _Zenodo(object):
                 self._VALID_STATUS_REQUEST_POST, r)
         return self._json(r)
 
-    def post_publish(self, deposit_id):
+    def post_publish(self, deposit_id: str) -> Optional[JsonObject]:
         r = requests.post(
             self._PUBLISH_URL.format(deposit_id), timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token})
@@ -136,31 +144,32 @@ class _Zenodo(object):
 
 
 class CitationUpdaterAndDoiGenerator(object):
-    def __init__(self):
-        self.__zenodo = None
+    def __init__(self) -> None:
+        self.__zenodo: Optional[_Zenodo] = None
 
     def update_citation_file_and_create_doi(
-            self, citation_file_path, doi_title, create_doi, publish_doi,
-            previous_doi, zenodo_access_token, module_path):
+            self, citation_file_path: str, doi_title: str, create_doi: bool,
+            publish_doi: bool, previous_doi: str, zenodo_access_token: str,
+            module_path: str) -> None:
         """
         Take a CITATION.cff file and updates the version and
         date-released fields, and rewrites the ``CITATION.cff`` file.
 
-        :param str citation_file_path: File path to the ``CITATION.cff`` file
-        :param bool create_doi:
+        :param citation_file_path: File path to the ``CITATION.cff`` file
+        :param create_doi:
             Whether to use Zenodo DOI interface to grab a DOI
-        :param str zenodo_access_token: Access token for Zenodo
-        :param bool publish_doi: Whether to publish the DOI on Zenodo
-        :param str previous_doi: DOI to append the created DOI to
-        :param str doi_title: Title for the created DOI
-        :param str module_path: Path to the module to zip up
-        :param bool update_version:
+        :param zenodo_access_token: Access token for Zenodo
+        :param publish_doi: Whether to publish the DOI on Zenodo
+        :param previous_doi: DOI to append the created DOI to
+        :param doi_title: Title for the created DOI
+        :param module_path: Path to the module to zip up
+        :param update_version:
             Whether we should update the citation version
         """
         self.__zenodo = _Zenodo(zenodo_access_token)
 
         # data holders
-        deposit_id = None
+        deposit_id: Optional[str] = None
 
         # read in YAML file
         with open(citation_file_path, 'r', encoding="utf-8") as stream:
@@ -178,17 +187,17 @@ class CitationUpdaterAndDoiGenerator(object):
 
         # if creating a DOI, finish the request and possibly publish it
         if create_doi:
+            assert deposit_id is not None
             self._finish_doi(
                 deposit_id, publish_doi, doi_title,
                 yaml_file[CITATION_FILE_DESCRIPTION], yaml_file, module_path)
 
-    def _request_doi(self, previous_doi):
+    def _request_doi(self, previous_doi: str) -> Tuple[bytes, Any]:
         """
         Go to Zenodo and requests a DOI.
 
-        :param str previous_doi: the previous DOI for this module, if exists
+        :param previous_doi: the previous DOI for this module, if exists
         :return: the DOI id, and deposit id
-        :rtype: tuple(str, str)
         """
         # create link to previous version (if applicable)
         related = list()
@@ -197,34 +206,40 @@ class CitationUpdaterAndDoiGenerator(object):
             IDENTIFIER: previous_doi})
 
         # get a request for a DOI
+        assert self.__zenodo is not None
         self.__zenodo.get_verify(related)
 
         # get empty upload
         request_data = self.__zenodo.post_create(related)
+        assert request_data is not None
 
         # get DOI and deposit id
+        metadata = cast(Dict[str, Dict[str, str]],
+                        request_data[ZENODO_METADATA])
         doi_id = unicodedata.normalize(
             'NFKD',
-            (request_data[ZENODO_METADATA][ZENODO_PRE_RESERVED_DOI]
+            (metadata[ZENODO_PRE_RESERVED_DOI]
              [ZENODO_DOI_VALUE])).encode('ascii', 'ignore')
         deposition_id = request_data[ZENODO_DEPOSIT_ID]
 
         return doi_id, deposition_id
 
     def _finish_doi(
-            self, deposit_id, publish_doi, title,
-            doi_description, yaml_file, module_path):
+            self, deposit_id: str, publish_doi: bool, title: str,
+            doi_description: str, yaml_file: Dict[str, Any],
+            module_path: str) -> None:
         """
         Finishes the DOI on Zenodo.
 
-        :param str deposit_id: the deposit id to publish
-        :param bool publish_doi: whether we should publish the DOI
-        :param str title: the title of this DOI
-        :param str doi_description: the description for the DOI
+        :param deposit_id: the deposit id to publish
+        :param publish_doi: whether we should publish the DOI
+        :param title: the title of this DOI
+        :param doi_description: the description for the DOI
         :param yaml_file: the citation file after its been read it
         :param module_path: the path to the module to DOI
         """
         zipped_file = None
+        assert self.__zenodo is not None
         try:
             zipped_file = self._zip_up_module(module_path)
             with open(zipped_file, "rb") as zipped_open_file:
@@ -239,11 +254,11 @@ class CitationUpdaterAndDoiGenerator(object):
         if publish_doi:
             self.__zenodo.post_publish(deposit_id)
 
-    def _zip_up_module(self, module_path):
+    def _zip_up_module(self, module_path: str) -> str:
         """
         Zip up a module.
 
-        :param str module_path: the path to the module to zip up
+        :param module_path: the path to the module to zip up
         :return: the filename to the zip file
         """
         if os.path.isfile('module.zip'):
@@ -259,14 +274,15 @@ class CitationUpdaterAndDoiGenerator(object):
         return 'module.zip'
 
     @staticmethod
-    def _zip_walker(module_path, avoids, module_zip_file):
+    def _zip_walker(module_path: str, avoids: List[str],
+                    module_zip_file: zipfile.ZipFile) -> None:
         """
         Traverse the module and its sub-directories and only adds to the
         files to the zip which are not within a avoid directory that.
 
-        :param str module_path: the path to start the search at
-        :param set(str) avoids: the set of avoids to avoid
-        :param ~zipfile.ZipFile module_zip_file: the zip file to put into
+        :param module_path: the path to start the search at
+        :param avoids: the set of avoids to avoid
+        :param module_zip_file: the zip file to put into
         """
         for directory_path, _, files in os.walk(module_path):
             for directory_name in directory_path.split(os.sep):
@@ -280,7 +296,8 @@ class CitationUpdaterAndDoiGenerator(object):
                             os.path.join(directory_path, potential_zip_file))
 
     @staticmethod
-    def _fill_in_data(doi_title, doi_description, yaml_file):
+    def _fill_in_data(doi_title: str, doi_description: str,
+                      yaml_file: Dict[str, Any]) -> Dict[str, Any]:
         """
         Add in data to the Zenodo metadata.
 
@@ -291,7 +308,7 @@ class CitationUpdaterAndDoiGenerator(object):
         :rtype: dict
         """
         # add basic meta data
-        metadata = {
+        metadata: Dict[str, Any] = {
             ZENODO_METADATA_TITLE: doi_title,
             ZENODO_METATDATA_DESC: doi_description,
             ZENODO_METADATA_CREATORS: []
@@ -313,16 +330,15 @@ class CitationUpdaterAndDoiGenerator(object):
 
     @staticmethod
     def convert_text_date_to_date(
-            version_month, version_year, version_day):
+            version_month: Union[int, str], version_year: Union[int, str],
+            version_day: Union[int, str]) -> str:
         """
         Convert the 3 components of a date into a CFF date.
 
         :param version_month: version month, in text form
-        :type version_month: str or int
-        :param int version_year: version year
-        :param int version_day: version day of month
+        :param version_year: version year
+        :param version_day: version day of month
         :return: the string representation for the CFF file
-        :rtype: str
         """
         return "{}-{}-{}".format(
             version_year,
@@ -331,14 +347,12 @@ class CitationUpdaterAndDoiGenerator(object):
             version_day)
 
     @staticmethod
-    def convert_month_name_to_number(version_month):
+    def convert_month_name_to_number(version_month: Union[int, str]) -> int:
         """
         Convert a python month in text form to a number form.
 
         :param version_month: the text form of the month
-        :type version_month: str or int
         :return: the month int value
-        :rtype: int
         :raises ValueError: when the month name is not recognised
         """
         if isinstance(version_month, int):

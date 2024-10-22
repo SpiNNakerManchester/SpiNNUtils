@@ -66,12 +66,12 @@ class _IdsView(AbstractView[T], Generic[T]):
 
     @overrides(AbstractDict.set_value)
     def set_value(
-            self, key: str, value: T, use_list_as_value: bool = False):
+            self, key: str, value: T, use_list_as_value: bool = False) -> None:
         ranged_list = self._range_dict.get_list(key)
         for _id in self._ids:
             ranged_list.set_value_by_id(the_id=_id, value=value)
 
-    def set_value_by_ids(self, key: str, ids: Iterable[int], value: T):
+    def set_value_by_ids(self, key: str, ids: Iterable[int], value: T) -> None:
         """
         Sets a already existing key to the new value. For the view specified.
 
@@ -84,7 +84,8 @@ class _IdsView(AbstractView[T], Generic[T]):
             rl.set_value_by_id(the_id=_id, value=value)
 
     @overload
-    def iter_all_values(self, key: str, update_safe=False) -> Iterator[T]:
+    def iter_all_values(
+            self, key: str, update_safe: bool = False) -> Iterator[T]:
         ...
 
     @overload
@@ -93,7 +94,9 @@ class _IdsView(AbstractView[T], Generic[T]):
         ...
 
     @overrides(AbstractDict.iter_all_values)
-    def iter_all_values(self, key: _Keys, update_safe: bool = False):
+    def iter_all_values(
+            self, key: _Keys, update_safe: bool = False
+            ) -> Union[Iterator[T], Iterator[Dict[str, T]]]:
         if isinstance(key, str):
             yield from self._range_dict.iter_values_by_ids(
                 ids=self._ids, key=key, update_safe=update_safe)

@@ -13,12 +13,14 @@
 # limitations under the License.
 
 import atexit
+import configparser
 from datetime import datetime
 import logging
 import re
 import sys
-from typing import Any, List, Optional, Tuple
+from typing import Any, Dict, KeysView, List, Mapping, Optional, Tuple
 from inspect import getfullargspec
+from spinn_utilities.configs import CamelCaseConfigParser
 from .log_store import LogStore
 from .overrides import overrides
 
@@ -38,13 +40,13 @@ class ConfiguredFilter(object):
     __slots__ = [
         "_default_level", "_levels"]
 
-    def __init__(self, conf):
+    def __init__(self, conf: configparser.RawConfigParser):
         self._levels = ConfiguredFormatter.construct_logging_parents(conf)
         self._default_level = logging.INFO
         if conf.has_option("Logging", "default"):
             self._default_level = _LEVELS[conf.get("Logging", "default")]
 
-    def filter(self, record):
+    def filter(self, record: logging.LogRecord) -> bool:
         """
         Get the level for the deepest parent, and filter appropriately.
         """
@@ -64,7 +66,7 @@ class ConfiguredFormatter(logging.Formatter):
     # Precompile this RE; it gets used quite a few times
     __last_component = re.compile(r'\.[^.]+$')
 
-    def __init__(self, conf):
+    def __init__(self, conf: CamelCaseConfigParser) -> None:
         if (conf.has_option("Logging", "default") and
                 conf.get("Logging", "default") == "debug"):
             fmt = "%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s"
@@ -73,12 +75,13 @@ class ConfiguredFormatter(logging.Formatter):
         super().__init__(fmt=fmt, datefmt="%Y-%m-%d %H:%M:%S")
 
     @staticmethod
-    def construct_logging_parents(conf):
+    def construct_logging_parents(
+            conf: configparser.RawConfigParser) -> Dict[str, int]:
         """
         Create a dictionary of module names and logging levels.
         """
         # Construct the dictionary
-        _levels = {}
+        _levels: Dict[str, int] = {}
 
         if not conf.has_section("Logging"):
             return _levels
@@ -92,7 +95,7 @@ class ConfiguredFormatter(logging.Formatter):
         return _levels
 
     @staticmethod
-    def deepest_parent(parents, child):
+    def deepest_parent(parents: KeysView[str], child: str) -> Optional[str]:
         """
         Greediest match between child and parent.
         """
@@ -111,7 +114,8 @@ class ConfiguredFormatter(logging.Formatter):
         return match
 
     @staticmethod
-    def level_of_deepest_parent(parents, child):
+    def level_of_deepest_parent(
+            parents: Dict[str, int], child: str) -> Optional[int]:
         """
         The logging level of the greediest match between child and parent.
         """
@@ -129,14 +133,16 @@ class _BraceMessage(object):
     A message that converts a Python format string to a string.
     """
     __slots__ = [
+
         "args", "fmt", "kwargs"]
 
-    def __init__(self, fmt, args, kwargs):
+    def __init__(self, fmt: object,
+                 args: Tuple[object, ...], kwargs: Dict[str, object]) -> None:
         self.fmt = fmt
         self.args = args
         self.kwargs = kwargs
 
-    def __str__(self):
+    def __str__(self) -> str:
         try:
             return str(self.fmt).format(*self.args, **self.kwargs)
         except KeyError:
@@ -182,7 +188,7 @@ class FormatAdapter(logging.LoggerAdapter):
     __log_store: Optional[LogStore] = None
 
     @classmethod
-    def set_kill_level(cls, level: Optional[int] = None):
+    def set_kill_level(cls, level: Optional[int] = None) -> None:
         """
         Allow system to change the level at which a log is changed to an
         Exception.
@@ -199,7 +205,7 @@ class FormatAdapter(logging.LoggerAdapter):
             cls.__kill_level = level
 
     @classmethod
-    def set_log_store(cls, log_store: Optional[LogStore]):
+    def set_log_store(cls, log_store: Optional[LogStore]) -> None:
         """
         Sets a Object to write the log messages to
         :param LogStore log_store:
@@ -211,14 +217,17 @@ class FormatAdapter(logging.LoggerAdapter):
             for timestamp, level, message in cls._pop_not_stored_messages():
                 cls.__log_store.store_log(level, message, timestamp)
 
-    def __init__(self, logger: logging.Logger, extra=None):
+    def __init__(
+            self, logger: logging.Logger,
+            extra: Optional[Mapping[str, object]] = None) -> None:
         if extra is None:
             extra = {}
         super().__init__(logger, extra)
         self.do_log = logger._log  # pylint: disable=protected-access
 
     @overrides(logging.LoggerAdapter.log, extend_doc=False, adds_typing=True)
-    def log(self, level: int, msg: object, *args, **kwargs):
+    def log(self, level: int, msg: object,
+            *args: object, **kwargs: object) -> None:
         """
         Delegate a log call to the underlying logger, applying appropriate
         transformations to allow the log message to be written using
@@ -297,7 +306,8 @@ class FormatAdapter(logging.LoggerAdapter):
                 print(message, file=sys.stderr)
 
     @classmethod
-    def _pop_not_stored_messages(cls, min_level=0):
+    def _pop_not_stored_messages(
+            cls, min_level: int = 0) -> List[Tuple[datetime, int, str]]:
         """
         Returns the log of messages to print on exit and
         *clears that log*.
@@ -305,7 +315,7 @@ class FormatAdapter(logging.LoggerAdapter):
         .. note::
             Should only be called externally from test code!
         """
-        result = []
+        result: List[Tuple[datetime, int, str]] = []
         try:
             for timestamp, level, message in cls.__not_stored_messages:
                 if level >= min_level:

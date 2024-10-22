@@ -12,22 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Any, Callable, Optional, Type
+
 
 class _ClassPropertyDescriptor(object):
     """
     A class to handle the management of class properties.
     """
 
-    def __init__(self, fget):
+    def __init__(self, fget: Callable) -> None:
         self.fget = fget
 
-    def __get__(self, obj, klass=None):
+    def __get__(
+            self, obj: Optional[Any], klass: Optional[Type] = None) -> Any:
         if klass is None:
             klass = type(obj)
         return self.fget.__get__(obj, klass)()
 
 
-def classproperty(func):
+def classproperty(func: Callable) -> _ClassPropertyDescriptor:
     """
     Defines a property at the class-level.
 
@@ -41,6 +44,7 @@ def classproperty(func):
                 return cls._my_property
     """
     if not isinstance(func, (classmethod, staticmethod)):
-        func = classmethod(func)
+        # mypy claims expression has type "classmethod ...
+        func = classmethod(func)  # type: ignore[assignment]
 
     return _ClassPropertyDescriptor(func)

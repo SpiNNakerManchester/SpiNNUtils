@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import configparser
 from datetime import datetime
 import logging
 from typing import List, Optional
@@ -136,7 +137,7 @@ def test_logger_exception():
     assert len(logger._pop_not_stored_messages()) == 1
 
 
-class MockConfig1(object):
+class MockConfig1(configparser.RawConfigParser):
 
     def get(self, section, option):
         return "debug"

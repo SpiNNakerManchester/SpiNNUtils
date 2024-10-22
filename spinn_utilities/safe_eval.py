@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from types import ModuleType
+from typing import Any, Callable, Dict, Union
+
 
 class SafeEval(object):
     """
@@ -42,7 +45,8 @@ class SafeEval(object):
     """
     __slots__ = ["_environment"]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Union[Callable, ModuleType],
+                 **kwargs: Any) -> None:
         """
         :param args:
             The symbols to use to populate the global reference table.
@@ -58,13 +62,13 @@ class SafeEval(object):
             symbols (e.g., constants in numpy) do not have names that we can
             otherwise look up easily.
         """
-        env = {}
+        env: Dict[Any, Any] = {}
         for item in args:
             env[item.__name__] = item
         env.update(kwargs)
         self._environment = env
 
-    def eval(self, expression, **kwargs):
+    def eval(self, expression: str, **kwargs: Any) -> Any:
         """
         Evaluate an expression and return the result.
 

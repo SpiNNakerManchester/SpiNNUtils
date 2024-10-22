@@ -15,10 +15,13 @@
 import os
 import sys
 import traceback
+from typing import List, Optional, Set
+
 from spinn_utilities.overrides import overrides
 
 
-def all_modules(directory, prefix, remove_pyc_files=False):
+def all_modules(directory: str, prefix: str,
+                remove_pyc_files: bool = False) -> Set[str]:
     """
     List all the python files found in this directory giving then the prefix.
 
@@ -57,8 +60,9 @@ def all_modules(directory, prefix, remove_pyc_files=False):
 
 
 def load_modules(
-        directory, prefix, remove_pyc_files=False, exclusions=None,
-        gather_errors=True):
+        directory: str, prefix: str, remove_pyc_files: bool = False,
+        exclusions: Optional[List[str]] = None,
+        gather_errors: bool = True) -> None:
     """
     Loads all the python files found in this directory, giving them the
     specified prefix.
@@ -66,13 +70,12 @@ def load_modules(
     Any file that ends in either ``.py`` or ``.pyc`` is assume a python module
     and added to the result set.
 
-    :param str directory: path to check for python files
-    :param str prefix: package prefix top add to the file name
-    :param bool remove_pyc_files: True if ``.pyc`` files should be deleted
-    :param list(str) exclusions: a list of modules to exclude
-    :param bool gather_errors:
+    :param directory: path to check for python files
+    :param prefix: package prefix top add to the file name
+    :param remove_pyc_files: True if ``.pyc`` files should be deleted
+    :param exclusions: a list of modules to exclude
+    :param gather_errors:
         True if errors should be gathered, False to report on first error
-    :return: None
     """
     if exclusions is None:
         exclusions = []
@@ -103,23 +106,26 @@ def load_modules(
 
 
 def load_module(
-        name, remove_pyc_files=False, exclusions=None, gather_errors=True):
+        name: str, remove_pyc_files: bool = False,
+        exclusions: Optional[List[str]] = None,
+        gather_errors: bool = True) -> None:
     """
     Loads this modules and all its children.
 
-    :param str name: name of the modules
-    :param bool remove_pyc_files: True if ``.pyc`` files should be deleted
-    :param list(str) exclusions: a list of modules to exclude
-    :param bool gather_errors:
+    :param name: name of the modules
+    :param remove_pyc_files: True if ``.pyc`` files should be deleted
+    :param exclusions: a list of modules to exclude
+    :param gather_errors:
         True if errors should be gathered, False to report on first error
-    :return: None
     """
     overrides.check_types()
     if exclusions is None:
         exclusions = []
     module = __import__(name)
     path = module.__file__
+    assert path is not None
     directory = os.path.dirname(path)
+    assert directory is not None
     load_modules(directory, name, remove_pyc_files, exclusions, gather_errors)
 
 

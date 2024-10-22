@@ -53,7 +53,7 @@ def lcm(number: int, /, *numbers: int) -> int:
     ...
 
 
-def lcm(*numbers) -> int:
+def lcm(*numbers) -> int:  # type: ignore[no-untyped-def]
     """
     Lowest common multiple of 0, 1 or more integers.
 
@@ -90,7 +90,7 @@ def gcd(number: int, /, *numbers: int) -> int:
     ...
 
 
-def gcd(*numbers) -> int:
+def gcd(*numbers) -> int:  # type: ignore[no-untyped-def]
     """
     Greatest common divisor of 1 or more integers.
 

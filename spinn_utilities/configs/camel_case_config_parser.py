@@ -11,14 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 
+from collections.abc import Iterable
 import configparser
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING, Union
 
 
 NONES = ("none", )
 TRUES = ('y', 'yes', 't', 'true', 'on', '1')
 FALSES = ('n', 'no', 'f', 'false', 'off', '0')
+
+# Type support
+if TYPE_CHECKING:
+    _Path = Union[Union[str, bytes, os.PathLike],
+                  Iterable[Union[str, bytes, os.PathLike]]]
+else:
+    # Python 3.8 does not support above typing
+    _Path = str
 
 
 class CamelCaseConfigParser(configparser.RawConfigParser):
@@ -35,11 +45,12 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         lower = optionstr.lower()
         return lower.replace("_", "")
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self._read_files = list()
+        self._read_files: List[str] = list()
 
-    def read(self, filenames, encoding=None):
+    def read(self, filenames: _Path,
+             encoding: Optional[str] = None) -> List[str]:
         """
         Read and parse a filename or a list of filenames.
         """
@@ -48,7 +59,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         return new_files
 
     @property
-    def read_files(self):
+    def read_files(self) -> List[str]:
         """
         The configuration files that have been actually read.
         """
@@ -58,10 +69,9 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         """
         Get the string value of an option.
 
-        :param str section: What section to get the option from.
-        :param str option: What option to read.
+        :param section: What section to get the option from.
+        :param option: What option to read.
         :return: The option value
-        :rtype: str or None
         """
         value = self.get(section, option)
         if value.lower() in NONES:
@@ -73,11 +83,10 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         """
         Get the string value of an option split into a list.
 
-        :param str section: What section to get the option from.
-        :param str option: What option to read.
+        :param section: What section to get the option from.
+        :param option: What option to read.
         :param token: The token to split the string into a list
         :return: The list (possibly empty) of the option values
-        :rtype: list(str)
         """
         value = self.get(section, option)
         if value.lower() in NONES:

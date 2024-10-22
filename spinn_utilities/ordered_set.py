@@ -39,11 +39,11 @@ class OrderedSet(MutableSet, Generic[T]):
         if iterable is not None:
             self.update(iterable)
 
-    def add(self, value: T):
+    def add(self, value: T) -> None:
         if value not in self._map:
             self._map[value] = None
 
-    def discard(self, value: T):
+    def discard(self, value: T) -> None:
         if value in self._map:
             self._map.pop(value)
 
@@ -72,7 +72,7 @@ class OrderedSet(MutableSet, Generic[T]):
     def __contains__(self, key: Any) -> bool:
         return key in self._map
 
-    def update(self, iterable: Iterable[T]):
+    def update(self, iterable: Iterable[T]) -> None:
         """
         Updates the set by adding each item in order
 

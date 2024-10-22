@@ -24,7 +24,7 @@ _SECONDS_TO_MICRO_SECONDS_CONVERSION = 1000
 DB_FILE_NAME = "logs.sqlite3"
 
 
-def _timestamp():
+def _timestamp() -> int:
     return int(time.time() * _SECONDS_TO_MICRO_SECONDS_CONVERSION)
 
 
@@ -46,7 +46,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         "_db",
     ]
 
-    def __init__(self, new_dict=False):
+    def __init__(self, new_dict: bool = False) -> None:
         """
         Connects to a log dict. The location of the file can be overridden
         using the ``C_LOGS_DICT`` environment variable.
@@ -89,7 +89,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
         otherwise the default path in this directory is used.
 
         :return: Absolute path to where the database file is or will be
-        :rtype: str
         """
         if 'C_LOGS_DICT' in os.environ:
             return str(os.environ['C_LOGS_DICT'])
@@ -104,7 +103,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
         Adds a possible extra part to the error message.
 
         :return: A likely empty string
-        :rtype: str
         """
         return ""
 
@@ -112,7 +110,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         """
         Checks the database file exists:
 
-        :param str database_file: Absolute path to the database file
+        :param database_file: Absolute path to the database file
         :raises FileNotFoundErrorL If the file does not exists
         """
         if os.path.exists(database_file):
@@ -125,10 +123,10 @@ class LogSqlLiteDatabase(AbstractContextManager):
         message += "Please rebuild the C code."
         raise FileNotFoundError(message)
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.close()
 
-    def close(self):
+    def close(self) -> None:
         """
         Finalises and closes the database.
         """
@@ -139,10 +137,11 @@ class LogSqlLiteDatabase(AbstractContextManager):
             pass
         self._db = None
 
-    def __init_db(self):
+    def __init_db(self) -> None:
         """
         Set up the database if required.
         """
+        assert self._db is not None
         self._db.row_factory = sqlite3.Row
         # Don't use memoryview / buffer as hard to deal with difference
         self._db.text_factory = str
@@ -150,7 +149,8 @@ class LogSqlLiteDatabase(AbstractContextManager):
             sql = f.read()
         self._db.executescript(sql)
 
-    def __clear_db(self):
+    def __clear_db(self) -> None:
+        assert self._db is not None
         with self._db:
             cursor = self._db.cursor()
             cursor.execute("DELETE FROM log")
@@ -166,10 +166,10 @@ class LogSqlLiteDatabase(AbstractContextManager):
         """
         gets the Ids for this directory. Making a new one if needed
 
-        :param str src_path:
-        :param str dest_path:
-        :rtype: int
+        :param src_path:
+        :param dest_path:
         """
+        assert self._db is not None
         with self._db:
             cursor = self._db.cursor()
             # reuse the existing if it exists
@@ -188,16 +188,18 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 INSERT INTO directory(src_path, dest_path)
                 VALUES(?, ?)
                 """, (src_path, dest_path))
-            return cursor.lastrowid
+            directory_id = cursor.lastrowid
+            assert directory_id is not None
+            return directory_id
 
     def get_file_id(self, directory_id: int, file_name: str) -> int:
         """
         Gets the id for this file, making a new one if needed.
 
-        :param int directory_id:
-        :param str file_name:
-        :rtype: int
+        :param directory_id:
+        :param file_name:
         """
+        assert self._db is not None
         with self._db:
             # Make previous one as not last
             with self._db:
@@ -214,18 +216,21 @@ class LogSqlLiteDatabase(AbstractContextManager):
                         directory_id, file_name, convert_time, last_build)
                     VALUES(?, ?, ?, 1)
                     """, (directory_id, file_name, _timestamp()))
-                return cursor.lastrowid
+                file_id = cursor.lastrowid
+                assert file_id is not None
+                return file_id
 
-    def set_log_info(
-            self, log_level: int, line_num: int, original: str, file_id: int):
+    def set_log_info(self, log_level: int, line_num: int,
+                     original: str, file_id: int) -> int:
         """
         Saves the data needed to replace a short log back to the original.
 
-        :param int log_level:
-        :param int line_num:
-        :param str original:
-        :param int file_id:
+        :param log_level:
+        :param line_num:
+        :param original:
+        :param file_id:
         """
+        assert self._db is not None
         with self._db:
             cursor = self._db.cursor()
             # reuse the existing number if nothing has changed
@@ -243,7 +248,9 @@ class LogSqlLiteDatabase(AbstractContextManager):
                     INSERT INTO log(log_level, line_num, original, file_id)
                     VALUES(?, ?, ?, ?)
                     """, (log_level, line_num, original, file_id))
-                return cursor.lastrowid
+                log_id = cursor.lastrowid
+                assert log_id is not None
+                return log_id
             else:
                 for row in self._db.execute(
                         """
@@ -260,9 +267,9 @@ class LogSqlLiteDatabase(AbstractContextManager):
         """
         Gets the data needed to replace a short log back to the original.
 
-        :param str log_id: The int id as a String
-        :rtype: tuple(int, str, int, str)
+        :param log_id: The int id as a String
         """
+        assert self._db is not None
         with self._db:
             for row in self._db.execute(
                     """
@@ -275,15 +282,16 @@ class LogSqlLiteDatabase(AbstractContextManager):
                         row["original"])
         return None
 
-    def check_original(self, original: str):
+    def check_original(self, original: str) -> None:
         """
         Checks that an original log line has been added to the database.
 
         Mainly used for testing
 
-        :param str original:
+        :param original:
         :raises ValueError: If the original is not in the database
         """
+        assert self._db is not None
         with self._db:
             for row in self._db.execute(
                     """
@@ -294,12 +302,11 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 if row["counts"] == 0:
                     raise ValueError(f"{original} not found in database")
 
-    def get_max_log_id(self):
+    def get_max_log_id(self) -> Optional[int]:
         """
         Get the max id of any log message.
-
-        :rtype: int
         """
+        assert self._db is not None
         with self._db:
             for row in self._db.execute(
                     """

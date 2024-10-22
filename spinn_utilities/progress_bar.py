@@ -363,6 +363,6 @@ if __name__ == "__main__":  # pragma: no cover
     demo.end()
 
     _collection = [2, 3, 5, 7, 11, 13, 17]
-    demo = ProgressBar(len(_collection), "Demo over a few primes")
+    demo = ProgressBar(_collection, "Demo over a few primes")
     for prime in demo.over(_collection):
         sleep(0.1)

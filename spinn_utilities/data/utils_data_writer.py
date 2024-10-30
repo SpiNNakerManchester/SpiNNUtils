@@ -146,7 +146,6 @@ class UtilsDataWriter(UtilsDataView):
                 f"{self.__data._run_status}")
         self.__data._run_status = RunStatus.NOT_RUNNING
         self.__data._reset_status = ResetStatus.HAS_RUN
-        #self.__data._requires_data_generation = False
         self.__data._requires_mapping = False
 
     def _hard_reset(self) -> None:
@@ -212,6 +211,14 @@ class UtilsDataWriter(UtilsDataView):
         Causes get_requires_data_generation to report False
         """
         self.__data._requires_data_generation = False
+
+    def set_requires_data_generation(self) -> None:
+        """
+        Sets `requires_data_generation` to True.
+
+        Set to False after data is loaded
+        """
+        self.__data._requires_data_generation = True
 
     def request_stop(self) -> None:
         """

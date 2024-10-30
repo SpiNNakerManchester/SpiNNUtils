@@ -1030,15 +1030,20 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(writer.get_requires_mapping())
         # Can not be changed during run
         with self.assertRaises(SimulatorRunningException):
-            writer.set_requires_data_generation()
+            UtilsDataView.set_requires_data_generation()
         with self.assertRaises(SimulatorRunningException):
             writer.set_requires_mapping()
         writer.data_specification_loaded()
         self.assertFalse(writer.get_requires_data_generation())
+        with self.assertRaises(SimulatorRunningException):
+            UtilsDataView.set_requires_data_generation()
+        writer.set_requires_data_generation()
+        self.assertTrue(writer.get_requires_data_generation())
         writer.finish_run()
 
+        # Stay as it was
+        self.assertTrue(writer.get_requires_data_generation())
         # False after run
-        self.assertFalse(writer.get_requires_data_generation())
         self.assertFalse(writer.get_requires_mapping())
 
         # Setting requires mapping sets both to True

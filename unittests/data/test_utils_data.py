@@ -1033,6 +1033,8 @@ class TestUtilsData(unittest.TestCase):
             writer.set_requires_data_generation()
         with self.assertRaises(SimulatorRunningException):
             writer.set_requires_mapping()
+        writer.data_specification_loaded()
+        self.assertFalse(writer.get_requires_data_generation())
         writer.finish_run()
 
         # False after run

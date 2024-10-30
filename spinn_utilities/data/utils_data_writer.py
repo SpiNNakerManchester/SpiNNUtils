@@ -146,7 +146,7 @@ class UtilsDataWriter(UtilsDataView):
                 f"{self.__data._run_status}")
         self.__data._run_status = RunStatus.NOT_RUNNING
         self.__data._reset_status = ResetStatus.HAS_RUN
-        self.__data._requires_data_generation = False
+        #self.__data._requires_data_generation = False
         self.__data._requires_mapping = False
 
     def _hard_reset(self) -> None:
@@ -204,6 +204,14 @@ class UtilsDataWriter(UtilsDataView):
         raise UnexpectedStateChange(
             f"Unexpected call to reset while reset status is "
             f"{self.__data._reset_status}")
+
+    def data_specification_loaded(self) -> None:
+        """
+        Used to indicate that load data specification has run/
+    .
+        Causes get_requires_data_generation to report False
+        """
+        self.__data._requires_data_generation = False
 
     def request_stop(self) -> None:
         """

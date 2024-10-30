@@ -536,8 +536,7 @@ class UtilsDataView(object):
         Set to True at the start and by any change that could require
         data generation or mapping
         Remains True during the first run after a data change
-        Only set to False at the *end* of the first run
-
+        Only set to False after the data is loaded.
         """
         return cls.__data._requires_data_generation
 
@@ -546,7 +545,7 @@ class UtilsDataView(object):
         """
         Sets `requires_data_generation` to True.
 
-        Only the end of a run can set it to False
+        Set to False after data is loaded
         """
         cls.check_user_can_act()
         cls.__data._requires_data_generation = True
@@ -588,7 +587,6 @@ class UtilsDataView(object):
         """
         cls.__data._run_status = RunStatus.NOT_RUNNING
         cls.__data._reset_status = ResetStatus.HAS_RUN
-        cls.__data._requires_data_generation = False
         cls.__data._requires_mapping = False
 
     @classmethod

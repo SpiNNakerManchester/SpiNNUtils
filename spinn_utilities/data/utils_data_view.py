@@ -288,17 +288,17 @@ class UtilsDataView(object):
             f"{cls.__data._run_status}")
 
     @classmethod
-    def is_no_stop_requested(cls) -> bool:
+    def is_stop_requested(cls) -> bool:
         """
-        Checks that a stop request has not been sent.
+        Checks that a stop request has been sent.
 
         :raises NotImplementedError:
             If this is called from an unexpected state
         """
         if cls.__data._run_status == RunStatus.IN_RUN:
-            return True
-        if cls.__data._run_status == RunStatus.STOP_REQUESTED:
             return False
+        if cls.__data._run_status == RunStatus.STOP_REQUESTED:
+            return True
         raise NotImplementedError(
             f"This call was not expected with run status "
             f"{cls.__data._run_status}")

@@ -212,14 +212,14 @@ class UtilsDataWriter(UtilsDataView):
         """
         self.__data._requires_data_generation = False
 
-    def set_requires_data_generation(   # pylint: disable=arguments-differ
-            self) -> None:
+    @classmethod
+    def set_requires_data_generation(cls) -> None:
         """
         Sets `requires_data_generation` to True.
 
         Set to False after data is loaded
         """
-        self.__data._requires_data_generation = True
+        cls.__data._requires_data_generation = True
 
     def request_stop(self) -> None:
         """

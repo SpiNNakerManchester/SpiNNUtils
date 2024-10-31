@@ -212,8 +212,8 @@ class UtilsDataWriter(UtilsDataView):
         """
         self.__data._requires_data_generation = False
 
-    def set_requires_data_generation(
-            self) -> None:  # pylint: disable=arguments-differ
+    def set_requires_data_generation(   # pylint: disable=arguments-differ
+            self) -> None:
         """
         Sets `requires_data_generation` to True.
 

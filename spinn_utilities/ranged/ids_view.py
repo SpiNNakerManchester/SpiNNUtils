@@ -31,7 +31,7 @@ class _IdsView(AbstractView[T], Generic[T]):
         Use :py:meth:`RangeDictionary.view_factory` to create views
         """
         super().__init__(range_dict)
-        self._ids = tuple(ids)
+        self._ids: Sequence[int] = tuple(ids)
 
     def __str__(self) -> str:
         return f"View with IDs: {self._ids}"

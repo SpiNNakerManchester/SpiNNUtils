@@ -508,6 +508,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     def _set_values_list(self, ids: IdsType, value: _ListType) -> None:
         values = self.as_list(value=value, size=len(ids), ids=ids)
+        val: T
         for id_value, val in zip(ids, values):
             self.set_value_by_id(id_value, val)
 

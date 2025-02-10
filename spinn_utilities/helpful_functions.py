@@ -43,7 +43,7 @@ def _lcm(a: int, b: int) -> int:
 
 # A sequence of integers..
 @overload
-def lcm(numbers: Collection[int] = [], /) -> int:
+def lcm(numbers: Collection[int] = (), /) -> int:
     ...
 
 
@@ -80,7 +80,7 @@ def lcm(*numbers) -> int:  # type: ignore[no-untyped-def]
 
 # A sequence of integers..
 @overload
-def gcd(numbers: Collection[int] = [], /) -> int:
+def gcd(numbers: Collection[int] = (), /) -> int:
     ...
 
 

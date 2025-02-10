@@ -15,7 +15,7 @@
 from functools import reduce
 import logging
 import math
-from typing import Any, Sequence, Union, overload
+from typing import Any, Collection, Union, overload
 from typing_extensions import TypeGuard
 from spinn_utilities.log import FormatAdapter
 
@@ -43,7 +43,7 @@ def _lcm(a: int, b: int) -> int:
 
 # A sequence of integers..
 @overload
-def lcm(numbers: Sequence[int], /) -> int:
+def lcm(numbers: Collection[int] = [], /) -> int:
     ...
 
 
@@ -80,7 +80,7 @@ def lcm(*numbers) -> int:  # type: ignore[no-untyped-def]
 
 # A sequence of integers..
 @overload
-def gcd(numbers: Sequence[int], /) -> int:
+def gcd(numbers: Collection[int] = [], /) -> int:
     ...
 
 

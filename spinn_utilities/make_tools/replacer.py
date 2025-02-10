@@ -129,11 +129,11 @@ class Replacer(LogSqlLiteDatabase):
         (log_level, file_name, line_num, replaced) = data
         return f"{LEVELS[log_level]} ({file_name}: {line_num}): {replaced}"
 
-    def _hex_to_float(self, hex_str: str) -> str:
+    def _hex_to_float(self, hex_str: str) -> float:
         return self._FLT_FMT.unpack(
             self._INT_FMT.pack(int(hex_str, 16)))[0]
 
-    def _hexes_to_double(self, upper: str, lower: str) -> str:
+    def _hexes_to_double(self, upper: str, lower: str) -> float:
         return self._DBL_FMT.unpack(
             self._INT_FMT.pack(int(upper, 16)) +
             self._INT_FMT.pack(int(lower, 16)))[0]

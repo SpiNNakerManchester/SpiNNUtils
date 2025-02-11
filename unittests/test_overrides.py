@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from typing import Any, List, Tuple
+from typing import Any, List
 from spinn_utilities.abstract_base import abstractmethod
 from spinn_utilities.overrides import overrides
 

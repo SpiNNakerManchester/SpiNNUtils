@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from testfixtures import LogCapture# type: ignore[import]
+from testfixtures import LogCapture  # type: ignore[import]
 from typing import Callable
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.progress_bar import (
@@ -53,7 +53,8 @@ def test_with_operation(pbclass:  Callable[[int, str], ProgressBar]) -> None:
 
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
-def test_check_length_full(pbclass:  Callable[[int, None], ProgressBar]) -> None:
+def test_check_length_full(
+        pbclass:  Callable[[int, None], ProgressBar]) -> None:
     unittest_setup()
     logger_utils.reset()
     p = pbclass(2, None)
@@ -65,7 +66,8 @@ def test_check_length_full(pbclass:  Callable[[int, None], ProgressBar]) -> None
 
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
-def test_check_length_addition(pbclass:  Callable[[int, None], ProgressBar]) -> None:
+def test_check_length_addition(
+        pbclass:  Callable[[int, None], ProgressBar]) -> None:
     unittest_setup()
     logger_utils.reset()
     p = pbclass(2, None)
@@ -85,7 +87,8 @@ def test_repr(pbclass:  Callable[[int, str], ProgressBar]) -> None:
 
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
-def test_iteration_style(pbclass:  Callable[[range, None], ProgressBar]) -> None:
+def test_iteration_style(
+        pbclass:  Callable[[range, None], ProgressBar]) -> None:
     unittest_setup()
     coll = range(5)
     p = pbclass(coll, None)

@@ -28,7 +28,7 @@ class Support(object):
     def Def(self, x: int) -> int:
         return x*2
 
-    def Ghi(self, x: int)-> float:
+    def Ghi(self, x: int) -> float:
         return x*0.5
 
     def Jkl(self, x: int) -> int:

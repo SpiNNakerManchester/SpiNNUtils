@@ -26,7 +26,7 @@ class ClassWithClassProperty(object):
         return cls._my_property
 
     @classmethod
-    def set_my_property(cls, my_property: str)  -> None:
+    def set_my_property(cls, my_property: str) -> None:
         cls._my_property = my_property
 
 

@@ -125,7 +125,7 @@ def test_empty_slice() -> None:
         rd[2: 2]
 
 
-def test_one_slice()  -> None:
+def test_one_slice() -> None:
     slice_view1 = rd[2: 3]
     assert isinstance(slice_view1, _SingleView)
 

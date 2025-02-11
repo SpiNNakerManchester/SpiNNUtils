@@ -405,7 +405,7 @@ def test_iter_by_slice_ranged() -> None:
 
 def test_as_list_bad() -> None:
     with pytest.raises(Exception):
-        RangedList.as_list([1, 2, 3], 4) # type: ignore
+        RangedList.as_list([1, 2, 3], 4)  # type: ignore
 
 
 def test_range_merge() -> None:

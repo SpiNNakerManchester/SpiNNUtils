@@ -17,7 +17,9 @@ import os
 import pytest
 import random
 import configparser
-from typing import Any, Generator, Tuple
+from types import ModuleType
+from typing import Generator, Tuple
+
 import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture  # type: ignore[import]
 
@@ -70,7 +72,7 @@ def default_config() -> str:
 
 
 @pytest.fixture
-def mach_spec(tmpdir: Any) -> str:
+def mach_spec(tmpdir: ModuleType) -> str:
     msf = tmpdir.join("machspec.cfg")
     msf.write("[Machine]\nmachineName=foo\nversion=5\n")
     return str(msf)
@@ -89,8 +91,8 @@ def test_different_value(
     assert config.get("sect", "foobob") == "cat"
 
 
-def test_new_option_local(
-        tmpdir: Any, default_config: str, not_there: Tuple[str, str]) -> None:
+def test_new_option_local(tmpdir: ModuleType, default_config: str,
+                          not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with open(place, "w") as f:
         f.write(default_config)
@@ -125,7 +127,7 @@ def test_dead_section(not_there: Tuple[str, str], default_config: str) -> None:
             lc.records, "Unexpected Section: [Pets]")
 
 
-def test_use_one_default(tmpdir: Any, not_there: Tuple[str, str]) -> None:
+def test_use_one_default(tmpdir: ModuleType, not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with tmpdir.as_cwd():
         with pytest.raises(NoConfigFoundException):
@@ -139,7 +141,7 @@ def test_use_one_default(tmpdir: Any, not_there: Tuple[str, str]) -> None:
         assert config.get("sect", "foobob") == "bar"
 
 
-def test_no_templates(tmpdir: Any, default_config: str,
+def test_no_templates(tmpdir: ModuleType, default_config: str,
                       not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with tmpdir.as_cwd():
@@ -147,7 +149,7 @@ def test_no_templates(tmpdir: Any, default_config: str,
             conf_loader.load_config(name, [THREEPATH, FOURPATH])
 
 
-def test_one_templates(tmpdir: Any, default_config: str,
+def test_one_templates(tmpdir: ModuleType, default_config: str,
                        not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with tmpdir.as_cwd():
@@ -155,16 +157,15 @@ def test_one_templates(tmpdir: Any, default_config: str,
             conf_loader.load_config(name, [FOURPATH, ONEPATH, THREEPATH])
 
 
-def test_two_templates(tmpdir: Any, default_config: str,
+def test_two_templates(tmpdir: ModuleType, default_config: str,
                        not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with tmpdir.as_cwd():
         with pytest.raises(ConfigTemplateException):
             conf_loader.load_config(name, [ONEPATH, TWOPATH])
 
-
-def test_None_machine_spec_file(tmpdir: Any, default_config: str,
-                       not_there: Tuple[str, str]) -> None:
+def test_None_machine_spec_file(
+        tmpdir: ModuleType, default_config: str, not_there: Tuple[str, str]) -> None:
     name, place = not_there
     default_config += "\n[Machine]\nmachine_spec_file=None\n"
     with open(place, "w") as f:
@@ -179,8 +180,8 @@ def test_None_machine_spec_file(tmpdir: Any, default_config: str,
             log_checker.assert_logs_info_not_contains(lc.records, "None")
 
 
-def test_intermediate_use(tmpdir: Any, default_config: str, mach_spec: str,
-                          not_there: Tuple[str, str]) -> None:
+def test_intermediate_use(tmpdir: ModuleType, default_config: str,
+                          mach_spec: str, not_there: Tuple[str, str]) -> None:
     name, place = not_there
     default_config += "\n[Machine]\nmachine_spec_file=" + mach_spec + "\n"
     with open(place, "w") as f:
@@ -198,7 +199,7 @@ def test_intermediate_use(tmpdir: Any, default_config: str, mach_spec: str,
             log_checker.assert_logs_info_contains(lc.records, name)
 
 
-def test_advanced_use(tmpdir: Any, default_config: str,
+def test_advanced_use(tmpdir: ModuleType, default_config: str,
                       not_there: Tuple[str, str]) -> None:
     def parseAbc(parser: CamelCaseConfigParser) -> None:
         f = parser.getfloat("Abc", "def")
@@ -216,7 +217,7 @@ def test_advanced_use(tmpdir: Any, default_config: str,
         assert config.getfloat("Abc", "ghi") == 3.75
 
 
-def test_str_list(tmpdir: Any, not_there: Tuple[str, str]) -> None:
+def test_str_list(tmpdir: ModuleType, not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with open(place, "w") as f:
         f.write("[abc]\n"
@@ -233,7 +234,7 @@ def test_str_list(tmpdir: Any, not_there: Tuple[str, str]) -> None:
         assert config.get_str_list("abc", "fluff") == ["more"]
 
 
-def test_logging(tmpdir: Any, not_there: Tuple[str, str]) -> None:
+def test_logging(tmpdir: ModuleType, not_there: Tuple[str, str]) -> None:
     # tests the ConfiguredFilter
     name, place = not_there
     with open(place, "w") as f:

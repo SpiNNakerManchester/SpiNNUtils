@@ -40,7 +40,7 @@ def _assert_logs_not_contains(
 
 
 def assert_logs_contains_once(
-        level: int, log_records: List[LogRecord], message: str) -> None:
+        level: str, log_records: List[LogRecord], message: str) -> None:
     """
     Checks if the log records contain exactly one record at the given
     level with the given sub-message.

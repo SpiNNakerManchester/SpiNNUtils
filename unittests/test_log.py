@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import configparser
 from datetime import datetime
 import logging
 from typing import Any, List, Optional, Tuple
@@ -23,6 +22,7 @@ from spinn_utilities.log import (
     LogLevelTooHighException)
 from spinn_utilities.log_store import LogStore
 from spinn_utilities.overrides import overrides
+
 
 class MockLog(logging.Logger):
     def __init__(self) -> None:

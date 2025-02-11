@@ -22,6 +22,7 @@ class Base(object):
     def bar(self) -> int:
         return 123
 
+
 @require_subclass(Base)
 class Ifc(object, metaclass=AbstractBase):
     @abstractmethod

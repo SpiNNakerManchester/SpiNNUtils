@@ -18,7 +18,7 @@ import pytest
 import random
 import configparser
 from types import ModuleType
-from typing import Generator, Tuple
+from typing import Iterator, Tuple
 
 import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture  # type: ignore[import]
@@ -51,7 +51,7 @@ logger = FormatAdapter(logging.getLogger(__name__))
 
 
 @pytest.fixture
-def not_there() -> Generator[Tuple[str, str]]:
+def not_there() -> Iterator[Tuple[str, str]]:
     name = "test_config_for_spinnutils_unittests.{}.txt".format(
         random.randint(1, 1000000))
     place = os.path.join(os.path.expanduser("~"), f".{name}")

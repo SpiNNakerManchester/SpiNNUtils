@@ -23,16 +23,17 @@ class AbstractHasLabel(object, metaclass=AbstractBase):
 
     @property
     @abstractmethod
-    def label(self):
+    def label(self) -> str:
         """ The label of the item
 
         :return: The label
         :rtype: str
         :raise None: Raises no known exceptions
         """
+        raise NotImplementedError()
 
     @abstractmethod
-    def set_label(self, label):
+    def set_label(self, label: str) -> None:
         """ Set the label of the item.
 
         :param label:

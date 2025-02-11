@@ -21,16 +21,16 @@ class ClassWithClassProperty(object):
     getter_called = False
 
     @classproperty
-    def my_property(cls):
+    def my_property(cls) -> str:
         cls.getter_called = True
         return cls._my_property
 
     @classmethod
-    def set_my_property(cls, my_property):
+    def set_my_property(cls, my_property: str)  -> None:
         cls._my_property = my_property
 
 
-def test_class_property():
+def test_class_property() -> None:
 
     assert not ClassWithClassProperty.getter_called
     assert ClassWithClassProperty.my_property == \

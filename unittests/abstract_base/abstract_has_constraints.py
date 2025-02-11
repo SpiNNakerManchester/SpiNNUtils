@@ -24,7 +24,7 @@ class AbstractHasConstraints(object, metaclass=AbstractBase):
     __slots__ = ()
 
     @abstractmethod
-    def add_constraint(self, constraint: Any):
+    def add_constraint(self, constraint: Any) -> None:
         """ Add a new constraint to the collection of constraints
 
         :param constraint: constraint to add

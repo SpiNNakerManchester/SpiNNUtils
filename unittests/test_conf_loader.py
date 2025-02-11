@@ -17,12 +17,15 @@ import os
 import pytest
 import random
 import configparser
+from typing import Any, Generator, Tuple
 import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture  # type: ignore[import]
+
 import spinn_utilities.conf_loader as conf_loader
 import spinn_utilities.config_holder as config_holder
 from spinn_utilities.configs import (
-    ConfigTemplateException, NoConfigFoundException, UnexpectedConfigException)
+    CamelCaseConfigParser, ConfigTemplateException,
+    NoConfigFoundException, UnexpectedConfigException)
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.testing import log_checker
 
@@ -46,7 +49,7 @@ logger = FormatAdapter(logging.getLogger(__name__))
 
 
 @pytest.fixture
-def not_there():
+def not_there() -> Generator[Tuple[str, str]]:
     name = "test_config_for_spinnutils_unittests.{}.txt".format(
         random.randint(1, 1000000))
     place = os.path.join(os.path.expanduser("~"), f".{name}")
@@ -61,19 +64,20 @@ def not_there():
 
 
 @pytest.fixture
-def default_config():
+def default_config() -> str:
     with open(CFGPATH) as the_file:
         return the_file.read()
 
 
 @pytest.fixture
-def mach_spec(tmpdir):
+def mach_spec(tmpdir: Any) -> str:
     msf = tmpdir.join("machspec.cfg")
     msf.write("[Machine]\nmachineName=foo\nversion=5\n")
     return str(msf)
 
 
-def test_different_value(not_there, default_config):
+def test_different_value(
+        not_there: Tuple[str, str], default_config: str) -> None:
     name, place = not_there
     default_config = default_config.replace("bar", "cat")
     with open(place, "w") as f:
@@ -85,7 +89,8 @@ def test_different_value(not_there, default_config):
     assert config.get("sect", "foobob") == "cat"
 
 
-def test_new_option_local(tmpdir, default_config, not_there):
+def test_new_option_local(
+        tmpdir: Any, default_config: str, not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with open(place, "w") as f:
         f.write(default_config)
@@ -97,7 +102,8 @@ def test_new_option_local(tmpdir, default_config, not_there):
             conf_loader.load_config(name, [CFGPATH])
 
 
-def test_new_option_home(not_there, default_config):
+def test_new_option_home(
+        not_there: Tuple[str, str], default_config: str) -> None:
     name, place = not_there
     default_config = default_config + "sam=cat\n"
     with open(place, "w") as f:
@@ -108,7 +114,7 @@ def test_new_option_home(not_there, default_config):
             lc.records, "Unexpected Option: [sect]sam")
 
 
-def test_dead_section(not_there, default_config):
+def test_dead_section(not_there: Tuple[str, str], default_config: str) -> None:
     name, place = not_there
     default_config = default_config + "[Pets]\nsam=cat\n"
     with open(place, "w") as f:
@@ -119,7 +125,7 @@ def test_dead_section(not_there, default_config):
             lc.records, "Unexpected Section: [Pets]")
 
 
-def test_use_one_default(tmpdir, not_there):
+def test_use_one_default(tmpdir: Any, not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with tmpdir.as_cwd():
         with pytest.raises(NoConfigFoundException):
@@ -133,28 +139,32 @@ def test_use_one_default(tmpdir, not_there):
         assert config.get("sect", "foobob") == "bar"
 
 
-def test_no_templates(tmpdir, default_config, not_there):
+def test_no_templates(tmpdir: Any, default_config: str,
+                      not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with tmpdir.as_cwd():
         with pytest.raises(ConfigTemplateException):
             conf_loader.load_config(name, [THREEPATH, FOURPATH])
 
 
-def test_one_templates(tmpdir, default_config, not_there):
+def test_one_templates(tmpdir: Any, default_config: str,
+                       not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with tmpdir.as_cwd():
         with pytest.raises(NoConfigFoundException):
             conf_loader.load_config(name, [FOURPATH, ONEPATH, THREEPATH])
 
 
-def test_two_templates(tmpdir, default_config, not_there):
+def test_two_templates(tmpdir: Any, default_config: str,
+                       not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with tmpdir.as_cwd():
         with pytest.raises(ConfigTemplateException):
             conf_loader.load_config(name, [ONEPATH, TWOPATH])
 
 
-def test_None_machine_spec_file(tmpdir, default_config, not_there):
+def test_None_machine_spec_file(tmpdir: Any, default_config: str,
+                       not_there: Tuple[str, str]) -> None:
     name, place = not_there
     default_config += "\n[Machine]\nmachine_spec_file=None\n"
     with open(place, "w") as f:
@@ -169,7 +179,8 @@ def test_None_machine_spec_file(tmpdir, default_config, not_there):
             log_checker.assert_logs_info_not_contains(lc.records, "None")
 
 
-def test_intermediate_use(tmpdir, default_config, mach_spec, not_there):
+def test_intermediate_use(tmpdir: Any, default_config: str, mach_spec: str,
+                          not_there: Tuple[str, str]) -> None:
     name, place = not_there
     default_config += "\n[Machine]\nmachine_spec_file=" + mach_spec + "\n"
     with open(place, "w") as f:
@@ -187,10 +198,11 @@ def test_intermediate_use(tmpdir, default_config, mach_spec, not_there):
             log_checker.assert_logs_info_contains(lc.records, name)
 
 
-def test_advanced_use(tmpdir, default_config, not_there):
-    def parseAbc(parser):
+def test_advanced_use(tmpdir: Any, default_config: str,
+                      not_there: Tuple[str, str]) -> None:
+    def parseAbc(parser: CamelCaseConfigParser) -> None:
         f = parser.getfloat("Abc", "def")
-        parser.set("Abc", "ghi", f*3)
+        parser.set("Abc", "ghi", str(f*3))
         parser.remove_option("Abc", "def")
 
     name, place = not_there
@@ -204,7 +216,7 @@ def test_advanced_use(tmpdir, default_config, not_there):
         assert config.getfloat("Abc", "ghi") == 3.75
 
 
-def test_str_list(tmpdir, not_there):
+def test_str_list(tmpdir: Any, not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with open(place, "w") as f:
         f.write("[abc]\n"
@@ -221,7 +233,7 @@ def test_str_list(tmpdir, not_there):
         assert config.get_str_list("abc", "fluff") == ["more"]
 
 
-def test_logging(tmpdir, not_there):
+def test_logging(tmpdir: Any, not_there: Tuple[str, str]) -> None:
     # tests the ConfiguredFilter
     name, place = not_there
     with open(place, "w") as f:
@@ -240,14 +252,14 @@ def test_logging(tmpdir, not_there):
     logger.warning("trigger filter")
 
 
-def test_errors(not_there):
+def test_errors(not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with pytest.raises(ConfigTemplateException):
         conf_loader.install_cfg_and_error(
             filename=name, defaults=[], config_locations=[])
 
 
-def test_config_holder(not_there):
+def test_config_holder(not_there: Tuple[str, str]) -> None:
     config_holder.clear_cfg_files(False)
     name, place = not_there
     config_holder.set_cfg_files(name, TYPESPATH)
@@ -268,7 +280,7 @@ def test_config_holder(not_there):
     assert config_holder.get_config_bool("sect", "a_bool")
 
 
-def test_no_default():
+def test_no_default() -> None:
     config_holder.clear_cfg_files(False)
     try:
         config_holder.load_config()
@@ -277,7 +289,7 @@ def test_no_default():
         assert "No default configs set" in str(ex)
 
 
-def test_preload_not_unittest():
+def test_preload_not_unittest() -> None:
     config_holder.clear_cfg_files(False)
     config_holder.set_cfg_files(None, TYPESPATH)
     try:
@@ -289,32 +301,32 @@ def test_preload_not_unittest():
                 in str(ex))
 
 
-def test_preload_str():
+def test_preload_str() -> None:
     config_holder.clear_cfg_files(True)
     config_holder.set_cfg_files(None, TYPESPATH)
     assert "from default" == config_holder.get_config_str("sect", "a_string")
 
 
-def test_preload_str_list():
+def test_preload_str_list() -> None:
     config_holder.clear_cfg_files(True)
     config_holder.set_cfg_files(None, TYPESPATH)
     assert ["foo", "bar"] == config_holder.get_config_str_list(
         "sect", "string_list")
 
 
-def test_preload_int():
+def test_preload_int() -> None:
     config_holder.clear_cfg_files(True)
     config_holder.set_cfg_files(None, TYPESPATH)
     assert 321 == config_holder.get_config_int("sect", "a_int")
 
 
-def test_preload_float():
+def test_preload_float() -> None:
     config_holder.clear_cfg_files(True)
     config_holder.set_cfg_files(None, TYPESPATH)
     assert 56.44 == config_holder.get_config_float("sect", "a_float")
 
 
-def test_preload_bool():
+def test_preload_bool() -> None:
     config_holder.clear_cfg_files(True)
     config_holder.set_cfg_files(None, TYPESPATH)
     assert not config_holder.get_config_bool("sect", "a_bool")

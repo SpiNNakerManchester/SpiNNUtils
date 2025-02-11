@@ -20,11 +20,11 @@ from .abstract_has_constraints import AbstractHasConstraints
 
 class NoLabel(AbstractGrandParent):
 
-    def set_label(selfself, label):
+    def set_label(self, label: str) -> None:
         pass
 
     @overrides(AbstractHasConstraints.add_constraint)
-    def add_constraint(self, constraint: Any):
+    def add_constraint(self, constraint: Any) -> None:
         raise NotImplementedError("We set our own constraints")
 
     @overrides(AbstractHasConstraints.constraints)

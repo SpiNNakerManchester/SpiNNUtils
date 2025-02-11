@@ -40,13 +40,13 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 class TestReplacer(unittest.TestCase):
 
-    def test_replacer(self):
+    def test_replacer(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             new = replacer.replace("5")
         assert ("[INFO] (weird,file.c: 37): this is ok" == new)
 
-    def test_not_there_existing(self):
+    def test_not_there_existing(self) -> None:
         unittest_setup()
         # Point C_LOGS_DICT to somewhere that does not exist
         os.environ["C_LOGS_DICT"] = str(
@@ -57,7 +57,7 @@ class TestReplacer(unittest.TestCase):
         except Exception as ex:
             assert ("Unable to locate c_logs_dict" in str(ex))
 
-    def test_external_empty(self):
+    def test_external_empty(self) -> None:
         unittest_setup()
         with tempfile.TemporaryDirectory() as tmpdirname:
             set_config("Mapping", "external_binaries", tmpdirname)
@@ -69,7 +69,7 @@ class TestReplacer(unittest.TestCase):
             except FileNotFoundError as ex:
                 self.assertIn(tmpdirname, str(ex))
 
-    def test_tab(self):
+    def test_tab(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             new = replacer.replace("11" + TOKEN + "10" + TOKEN + "20")
@@ -77,14 +77,14 @@ class TestReplacer(unittest.TestCase):
                   " spikes 20"
         assert (message == new)
 
-    def test_float(self):
+    def test_float(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace("2" + TOKEN + "0xc0400000")
         message = "[INFO] (weird,file.c: 31): test -three -3.0"
         assert (message == new)
 
-    def test_double(self):
+    def test_double(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace(
@@ -92,7 +92,7 @@ class TestReplacer(unittest.TestCase):
         message = "[INFO] (weird,file.c: 33): test double 23.6"
         assert (message == new)
 
-    def test_bad(self):
+    def test_bad(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace("1007" + TOKEN + "10")
@@ -100,14 +100,14 @@ class TestReplacer(unittest.TestCase):
         message = "1007" + TOKEN + "10"
         assert (message == new)
 
-    def near_equals(self, a, b):
+    def near_equals(self, a: float, b: float) -> bool:
         diff = a - b
         if diff == 0:
             return True
         ratio = diff / a
         return abs(ratio) < 0.0000001
 
-    def test_hex_to_float(self):
+    def test_hex_to_float(self) -> None:
         """
         Test the converter against hex values returned from Spinnaker
 
@@ -136,7 +136,7 @@ class TestReplacer(unittest.TestCase):
             assert self.near_equals(
                 -3, replacer._hex_to_float("0xc0400000"))
 
-    def test_hexes_to_double(self):
+    def test_hexes_to_double(self) -> None:
         """
         Test the converter against hexes values returned from Spinnaker
 

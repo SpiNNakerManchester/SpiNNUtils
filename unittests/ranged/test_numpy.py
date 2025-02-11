@@ -21,10 +21,11 @@ import pytest
     "ranged_list, range_based", [
         (RangedList(10, numpy.arange(10), use_list_as_value=True), True),
         (RangedList(10, [numpy.arange(10) for _ in range(10)]), False)])
-def test_list_of_numpy_list(ranged_list, range_based):
+def test_list_of_numpy_list(
+        ranged_list: RangedList, range_based: bool) -> None:
     assert ranged_list.range_based() == range_based
     assert numpy.array_equal(
-        ranged_list, [numpy.arange(10) for _ in range(10)])
+        list(ranged_list), [numpy.arange(10) for _ in range(10)])
     assert numpy.array_equal(
         ranged_list.get_single_value_all(), numpy.arange(10))
 
@@ -58,7 +59,7 @@ def test_list_of_numpy_list(ranged_list, range_based):
     with pytest.raises(Exception):
         ranged_list[3] = range(5)
     ranged_list.set_value_by_id(3, range(5))
-    assert numpy.array_equal(ranged_list[3], numpy.arange(5))
+    assert numpy.array_equal(list(ranged_list[3]), numpy.arange(5))
 
     ranged_list.set_value_by_slice(
         0, 4, numpy.arange(10), use_list_as_value=True)

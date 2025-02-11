@@ -15,17 +15,18 @@
 import pytest
 from spinn_utilities.ranged import RangeDictionary
 from spinn_utilities.ranged.single_view import _SingleView
+from spinn_utilities.ranged.slice_view import _SliceView
 
 defaults = {"a": "alpha", "b": "bravo"}
-rd = RangeDictionary(10, defaults)
+rd: RangeDictionary = RangeDictionary(10, defaults)
 slice_view = rd[4:6]
 
 
-def test_ids():
+def test_ids() -> None:
     assert [4, 5] == list(slice_view.ids())
 
 
-def test_value():
+def test_value() -> None:
     assert "alpha" == slice_view.get_value("a")
     assert "bravo" == slice_view.get_value("b")
     assert "a" in slice_view
@@ -34,19 +35,19 @@ def test_value():
     assert {"a", "b"} == set(slice_view.keys())
 
 
-def test_items():
+def test_items() -> None:
     expected = {("a", "alpha"), ("b", "bravo")}
     result = set(slice_view.items())
     assert expected == result
 
 
-def test_values():
+def test_values() -> None:
     expected = {"alpha", "bravo"}
     result = set(slice_view.values())
     assert expected == result
 
 
-def test_set_range_direct():
+def test_set_range_direct() -> None:
     rd1 = RangeDictionary(10, defaults)
     slice_view1 = rd1[4:7]
     assert "alpha" == slice_view1.get_value("a")
@@ -54,7 +55,7 @@ def test_set_range_direct():
     assert "Foo" == slice_view1.get_value("a")
 
 
-def test_iter_values():
+def test_iter_values() -> None:
     rd1 = RangeDictionary(10, defaults)
     slice_view1 = rd1[4:7]
     aware = slice_view1.iter_all_values("a", update_safe=False)
@@ -65,7 +66,7 @@ def test_iter_values():
     assert ["Foo", "Foo", "Foo"] == list(aware)
 
 
-def test_ranges_by_key():
+def test_ranges_by_key() -> None:
     rd1 = RangeDictionary(10, defaults)
     slice_view1 = rd1[4:7]
     assert [(4, 7, "alpha")] == list(slice_view1.iter_ranges(key="a"))
@@ -78,9 +79,10 @@ def test_ranges_by_key():
         == list(slice_view1.iter_ranges(key="a"))
 
 
-def test_ranges_all():
+def test_ranges_all() -> None:
     rd1 = RangeDictionary(10, defaults)
     slice_view1 = rd1[4:7]
+    assert isinstance(slice_view1, _SliceView)
     assert [(4, 7, {"a": "alpha", "b": "bravo"})] == \
         list(slice_view1.iter_ranges())
     slice_view1["a"] = "foo"
@@ -97,47 +99,51 @@ def test_ranges_all():
         list(slice_view1.iter_ranges())
 
 
-def test_left_slice():
+def test_left_slice() -> None:
     slice_view1 = rd[4:]
+    assert isinstance(slice_view1, _SliceView)
     assert [(4, 10, {"a": "alpha", "b": "bravo"})] == \
         list(slice_view1.iter_ranges())
 
 
-def test_right_slice():
+def test_right_slice() -> None:
     slice_view1 = rd[:4]
+    assert isinstance(slice_view1, _SliceView)
     assert [(0, 4, {"a": "alpha", "b": "bravo"})] == \
         list(slice_view1.iter_ranges())
 
 
-def test_minus_slice():
+def test_minus_slice() -> None:
     slice_view1 = rd[-8:-4]
+    assert isinstance(slice_view1, _SliceView)
     assert [(2, 6, {"a": "alpha", "b": "bravo"})] == \
         list(slice_view1.iter_ranges())
 
 
-def test_empty_slice():
+def test_empty_slice() -> None:
     with pytest.raises(Exception):
         rd[2: 2]
 
 
-def test_one_slice():
+def test_one_slice()  -> None:
     slice_view1 = rd[2: 3]
     assert isinstance(slice_view1, _SingleView)
 
 
-def test_str():
+def test_str() -> None:
     s = str(slice_view)
     assert 0 < len(s)
 
 
-def test_iter_by_slice():
-    rd1 = RangeDictionary(10)
+def test_iter_by_slice() -> None:
+    rd1: RangeDictionary = RangeDictionary(10)
     rd1["g"] = "gamma"
     rd1["a"] = "alpha"
     rd1["b"] = ["bravo0", "bravo1", "bravo2", "bravo3", "bravo4", "bravo5",
                 "bravo6", "bravo7", "bravo8+", "bravo9"]
 
     slice_view1 = rd1[2: 4]
+    assert isinstance(slice_view1, _SliceView)
     iterator = slice_view1.iter_all_values()
     assert {"a": "alpha", "b": "bravo2", "g": "gamma"} == next(iterator)
     assert {"a": "alpha", "b": "bravo3", "g": "gamma"} == next(iterator)
@@ -182,7 +188,7 @@ def test_iter_by_slice():
     rd1["b"][3] = "bravo3"
 
 
-def test_check_slice_in_range():
+def test_check_slice_in_range() -> None:
     assert (2, 4) == rd._check_slice_in_range(2, 4)
     assert (7, 9) == rd._check_slice_in_range(-3, -1)
     assert (0, 4) == rd._check_slice_in_range(-18, 4)

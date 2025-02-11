@@ -24,8 +24,8 @@ ranged_file = "local_ranges.txt"
 
 class TestConverter(unittest.TestCase):
 
-    def test_convert(self):
-        class_file = sys.modules[self.__module__].__file__
+    def test_convert(self) -> None:
+        class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = str(os.path.join(path,
                                                      "convert_2.sqlite3"))
@@ -66,8 +66,8 @@ class TestConverter(unittest.TestCase):
             sql.check_original("then a standard comment on a middle line")
             sql.check_original("comment before")
 
-    def test_not_there_exception(self):
-        class_file = sys.modules[self.__module__].__file__
+    def test_not_there_exception(self) -> None:
+        class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
         # clear the database and create a new one
@@ -82,8 +82,8 @@ class TestConverter(unittest.TestCase):
             self.assertIn("mistakes", str(ex1))
             self.assertIn("not_there.c", str(ex1))
 
-    def test_split_fail(self):
-        class_file = sys.modules[self.__module__].__file__
+    def test_split_fail(self) -> None:
+        class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
         # clear the database and create a new one
@@ -98,8 +98,8 @@ class TestConverter(unittest.TestCase):
             self.assertIn("mistakes", str(ex1))
             self.assertIn("bad_comma.c", str(ex1))
 
-    def test_format_fail(self):
-        class_file = sys.modules[self.__module__].__file__
+    def test_format_fail(self) -> None:
+        class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
         # clear the database and create a new one
@@ -112,8 +112,8 @@ class TestConverter(unittest.TestCase):
         except Exception as ex1:
             assert str(ex1) == "Unexpected formatString in %!"
 
-    def test_unclosed_log(self):
-        class_file = sys.modules[self.__module__].__file__
+    def test_unclosed_log(self) -> None:
+        class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
         # clear the database and create a new one
@@ -127,8 +127,8 @@ class TestConverter(unittest.TestCase):
             self.assertIn('Unclosed log_info("test %f", -3.0f in ', str(ex1))
             self.assertIn("mistakes/unclosed.c", str(ex1).replace('\\', '/'))
 
-    def test_semi(self):
-        class_file = sys.modules[self.__module__].__file__
+    def test_semi(self) -> None:
+        class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
         # clear the database and create a new one
@@ -144,8 +144,8 @@ class TestConverter(unittest.TestCase):
             self.assertIn("semi.c", str(ex1))
             self.assertIn("mistakes", str(ex1))
 
-    def test_open(self):
-        class_file = sys.modules[self.__module__].__file__
+    def test_open(self) -> None:
+        class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
         # clear the database and create a new one
@@ -160,8 +160,8 @@ class TestConverter(unittest.TestCase):
             self.assertIn("open.c", str(ex1))
             self.assertIn("mistakes", str(ex1))
 
-    def test_too_few(self):
-        class_file = sys.modules[self.__module__].__file__
+    def test_too_few(self) -> None:
+        class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
         # clear the database and create a new one
@@ -177,8 +177,8 @@ class TestConverter(unittest.TestCase):
             self.assertIn("mistakes", str(ex1))
             self.assertIn("too_few.c", str(ex1))
 
-    def test_too_many(self):
-        class_file = sys.modules[self.__module__].__file__
+    def test_too_many(self) -> None:
+        class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
         # clear the database and create a new one

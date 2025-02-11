@@ -18,7 +18,7 @@ from spinn_utilities.config_holder import set_config
 from spinn_utilities.socket_address import SocketAddress
 
 
-def test_correct_usage():
+def test_correct_usage() -> None:
     # Test the constructor
     sa1 = SocketAddress("a", 2, 3)
     sa2 = SocketAddress("a", 2, 3)
@@ -52,22 +52,22 @@ def test_correct_usage():
     assert d[sa1] == 234
 
 
-def test_wrong_usage():
-    sa = SocketAddress(21, 1, 1)
+def test_wrong_usage() -> None:
+    sa = SocketAddress(21, 1, 1)  # type: ignore[arg-type]
     # Stringified the 12...
     assert sa.notify_host_name == "21"
 
     with pytest.raises(ValueError):
-        SocketAddress("a", "b", 1)
+        SocketAddress("a", "b", 1)   # type: ignore[arg-type]
     with pytest.raises(ValueError):
-        SocketAddress("a", 1, "a")
+        SocketAddress("a", 1, "a")   # type: ignore[arg-type]
 
 
-def test_using_configs():
+def test_using_configs() -> None:
     unittest_setup()
-    set_config("Database", "notify_port", 31)
+    set_config("Database", "notify_port", "31")
     set_config("Database", "notify_hostname", "b")
-    set_config("Database", "listen_port", 21)
+    set_config("Database", "listen_port", "21")
     sa1 = SocketAddress()
     assert sa1.listen_port == 21
     assert sa1.notify_host_name == "b"

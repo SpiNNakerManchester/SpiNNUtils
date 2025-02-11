@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from typing import Any, List
+from typing import Any, List, Tuple
 from spinn_utilities.abstract_base import abstractmethod
 from spinn_utilities.overrides import overrides
 
@@ -39,19 +39,19 @@ class Base(object):
     def with_param_no_return(self, x: int) -> None:
         pass
 
-    def with_param_no_return2(self, x: int):
+    def with_param_no_return2(self, x: int) -> None:
         pass
 
-    def no_param_no_return(self):
+    def no_param_no_return(self):  # type: ignore[no-untyped-def]
         pass
 
     # This is bad as it does not define a return
-    def bad(self, x: int, y: int, z: int):
+    def bad(self, x: int, y: int, z: int):   # type: ignore[no-untyped-def]
         """this is the doc"""
         return [x, y, z]
 
 
-def test_basic_use():
+def test_basic_use() -> None:
     class Sub(Base):
         @overrides(Base.foo)
         def foo(self, x: int, y: int, z: int) -> List[int]:
@@ -59,7 +59,7 @@ def test_basic_use():
     assert Sub().foo(1, 2, 3) == [3, 2, 1]
 
 
-def test_doc_no_sub_extend():
+def test_doc_no_sub_extend() -> None:
     class Sub(Base):
         @overrides(Base.foo, extend_doc=True)
         def foo(self, x: int, y: int, z: int) -> List[int]:
@@ -67,7 +67,7 @@ def test_doc_no_sub_extend():
     assert Sub.foo.__doc__ == "this is the doc"
 
 
-def test_doc_no_sub_no_extend():
+def test_doc_no_sub_no_extend() -> None:
     class Sub(Base):
         @overrides(Base.foo, extend_doc=False)
         def foo(self, x: int, y: int, z: int) -> List[int]:
@@ -75,7 +75,7 @@ def test_doc_no_sub_no_extend():
     assert Sub.foo.__doc__ == "this is the doc"
 
 
-def test_doc_sub_no_extend():
+def test_doc_sub_no_extend() -> None:
     class Sub(Base):
         @overrides(Base.foo, extend_doc=False)
         def foo(self, x: int, y: int, z: int) -> List[int]:
@@ -84,7 +84,7 @@ def test_doc_sub_no_extend():
     assert Sub.foo.__doc__ == "(abc)"
 
 
-def test_doc_sub_extend():
+def test_doc_sub_extend() -> None:
     class Sub(Base):
         @overrides(Base.foo, extend_doc=True)
         def foo(self, x: int, y: int, z: int) -> List[int]:
@@ -93,33 +93,36 @@ def test_doc_sub_extend():
     assert Sub.foo.__doc__ == "this is the doc(abc)"
 
 
-def test_removes_param():
+def test_removes_param() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo)
-            def foo(self, x: int, y: int) -> List[int]:
+            def foo(self, x: int,  # type: ignore[override]
+                    y: int) -> List[int]:
                 return [y, x]
     assert str(e.value) == WRONG_ARGS.format(3)
 
 
-def test_adds_param():
+def test_adds_param() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo)
-            def foo(self, x: int, y: int, z: int, w: int) -> List[int]:
+            def foo(self, x: int, y: int, z: int,  # type: ignore[override]
+                    w: int) -> List[int]:
                 return [w, z, y, x]
     assert str(e.value) == WRONG_ARGS.format(5)
 
 
-def test_adds_expected_param():
+def test_adds_expected_param() -> None:
     class Sub(Base):
         @overrides(Base.foo, additional_arguments=["w"])
-        def foo(self, x: int, y: int, z: int, w: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int,  # type: ignore[override]
+                w: int) -> List[int]:
             return [w, z, y, x]
     assert Sub().foo(1, 2, 3, 4) == [4, 3, 2, 1]
 
 
-def test_renames_param():
+def test_renames_param() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo)
@@ -128,7 +131,7 @@ def test_renames_param():
     assert str(e.value) == "Missing argument z"
 
 
-def test_renames_param_expected():
+def test_renames_param_expected() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo, additional_arguments=["w"])
@@ -138,24 +141,26 @@ def test_renames_param_expected():
     # TODO: Fix the AWFUL error message in this case!
 
 
-def test_changes_params_defaults():
+def test_changes_params_defaults() -> None:
     class Sub(Base):
         @overrides(Base.foodef)
-        def foodef(self, x: Any, y: Any, z: Any = False) -> List[Any]:
+        def foodef(self, x: Any, y: Any,   # type: ignore[override]
+                   z: Any = False) -> List[Any]:
             return [z, y, x]
     assert Sub().foodef(1, 2) == [False, 2, 1]
 
 
-def test_undefaults_super_param():
+def test_undefaults_super_param() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foodef)
-            def foodef(self, x: Any, y: Any, z: Any) -> List[Any]:
+            def foodef(self, x: Any, y: Any,   # type: ignore[override]
+                       z: Any) -> List[Any]:
                 return [z, y, x]
     assert str(e.value) == BAD_DEFS
 
 
-def test_defaults_super_param():
+def test_defaults_super_param() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foodef)
@@ -165,7 +170,7 @@ def test_defaults_super_param():
     # TODO: Should this case fail at all?
 
 
-def test_defaults_super_param_expected():
+def test_defaults_super_param_expected() -> None:
     class Sub(Base):
         @overrides(Base.foodef, extend_defaults=True)
         def foodef(self, x: Any, y: Any = 1, z: Any = 2) -> List[Any]:
@@ -173,7 +178,7 @@ def test_defaults_super_param_expected():
     assert Sub().foodef(7) == [2, 1, 7]
 
 
-def test_defaults_extra_param():
+def test_defaults_extra_param() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foodef, additional_arguments=['pdq'])
@@ -183,7 +188,7 @@ def test_defaults_extra_param():
     assert str(e.value) == BAD_DEFS
 
 
-def test_defaults_super_param_no_super_defaults():
+def test_defaults_super_param_no_super_defaults() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo)
@@ -193,12 +198,13 @@ def test_defaults_super_param_no_super_defaults():
     # TODO: Should this case fail at all?
 
 
-def test_crazy_extends():
+def test_crazy_extends() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.foo)
-            def bar(self, x: int, y: int, z: int):
-                return [z, y, x]
+            def bar(self, x: int, y: int,    # type: ignore[no-untyped-def]
+                    z: int):
+                return [z, y, x]  # type: ignore[return-value]
     assert str(e.value) == \
         "super class method name foo does not match bar. Ensure overrides is "\
         "the last decorator before the method declaration"
@@ -237,7 +243,7 @@ def test_sister_overides() -> None:
         def foo(self) -> int:
             raise NotImplementedError
 
-        def bar(self):
+        def bar(self) -> int:
             return self.foo()
 
     class Child(ParentTwo, ParentOne):
@@ -261,7 +267,7 @@ def test_sister_overides_bad() -> None:
         try:
             @overrides(ParentOne.foo)
             @abstractmethod
-            def foo(self, check) -> int:
+            def foo(self, check: int) -> int:
                 raise NotImplementedError
 
             raise ValueError("Should not get here")
@@ -277,17 +283,17 @@ def test_sister_different1() -> None:
 
     class ParentTwo(object):
         @abstractmethod
-        def foo(self, check) -> int:
+        def foo(self, check: int) -> int:
             raise NotImplementedError
 
-        def bar(self):
-            return self.foo()
+        def bar(self) -> int:
+            return self.foo(1)
 
     try:
         class Child(ParentTwo, ParentOne):
             @overrides(ParentTwo.foo)
             @overrides(ParentOne.foo)
-            def foo(self) -> int:  # type: ignore
+            def foo(self) -> int:  # type: ignore[override]
                 return 1
     except AttributeError:
         pass
@@ -301,23 +307,23 @@ def test_sister_different2() -> None:
 
     class ParentTwo(object):
         @abstractmethod
-        def foo(self, check) -> int:
+        def foo(self, check: int) -> int:
             raise NotImplementedError
 
-        def bar(self):
-            return self.foo()
+        def bar(self) -> int:
+            return self.foo(1)
 
     try:
         class Child(ParentTwo, ParentOne):
             @overrides(ParentOne.foo)
             @overrides(ParentTwo.foo)
-            def foo(self) -> int:  # type: ignore
+            def foo(self) -> int:  # type: ignore[override]
                 return 1
     except AttributeError:
         pass
 
 
-def test_add_return():
+def test_add_return() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.bad)
@@ -327,53 +333,53 @@ def test_add_return():
                            "while this does"
 
 
-def test_dont_add_return():
+def test_dont_add_return() -> None:
     # This demonstrates that if both have no return we can not check it.
     # It would be better if there was an error!
     class Sub(Base):
         @overrides(Base.bad)
-        def bad(self, x: int, y: int, z: int):
+        def bad(self, x: int, y: int, z: int):  # type: ignore[no-untyped-def]
             return super().foo(z, y, x)
     assert Sub().bad(1, 2, 3) == [3, 2, 1]
 
 
-def test_missing_return_type():
+def test_missing_return_type() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @property
             @overrides(Base.boo)
-            def boo(self):
+            def boo(self):  # type: ignore[no-untyped-def]
                 return 2
     assert str(e.value) == "Method boo has no arguments " \
                            "so should declare a return type"
 
 
-def test_with_missing_return():
+def test_with_missing_return() -> None:
     class Sub(Base):
         @overrides(Base.with_param_no_return)
-        def with_param_no_return(self, x: int):
+        def with_param_no_return(self, x: int) -> None:
             pass
 
 
-def test_with_missing_return_both():
-    class Sub(Base):
-        @overrides(Base.with_param_no_return2)
-        def with_param_no_return2(self, x: int):
-            pass
-
-
-def test_with_missing_return_super():
+def test_with_missing_return_both() -> None:
     class Sub(Base):
         @overrides(Base.with_param_no_return2)
         def with_param_no_return2(self, x: int) -> None:
             pass
 
 
-def test_no_param_missing_return():
+def test_with_missing_return_super() -> None:
+    class Sub(Base):
+        @overrides(Base.with_param_no_return2)
+        def with_param_no_return2(self, x: int) -> None:
+            pass
+
+
+def test_no_param_missing_return() -> None:
     with pytest.raises(AttributeError) as e:
         class Sub(Base):
             @overrides(Base.no_param_no_return)
-            def no_param_no_return(self):
+            def no_param_no_return(self):   # type: ignore[no-untyped-def]
                 pass
     assert str(e.value) == "Super Method no_param_no_return has " \
                            "no arguments so should declare a return type"

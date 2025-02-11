@@ -16,13 +16,13 @@ import pytest
 from spinn_utilities.ordered_set import OrderedSet
 
 
-def test_create():
-    o = OrderedSet()
+def test_create() -> None:
+    o: OrderedSet = OrderedSet()
     assert o is not None
 
 
-def test_set_ness():
-    o = OrderedSet()
+def test_set_ness() -> None:
+    o: OrderedSet = OrderedSet()
     assert len(o) == 0
     o.add(123)
     assert len(o) == 1
@@ -54,8 +54,8 @@ def test_set_ness():
     assert len(o) == 0
 
 
-def test_ordered_ness():
-    o = OrderedSet()
+def test_ordered_ness() -> None:
+    o: OrderedSet = OrderedSet()
     o.add(12)
     o.add(78)
     o.add(56)
@@ -69,8 +69,8 @@ def test_ordered_ness():
     assert result == [12, 78, 56, 34, 90]
 
 
-def test_containment():
-    o = OrderedSet()
+def test_containment() -> None:
+    o: OrderedSet = OrderedSet()
     o.add(12)
     o.add(78)
     o.add(56)
@@ -82,8 +82,8 @@ def test_containment():
         assert item not in o
 
 
-def test_repr():
-    o = OrderedSet()
+def test_repr() -> None:
+    o: OrderedSet = OrderedSet()
     o.add(12)
     o.add(78)
     o.add(56)
@@ -93,8 +93,8 @@ def test_repr():
     assert s == "OrderedSet([12, 78, 56, 34, 90])"
 
 
-def test_pop():
-    o = OrderedSet()
+def test_pop() -> None:
+    o: OrderedSet = OrderedSet()
     o.add(12)
     o.add(78)
     o.add(56)
@@ -106,8 +106,8 @@ def test_pop():
         o.pop()
 
 
-def test_update():
-    o = OrderedSet()
+def test_update() -> None:
+    o: OrderedSet = OrderedSet()
     o.add(1)
     o.add(2)
     o.add(3)
@@ -118,8 +118,8 @@ def test_update():
         o.pop()
 
 
-def test_obscure_stuff():
-    o = OrderedSet()
+def test_obscure_stuff() -> None:
+    o: OrderedSet = OrderedSet()
     o.add(1)
     o.add(2)
     o.add(3)
@@ -127,13 +127,13 @@ def test_obscure_stuff():
     o2 = OrderedSet(o)
     assert [x for x in o2] == [1, 2, 3]
     assert o == o2
-    o2 |= [4]
+    o2 |= {[4]}
     assert o != o2
     assert repr(OrderedSet()) == "OrderedSet()"
 
 
-def test_peek():
-    o = OrderedSet()
+def test_peek() -> None:
+    o: OrderedSet = OrderedSet()
     o.add(1)
     o.add(2)
     o.add(3)
@@ -147,8 +147,8 @@ def test_peek():
     assert p4 == p3
 
 
-def test_reverse():
-    o = OrderedSet()
+def test_reverse() -> None:
+    o: OrderedSet = OrderedSet()
     o.add(1)
     o.add(2)
     o.add(3)

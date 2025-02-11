@@ -15,7 +15,7 @@
 from spinn_utilities.helpful_functions import (is_singleton, gcd, lcm)
 
 
-def test_is_singleton():
+def test_is_singleton() -> None:
     assert is_singleton(35)
     assert is_singleton(False)
     assert is_singleton(0.12)
@@ -30,7 +30,7 @@ def test_is_singleton():
     assert is_singleton(lambda x: x * 2 + 1)
 
 
-def test_gcd():
+def test_gcd() -> None:
     assert gcd(2) == 2
     assert gcd(30, 40) == 10
     assert gcd(120, 40, 60) == 20
@@ -42,7 +42,7 @@ def test_gcd():
     assert gcd(c) == 34
 
 
-def test_lcm():
+def test_lcm() -> None:
     assert lcm(2) == 2
     assert lcm(30, 40) == 120
     assert lcm(120, 40, 60) == 120

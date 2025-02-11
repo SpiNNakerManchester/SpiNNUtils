@@ -19,11 +19,11 @@ defaults = {"a": "alpha", "b": "bravo"}
 rd = RangeDictionary(10, defaults)
 
 
-def test_ids():
+def test_ids() -> None:
     assert [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] == list(rd.ids())
 
 
-def test_value():
+def test_value() -> None:
     assert "alpha" == rd["a"].get_single_value_all()
     assert "bravo" == rd["b"].get_single_value_all()
     assert "a" in rd
@@ -32,31 +32,31 @@ def test_value():
     assert {"a", "b"} == set(rd.keys())
 
 
-def test_items():
+def test_items() -> None:
     expected = {("a", "alpha"), ("b", "bravo")}
     result = set(rd.items())
     assert expected == result
 
 
-def test_values():
+def test_values() -> None:
     expected = {"alpha", "bravo"}
     result = set(rd.values())
     assert expected == result
 
 
-def test_set_range_direct():
+def test_set_range_direct() -> None:
     rd1 = RangeDictionary(10, defaults)
     assert "alpha" == rd1["a"].get_single_value_all()
     rd1["a"] = "Foo"
     assert "Foo" == rd1["a"].get_single_value_all()
 
 
-def test_ranges_by_key():
+def test_ranges_by_key() -> None:
     rd1 = RangeDictionary(10, defaults)
     assert [(0, 10, "alpha")] == rd1.get_ranges(key="a")
 
 
-def test_iter_values():
+def test_iter_values() -> None:
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1[4]
     aware = rd1.iter_all_values(key="a", update_safe=True)
@@ -68,7 +68,7 @@ def test_iter_values():
             "alpha", "alpha", "alpha"] == list(aware)
 
 
-def test_iter_values_keys():
+def test_iter_values_keys() -> None:
     rd1 = RangeDictionary(10, defaults)
     aware = rd1.iter_all_values(key=("a", "b"), update_safe=True)
     fast = rd1.iter_all_values(key=("b", "a"), update_safe=False)
@@ -88,7 +88,7 @@ def test_iter_values_keys():
         == list(aware)
 
 
-def test_ranges_by_key2():
+def test_ranges_by_key2() -> None:
     rd1 = RangeDictionary(10, defaults)
     assert [(0, 10, "alpha")] == rd1.get_ranges(key="a")
     rd1[4]["a"] = "foo"
@@ -96,7 +96,7 @@ def test_ranges_by_key2():
         rd1.get_ranges(key="a")
 
 
-def test_ranges_all():
+def test_ranges_all() -> None:
     rd1 = RangeDictionary(10, defaults)
     assert [(0, 10, {"a": "alpha", "b": "bravo"})] == rd1.get_ranges()
     rd1[4]["a"] = "foo"
@@ -105,23 +105,23 @@ def test_ranges_all():
             (5, 10, {"a": "alpha", "b": "bravo"})] == rd1.get_ranges()
 
 
-def test_set_range():
-    rd1 = RangeDictionary(10, defaults)
+def test_set_range() -> None:
+    rd1: RangeDictionary = RangeDictionary(10, defaults)
     rd1["a"] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     assert rd1["a"] == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
-def test_set_list():
+def test_set_list() -> None:
     rd1 = RangeDictionary(10, defaults)
-    rl = RangedList(10, "gamma")
+    rl: RangedList = RangedList(10, "gamma")
     rd1["g"] = rl
     new_dict = {"a": "alpha", "b": "bravo", "g": "gamma"}
     assert new_dict == rd1.get_value()
 
 
-def test_empty():
-    rd1 = RangeDictionary(10)
-    rl = RangedList(10, "gamma")
+def test_empty() -> None:
+    rd1: RangeDictionary = RangeDictionary(10)
+    rl: RangedList = RangedList(10, "gamma")
     rd1["g"] = rl
     rd1["a"] = "alpha"
     rd1["b"] = ["bravo", "bravo", "bravo", "bravo", "bravo", "bravo", "bravo",
@@ -130,24 +130,24 @@ def test_empty():
     assert new_dict == rd1.get_value()
 
 
-def test_iter_tests():
-    rd1 = RangeDictionary(10)
-    rl = RangedList(10, "gamma")
+def test_iter_tests() -> None:
+    rd1: RangeDictionary = RangeDictionary(10)
+    rl: RangedList = RangedList(10, "gamma")
     rd1["g"] = rl
     rd1["a"] = "alpha"
     rd1["b"] = ["bravo", "bravo", "bravo", "bravo", "bravo", "bravo", "bravo",
                 "bravo", "bravo", "bravo"]
     result = set(rd1.iteritems())
-    check = {('a', 'alpha'), ('b', 'bravo'), ('g', 'gamma')}
-    assert check == result
+    check1 = {('a', 'alpha'), ('b', 'bravo'), ('g', 'gamma')}
+    assert check1 == result
     result = set(rd1.itervalues())
-    check = {'alpha', 'bravo', 'gamma'}
-    assert check == result
+    check2 = {'alpha', 'bravo', 'gamma'}
+    assert check2 == result
 
 
-def test_contains():
-    rd1 = RangeDictionary(10)
-    rl = RangedList(10, "gamma")
+def test_contains() -> None:
+    rd1: RangeDictionary = RangeDictionary(10)
+    rl: RangedList = RangedList(10, "gamma")
     rd1["g"] = rl
     rd1["a"] = "alpha"
     rd1["b"] = ["bravo", "bravo", "bravo", "bravo", "bravo", "bravo", "bravo",
@@ -157,12 +157,12 @@ def test_contains():
     assert 1 in rd1
     assert 14 not in rd1
     with pytest.raises(KeyError):
-        assert (rl in rd1)
+        assert (rl in rd1)  # type: ignore[operator]
 
 
-def test_reset():
-    rd1 = RangeDictionary(10)
-    rl = RangedList(10, "gamma")
+def test_reset() -> None:
+    rd1: RangeDictionary = RangeDictionary(10)
+    rl: RangedList = RangedList(10, "gamma")
     rd1["g"] = rl
     rd1["a"] = "alpha"
     rd1["b"] = ["bravo", "bravo", "bravo", "bravo", "bravo", "bravo", "bravo",
@@ -173,17 +173,17 @@ def test_reset():
                         "alpha", "alpha", "alpha", "alpha"]
 
 
-def test_bad_set():
-    rd1 = RangeDictionary(10)
+def test_bad_set() -> None:
+    rd1: RangeDictionary = RangeDictionary(10)
     with pytest.raises(KeyError):
-        rd1[2] = "This should not work"
+        rd1[2] = "This should not work"  # type: ignore[index]
     with pytest.raises(KeyError):
-        rd1[rd] = "This should not work"
+        rd1[rd] = "This should not work"  # type: ignore[index]
 
 
-def test_iter_by_slice():
-    rd1 = RangeDictionary(10)
-    rl = RangedList(10, "gamma")
+def test_iter_by_slice() -> None:
+    rd1: RangeDictionary = RangeDictionary(10)
+    rl: RangedList = RangedList(10, "gamma")
     rd1["g"] = rl
     rd1["a"] = "alpha"
     rd1["b"] = ["bravo0", "bravo1", "bravo2", "bravo3", "bravo4", "bravo5",
@@ -233,21 +233,21 @@ def test_iter_by_slice():
     rd1["b"][3] = "bravo3"
 
 
-def test_defaults():
+def test_defaults() -> None:
     assert "alpha" == rd.get_default("a")
     rd.set_default("a", "newa")
     assert "newa" == rd.get_default("a")
 
 
-def test_bad_factory():
+def test_bad_factory() -> None:
     with pytest.raises(KeyError):
-        rd.view_factory([1, "a"])
+        rd.view_factory([1, "a"])   # type: ignore[list-item]
 
 
-def test_copy():
-    rd = RangeDictionary(3)
-    a_list1 = RangedList(3, [1, 2, 3])
-    a_list2 = RangedList(3, 5)
+def test_copy() -> None:
+    rd: RangeDictionary = RangeDictionary(3)
+    a_list1: RangedList = RangedList(3, [1, 2, 3])
+    a_list2: RangedList = RangedList(3, 5)
     a_calc1 = a_list1 * 4
     a_calc2 = a_list2 * 4
     rd["list1"] = a_list1

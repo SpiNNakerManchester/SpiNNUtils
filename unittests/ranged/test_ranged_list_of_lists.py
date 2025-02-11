@@ -18,8 +18,8 @@ from spinn_utilities.ranged.ranged_list_of_lists import RangedListOfList
 
 class TestRangeListOfLists(unittest.TestCase):
 
-    def test_simple(self):
-        rl = RangedListOfList(4, [1, 2, 3])
+    def test_simple(self) -> None:
+        rl: RangedListOfList = RangedListOfList(4, [1, 2, 3])
         self.assertListEqual([[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]],
                              list(rl))
         rl[1] = [2, 4, 6]
@@ -32,14 +32,14 @@ class TestRangeListOfLists(unittest.TestCase):
         self.assertListEqual([[12, 14, 16], [4, 5, 6], [1, 2, 3], [4, 5, 6]],
                              list(rl))
 
-    def test_start_empty(self):
-        rl = RangedListOfList(3, [])
+    def test_start_empty(self) -> None:
+        rl: RangedListOfList = RangedListOfList(3, [])
         self.assertListEqual([[], [], []], list(rl))
         rl.set_value([[1, 2], [3], [4, 5]])
         self.assertListEqual([[1, 2], [3], [4, 5]], list(rl))
 
-    def test_list_checker(self):
-        rl = RangedListOfList(3, [])
+    def test_list_checker(self) -> None:
+        rl: RangedListOfList = RangedListOfList(3, [])
         with self.assertRaises(ValueError):
             rl.set_value([[1, 2], [4, 5]])
         with self.assertRaises(ValueError):

@@ -127,7 +127,7 @@ def test_obscure_stuff() -> None:
     o2 = OrderedSet(o)
     assert [x for x in o2] == [1, 2, 3]
     assert o == o2
-    o2 |= {[4]}
+    o2 |= set([4])
     assert o != o2
     assert repr(OrderedSet()) == "OrderedSet()"
 

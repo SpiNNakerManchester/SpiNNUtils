@@ -16,24 +16,25 @@ import logging
 from testfixtures import LogCapture  # type: ignore[import]
 import unittest
 from spinn_utilities import logger_utils
+from spinn_utilities.log import FormatAdapter
 from spinn_utilities.testing import log_checker
 
 logging.basicConfig()
-logger = logging.getLogger(__name__)
+logger = FormatAdapter(logging.getLogger(__name__))
 
 
 class TestLoggerUtils(unittest.TestCase):
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         logger_utils.reset()
 
-    def test_one(self):
+    def test_one(self) -> None:
         with LogCapture() as lc:
             logger_utils.warn_once(logger, "a log warning")
             log_checker.assert_logs_contains_once("WARNING", lc.records,
                                                   "a log warning")
 
-    def test_two(self):
+    def test_two(self) -> None:
         with LogCapture() as lc:
             logger_utils.warn_once(logger, "a log warning")
             logger_utils.warn_once(logger, "another log warning")
@@ -42,14 +43,14 @@ class TestLoggerUtils(unittest.TestCase):
             log_checker.assert_logs_contains_once("WARNING", lc.records,
                                                   "another log warning")
 
-    def test_twice(self):
+    def test_twice(self) -> None:
         with LogCapture() as lc:
             logger_utils.warn_once(logger, "a log warning")
             logger_utils.warn_once(logger, "a log warning")
             log_checker.assert_logs_contains_once("WARNING", lc.records,
                                                   "a log warning")
 
-    def test_multiple(self):
+    def test_multiple(self) -> None:
         with LogCapture() as lc:
             logger_utils.warn_once(logger, "a log warning")
             logger_utils.warn_once(logger, "another log warning")
@@ -57,7 +58,7 @@ class TestLoggerUtils(unittest.TestCase):
             log_checker.assert_logs_contains_once("WARNING", lc.records,
                                                   "a log warning")
 
-    def test_error(self):
+    def test_error(self) -> None:
         with LogCapture() as lc:
             logger_utils.error_once(logger, "a log Error")
             logger_utils.warn_once(logger, "another log error")

@@ -18,7 +18,8 @@ from datetime import datetime
 import logging
 import re
 import sys
-from typing import Any, Dict, KeysView, List, Mapping, Optional, Tuple
+from typing import (Any, Collection, Dict, KeysView, List, Mapping, Optional,
+                    Tuple)
 from inspect import getfullargspec
 from spinn_utilities.configs import CamelCaseConfigParser
 from .log_store import LogStore
@@ -137,7 +138,7 @@ class _BraceMessage(object):
         "args", "fmt", "kwargs"]
 
     def __init__(self, fmt: object,
-                 args: Tuple[object, ...], kwargs: Dict[str, object]) -> None:
+                 args: Collection, kwargs: Dict[str, object]) -> None:
         self.fmt = fmt
         self.args = args
         self.kwargs = kwargs

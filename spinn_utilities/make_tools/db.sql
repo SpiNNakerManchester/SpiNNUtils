@@ -52,4 +52,4 @@ CREATE VIEW IF NOT EXISTS current_file_view AS
 
 CREATE VIEW IF NOT EXISTS all_file_view AS
     SELECT log_id, log_level, file_name, line_num , original, file_id, src_path, dest_path, convert_time
-    FROM log NATURAL JOIN file;
+    FROM log NATURAL JOIN file NATURAL JOIN directory;

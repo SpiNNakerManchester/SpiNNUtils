@@ -127,7 +127,8 @@ def test_dead_section(not_there: Tuple[str, str], default_config: str) -> None:
             lc.records, "Unexpected Section: [Pets]")
 
 
-def test_use_one_default(tmpdir: ModuleType, not_there: Tuple[str, str]) -> None:
+def test_use_one_default(
+        tmpdir: ModuleType, not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with tmpdir.as_cwd():
         with pytest.raises(NoConfigFoundException):
@@ -164,8 +165,9 @@ def test_two_templates(tmpdir: ModuleType, default_config: str,
         with pytest.raises(ConfigTemplateException):
             conf_loader.load_config(name, [ONEPATH, TWOPATH])
 
-def test_None_machine_spec_file(
-        tmpdir: ModuleType, default_config: str, not_there: Tuple[str, str]) -> None:
+
+def test_None_machine_spec_file(tmpdir: ModuleType, default_config: str,
+                                not_there: Tuple[str, str]) -> None:
     name, place = not_there
     default_config += "\n[Machine]\nmachine_spec_file=None\n"
     with open(place, "w") as f:

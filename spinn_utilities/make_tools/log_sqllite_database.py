@@ -263,7 +263,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
                     return row["log_id"]
         raise ValueError("unexpected no return")
 
-
     def get_log_info(self, log_id: str) -> Optional[Tuple[int, str, str, str]]:
         """
         Gets the data needed to replace a short log back to the original.

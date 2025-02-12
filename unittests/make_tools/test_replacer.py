@@ -17,7 +17,7 @@ These test depend on unittests/make_tools/replacer.sqlite3
 
 The replacer.sqlite3 file in this directory is created by
 unittests/make_tools/test_file_convert.py method test_convert
-as unittests/make_tools/convert.sqlite3
+as unittests/make_tools/convert_2.sqlite3
 
 It is manually copied and pasted into this directory
 so that the unittests are not order dependant
@@ -44,7 +44,7 @@ class TestReplacer(unittest.TestCase):
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             new = replacer.replace("5")
-        assert ("[INFO] (weird,file.c: 37): this is ok" == new)
+        assert ("[INFO] (weird,file.c: 36): this is ok" == new)
 
     def test_not_there_existing(self):
         unittest_setup()
@@ -73,7 +73,7 @@ class TestReplacer(unittest.TestCase):
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             new = replacer.replace("11" + TOKEN + "10" + TOKEN + "20")
-        message = "[INFO] (weird,file.c: 57): \t back off = 10, time between"\
+        message = "[INFO] (weird,file.c: 56): \t back off = 10, time between"\
                   " spikes 20"
         assert (message == new)
 
@@ -81,7 +81,7 @@ class TestReplacer(unittest.TestCase):
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace("2" + TOKEN + "0xc0400000")
-        message = "[INFO] (weird,file.c: 31): test -three -3.0"
+        message = "[INFO] (weird,file.c: 30): test -three -3.0"
         assert (message == new)
 
     def test_double(self):
@@ -89,7 +89,7 @@ class TestReplacer(unittest.TestCase):
         replacer = Replacer()
         new = replacer.replace(
             "3" + TOKEN + "40379999" + TOKEN + "9999999a")
-        message = "[INFO] (weird,file.c: 33): test double 23.6"
+        message = "[INFO] (weird,file.c: 32): test double 23.6"
         assert (message == new)
 
     def test_bad(self):

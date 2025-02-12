@@ -288,8 +288,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
                         row["original"])
         return None
 
-
-
     def check_original(self, original: str) -> None:
         """
         Checks that an original log line has been added to the database.

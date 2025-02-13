@@ -263,7 +263,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
                     return row["log_id"]
         raise ValueError("unexpected no return")
 
-    def get_log_info(self, log_id: str) -> Optional[Tuple[int, str, int, str]]:
+    def get_log_info(self, log_id: str) -> Optional[Tuple[int, str, str, str]]:
         """
         Gets the data needed to replace a short log back to the original.
 
@@ -273,12 +273,17 @@ class LogSqlLiteDatabase(AbstractContextManager):
         with self._db:
             for row in self._db.execute(
                     """
-                    SELECT log_level, file_name, line_num , original
-                    FROM current_file_view
+                    SELECT log_level, file_name, line_num , original,
+                            last_build
+                    FROM replacer_view
                     WHERE log_id = ?
                     LIMIT 1
                     """, [log_id]):
-                return (row["log_level"], row["file_name"], row["line_num"],
+                if row["last_build"]:
+                    line_number = str(row["line_num"])
+                else:
+                    line_number = str(row["line_num"]) + "*"
+                return (row["log_level"], row["file_name"], line_number,
                         row["original"])
         return None
 

@@ -77,7 +77,7 @@ class Replacer(LogSqlLiteDatabase):
     _FLT_FMT = struct.Struct("!f")
     _DBL_FMT = struct.Struct("!d")
 
-    def _replace(self, short: str) -> Optional[Tuple[int, str, int, str]]:
+    def _replace(self, short: str) -> Optional[Tuple[int, str, str, str]]:
         """
         Apply the replacements to a short message.
 

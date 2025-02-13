@@ -45,6 +45,10 @@ CREATE TABLE IF NOT EXISTS directory(
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Glue the bits together to show the information that people think is here
+CREATE VIEW IF NOT EXISTS replacer_view AS
+    SELECT log_id, log_level, file_name, line_num , original, last_build
+    FROM log NATURAL JOIN file;
+
 CREATE VIEW IF NOT EXISTS current_file_view AS
     SELECT log_id, log_level, file_name, line_num , original, file_id, src_path, dest_path, convert_time
     FROM log NATURAL JOIN file NATURAL JOIN directory
@@ -52,4 +56,4 @@ CREATE VIEW IF NOT EXISTS current_file_view AS
 
 CREATE VIEW IF NOT EXISTS all_file_view AS
     SELECT log_id, log_level, file_name, line_num , original, file_id, src_path, dest_path, convert_time
-    FROM log NATURAL JOIN file;
+    FROM log NATURAL JOIN file NATURAL JOIN directory;

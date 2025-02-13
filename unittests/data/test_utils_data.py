@@ -18,6 +18,7 @@ from spinn_utilities.data import UtilsDataView
 from spinn_utilities.data.reset_status import ResetStatus
 from spinn_utilities.data.run_status import RunStatus
 from spinn_utilities.data.utils_data_writer import UtilsDataWriter
+from spinn_utilities.data.utils_data_view import _UtilsDataModel
 from spinn_utilities.data.data_status import DataStatus
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.exceptions import (
@@ -30,17 +31,16 @@ from spinn_utilities.exceptions import (
 
 class TestUtilsData(unittest.TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         unittest_setup()
 
-    def test_not_setup(self):
+    def test_not_setup(self) -> None:
         # NOT_SETUP only reachable on first call or via hack
-        UtilsDataWriter._UtilsDataWriter__data._data_status = \
-            DataStatus.NOT_SETUP
-        UtilsDataWriter._UtilsDataWriter__data._reset_status = \
-            ResetStatus.NOT_SETUP
-        UtilsDataWriter._UtilsDataWriter__data._run_status = \
-            RunStatus.NOT_SETUP
+        data: _UtilsDataModel = UtilsDataWriter.\
+            _UtilsDataWriter__data  # type: ignore[attr-defined]
+        data._data_status = DataStatus.NOT_SETUP
+        data._reset_status = ResetStatus.NOT_SETUP
+        data._run_status = RunStatus.NOT_SETUP
         with self.assertRaises(NotSetupException):
             UtilsDataView.get_run_dir_path()
 
@@ -68,7 +68,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_setup())
         # No writer yet so no way to call state change methods
 
-    def test_mocked(self):
+    def test_mocked(self) -> None:
         writer = UtilsDataWriter.mock()
 
         self.assertTrue(UtilsDataView._is_mocked())
@@ -109,7 +109,7 @@ class TestUtilsData(unittest.TestCase):
         # TODO do we need to block this?
         writer.shut_down()
 
-    def test_setup(self):
+    def test_setup(self) -> None:
         writer = UtilsDataWriter.setup()
 
         self.assertFalse(UtilsDataView._is_mocked())
@@ -141,7 +141,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_shut_down(writer)
 
-    def check_shut_down(self, writer):
+    def check_shut_down(self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(SimulatorShutdownException):
@@ -162,7 +162,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertFalse(UtilsDataView.is_setup())
         self.check_after_shutdown(writer)
 
-    def check_after_shutdown(self, writer):
+    def check_after_shutdown(self, writer: UtilsDataWriter) -> None:
         writer.shut_down()
         with self.assertRaises(SimulatorShutdownException):
             writer.stopping()
@@ -177,12 +177,12 @@ class TestUtilsData(unittest.TestCase):
         with self.assertRaises(SimulatorShutdownException):
             writer.request_stop()
 
-    def test_stopping(self):
+    def test_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.stopping()
         self.check_stopping(writer)
 
-    def check_stopping(self, writer):
+    def check_stopping(self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
         with self.assertRaises(UnexpectedStateChange):
@@ -217,7 +217,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_shut_down(writer)
 
-    def test_start(self):
+    def test_start(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
 
@@ -250,19 +250,19 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_shut_down(writer)
 
-    def test_start_stopping(self):
+    def test_start_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.stopping()
         self.check_stopping(writer)
 
-    def test_start_finish(self):
+    def test_start_finish(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
         self.check_start_finish(writer)
 
-    def check_start_finish(self, writer):
+    def check_start_finish(self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(UnexpectedStateChange):
@@ -291,7 +291,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_shut_down(writer)
 
-    def check_start_finish_shut_down(self, writer):
+    def check_start_finish_shut_down(self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(SimulatorShutdownException):
@@ -313,14 +313,14 @@ class TestUtilsData(unittest.TestCase):
 
         self.check_after_shutdown(writer)
 
-    def test_start_finish_stopping(self):
+    def test_start_finish_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
         writer.stopping()
         self.check_start_finish_stopping(writer)
 
-    def check_start_finish_stopping(self, writer):
+    def check_start_finish_stopping(self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
@@ -354,14 +354,14 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_shut_down(writer)
 
-    def test_start_finish_hard(self):
+    def test_start_finish_hard(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
         writer.hard_reset()
         self.check_start_finish_hard(writer)
 
-    def check_start_finish_hard(self, writer):
+    def check_start_finish_hard(self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(UnexpectedStateChange):
@@ -392,7 +392,8 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_hard_shut_down(writer)
 
-    def check_start_finish_hard_shut_down(self, writer):
+    def check_start_finish_hard_shut_down(
+            self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(SimulatorShutdownException):
@@ -415,7 +416,7 @@ class TestUtilsData(unittest.TestCase):
 
         self.check_after_shutdown(writer)
 
-    def test_start_finish_hard_stopping(self):
+    def test_start_finish_hard_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -423,7 +424,8 @@ class TestUtilsData(unittest.TestCase):
         writer.stopping()
         self.check_start_finish_hard_stopping(writer)
 
-    def check_start_finish_hard_stopping(self, writer):
+    def check_start_finish_hard_stopping(
+            self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
@@ -458,7 +460,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_hard_shut_down(writer)
 
-    def test_start_finish_hard_start(self):
+    def test_start_finish_hard_start(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -466,7 +468,7 @@ class TestUtilsData(unittest.TestCase):
         writer.start_run()
         self.check_start_finish_hard_start(writer)
 
-    def check_start_finish_hard_start(self, writer):
+    def check_start_finish_hard_start(self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertFalse(UtilsDataView.is_stop_already_requested())
@@ -495,7 +497,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_hard_shut_down(writer)
 
-    def test_start_finish_hard_start_stopping(self):
+    def test_start_finish_hard_start_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -504,7 +506,7 @@ class TestUtilsData(unittest.TestCase):
         writer.stopping()
         self.check_start_finish_hard_stopping(writer)
 
-    def test_start_finish_start_hard_finish(self):
+    def test_start_finish_start_hard_finish(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -513,7 +515,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.check_start_finish(writer)
 
-    def test_start_finish_hard_start_request(self):
+    def test_start_finish_hard_start_request(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -522,7 +524,8 @@ class TestUtilsData(unittest.TestCase):
         writer.request_stop()
         self.check_start_finish_hard_start_request(writer)
 
-    def check_start_finish_hard_start_request(self, writer):
+    def check_start_finish_hard_start_request(
+            self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertFalse(UtilsDataView.is_user_mode())
         self.assertTrue(UtilsDataView.is_stop_already_requested())
@@ -553,7 +556,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_hard_shut_down(writer)
 
-    def test_start_finish_hard_start_request_stopping(self):
+    def test_start_finish_hard_start_request_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -563,7 +566,7 @@ class TestUtilsData(unittest.TestCase):
         writer.stopping()
         self.check_start_finish_hard_stopping(writer)
 
-    def test_start_finish_hard_start_request_finish(self):
+    def test_start_finish_hard_start_request_finish(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -573,7 +576,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.check_start_finish(writer)
 
-    def test_start_finish_start(self):
+    def test_start_finish_start(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -605,7 +608,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_shut_down(writer)
 
-    def test_start_finish_start_stopping(self):
+    def test_start_finish_start_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -613,7 +616,7 @@ class TestUtilsData(unittest.TestCase):
         writer.stopping()
         self.check_start_finish_stopping(writer)
 
-    def test_start_finish_start_finish(self):
+    def test_start_finish_start_finish(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -621,7 +624,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.check_start_finish(writer)
 
-    def test_start_finish_start_hard(self):
+    def test_start_finish_start_hard(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -629,7 +632,7 @@ class TestUtilsData(unittest.TestCase):
         writer.hard_reset()
         self.check_start_finish_hard_start(writer)
 
-    def test_start_finish_start_request(self):
+    def test_start_finish_start_request(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -665,7 +668,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_shut_down(writer)
 
-    def test_start_finish_start_request_stopping(self):
+    def test_start_finish_start_request_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -674,7 +677,7 @@ class TestUtilsData(unittest.TestCase):
         writer.stopping()
         self.check_start_finish_stopping(writer)
 
-    def test_start_finish_start_request_hard(self):
+    def test_start_finish_start_request_hard(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -683,7 +686,7 @@ class TestUtilsData(unittest.TestCase):
         writer.hard_reset()
         self.check_start_finish_hard_start_request(writer)
 
-    def test_start_finish_start_request_finish(self):
+    def test_start_finish_start_request_finish(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -692,7 +695,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.check_start_finish(writer)
 
-    def test_start_finish_soft(self):
+    def test_start_finish_soft(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -726,7 +729,8 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_soft_shutdown(writer)
 
-    def check_start_finish_soft_shutdown(self, writer):
+    def check_start_finish_soft_shutdown(
+            self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         self.assertTrue(UtilsDataView.is_user_mode())
         with self.assertRaises(SimulatorShutdownException):
@@ -749,7 +753,7 @@ class TestUtilsData(unittest.TestCase):
 
         self.check_after_shutdown(writer)
 
-    def test_start_finish_soft_stopping(self):
+    def test_start_finish_soft_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -757,7 +761,8 @@ class TestUtilsData(unittest.TestCase):
         writer.stopping()
         self.check_start_finish_start_soft_stopping(writer)
 
-    def check_start_finish_start_soft_stopping(self, writer):
+    def check_start_finish_start_soft_stopping(
+            self, writer: UtilsDataWriter) -> None:
         self.assertFalse(UtilsDataView._is_mocked())
         with self.assertRaises(UnexpectedStateChange):
             UtilsDataView.is_stop_already_requested()
@@ -792,7 +797,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_soft_shutdown(writer)
 
-    def test_start_finish_soft_hard(self):
+    def test_start_finish_soft_hard(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -800,7 +805,7 @@ class TestUtilsData(unittest.TestCase):
         writer.hard_reset()
         self.check_start_finish_hard(writer)
 
-    def test_start_finish_soft_start(self):
+    def test_start_finish_soft_start(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -834,7 +839,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_soft_shutdown(writer)
 
-    def test_start_finish_soft_start_stopping(self):
+    def test_start_finish_soft_start_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -843,7 +848,7 @@ class TestUtilsData(unittest.TestCase):
         writer.stopping()
         self.check_start_finish_start_soft_stopping(writer)
 
-    def test_start_finish_soft_start_hard(self):
+    def test_start_finish_soft_start_hard(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -852,7 +857,7 @@ class TestUtilsData(unittest.TestCase):
         writer.hard_reset()
         self.check_start_finish_hard_start(writer)
 
-    def test_start_finish_soft_start_finish(self):
+    def test_start_finish_soft_start_finish(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -861,7 +866,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.check_start_finish(writer)
 
-    def test_start_finish_soft_start_request(self):
+    def test_start_finish_soft_start_request(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -897,7 +902,7 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_start_finish_soft_shutdown(writer)
 
-    def test_start_finish_soft_start_request_stopping(self):
+    def test_start_finish_soft_start_request_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -907,7 +912,7 @@ class TestUtilsData(unittest.TestCase):
         writer.stopping()
         self.check_start_finish_start_soft_stopping(writer)
 
-    def test_start_finish_soft_start_request_hard(self):
+    def test_start_finish_soft_start_request_hard(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -917,7 +922,7 @@ class TestUtilsData(unittest.TestCase):
         writer.hard_reset()
         self.check_start_finish_hard_start_request(writer)
 
-    def test_start_finish_soft_start_request_finish(self):
+    def test_start_finish_soft_start_request_finish(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.finish_run()
@@ -927,7 +932,7 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.check_start_finish(writer)
 
-    def test_start_request(self):
+    def test_start_request(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.request_stop()
@@ -961,32 +966,32 @@ class TestUtilsData(unittest.TestCase):
         writer.shut_down()
         self.check_shut_down(writer)
 
-    def test_start_request_stopping(self):
+    def test_start_request_stopping(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.request_stop()
         writer.stopping()
         self.check_stopping(writer)
 
-    def test_start_request_finish(self):
+    def test_start_request_finish(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.start_run()
         writer.request_stop()
         writer.finish_run()
         self.check_start_finish(writer)
 
-    def test_directories_setup(self):
+    def test_directories_setup(self) -> None:
         writer = UtilsDataWriter.setup()
         # setup should clear mocked
         writer.setup()
         with self.assertRaises(DataNotYetAvialable):
             UtilsDataView.get_run_dir_path()
 
-    def test_directories_mocked(self):
+    def test_directories_mocked(self) -> None:
         UtilsDataWriter.mock()
         self.assertTrue(os.path.exists(UtilsDataView.get_run_dir_path()))
 
-    def test_set_run_dir_path(self):
+    def test_set_run_dir_path(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.setup()
         with self.assertRaises(InvalidDirectory):
@@ -994,7 +999,7 @@ class TestUtilsData(unittest.TestCase):
         writer.set_run_dir_path(os.path.curdir)
         self.assertEqual(os.path.curdir, UtilsDataView.get_run_dir_path())
 
-    def test_set_report_dir_path(self):
+    def test_set_report_dir_path(self) -> None:
         writer = UtilsDataWriter.setup()
         writer.setup()
         with self.assertRaises(InvalidDirectory):
@@ -1002,13 +1007,13 @@ class TestUtilsData(unittest.TestCase):
         writer.set_report_dir_path(os.path.curdir)
         self.assertEqual(os.path.curdir, writer.get_report_dir_path())
 
-    def test_writer_init_block(self):
+    def test_writer_init_block(self) -> None:
         with self.assertRaises(IllegalWriterException):
             UtilsDataWriter(DataStatus.NOT_SETUP)
         with self.assertRaises(IllegalWriterException):
-            UtilsDataWriter("bacon")
+            UtilsDataWriter("bacon")  # type: ignore[arg-type]
 
-    def test_excutable_finder(self):
+    def test_excutable_finder(self) -> None:
         writer = UtilsDataWriter.setup()
         ef = UtilsDataView.get_executable_finder()
         writer.start_run()
@@ -1018,7 +1023,7 @@ class TestUtilsData(unittest.TestCase):
         UtilsDataWriter.setup()
         self.assertEqual(ef, UtilsDataView.get_executable_finder())
 
-    def test_requires(self):
+    def test_requires(self) -> None:
         writer = UtilsDataWriter.setup()
         # True before run
         self.assertTrue(writer.get_requires_data_generation())
@@ -1056,7 +1061,7 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(writer.get_requires_data_generation())
         self.assertTrue(writer.get_requires_mapping())
 
-    def test_skiptest(self):
+    def test_skiptest(self) -> None:
         with self.assertRaises(unittest.SkipTest):
             UtilsDataView.raise_skiptest("Skip me")
         with self.assertRaises(unittest.SkipTest):

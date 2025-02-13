@@ -15,31 +15,31 @@
 from spinn_utilities.bytestring_utils import as_hex, as_string
 
 
-def test_hex():
+def test_hex() -> None:
     raw = b'helloworld'
     hex = as_hex(raw)
     assert '68,65,6c,6c,6f,77,6f,72,6c,64' == hex
 
 
-def test_string():
+def test_string() -> None:
     raw = b'helloworld'
     hex = as_string(raw)
     assert '(10)68,65,6c,6c,6f,77,6f,72,6c,64' == hex
 
 
-def test_start():
+def test_start() -> None:
     raw = b'helloworld'
     hex = as_string(raw, start=2)
     assert '(10)6c,6c,6f,77,6f,72,6c,64' == hex
 
 
-def test_end():
+def test_end() -> None:
     raw = b'helloworld'
     hex = as_string(raw, end=4)
     assert '(10)68,65,6c,6c' == hex
 
 
-def test_both():
+def test_both() -> None:
     raw = b'helloworld'
     hex = as_string(raw, start=3, end=6)
     assert '(10)6c,6f,77' == hex

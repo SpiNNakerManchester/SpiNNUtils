@@ -24,8 +24,8 @@ from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 
 class TestConverter(unittest.TestCase):
 
-    def test_convert(self):
-        class_file = sys.modules[self.__module__].__file__
+    def test_convert(self) -> None:
+        class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
         os.environ["C_LOGS_DICT"] = str(os.path.join(path,
@@ -40,6 +40,7 @@ class TestConverter(unittest.TestCase):
         convert(src, dest, True)
         with LogSqlLiteDatabase() as sql:
             single = sql.get_max_log_id()
+            assert single is not None
         # Unchanged file a second time should give same ids
         convert(src, dest, False)
         with LogSqlLiteDatabase() as sql:
@@ -51,8 +52,8 @@ class TestConverter(unittest.TestCase):
             # Need two more ids for the new log and then changed line number
             self.assertEqual(single + 2, sql.get_max_log_id())
 
-    def test_double_level(self):
-        class_file = sys.modules[self.__module__].__file__
+    def test_double_level(self) -> None:
+        class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()

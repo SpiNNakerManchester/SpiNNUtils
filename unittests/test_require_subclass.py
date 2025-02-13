@@ -18,24 +18,25 @@ from spinn_utilities.require_subclass import require_subclass
 
 
 class Base(object):
-    def __init__(self):
-        self.bar = 123
+    @property
+    def bar(self) -> int:
+        return 123
 
 
 @require_subclass(Base)
 class Ifc(object, metaclass=AbstractBase):
     @abstractmethod
-    def foo(self):
+    def foo(self) -> None:
         pass
 
 
 class NotFromBase(object):
-    def __init__(self):
+    def __init__(self) -> None:
         self.bar = 234
 
 
 class FromBase(Base):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.grill = 345
 
@@ -46,67 +47,69 @@ class DerivedIfc(Ifc, allow_derivation=True):
 
 @require_subclass(Base)
 class Ifc2(object, metaclass=AbstractBase):
+    @property
     @abstractmethod
-    def bar(self):
-        pass
+    def bar(self) -> int:
+        raise NotImplementedError()
 
 
-def test_direct():
+def test_direct() -> None:
     class Foo1(FromBase, Ifc):
-        def foo(self):
+        def foo(self) -> None:
             pass
     assert Foo1().bar == 123
 
 
-def test_indirect():
+def test_indirect() -> None:
     class Foo2(FromBase, DerivedIfc):
-        def foo(self):
+        def foo(self) -> None:
             pass
     assert Foo2().bar == 123
 
 
-def test_non_base_direct():
+def test_non_base_direct() -> None:
     with pytest.raises(TypeError, match="Foo3 must be a subclass of Base"):
         class Foo3(NotFromBase, Ifc):
-            def foo(self):
+            def foo(self) -> None:
                 pass
         assert Foo3().bar == 234
 
 
-def test_non_base_indirect():
+def test_non_base_indirect() -> None:
     with pytest.raises(TypeError, match="Foo4 must be a subclass of Base"):
         class Foo4(NotFromBase, DerivedIfc):
-            def foo(self):
+            def foo(self) -> None:
                 pass
         assert Foo4().bar == 234
 
 
-def test_non_base_double_indirect():
+def test_non_base_double_indirect() -> None:
     with pytest.raises(TypeError, match="Foo6 must be a subclass of Base"):
         class Foo5(DerivedIfc, allow_derivation=True):
-            def foo(self):
+            def foo(self) -> None:
                 pass
 
         class Foo6(NotFromBase, Foo5):
-            def foo(self):
+            def foo(self) -> None:
                 pass
         assert Foo6().bar == 234
 
 
-def test_double():
+def test_double() -> None:
     class Foo7(FromBase, Ifc, Ifc2):
         pass
 
 
-def test_double_indirect():
+def test_double_indirect() -> None:
     class Ifc3(Ifc, Ifc2, allow_derivation=True):
         pass
 
     class Foo7(FromBase, Ifc3):
-        def foo(self):
-            return 123
+        def foo(self) -> None:
+            assert True
 
-        def bar(self):
+        @property
+        def bar(self) -> int:
             return 234
 
     assert Foo7() is not None

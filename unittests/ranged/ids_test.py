@@ -20,11 +20,11 @@ rd = RangeDictionary(10, defaults)
 ranged_view = rd[2, 3, 8]
 
 
-def test_ids():
+def test_ids() -> None:
     assert [2, 3, 8] == list(ranged_view.ids())
 
 
-def test_value():
+def test_value() -> None:
     assert "alpha" == ranged_view.get_value("a")
     assert "bravo" == ranged_view.get_value("b")
     assert "a" in ranged_view
@@ -33,26 +33,26 @@ def test_value():
     assert {"a", "b"} == set(ranged_view.keys())
 
 
-def test_items():
+def test_items() -> None:
     expected = {("a", "alpha"), ("b", "bravo")}
     result = set(ranged_view.items())
     assert expected == result
 
 
-def test_values():
+def test_values() -> None:
     expected = {"alpha", "bravo"}
     result = set(ranged_view.values())
     assert expected == result
 
 
-def test_set_range_direct():
+def test_set_range_direct() -> None:
     ranged_view1 = rd[2, 3, 8]
     assert "alpha" == ranged_view1.get_value("a")
     ranged_view1["a"] = "Foo"
     assert "Foo" == ranged_view1.get_value("a")
 
 
-def test_iter_values():
+def test_iter_values() -> None:
     rd1 = RangeDictionary(10, defaults)
     ranged_view1 = rd1[2, 3, 8]
     aware = ranged_view1.iter_all_values("a", update_safe=False)
@@ -63,7 +63,7 @@ def test_iter_values():
     assert ["Foo", "Foo", "Foo"] == list(aware)
 
 
-def test_ranges_by_key():
+def test_ranges_by_key() -> None:
     rd1 = RangeDictionary(10, defaults)
     view = rd1[1, 2, 4, 5, 6, 7]
     view["a"] = "foo"
@@ -75,7 +75,7 @@ def test_ranges_by_key():
         == list(view.iter_ranges(key="a"))
 
 
-def test_ranges_by_all():
+def test_ranges_by_all() -> None:
     rd1 = RangeDictionary(10, defaults)
     view = rd1[1, 2, 4, 5, 6, 7]
     view["a"] = "foo"
@@ -94,22 +94,22 @@ def test_ranges_by_all():
         == view.get_ranges()
 
 
-def test_get_str():
+def test_get_str() -> None:
     with pytest.raises(KeyError):
-        assert ranged_view["OOPS"]
+        assert ranged_view["OOPS"]   # type: ignore[index]
 
 
-def test_no_set():
+def test_no_set() -> None:
     with pytest.raises(KeyError):
-        ranged_view[3] = "Better not be allowed"
+        ranged_view[3] = "Better not be allowed"   # type: ignore[index]
     with pytest.raises(KeyError):
-        ranged_view[rd] = "Can not do this either!"
+        ranged_view[rd] = "Can not do this either!"  # type: ignore[index]
 
 
-def test_defaults():
+def test_defaults() -> None:
     assert "alpha" == ranged_view.get_default("a")
 
 
-def test_str():
+def test_str() -> None:
     s = str(ranged_view)
     assert len(s) > 0

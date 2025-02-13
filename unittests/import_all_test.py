@@ -16,7 +16,7 @@ import os
 import spinn_utilities.package_loader as package_loader
 
 
-def test_import_all():
+def test_import_all() -> None:
     if os.environ.get('CONTINUOUS_INTEGRATION', 'false').lower() == 'true':
         package_loader.load_module("spinn_utilities", remove_pyc_files=False)
     else:

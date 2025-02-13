@@ -17,32 +17,32 @@ import pytest
 from spinn_utilities.safe_eval import SafeEval
 
 
-def Abc(x):
+def Abc(x: int) -> int:
     return x+1
 
 
 class Support(object):
-    def __init__(self):
+    def __init__(self) -> None:
         self._c = 0
 
-    def Def(self, x):
+    def Def(self, x: int) -> int:
         return x*2
 
-    def Ghi(self, x):
+    def Ghi(self, x: int) -> float:
         return x*0.5
 
-    def Jkl(self, x):
+    def Jkl(self, x: int) -> int:
         self._c += 1
         return x + self._c**2
 
 
-def test_simple_eval():
+def test_simple_eval() -> None:
     evaluator = SafeEval()
     assert evaluator.eval("1+2*3") == 7
     assert evaluator.eval("x+y*z", x=1, y=2, z=3) == 7
 
 
-def test_environment_eval():
+def test_environment_eval() -> None:
     evaluator = SafeEval(Abc)
     assert evaluator.eval("Abc(1)") == 2
     with pytest.raises(NameError):
@@ -51,7 +51,7 @@ def test_environment_eval():
         evaluator.eval("Abc(1,2)")
 
 
-def test_multi_environment():
+def test_multi_environment() -> None:
     s = Support()
     evaluator = SafeEval(Abc, s.Def)
     assert evaluator.eval("x+y*z", x=1, y=2, z=3) == 7
@@ -64,17 +64,17 @@ def test_multi_environment():
     assert evaluator.eval("Ghi.__name__", y=3, Ghi=s.Def) == "Def"
 
 
-def test_state_sensitive():
+def test_state_sensitive() -> None:
     s = Support()
     evaluator = SafeEval(s.Jkl)
     assert evaluator.eval("Jkl(Jkl(Jkl(x)))", x=2.5) == 16.5
 
 
-def test_packages():
+def test_packages() -> None:
     evaluator = SafeEval(math)
     assert evaluator.eval("math.floor(d)", d=2.5) == 2.0
 
 
-def test_defined_names():
+def test_defined_names() -> None:
     evaluator = SafeEval(math, x=123.25)
     assert evaluator.eval("math.floor(x+d)", d=0.875) == 124.0

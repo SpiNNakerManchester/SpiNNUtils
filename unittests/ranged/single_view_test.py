@@ -19,11 +19,11 @@ rd = RangeDictionary(10, defaults)
 single = rd[4]
 
 
-def test_ids():
+def test_ids() -> None:
     assert [4] == single.ids()
 
 
-def test_value():
+def test_value() -> None:
     assert "alpha" == single.get_value("a")
     assert "bravo" == single.get_value("b")
     assert "a" in single
@@ -32,19 +32,19 @@ def test_value():
     assert {"a", "b"} == set(single.keys())
 
 
-def test_items():
+def test_items() -> None:
     expected = {("a", "alpha"), ("b", "bravo")}
     result = set(single.items())
     assert expected == result
 
 
-def test_values():
+def test_values() -> None:
     expected = {"alpha", "bravo"}
     result = set(single.values())
     assert expected == result
 
 
-def test_set():
+def test_set() -> None:
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1.view_factory([4])
     assert single1.get_value("a") == "alpha"
@@ -52,7 +52,7 @@ def test_set():
     assert single1.get_value("a") == "foo"
 
 
-def test_iter_values():
+def test_iter_values() -> None:
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1[4]
     aware = single1.iter_all_values(key="a", update_safe=False)
@@ -63,7 +63,7 @@ def test_iter_values():
     assert ["Foo"] == list(aware)
 
 
-def test_iter_values_keys():
+def test_iter_values_keys() -> None:
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1[4]
     aware = single1.iter_all_values(key=("a", "b"), update_safe=False)
@@ -74,7 +74,7 @@ def test_iter_values_keys():
     assert [{'a': 'Foo', 'b': 'bravo'}] == list(aware)
 
 
-def test_ranges_by_key():
+def test_ranges_by_key() -> None:
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1[4]
     assert [(4, 5, "alpha")] == list(single1.iter_ranges(key="a"))
@@ -84,7 +84,7 @@ def test_ranges_by_key():
     assert [(4, 5, "foo")] == list(single1.iter_ranges(key="a"))
 
 
-def test_ranges_all():
+def test_ranges_all() -> None:
     rd1 = RangeDictionary(10, defaults)
     single1 = rd1[4]
     assert [(4, 5, {"a": "alpha", "b": "bravo"})] == single1.get_ranges()
@@ -96,6 +96,6 @@ def test_ranges_all():
         single1.get_ranges()
 
 
-def test_str():
+def test_str() -> None:
     s = str(single)
     assert 0 < len(s)

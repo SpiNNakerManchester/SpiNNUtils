@@ -20,7 +20,7 @@ from spinn_utilities.config_holder import (
 from spinn_utilities.exceptions import ConfigException, SpiNNUtilsException
 
 
-def test_configs_None():
+def test_configs_None() -> None:
     unittest_setup()
     set_config("Mode", "Foo", "None")
     set_config("Mode", "Bar", "none")

@@ -21,7 +21,7 @@ from spinn_utilities.citation.citation_updater_and_doi_generator import (
     _Zenodo as Zenodo)
 
 
-def test_generate_aggregate():
+def test_generate_aggregate() -> None:
     with open("module.zip", "w") as f:
         f.write("test")
     deposit_id = 56789

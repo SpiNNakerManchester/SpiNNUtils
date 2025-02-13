@@ -21,7 +21,7 @@ from spinn_utilities.testing import log_checker
 logger = FormatAdapter(logging.getLogger(__name__))
 
 
-def test_log_checker():
+def test_log_checker() -> None:
     with LogCapture() as lc:
         logger.warning("This is a warning")
         logger.error("This is an error")

@@ -58,13 +58,14 @@ def clear_cfg_files(unittest_mode: bool) -> None:
     __unittest_mode = unittest_mode
 
 
-def set_cfg_files(config_file: str, default: str) -> None:
+def set_cfg_files(config_file: Optional[str], default: str) -> None:
     """
     Adds the configuration files to be loaded.
 
     :param config_file:
         The base name of the configuration file(s).
         Should not include any path components.
+        Use None to not read any file
     :param default:
         Full path to the extra file to get default configurations from.
     """

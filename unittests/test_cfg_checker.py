@@ -20,10 +20,10 @@ from spinn_utilities.config_setup import unittest_setup
 
 class TestCfgChecker(unittest.TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         unittest_setup()
 
-    def test_config_checks(self):
+    def test_config_checks(self) -> None:
         spinn_utilities_dir = spinn_utilities.__path__[0]
         run_config_checks(directories=[spinn_utilities_dir],
                           exceptions=[])

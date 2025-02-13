@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import configparser
 from datetime import datetime
 import logging
-from typing import List, Optional
+from typing import Any, List, Optional, Tuple
+
+from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.log import (
     _BraceMessage, ConfiguredFilter, ConfiguredFormatter, FormatAdapter,
     LogLevelTooHighException)
@@ -23,42 +24,39 @@ from spinn_utilities.log_store import LogStore
 from spinn_utilities.overrides import overrides
 
 
-class MockLog(object):
-    def __init__(self):
-        self.last_level = None
-        self.last_msg = None
-        self.last_args = None
-        self.last_kwargs = None
+class MockLog(logging.Logger):
+    def __init__(self) -> None:
+        self.last_level: Optional[int] = None
+        self.last_msg: Optional[str] = None
+        self.last_args: Any = None
+        self.last_kwargs: Any = None
 
-    def isEnabledFor(self, level):
+    def isEnabledFor(self, level: int) -> bool:
         return level >= logging.INFO
 
-    def _log(self, level, msg, *args, **kwargs):
+    def _log(self, level: int, msg: str,   # type: ignore[override]
+             *args: Any, **kwargs: Any) -> None:
         self.last_level = level
         self.last_msg = msg
         self.last_args = args
         self.last_kwargs = kwargs
 
-    def getEffectiveLevel(self):
+    def getEffectiveLevel(self) -> int:
         return logging.INFO
 
     @property
-    def manager(self):
-        return self
-
-    @property
-    def disable(self):
+    def disable(self) -> int:
         return logging.DEBUG
 
 
 class MockLogStore(LogStore):
 
-    def __init__(self):
-        self.data = []
+    def __init__(self) -> None:
+        self.data: List[Tuple[int, str]] = []
 
     @overrides(LogStore.store_log)
     def store_log(self, level: int, message: str,
-                  timestamp: Optional[datetime] = None):
+                  timestamp: Optional[datetime] = None) -> None:
         if level == logging.CRITICAL:
             1/0
         self.data.append((level, message))
@@ -77,7 +75,7 @@ class MockLogStore(LogStore):
         return "MOCK"
 
 
-def test_logger_adapter():
+def test_logger_adapter() -> None:
     log = MockLog()
     logger = FormatAdapter(log)
     logger._pop_not_stored_messages()  # clear the log
@@ -108,7 +106,7 @@ def test_logger_adapter():
     assert len(logger._pop_not_stored_messages())
 
 
-def test_logger_dict():
+def test_logger_dict() -> None:
     log = MockLog()
     logger = FormatAdapter(log)
     mydict = {1: "one", 2: "two"}
@@ -116,7 +114,7 @@ def test_logger_dict():
     assert str(log.last_msg) == "{1: 'one', 2: 'two'}"
 
 
-def test_logger_exception():
+def test_logger_exception() -> None:
     log = MockLog()
     logger = FormatAdapter(log)
     logger._pop_not_stored_messages()  # clear the log
@@ -137,41 +135,41 @@ def test_logger_exception():
     assert len(logger._pop_not_stored_messages()) == 1
 
 
-class MockConfig1(configparser.RawConfigParser):
+class MockConfig1(CamelCaseConfigParser):
 
-    def get(self, section, option):
+    def get(self, section: str, option: str) -> str:  # type: ignore[override]
         return "debug"
 
-    def has_section(self, section):
+    def has_section(self, section: str) -> bool:
         return False
 
-    def has_option(self, section, option):
+    def has_option(self, section: str, option: str) -> bool:
         return False
 
 
-def test_weird_config1():
+def test_weird_config1() -> None:
     ConfiguredFormatter(MockConfig1())
     ConfiguredFilter(MockConfig1())
 
 
-class MockConfig2(object):
+class MockConfig2(CamelCaseConfigParser):
 
-    def get(self, section, option):
+    def get(self, section: str, option: str) -> str:  # type: ignore[override]
         return "critical"
 
-    def has_section(self, section):
+    def has_section(self, section: str) -> bool:
         return True
 
-    def has_option(self, section, option):
+    def has_option(self, section: str, option: str) -> bool:
         return option == 'warning'
 
 
-def test_weird_config2():
-    ConfiguredFormatter(MockConfig2())
+def test_weird_config2() -> None:
+    ConfiguredFormatter(MockConfig1())
     ConfiguredFilter(MockConfig2())
 
 
-def test_log_store():
+def test_log_store() -> None:
     logger = FormatAdapter(MockLog())
     logger2 = FormatAdapter(MockLog())
     logger2.warning("This is early")
@@ -203,10 +201,10 @@ def test_log_store():
     assert 3 == len(FormatAdapter._pop_not_stored_messages())
 
 
-def test_bad_log_store():
+def test_bad_log_store() -> None:
     logger = FormatAdapter(logging.getLogger(__name__))
     try:
-        logger.set_log_store("bacon")
+        logger.set_log_store("bacon")   # type: ignore[arg-type]
         raise NotImplementedError("bad call accepted")
     except TypeError:
         pass
@@ -214,17 +212,17 @@ def test_bad_log_store():
 
 class DoKeyError(object):
 
-    def __str__(self):
+    def __str__(self) -> str:
         raise KeyError("Boom!")
 
 
 class DoIndexError(object):
 
-    def __str__(self):
+    def __str__(self) -> str:
         raise IndexError("Boom!")
 
 
-def test_brace_message():
+def test_brace_message() -> None:
     bm = _BraceMessage("This is a {name_one}", [], {"name_one": "test"})
     assert str(bm) == "This is a test"
     bm = _BraceMessage("This is a {name_one}", [], {})

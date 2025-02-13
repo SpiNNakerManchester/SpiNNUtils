@@ -13,11 +13,12 @@
 # limitations under the License.
 
 import os
+from typing import Any
 import pytest
 from spinn_utilities.executable_finder import ExecutableFinder
 
 
-def test_create_and_config(tmpdir):
+def test_create_and_config(tmpdir: Any) -> None:
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
     ef = ExecutableFinder()
@@ -29,13 +30,13 @@ def test_create_and_config(tmpdir):
     assert ef.binary_paths == "{} : {} : {}".format(a, b, c)
 
 
-def test_find_in_no_places():
+def test_find_in_no_places() -> None:
     ef = ExecutableFinder()
     with pytest.raises(KeyError):
         ef.get_executable_path("abc.aplx")
 
 
-def test_find_in_one_place(tmpdir):
+def test_find_in_one_place(tmpdir: Any) -> None:
     ef = ExecutableFinder()
     ef.add_path(str(tmpdir))
     wa = tmpdir.join("abc.aplx")
@@ -47,7 +48,7 @@ def test_find_in_one_place(tmpdir):
     assert p == [wa, wb]
 
 
-def test_find_in_two_places(tmpdir):
+def test_find_in_two_places(tmpdir: Any) -> None:
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")
     ef = ExecutableFinder()
@@ -69,7 +70,7 @@ def test_find_in_two_places(tmpdir):
         ef.get_executable_path("abc.aplx")
 
 
-def test_logs(tmpdir):
+def test_logs(tmpdir: Any) -> None:
     if "GLOBAL_REPORTS" not in os.environ:
 
         # test with not logging
@@ -110,7 +111,7 @@ def test_logs(tmpdir):
     ef2.clear_logs()
 
 
-def test_find_no_duplicates(tmpdir):
+def test_find_no_duplicates(tmpdir: Any) -> None:
     ef = ExecutableFinder()
     a = tmpdir.mkdir("a")
     b = tmpdir.mkdir("b")

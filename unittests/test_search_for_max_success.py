@@ -16,81 +16,81 @@ from spinn_utilities.find_max_success import (
     find_max_success, search_for_max_success)
 
 
-def test_0():
+def test_0() -> None:
     result = find_max_success(12, lambda x: x < 0)
     assert result == 0
 
 
-def test_1():
+def test_1() -> None:
     result = find_max_success(12, lambda x: x <= 1)
     assert result == 1
 
 
-def test_2():
+def test_2() -> None:
     result = find_max_success(12, lambda x: x <= 2)
     assert result == 2
 
 
-def test_3():
+def test_3() -> None:
     result = find_max_success(12, lambda x: x <= 3)
     assert result == 3
 
 
-def test_4():
+def test_4() -> None:
     result = find_max_success(12, lambda x: x <= 4)
     assert result == 4
 
 
-def test_5():
+def test_5() -> None:
     result = find_max_success(12, lambda x: x <= 5)
     assert result == 5
 
 
-def test_6():
+def test_6() -> None:
     result = find_max_success(12, lambda x: x <= 6)
     assert result == 6
 
 
-def test_7():
+def test_7() -> None:
     result = find_max_success(12, lambda x: x <= 7)
     assert result == 7
 
 
-def test_8():
+def test_8() -> None:
     result = find_max_success(12, lambda x: x <= 8)
     assert result == 8
 
 
-def test_9():
+def test_9() -> None:
     result = find_max_success(12, lambda x: x <= 9)
     assert result == 9
 
 
-def test_10():
+def test_10() -> None:
     result = find_max_success(12, lambda x: x <= 10)
     assert result == 10
 
 
-def test_11():
+def test_11() -> None:
     result = find_max_success(12, lambda x: x <= 11)
     assert result == 11
 
 
-def test_12():
+def test_12() -> None:
     result = find_max_success(12, lambda x: x <= 12)
     assert result == 12
 
 
-def test_17():
+def test_17() -> None:
     result = find_max_success(12, lambda x: x <= 12)
     assert result == 12
 
 
-def test_negative():
+def test_negative() -> None:
     result = search_for_max_success(-10, 12, lambda x: x <= -2)
     assert result == -2
 
 
-def test_negative_2():
+def test_negative_2() -> None:
     result = search_for_max_success(-10, 12, lambda x: x <= 2)
     assert result == 2

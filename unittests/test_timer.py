@@ -16,12 +16,12 @@ from time import sleep
 from spinn_utilities.timer import Timer
 
 
-def test_create():
+def test_create() -> None:
     t = Timer()
     assert t is not None
 
 
-def test_basic_use():
+def test_basic_use() -> None:
     t = Timer()
     # Just check that these things don't throw
     t.start_timing()
@@ -31,7 +31,7 @@ def test_basic_use():
     assert t.take_sample().total_seconds() > 0
 
 
-def test_advanced_use():
+def test_advanced_use() -> None:
     t = Timer()
     with t:
         sleep(0.1)

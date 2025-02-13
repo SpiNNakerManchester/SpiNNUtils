@@ -19,14 +19,15 @@ from .abstract_has_constraints import AbstractHasConstraints
 
 
 class UncheckedBadParam(AbstractGrandParent):
-    def label(self):
+    @property
+    def label(self) -> str:
         return "GRANDPARENT"
 
-    def set_label(selfself, not_label):
+    def set_label(self, not_label: str) -> None:
         pass
 
     @overrides(AbstractHasConstraints.add_constraint)
-    def add_constraint(self, constraint: Any):
+    def add_constraint(self, constraint: Any) -> None:
         raise NotImplementedError("We set our own constrainst")
 
     @overrides(AbstractHasConstraints.constraints)

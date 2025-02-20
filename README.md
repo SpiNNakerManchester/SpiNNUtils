@@ -3,6 +3,7 @@
 [![Documentation Status](https://readthedocs.org/projects/spinnutils/badge/?version=latest)](https://spinnutils.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/SpiNNakerManchester/SpiNNUtils/badge.svg?branch=master)](https://coveralls.io/github/SpiNNakerManchester/SpiNNUtils?branch=master)
 
+
 SpiNNUtils
 ==========
 This provides basic utility functions and classes to other parts of SpiNNaker's

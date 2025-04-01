@@ -102,7 +102,7 @@ def test_iteration_style(
 @pytest.mark.parametrize("pbmagic", [False, True])
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_bacon_enhancement(
-        pbmagic: bool, pbclass: Callable[[Tuple, None], ProgressBar]) -> None:
+        pbmagic: bool, pbclass: Callable[[Tuple, str], ProgressBar]) -> None:
     unittest_setup()
     try:
         EPB._enabled = pbmagic

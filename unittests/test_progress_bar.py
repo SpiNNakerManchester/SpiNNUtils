@@ -100,11 +100,13 @@ def test_iteration_style(
 
 
 @pytest.mark.parametrize("pbmagic", [False, True])
-def test_bacon_enhancement(pbmagic: bool) -> None:
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
+def test_bacon_enhancement(
+        pbmagic: bool, pbclass: Callable[[range, None], ProgressBar]) -> None:
     unittest_setup()
     try:
         EPB._enabled = pbmagic
         seq = (1, 2, 3)
-        assert sum(ProgressBar(seq, "foo").over(seq)) == 6
+        assert sum(pbclass(seq, "foo").over(seq)) == 6
     finally:
         EPB._enabled = False

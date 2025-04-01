@@ -221,7 +221,7 @@ class ProgressBar(object):
     def __new__(cls, *args: Tuple[int, str], **kwargs: Dict) -> "ProgressBar":
         # pylint: disable=unused-argument
         c = cls
-        if _EnhancedProgressBar._enabled:
+        if cls != DummyProgressBar and _EnhancedProgressBar._enabled:
             if get_config_bool("Mode", "I_have_a_sense_of_humour"):
                 c = _EnhancedProgressBar
             else:
@@ -364,5 +364,9 @@ if __name__ == "__main__":  # pragma: no cover
 
     _collection = [2, 3, 5, 7, 11, 13, 17]
     demo = ProgressBar(_collection, "Demo over a few primes")
+    for prime in demo.over(_collection):
+        sleep(0.1)
+
+    demo = DummyProgressBar(3, "Test Dummy")
     for prime in demo.over(_collection):
         sleep(0.1)

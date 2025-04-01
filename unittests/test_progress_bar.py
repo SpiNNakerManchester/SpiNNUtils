@@ -14,7 +14,7 @@
 
 import pytest
 from testfixtures import LogCapture  # type: ignore[import]
-from typing import Callable
+from typing import Callable, Tuple
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.progress_bar import (
     ProgressBar, DummyProgressBar, _EnhancedProgressBar as
@@ -102,7 +102,7 @@ def test_iteration_style(
 @pytest.mark.parametrize("pbmagic", [False, True])
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_bacon_enhancement(
-        pbmagic: bool, pbclass: Callable[[range, None], ProgressBar]) -> None:
+        pbmagic: bool, pbclass: Callable[[Tuple, None], ProgressBar]) -> None:
     unittest_setup()
     try:
         EPB._enabled = pbmagic

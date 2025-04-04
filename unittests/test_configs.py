@@ -22,30 +22,30 @@ from spinn_utilities.exceptions import ConfigException, SpiNNUtilsException
 
 def test_configs_None() -> None:
     unittest_setup()
-    set_config("Mode", "Foo", "None")
-    set_config("Mode", "Bar", "none")
-    assert get_config_str_or_none("Mode", "Foo") is None
+    set_config("Mapping", "Foo", "None")
+    set_config("Mapping", "Bar", "none")
+    assert get_config_str_or_none("Mapping", "Foo") is None
     try:
-        assert get_config_str("Mode", "Foo") is None
+        assert get_config_str("Mapping", "Foo") is None
         raise SpiNNUtilsException("Expected ConfigException")
     except ConfigException:
         pass
-    assert get_config_str_or_none("Mode", "bar") is None
-    assert get_config_int_or_none("Mode", "Foo") is None
+    assert get_config_str_or_none("Mapping", "bar") is None
+    assert get_config_int_or_none("Mapping", "Foo") is None
     try:
-        get_config_int("Mode", "Foo")
+        get_config_int("Mapping", "Foo")
         raise SpiNNUtilsException("Expected ConfigException")
     except ConfigException:
         pass
-    assert get_config_float_or_none("Mode", "Foo") is None
+    assert get_config_float_or_none("Mapping", "Foo") is None
     try:
-        assert get_config_float("Mode", "Foo") is None
+        assert get_config_float("Mapping", "Foo") is None
         raise SpiNNUtilsException("Expected ConfigException")
     except ConfigException:
         pass
-    assert get_config_bool_or_none("Mode", "Foo") is None
+    assert get_config_bool_or_none("Mapping", "Foo") is None
     try:
-        assert get_config_bool("Mode", "Foo") is None
+        assert get_config_bool("Mapping", "Foo") is None
         raise SpiNNUtilsException("Expected ConfigException")
     except ConfigException:
         pass

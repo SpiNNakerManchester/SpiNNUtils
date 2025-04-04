@@ -557,3 +557,32 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
             if option not in found_options:
                 raise ConfigException(
                     f"cfg {section=} {option=} was never used")
+
+
+def print_configs() -> None:
+    config1 = CamelCaseConfigParser()
+    config1.read(__default_config_files)
+    for section in config1:
+        if section == "DEFAULT":
+            continue
+        print(section)
+        for option in config1.options(section):
+            if option.startswith("path_"):
+                continue
+            if option.startswith("@"):
+                continue
+            print("\t", option)
+            value = config1.get(section, option)
+            print("\t\tdefault:", value)
+            if option.startswith("write"):
+                path = "path" + option[5:]
+                if config1.has_option(section, path):
+                    value = config1.get(section, path)
+                    print("\t\tpath:", value)
+            comment = "@" + option
+            if config1.has_option(section, comment):
+                value = config1.get(section, comment)
+                value = value.replace("\n", "\n\t\t\t")
+                print("\t\t", value)
+
+

@@ -17,15 +17,12 @@ from testfixtures import LogCapture  # type: ignore[import]
 from typing import Callable, Tuple
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.progress_bar import (
-    ProgressBar, DummyProgressBar, _EnhancedProgressBar as
-    EPB)
+    ProgressBar, DummyProgressBar)
 from spinn_utilities.testing import log_checker
 from spinn_utilities import logger_utils
 
-EPB._enabled = False
 
-
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_operation(pbclass: Callable[[int, str], ProgressBar]) -> None:
     unittest_setup()
     p = pbclass(2, "abc")
@@ -34,7 +31,7 @@ def test_operation(pbclass: Callable[[int, str], ProgressBar]) -> None:
     p.end()
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_two_end(pbclass:  Callable[[int, str], ProgressBar]) -> None:
     unittest_setup()
     p = pbclass(2, "abc2")
@@ -44,7 +41,7 @@ def test_two_end(pbclass:  Callable[[int, str], ProgressBar]) -> None:
     p.end()
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_with_operation(pbclass:  Callable[[int, str], ProgressBar]) -> None:
     unittest_setup()
     with pbclass(2, "with_p") as p:
@@ -52,7 +49,7 @@ def test_with_operation(pbclass:  Callable[[int, str], ProgressBar]) -> None:
         p.update()
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_check_length_full(
         pbclass:  Callable[[int, None], ProgressBar]) -> None:
     unittest_setup()
@@ -65,7 +62,7 @@ def test_check_length_full(
     p.end()
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_check_length_addition(
         pbclass:  Callable[[int, None], ProgressBar]) -> None:
     unittest_setup()
@@ -80,13 +77,13 @@ def test_check_length_addition(
     p.end()
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_repr(pbclass:  Callable[[int, str], ProgressBar]) -> None:
     p = pbclass(2, "repr test")
     assert "repr test" in repr(p)
 
 
-@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar, EPB])
+@pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_iteration_style(
         pbclass:  Callable[[range, None], ProgressBar]) -> None:
     unittest_setup()
@@ -104,9 +101,5 @@ def test_iteration_style(
 def test_bacon_enhancement(
         pbmagic: bool, pbclass: Callable[[Tuple, str], ProgressBar]) -> None:
     unittest_setup()
-    try:
-        EPB._enabled = pbmagic
-        seq = (1, 2, 3)
-        assert sum(pbclass(seq, "foo").over(seq)) == 6
-    finally:
-        EPB._enabled = False
+    seq = (1, 2, 3)
+    assert sum(pbclass(seq, "foo").over(seq)) == 6

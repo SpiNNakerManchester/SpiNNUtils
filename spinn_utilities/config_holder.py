@@ -17,7 +17,9 @@ from configparser import NoOptionError
 import logging
 import os
 from typing import Callable, Collection, Dict, List, Optional, Set, Union
+
 import spinn_utilities.conf_loader as conf_loader
+from spinn_utilities.data import UtilsDataView
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import (
@@ -278,6 +280,20 @@ def get_config_bool_or_none(section: str, option: str,
     else:
         return __config.get_bool(section, option, special_nones)
 
+def _check_section_exists(section: str) -> None:
+    """
+    Checks a section exists creating it if needed and in an unittest.
+
+    :param section:
+    :raises ConfigException: If no in an unittest
+    """
+    if not __unittest_mode:
+        raise ConfigException(
+            "check_section_exists is only allowed in unittests")
+    if __config is None:
+        _pre_load_config()
+    if not __config.has_section(section):
+        __config.add_section(section)
 
 def set_config(section: str, option: str, value: Optional[str]) -> None:
     """
@@ -557,3 +573,40 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
             if option not in found_options:
                 raise ConfigException(
                     f"cfg {section=} {option=} was never used")
+
+def get_report_path(option: str, section: str = "Reports",
+                    n_run: Optional[int] = None) -> str:
+    """
+    Gets and fixes the path for this option
+
+    If the cfg path is relative it will be joined with the run_dir_path.
+
+    All paths are returned unchecked for correctness
+
+    (n_run) will be replaced with the current/ or provided run number
+
+    Later updates may replace other bracketed expressions as needed
+    so avoid using brackets in file names
+
+    :param option: cfg option name
+    :param section: cfg section. Needed if not Reports
+    :param n_run: If provided will be used instead of the crrent run number
+    :return: An unchecked absolute path to the file or directory
+    """
+    path = get_config_str(section, option)
+
+    if n_run is not None and n_run > 1:
+        if "(n_run)" not in path:
+            logger.warning(
+                f"cfg option {option} does not have a (n_run) so "
+                f"files from different runs may be overwritten")
+    if "(n_run)" in path:
+        if n_run is None:
+            n_run = UtilsDataView.get_run_number()
+        path = path.replace("(n_run)", str(n_run))
+
+    if os.path.isabs(path):
+        return path
+
+    path = os.path.join(UtilsDataView.get_run_dir_path(), path)
+    return path

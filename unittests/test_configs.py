@@ -16,7 +16,7 @@ from testfixtures import LogCapture
 
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.config_holder import (
-    _check_section_exists, 
+    _check_section_exists,
     get_config_bool, get_config_bool_or_none, get_config_float,
     get_config_float_or_none, get_config_int, get_config_int_or_none,
     get_report_path,
@@ -54,6 +54,7 @@ def test_configs_None() -> None:
         raise SpiNNUtilsException("Expected ConfigException")
     except ConfigException:
         pass
+
 
 def test_get_report_path():
     unittest_setup()

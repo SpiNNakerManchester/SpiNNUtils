@@ -280,6 +280,7 @@ def get_config_bool_or_none(section: str, option: str,
     else:
         return __config.get_bool(section, option, special_nones)
 
+
 def _check_section_exists(section: str) -> None:
     """
     Checks a section exists creating it if needed and in an unittest.
@@ -294,6 +295,7 @@ def _check_section_exists(section: str) -> None:
         _pre_load_config()
     if not __config.has_section(section):
         __config.add_section(section)
+
 
 def set_config(section: str, option: str, value: Optional[str]) -> None:
     """
@@ -573,6 +575,7 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
             if option not in found_options:
                 raise ConfigException(
                     f"cfg {section=} {option=} was never used")
+
 
 def get_report_path(option: str, section: str = "Reports",
                     n_run: Optional[int] = None) -> str:

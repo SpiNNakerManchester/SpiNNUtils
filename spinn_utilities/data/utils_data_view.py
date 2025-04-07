@@ -52,6 +52,7 @@ class _UtilsDataModel(object):
         "_requires_mapping",
         "_reset_status",
         "_run_dir_path",
+        "_run_number",
         "_run_status",
         "_temporary_directory",
     ]
@@ -74,6 +75,7 @@ class _UtilsDataModel(object):
         """
         Clears out all data.
         """
+        self._run_number: Optional[int] = None
         self._report_dir_path: Optional[str] = None
         self._hard_reset()
 
@@ -471,6 +473,23 @@ class UtilsDataView(object):
         if cls._is_mocked():
             return cls._temporary_dir_path()
         raise cls._exception("run_dir_path")
+
+    #  run number
+
+    @classmethod
+    def get_run_number(cls) -> int:
+        """
+        Get the number of this or the next run.
+
+        Run numbers start at 1
+
+        :rtype: int
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            If the run_number is currently unavailable
+        """
+        if cls.__data._run_number is None:
+            raise cls._exception("run_number")
+        return cls.__data._run_number
 
     @classmethod
     def get_executable_finder(cls) -> ExecutableFinder:

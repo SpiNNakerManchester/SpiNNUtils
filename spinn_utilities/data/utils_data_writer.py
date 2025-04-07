@@ -112,6 +112,8 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._clear()
         self.__data._data_status = DataStatus.MOCKED
         self.__data._reset_status = ResetStatus.NOT_SETUP
+        # run numbers start at 1 and when not running this is the next one
+        self.__data._run_number = 1
         self.__data._run_status = RunStatus.NOT_SETUP
 
     def _setup(self) -> None:
@@ -121,6 +123,8 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._clear()
         self.__data._data_status = DataStatus.SETUP
         self.__data._reset_status = ResetStatus.SETUP
+        # run numbers start at 1 and when not running this is the next one
+        self.__data._run_number = 1
         self.__data._run_status = RunStatus.NOT_RUNNING
 
     def start_run(self) -> None:
@@ -144,6 +148,8 @@ class UtilsDataWriter(UtilsDataView):
             raise UnexpectedStateChange(
                 f"Unexpected finish run when in run state "
                 f"{self.__data._run_status}")
+        assert self.__data._run_number is not None
+        self.__data._run_number += 1
         self.__data._run_status = RunStatus.NOT_RUNNING
         self.__data._reset_status = ResetStatus.HAS_RUN
         self.__data._requires_data_generation = False

@@ -348,6 +348,7 @@ def _get_parts(line: str, lines: List[str], index: int, start: str) -> str:
                  line.find(")")].split(",")
     return parts
 
+
 # Tried to give method a more exact type but expects method to handle both!
 # Union[Callable[[str, str], Any],
 # Callable[[str, str, Optional[List[str]]], Any]]
@@ -394,8 +395,9 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
         used_cfgs[section].add(option)
 
 
-def _check_get_report_path(py_path: str, line: str, lines: List[str], index: int,
-               used_cfgs: Dict[str, Set[str]], start: str) -> None:
+def _check_get_report_path(
+        py_path: str, line: str, lines: List[str], index: int,
+        used_cfgs: Dict[str, Set[str]], start: str) -> None:
     """
     Support for `_check_python_file`. Gets section and option name.
 
@@ -415,6 +417,7 @@ def _check_get_report_path(py_path: str, line: str, lines: List[str], index: int
     option = parts[0].strip().replace("'", "").replace('"', '')
     get_report_path(option)
     used_cfgs["Reports"].add(option)
+
 
 def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]],
                        special_nones: Optional[List[str]] = None) -> None:

@@ -415,6 +415,8 @@ def _check_get_report_path(
         return
     parts = _get_parts(line, lines, index, start)
     option = parts[0].strip().replace("'", "").replace('"', '')
+    if option == "option":
+        return
     get_report_path(option)
     used_cfgs["Reports"].add(option)
 

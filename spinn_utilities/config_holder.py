@@ -293,6 +293,7 @@ def _check_section_exists(section: str) -> None:
             "check_section_exists is only allowed in unittests")
     if __config is None:
         _pre_load_config()
+    assert __config is not None
     if not __config.has_section(section):
         __config.add_section(section)
 

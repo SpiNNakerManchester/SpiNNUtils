@@ -340,6 +340,14 @@ def config_options(section: str) -> List[str]:
     return __config.options(section)
 
 
+def _get_parts(line: str, lines: List[str], index: int, start: str) -> str:
+    while ")" not in line:
+        index += 1
+        line += lines[index]
+    parts = line[line.find("(", line.find(start)) + 1:
+                 line.find(")")].split(",")
+    return parts
+
 # Tried to give method a more exact type but expects method to handle both!
 # Union[Callable[[str, str], Any],
 # Callable[[str, str, Optional[List[str]]], Any]]
@@ -358,11 +366,7 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
     :param special_nones: What special values to except as None
     :raises ConfigException: If an unexpected or uncovered `get_config` found
     """
-    while ")" not in line:
-        index += 1
-        line += lines[index]
-    parts = line[line.find("(", line.find(start)) + 1:
-                 line.find(")")].split(",")
+    parts = _get_parts(line, lines, index, start)
     section = parts[0].strip().replace("'", "").replace('"', '')
     for i in range(1, len(parts)):
         try:
@@ -390,6 +394,28 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
         used_cfgs[section].add(option)
 
 
+def _check_get_report_path(py_path: str, line: str, lines: List[str], index: int,
+               used_cfgs: Dict[str, Set[str]], start: str) -> None:
+    """
+    Support for `_check_python_file`. Gets section and option name.
+
+    :param line: Line with get_config call
+    :param lines: All lines in the file
+    :param index: index of line with `get_config` call
+    :param method: Method to call to check cfg
+    :param used_cfgs:
+        Dict of used cfg options to be added to
+    :param special_nones: What special values to except as None
+    :raises ConfigException: If an unexpected or uncovered `get_config` found
+    """
+    # dnot check this file
+    if py_path.endswith('config_holder.py'):
+        return
+    parts = _get_parts(line, lines, index, start)
+    option = parts[0].strip().replace("'", "").replace('"', '')
+    get_report_path(option)
+    used_cfgs["Reports"].add(option)
+
 def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]],
                        special_nones: Optional[List[str]] = None) -> None:
     """
@@ -411,6 +437,9 @@ def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]],
                 _check_lines(py_path, line, lines, index,
                              get_config_bool_or_none, used_cfgs,
                              "configuration.get")
+            if ("get_report_path(" in line):
+                _check_get_report_path(py_path, line, lines, index, used_cfgs,
+                                       "get_report_path(")
             if "get_config" not in line:
                 continue
             if (("get_config_bool(" in line) or
@@ -548,6 +577,8 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
             raise ConfigException(f"Unable find {directory}")
         for root, _, files in os.walk(directory):
             for file_name in files:
+                if file_name == "energy_report.py":
+                    print(1)
                 if file_name in exceptions:
                     pass
                 elif file_name.endswith(".cfg"):

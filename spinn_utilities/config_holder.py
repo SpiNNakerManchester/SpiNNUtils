@@ -593,7 +593,7 @@ def get_report_path(option: str, section: str = "Reports",
 
     :param option: cfg option name
     :param section: cfg section. Needed if not Reports
-    :param n_run: If provided will be used instead of the crrent run number
+    :param n_run: If provided will be used instead of the current run number
     :return: An unchecked absolute path to the file or directory
     """
     path = get_config_str(section, option)

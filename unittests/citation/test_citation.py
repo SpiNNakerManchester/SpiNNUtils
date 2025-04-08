@@ -16,7 +16,7 @@ from spinn_utilities.citation.citation_aggregator import generate_aggregate
 import tempfile
 import os
 import yaml
-import httpretty  # type: ignore[import]
+import httpretty
 from spinn_utilities.citation.citation_updater_and_doi_generator import (
     _Zenodo as Zenodo)
 

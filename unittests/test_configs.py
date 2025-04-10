@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from testfixtures import LogCapture
+import os
 
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.config_holder import (
@@ -74,3 +75,9 @@ def test_get_report_path():
     assert path.endswith("foo1.txt")
     path = get_report_path("foo_run", n_run=2)
     assert path.endswith("foo2.txt")
+
+    set_config("Reports", "foo_json", "(json)foo.json")
+    path = get_report_path("foo_json")
+    dirs, file = os.path.split(path)
+    assert dirs.endswith("json_files")
+    assert file == "foo.json"

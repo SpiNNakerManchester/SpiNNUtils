@@ -990,6 +990,7 @@ class TestUtilsData(unittest.TestCase):
     def test_directories_mocked(self) -> None:
         UtilsDataWriter.mock()
         self.assertTrue(os.path.exists(UtilsDataView.get_run_dir_path()))
+        self.assertTrue(os.path.exists(UtilsDataView.get_json_dir_path()))
 
     def test_set_run_dir_path(self) -> None:
         writer = UtilsDataWriter.setup()

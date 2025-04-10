@@ -648,5 +648,10 @@ def get_report_path(option: str, section: str = "Reports",
     if os.path.isabs(path):
         return path
 
-    path = os.path.join(UtilsDataView.get_run_dir_path(), path)
+    if path.startswith("(json)"):
+        a = UtilsDataView.get_json_dir_path()
+        path = os.path.join(UtilsDataView.get_json_dir_path(), path[6:])
+    else:
+        path = os.path.join(UtilsDataView.get_run_dir_path(), path)
+
     return path

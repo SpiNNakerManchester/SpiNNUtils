@@ -30,6 +30,13 @@ else:
     # Python 3.8 does not support above typing
     _Path = str
 
+def optionxform(optionstr: str) -> str:
+        """
+        Transforms the name of an option to lower case and strips
+        underscores, so matching is more user-friendly.
+        """
+        lower = optionstr.lower()
+        return lower.replace("_", "")
 
 class CamelCaseConfigParser(configparser.RawConfigParser):
     """
@@ -42,8 +49,7 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         Transforms the name of an option to lower case and strips
         underscores, so matching is more user-friendly.
         """
-        lower = optionstr.lower()
-        return lower.replace("_", "")
+        return optionxform(optionstr)
 
     def __init__(self) -> None:
         super().__init__()

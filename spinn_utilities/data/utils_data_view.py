@@ -500,24 +500,6 @@ class UtilsDataView(object):
             os.makedirs(child, exist_ok=True)
         return child
 
-    @classmethod
-    def get_json_dir_path(cls) -> str:
-        """
-        Returns the path to the directory that holds all JSON files.
-
-        This will be the path used by the last run call or to be used by
-        the next run if it has not yet been called.
-
-        .. note::
-            In unit-test mode this returns a temporary directory
-            shared by all path methods.
-
-        :rtype: str
-        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
-            If the simulation_time_step is currently unavailable
-        """
-        return cls._child_folder(cls.get_run_dir_path(), "json_files")
-
     #  run number
 
     @classmethod

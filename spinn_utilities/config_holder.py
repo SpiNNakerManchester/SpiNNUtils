@@ -614,8 +614,9 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
                     f"cfg {section=} {option=} was never used")
 
 
-def get_report_path(option: str, section: str = "Reports",
-                    n_run: Optional[int] = None) -> str:
+def get_report_path(
+        option: str, section: str = "Reports", n_run: Optional[int] = None,
+        is_dir: bool = False) -> str:
     """
     Gets and fixes the path for this option
 
@@ -645,13 +646,19 @@ def get_report_path(option: str, section: str = "Reports",
             n_run = UtilsDataView.get_run_number()
         path = path.replace("(n_run)", str(n_run))
 
+    if "\\" in path:
+       path = path.replace("\\", os.sep)
+
     if os.path.isabs(path):
         return path
 
-    if path.startswith("(json)"):
-        a = UtilsDataView.get_json_dir_path()
-        path = os.path.join(UtilsDataView.get_json_dir_path(), path[6:])
+    path = os.path.join(UtilsDataView.get_run_dir_path(), path)
+
+    if is_dir:
+        os.makedirs(path, exist_ok=True)
     else:
-        path = os.path.join(UtilsDataView.get_run_dir_path(), path)
+        dir, _ = os.path.split(path)
+        if dir:
+            os.makedirs(dir, exist_ok=True)
 
     return path

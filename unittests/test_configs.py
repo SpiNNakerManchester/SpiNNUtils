@@ -60,6 +60,7 @@ def test_configs_None() -> None:
 def test_get_report_path():
     unittest_setup()
     _check_section_exists("Reports")
+
     set_config("Reports", "foo", "foo.txt")
     path = get_report_path("foo")
     assert path.endswith("foo.txt")
@@ -76,7 +77,7 @@ def test_get_report_path():
     path = get_report_path("foo_run", n_run=2)
     assert path.endswith("foo2.txt")
 
-    set_config("Reports", "foo_json", "(json)foo.json")
+    set_config("Reports", "foo_json", "json_files\\foo.json")
     path = get_report_path("foo_json")
     dirs, file = os.path.split(path)
     assert dirs.endswith("json_files")

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+import os
 from tempfile import TemporaryDirectory
 from typing import List, Optional
 
@@ -52,6 +53,7 @@ class _UtilsDataModel(object):
         "_requires_mapping",
         "_reset_status",
         "_run_dir_path",
+        "_run_number",
         "_run_status",
         "_temporary_directory",
     ]
@@ -74,6 +76,7 @@ class _UtilsDataModel(object):
         """
         Clears out all data.
         """
+        self._run_number: Optional[int] = None
         self._report_dir_path: Optional[str] = None
         self._hard_reset()
 
@@ -471,6 +474,48 @@ class UtilsDataView(object):
         if cls._is_mocked():
             return cls._temporary_dir_path()
         raise cls._exception("run_dir_path")
+
+    @classmethod
+    def _child_folder(cls, parent: str, child_name: str,
+                      must_create: bool = False) -> str:
+        """
+        :param str parent:
+        :param str child_name:
+        :param bool must_create:
+            If `True`, the directory named by `child_name` (but not necessarily
+            its parents) must be created by this call, and an exception will be
+            thrown if this fails.
+        :return: The fully qualified name of the child folder.
+        :rtype: str
+        :raises OSError:
+            If the directory existed ahead of time and creation
+            was required by the user
+        """
+        child = os.path.join(parent, child_name)
+        if must_create:
+            # Throws OSError or FileExistsError (a subclass of OSError) if the
+            # directory exists.
+            os.makedirs(child)
+        elif not os.path.exists(child):
+            os.makedirs(child, exist_ok=True)
+        return child
+
+    #  run number
+
+    @classmethod
+    def get_run_number(cls) -> int:
+        """
+        Get the number of this or the next run.
+
+        Run numbers start at 1
+
+        :rtype: int
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            If the run_number is currently unavailable
+        """
+        if cls.__data._run_number is None:
+            raise cls._exception("run_number")
+        return cls.__data._run_number
 
     @classmethod
     def get_executable_finder(cls) -> ExecutableFinder:

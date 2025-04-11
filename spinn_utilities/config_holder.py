@@ -17,7 +17,9 @@ from configparser import NoOptionError
 import logging
 import os
 from typing import Callable, Collection, Dict, List, Optional, Set, Union
+
 import spinn_utilities.conf_loader as conf_loader
+from spinn_utilities.data import UtilsDataView
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import (
@@ -279,6 +281,23 @@ def get_config_bool_or_none(section: str, option: str,
         return __config.get_bool(section, option, special_nones)
 
 
+def _check_section_exists(section: str) -> None:
+    """
+    Checks a section exists creating it if needed and in an unittest.
+
+    :param section:
+    :raises ConfigException: If no in an unittest
+    """
+    if not __unittest_mode:
+        raise ConfigException(
+            "check_section_exists is only allowed in unittests")
+    if __config is None:
+        _pre_load_config()
+    assert __config is not None
+    if not __config.has_section(section):
+        __config.add_section(section)
+
+
 def set_config(section: str, option: str, value: Optional[str]) -> None:
     """
     Sets the value of a configuration option.
@@ -321,6 +340,15 @@ def config_options(section: str) -> List[str]:
     return __config.options(section)
 
 
+def _get_parts(line: str, lines: List[str], index: int, start: str) -> str:
+    while ")" not in line:
+        index += 1
+        line += lines[index]
+    parts = line[line.find("(", line.find(start)) + 1:
+                 line.find(")")].split(",")
+    return parts
+
+
 # Tried to give method a more exact type but expects method to handle both!
 # Union[Callable[[str, str], Any],
 # Callable[[str, str, Optional[List[str]]], Any]]
@@ -339,11 +367,7 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
     :param special_nones: What special values to except as None
     :raises ConfigException: If an unexpected or uncovered `get_config` found
     """
-    while ")" not in line:
-        index += 1
-        line += lines[index]
-    parts = line[line.find("(", line.find(start)) + 1:
-                 line.find(")")].split(",")
+    parts = _get_parts(line, lines, index, start)
     section = parts[0].strip().replace("'", "").replace('"', '')
     for i in range(1, len(parts)):
         try:
@@ -371,6 +395,32 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
         used_cfgs[section].add(option)
 
 
+def _check_get_report_path(
+        py_path: str, line: str, lines: List[str], index: int,
+        used_cfgs: Dict[str, Set[str]], start: str) -> None:
+    """
+    Support for `_check_python_file`. Gets section and option name.
+
+    :param line: Line with get_config call
+    :param lines: All lines in the file
+    :param index: index of line with `get_config` call
+    :param method: Method to call to check cfg
+    :param used_cfgs:
+        Dict of used cfg options to be added to
+    :param special_nones: What special values to except as None
+    :raises ConfigException: If an unexpected or uncovered `get_config` found
+    """
+    # dnot check this file
+    if py_path.endswith('config_holder.py'):
+        return
+    parts = _get_parts(line, lines, index, start)
+    option = parts[0].strip().replace("'", "").replace('"', '')
+    if option == "option":
+        return
+    get_report_path(option)
+    used_cfgs["Reports"].add(option)
+
+
 def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]],
                        special_nones: Optional[List[str]] = None) -> None:
     """
@@ -392,6 +442,9 @@ def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]],
                 _check_lines(py_path, line, lines, index,
                              get_config_bool_or_none, used_cfgs,
                              "configuration.get")
+            if ("get_report_path(" in line):
+                _check_get_report_path(py_path, line, lines, index, used_cfgs,
+                                       "get_report_path(")
             if "get_config" not in line:
                 continue
             if (("get_config_bool(" in line) or
@@ -529,6 +582,8 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
             raise ConfigException(f"Unable find {directory}")
         for root, _, files in os.walk(directory):
             for file_name in files:
+                if file_name == "energy_report.py":
+                    print(1)
                 if file_name in exceptions:
                     pass
                 elif file_name.endswith(".cfg"):
@@ -557,3 +612,53 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
             if option not in found_options:
                 raise ConfigException(
                     f"cfg {section=} {option=} was never used")
+
+
+def get_report_path(
+        option: str, section: str = "Reports", n_run: Optional[int] = None,
+        is_dir: bool = False) -> str:
+    """
+    Gets and fixes the path for this option
+
+    If the cfg path is relative it will be joined with the run_dir_path.
+
+    All paths are returned unchecked for correctness
+
+    (n_run) will be replaced with the current/ or provided run number
+
+    Later updates may replace other bracketed expressions as needed
+    so avoid using brackets in file names
+
+    :param option: cfg option name
+    :param section: cfg section. Needed if not Reports
+    :param n_run: If provided will be used instead of the current run number
+    :return: An unchecked absolute path to the file or directory
+    """
+    path = get_config_str(section, option)
+
+    if n_run is not None and n_run > 1:
+        if "(n_run)" not in path:
+            logger.warning(
+                f"cfg option {option} does not have a (n_run) so "
+                f"files from different runs may be overwritten")
+    if "(n_run)" in path:
+        if n_run is None:
+            n_run = UtilsDataView.get_run_number()
+        path = path.replace("(n_run)", str(n_run))
+
+    if "\\" in path:
+       path = path.replace("\\", os.sep)
+
+    if os.path.isabs(path):
+        return path
+
+    path = os.path.join(UtilsDataView.get_run_dir_path(), path)
+
+    if is_dir:
+        os.makedirs(path, exist_ok=True)
+    else:
+        dir, _ = os.path.split(path)
+        if dir:
+            os.makedirs(dir, exist_ok=True)
+
+    return path

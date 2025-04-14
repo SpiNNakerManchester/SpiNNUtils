@@ -646,6 +646,10 @@ def get_report_path(
             n_run = UtilsDataView.get_run_number()
         path = path.replace("(n_run)", str(n_run))
 
+    if "(reset_str)" in path:
+        reset_str = UtilsDataView.get_reset_str()
+        path = path.replace("(reset_str)", str(reset_str))
+
     if "\\" in path:
         path = path.replace("\\", os.sep)
 

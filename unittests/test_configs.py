@@ -22,6 +22,7 @@ from spinn_utilities.config_holder import (
     get_config_float_or_none, get_config_int, get_config_int_or_none,
     get_report_path,
     get_config_str, get_config_str_or_none,  set_config)
+from spinn_utilities.data import UtilsDataView
 from spinn_utilities.exceptions import ConfigException, SpiNNUtilsException
 from spinn_utilities.testing import log_checker
 
@@ -60,6 +61,9 @@ def test_configs_None() -> None:
 def test_get_report_path():
     unittest_setup()
     _check_section_exists("Reports")
+    # HACK to directly read the underlying models to avoid triggering
+    # various autodetection systems. DO NOT COPY AS UNSUPPORTED!
+    data_model = UtilsDataView._UtilsDataView__data
 
     set_config("Reports", "foo", "foo.txt")
     path = get_report_path("foo")
@@ -76,9 +80,23 @@ def test_get_report_path():
     assert path.endswith("foo1.txt")
     path = get_report_path("foo_run", n_run=2)
     assert path.endswith("foo2.txt")
+    # hack do not copy as unsupported
+    data_model._run_number = 4
+    path = get_report_path("foo_run")
+    assert path.endswith("foo4.txt")
+
+    set_config("Reports", "foo_reset", "foo(reset_str).txt")
+    path = get_report_path("foo_reset")
+    assert path.endswith("foo.txt")
+    # hack do not copy as unsupported
+    data_model._reset_number = 7
+    path = get_report_path("foo_reset")
+    assert path.endswith("foo7.txt")
 
     set_config("Reports", "foo_json", "json_files\\foo.json")
     path = get_report_path("foo_json")
     dirs, file = os.path.split(path)
     assert dirs.endswith("json_files")
     assert file == "foo.json"
+
+

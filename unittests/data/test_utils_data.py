@@ -1069,6 +1069,8 @@ class TestUtilsData(unittest.TestCase):
 
     def test_run_number(self) -> None:
         writer = UtilsDataWriter.setup()
+        self.assertEqual(0, writer.get_reset_number())
+        self.assertEqual("", writer.get_reset_str())
         self.assertEqual(1, UtilsDataView.get_run_number())
         writer.start_run()
         self.assertEqual(1, UtilsDataView.get_run_number())
@@ -1080,6 +1082,8 @@ class TestUtilsData(unittest.TestCase):
         # run_dir_path only changed on hard reset
         writer.finish_run()
         self.assertEqual(3, UtilsDataView.get_run_number())
+        self.assertEqual(0, writer.get_reset_number())
+        self.assertEqual("", writer.get_reset_str())
         writer.soft_reset()
         self.assertEqual(3, UtilsDataView.get_run_number())
         # run_dir_path only changed on hard reset

@@ -51,6 +51,7 @@ class _UtilsDataModel(object):
         "_report_dir_path",
         "_requires_data_generation",
         "_requires_mapping",
+        "_reset_number",
         "_reset_status",
         "_run_dir_path",
         "_run_number",
@@ -76,6 +77,7 @@ class _UtilsDataModel(object):
         """
         Clears out all data.
         """
+        self._reset_number = 0
         self._run_number: Optional[int] = None
         self._report_dir_path: Optional[str] = None
         self._hard_reset()
@@ -289,6 +291,54 @@ class UtilsDataView(object):
             f"This call was not expected with reset status "
             f"{cls.__data._reset_status} and run status "
             f"{cls.__data._run_status}")
+
+    #  reset number
+
+    @classmethod
+    def get_reset_number(cls) -> int:
+        """
+        Get the number of times a reset has happened.
+
+        Only counts the first reset after each run.
+
+        So resets that are first soft then hard are ignored.
+        Double reset calls without a run and resets before run are ignored.
+
+        Reset numbers start at zero
+
+        :rtype: int
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            If the run_number is currently unavailable
+        """
+        if cls.__data._reset_number is None:
+            raise cls._exception("run_number")
+        return cls.__data._reset_number
+
+    @classmethod
+    def get_reset_str(cls) -> str:
+        """
+        Get the number of times a reset has happened as a string.
+
+        An empty string is returned if the system has never been reset
+        (i.e., the reset number is 0)
+
+        Only counts the first reset after each run.
+
+        So resets that are first soft then hard are ignored.
+        Double reset calls without a run and resets before run are ignored.
+
+        Reset numbers start at zero
+
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            If the run_number is currently unavailable
+        :rtype: str
+        """
+        if cls.__data._reset_number is None:
+            raise cls._exception("reset_number")
+        if cls.__data._reset_number:
+            return str(cls.__data._reset_number)
+        else:
+            return ""
 
     @classmethod
     def is_no_stop_requested(cls) -> bool:

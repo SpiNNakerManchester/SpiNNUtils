@@ -160,6 +160,8 @@ class UtilsDataWriter(UtilsDataView):
         This method should only be called by `hard_setup`.
         """
         self.__data._hard_reset()
+        if self.is_ran_last():
+            self.__data._reset_number += 1
         self.__data._reset_status = ResetStatus.HARD_RESET
 
     def hard_reset(self) -> None:
@@ -191,6 +193,8 @@ class UtilsDataWriter(UtilsDataView):
         This method should only be called from `soft_reset`.
         """
         self.__data._soft_reset()
+        if self.is_ran_last():
+            self.__data._reset_number += 1
         self.__data._reset_status = ResetStatus.SOFT_RESET
 
     def soft_reset(self) -> None:

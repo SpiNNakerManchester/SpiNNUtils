@@ -647,7 +647,7 @@ def get_report_path(
         path = path.replace("(n_run)", str(n_run))
 
     if "\\" in path:
-       path = path.replace("\\", os.sep)
+        path = path.replace("\\", os.sep)
 
     if os.path.isabs(path):
         return path

@@ -413,12 +413,31 @@ def _check_get_report_path(
     # dnot check this file
     if py_path.endswith('config_holder.py'):
         return
+
+    line = line.strip().replace("'", "").replace('"', '')
     parts = _get_parts(line, lines, index, start)
-    option = parts[0].strip().replace("'", "").replace('"', '')
+    section = "Reports"
+    option = "No Option found"
+    for part in  parts:
+        part = part.strip()
+        if "=" not in part:
+            option = part
+        elif part.startswith("option="):
+            option = part[7:]
+        elif part.startswith("section="):
+            section = part[8:]
+        elif part.startswith("is_dir="):
+            pass
+        elif part.startswith("n_run="):
+            pass
+        else:
+            raise ConfigException(f"unexpected {parts=}")
+
     if option == "option":
         return
-    get_report_path(option)
-    used_cfgs["Reports"].add(option)
+
+    get_report_path(option, section)
+    used_cfgs[section].add(option)
 
 
 def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]],

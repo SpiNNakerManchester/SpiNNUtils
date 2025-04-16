@@ -98,5 +98,3 @@ def test_get_report_path():
     dirs, file = os.path.split(path)
     assert dirs.endswith("json_files")
     assert file == "foo.json"
-
-

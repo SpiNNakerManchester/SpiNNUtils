@@ -418,7 +418,7 @@ def _check_get_report_path(
     parts = _get_parts(line, lines, index, start)
     section = "Reports"
     option = "No Option found"
-    for part in  parts:
+    for part in parts:
         part = part.strip()
         if "=" not in part:
             option = part

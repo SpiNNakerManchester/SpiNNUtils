@@ -597,6 +597,9 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
 
     _find_double_defaults(repeaters)
 
+    # disable the flexibility to make sure names are exact matches
+    CamelCaseConfigParser.optionxform = lambda self, optionstr: optionstr
+
     config1 = CamelCaseConfigParser()
     config1.read(__default_config_files)
 

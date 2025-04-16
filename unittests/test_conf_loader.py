@@ -195,7 +195,7 @@ def test_intermediate_use(tmpdir: ModuleType, default_config: str,
             assert config.sections() == ["sect", "Machine"]
             assert config.options("sect") == ["foobob"]
             assert config.get("sect", "foobob") == "bar"
-            assert config.options("Machine") == ["machinename", "version"]
+            assert config.options("Machine") == ["machine_name", "version"]
             assert config.get("Machine", "MachineName") == "foo"
             assert config.getint("Machine", "VeRsIoN") == 5
             log_checker.assert_logs_info_contains(lc.records, name)

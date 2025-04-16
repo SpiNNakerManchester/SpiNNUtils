@@ -20,7 +20,8 @@ from typing import Callable, Collection, Dict, List, Optional, Set, Union
 
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.data import UtilsDataView
-from spinn_utilities.configs import CamelCaseConfigParser
+from spinn_utilities.configs.camel_case_config_parser import (
+    CamelCaseConfigParser, TypedConfigParser)
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import (
     FormatAdapter, ConfiguredFilter, ConfiguredFormatter)
@@ -353,7 +354,8 @@ def _get_parts(
 # Tried to give method a more exact type but expects method to handle both!
 # Union[Callable[[str, str], Any],
 # Callable[[str, str, Optional[List[str]]], Any]]
-def _check_lines(py_path: str, line: str, lines: List[str], index: int,
+def _check_lines(defaults: TypedConfigParser, py_path: str, line: str,
+                 lines: List[str], index: int,
                  method: Callable, used_cfgs: Dict[str, Set[str]], start: str,
                  special_nones: Optional[List[str]] = None) -> None:
     """
@@ -384,6 +386,7 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
         else:
             print(line)
             return
+
         try:
             if special_nones:
                 method(section, option, special_nones)
@@ -393,11 +396,17 @@ def _check_lines(py_path: str, line: str, lines: List[str], index: int,
             raise ConfigException(
                 f"failed in line:{index} of file: {py_path} with "
                 f"section:{section} option:{option}") from original
+
+        if not defaults.has_option(section, option):
+            raise ConfigException(f"{section=} {option=} is not a case "
+                                  f"underscore match with defaults")
+
         used_cfgs[section].add(option)
 
 
 def _check_get_report_path(
-        py_path: str, line: str, lines: List[str], index: int,
+        defaults: TypedConfigParser, py_path: str, line: str,
+        lines: List[str], index: int,
         used_cfgs: Dict[str, Set[str]], start: str) -> None:
     """
     Support for `_check_python_file`. Gets section and option name.
@@ -442,11 +451,13 @@ def _check_get_report_path(
     used_cfgs[section].add(option)
 
 
-def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]],
+def _check_python_file(defaults: TypedConfigParser, py_path: str,
+                       used_cfgs: Dict[str, Set[str]],
                        special_nones: Optional[List[str]] = None) -> None:
     """
     A testing function to check that all the `get_config` calls work.
 
+    :param defaults: default configs read in
     :param py_path: path to file to be checked
     :param used_cfgs: dict of cfg options found
     :param special_nones: What special values to except as None
@@ -456,40 +467,40 @@ def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]],
         lines = list(py_file)
         for index, line in enumerate(lines):
             if ("skip_if_cfg" in line):
-                _check_lines(py_path, line, lines, index,
+                _check_lines(defaults, py_path, line, lines, index,
                              get_config_bool_or_none, used_cfgs, "skip_if_cfg",
                              special_nones)
             if ("configuration.get" in line):
-                _check_lines(py_path, line, lines, index,
+                _check_lines(defaults, py_path, line, lines, index,
                              get_config_bool_or_none, used_cfgs,
                              "configuration.get")
             if ("get_report_path(" in line):
-                _check_get_report_path(py_path, line, lines, index, used_cfgs,
-                                       "get_report_path(")
+                _check_get_report_path(defaults, py_path, line, lines, index,
+                                       used_cfgs, "get_report_path(")
             if ("get_timestamp_path(" in line):
-                _check_get_report_path(py_path, line, lines, index, used_cfgs,
-                                       "get_timestamp_path(")
+                _check_get_report_path(defaults, py_path, line, lines, index,
+                                       used_cfgs, "get_timestamp_path(")
             if "get_config" not in line:
                 continue
             if (("get_config_bool(" in line) or
                     ("get_config_bool_or_none(" in line)):
-                _check_lines(py_path, line, lines, index,
+                _check_lines(defaults, py_path, line, lines, index,
                              get_config_bool_or_none, used_cfgs,
                              "get_config_bool", special_nones)
             if (("get_config_float(" in line) or
                     ("get_config_float_or_none(" in line)):
-                _check_lines(py_path, line, lines, index,
+                _check_lines(defaults, py_path, line, lines, index,
                              get_config_float_or_none, used_cfgs, "get_config")
             if (("get_config_int(" in line) or
                     ("get_config_int_or_none(" in line)):
-                _check_lines(py_path, line, lines, index,
+                _check_lines(defaults, py_path, line, lines, index,
                              get_config_int_or_none, used_cfgs, "get_config")
             if (("get_config_str(" in line) or
                     ("get_config_str_or_none(" in line)):
-                _check_lines(py_path, line, lines, index,
+                _check_lines(defaults, py_path, line, lines, index,
                              get_config_str_or_none, used_cfgs, "get_config")
             if "get_config_str_list(" in line:
-                _check_lines(py_path, line, lines, index,
+                _check_lines(defaults, py_path, line, lines, index,
                              get_config_str_list, used_cfgs, "get_config")
 
 
@@ -520,7 +531,7 @@ def _find_double_defaults(repeaters: Optional[Collection[str]] = ()) -> None:
                         f"repeats [{section}]{option}")
 
 
-def _check_cfg_file(config1: CamelCaseConfigParser, cfg_path: str) -> None:
+def _check_cfg_file(config1: TypedConfigParser, cfg_path: str) -> None:
     """
     Support method for :py:func:`check_cfgs`.
 
@@ -528,7 +539,7 @@ def _check_cfg_file(config1: CamelCaseConfigParser, cfg_path: str) -> None:
     :param cfg_path:
     :raises ConfigException: If an unexpected option is found
     """
-    config2 = CamelCaseConfigParser()
+    config2 = TypedConfigParser()
     config2.read(cfg_path)
     for section in config2.sections():
         if not config1.has_section(section):
@@ -539,31 +550,6 @@ def _check_cfg_file(config1: CamelCaseConfigParser, cfg_path: str) -> None:
                 raise ConfigException(
                     f"cfg:{cfg_path} "
                     f"has unexpected options [{section}]{option}")
-
-
-def _check_cfgs(path: str) -> None:
-    """
-    A testing function check local configuration files against the defaults.
-
-    It only checks that the option exists in a default.
-    It does not check if the option is used or if the value is the expected
-    type.
-
-    :param str path: Absolute path to the parent directory to search
-    :raises ConfigException: If an unexpected option is found
-    """
-    config1 = CamelCaseConfigParser()
-    for default in __default_config_files:
-        config1.read(default)
-    directory = os.path.dirname(path)
-    for root, _, files in os.walk(directory):
-        for file_name in files:
-            if file_name.endswith(".cfg"):
-                cfg_path = os.path.join(root, file_name)
-                if cfg_path in __default_config_files:
-                    continue
-                print(cfg_path)
-                _check_cfg_file(config1, cfg_path)
 
 
 def run_config_checks(directories: Union[str, Collection[str]], *,
@@ -597,10 +583,7 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
 
     _find_double_defaults(repeaters)
 
-    # disable the flexibility to make sure names are exact matches
-    CamelCaseConfigParser.optionxform = lambda self, optionstr: optionstr  # type: ignore[method-assign]  # noqa: E501
-
-    config1 = CamelCaseConfigParser()
+    config1 = TypedConfigParser()
     config1.read(__default_config_files)
 
     used_cfgs: Dict[str, Set[str]] = defaultdict(set)
@@ -619,12 +602,12 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
                     _check_cfg_file(config1, cfg_path)
                 elif file_name.endswith(".py"):
                     py_path = os.path.join(root, file_name)
-                    _check_python_file(py_path, used_cfgs, special_nones)
+                    _check_python_file(config1, py_path, used_cfgs, special_nones)
 
     if not check_all_used:
         return
 
-    config2 = CamelCaseConfigParser()
+    config2 = TypedConfigParser()
     config2.read(__default_config_files[-1])
     for section in config2:
         if section not in used_cfgs:

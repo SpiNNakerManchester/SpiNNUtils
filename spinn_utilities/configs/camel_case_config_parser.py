@@ -40,18 +40,11 @@ def optionxform(optionstr: str) -> str:
     return lower.replace("_", "")
 
 
-class CamelCaseConfigParser(configparser.RawConfigParser):
+class TypedConfigParser(configparser.RawConfigParser):
     """
-    Extends the Parser to allow for differences in case and underscores
+    Extends the Parser to support different types and Nones
     """
     __slots__ = ["_read_files"]
-
-    def optionxform(self, optionstr: str) -> str:
-        """
-        Transforms the name of an option to lower case and strips
-        underscores, so matching is more user-friendly.
-        """
-        return optionxform(optionstr)
 
     def __init__(self) -> None:
         super().__init__()
@@ -154,3 +147,17 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         if special_nones and lower in special_nones:
             return None
         raise ValueError(f"invalid truth value {value}")
+
+
+class CamelCaseConfigParser(TypedConfigParser):
+    """
+    Extends the Parser to allow for differences in case and underscores
+    """
+    __slots__ = []
+
+    def optionxform(self, optionstr: str) -> str:
+        """
+        Transforms the name of an option to lower case and strips
+        underscores, so matching is more user-friendly.
+        """
+        return optionxform(optionstr)

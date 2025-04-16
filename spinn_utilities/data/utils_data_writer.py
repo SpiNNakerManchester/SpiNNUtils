@@ -175,6 +175,7 @@ class UtilsDataWriter(UtilsDataView):
         if self.is_ran_last():
             self.__data._reset_number += 1
         self.__data._reset_status = ResetStatus.HARD_RESET
+        self.__create_run_dir_path()
 
     def hard_reset(self) -> None:
         """

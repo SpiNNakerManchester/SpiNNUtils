@@ -21,7 +21,7 @@ from types import ModuleType
 from typing import Iterator, Tuple
 
 import unittests  # CRITICAL: *THIS* package!
-from testfixtures import LogCapture  # type: imgnore[iport]
+from testfixtures import LogCapture
 
 import spinn_utilities.conf_loader as conf_loader
 import spinn_utilities.config_holder as config_holder

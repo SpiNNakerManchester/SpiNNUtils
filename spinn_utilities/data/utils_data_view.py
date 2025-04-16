@@ -57,6 +57,7 @@ class _UtilsDataModel(object):
         "_run_number",
         "_run_status",
         "_temporary_directory",
+        "_timestamp_dir_path",
     ]
 
     def __init__(self) -> None:
@@ -80,6 +81,7 @@ class _UtilsDataModel(object):
         self._reset_number = 0
         self._run_number: Optional[int] = None
         self._report_dir_path: Optional[str] = None
+        self._timestamp_dir_path: Optional[str] = None
         self._hard_reset()
 
     def _hard_reset(self) -> None:
@@ -524,6 +526,26 @@ class UtilsDataView(object):
         if cls._is_mocked():
             return cls._temporary_dir_path()
         raise cls._exception("run_dir_path")
+
+    @classmethod
+    def get_timestamp_dir_path(cls) -> str:
+        """
+        Returns path to existing time-stamped directory in the reports
+        directory.
+
+        .. note::
+            In unit-test mode this returns a temporary directory
+            shared by all path methods.
+
+        :rtype: str
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            If the simulation_time_step is currently unavailable
+        """
+        if cls.__data._timestamp_dir_path is not None:
+            return cls.__data._timestamp_dir_path
+        if cls._is_mocked():
+            return cls._temporary_dir_path()
+        raise cls._exception("timestamp_dir_path")
 
     @classmethod
     def _child_folder(cls, parent: str, child_name: str,

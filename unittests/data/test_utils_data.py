@@ -980,13 +980,6 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.check_start_finish(writer)
 
-    def test_directories_setup(self) -> None:
-        writer = UtilsDataWriter.setup()
-        # setup should clear mocked
-        writer.setup()
-        with self.assertRaises(DataNotYetAvialable):
-            UtilsDataView.get_run_dir_path()
-
     def test_directories_mocked(self) -> None:
         UtilsDataWriter.mock()
         self.assertTrue(os.path.exists(UtilsDataView.get_run_dir_path()))

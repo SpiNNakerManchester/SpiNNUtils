@@ -682,3 +682,13 @@ def get_report_path(
         os.makedirs(folder, exist_ok=True)
 
     return path
+
+def get_timestamp_path(option: str, section: str = "Reports") -> str:
+    path = get_config_str(section, option)
+    if not os.path.isabs(path):
+        path = os.path.join(UtilsDataView.get_run_dir_path(), path)
+
+    folder, _ = os.path.split(path)
+    os.makedirs(folder, exist_ok=True)
+
+    return path

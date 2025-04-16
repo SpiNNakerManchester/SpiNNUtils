@@ -415,7 +415,6 @@ def _check_get_report_path(
     if py_path.endswith('config_holder.py'):
         return
 
-    line = line.strip().replace("'", "").replace('"', '')
     parts = _get_parts(line, lines, index, start)
     section = "Reports"
     option = "No Option found"
@@ -437,6 +436,8 @@ def _check_get_report_path(
     if option == "option":
         return
 
+    option = option.replace("'", "").replace('"', '')
+    section = section.replace("'", "").replace('"', '')
     get_report_path(option, section)
     used_cfgs[section].add(option)
 
@@ -602,8 +603,6 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
             raise ConfigException(f"Unable find {directory}")
         for root, _, files in os.walk(directory):
             for file_name in files:
-                if file_name == "energy_report.py":
-                    print(1)
                 if file_name in exceptions:
                     pass
                 elif file_name.endswith(".cfg"):

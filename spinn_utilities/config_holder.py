@@ -466,6 +466,9 @@ def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]],
             if ("get_report_path(" in line):
                 _check_get_report_path(py_path, line, lines, index, used_cfgs,
                                        "get_report_path(")
+            if ("get_timestamp_path(" in line):
+                _check_get_report_path(py_path, line, lines, index, used_cfgs,
+                                       "get_timestamp_path(")
             if "get_config" not in line:
                 continue
             if (("get_config_bool(" in line) or

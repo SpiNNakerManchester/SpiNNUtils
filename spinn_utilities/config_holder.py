@@ -602,7 +602,8 @@ def run_config_checks(directories: Union[str, Collection[str]], *,
                     _check_cfg_file(config1, cfg_path)
                 elif file_name.endswith(".py"):
                     py_path = os.path.join(root, file_name)
-                    _check_python_file(config1, py_path, used_cfgs, special_nones)
+                    _check_python_file(
+                        config1, py_path, used_cfgs, special_nones)
 
     if not check_all_used:
         return

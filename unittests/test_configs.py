@@ -58,7 +58,7 @@ def test_configs_None() -> None:
         pass
 
 
-def test_get_report_path():
+def test_get_report_path() -> None:
     unittest_setup()
     _check_section_exists("Reports")
     # HACK to directly read the underlying models to avoid triggering

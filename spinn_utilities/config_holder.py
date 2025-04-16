@@ -340,7 +340,8 @@ def config_options(section: str) -> List[str]:
     return __config.options(section)
 
 
-def _get_parts(line: str, lines: List[str], index: int, start: str) -> str:
+def _get_parts(
+        line: str, lines: List[str], index: int, start: str) -> List[str]:
     while ")" not in line:
         index += 1
         line += lines[index]

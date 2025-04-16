@@ -641,7 +641,7 @@ def get_report_path(
 
     If the cfg path is relative it will be joined with the run_dir_path.
 
-    All paths are returned unchecked for correctness
+    Creates the path's directory if it does not exist.
 
     (n_run) will be replaced with the current/ or provided run number
 
@@ -672,16 +672,13 @@ def get_report_path(
     if "\\" in path:
         path = path.replace("\\", os.sep)
 
-    if os.path.isabs(path):
-        return path
-
-    path = os.path.join(UtilsDataView.get_run_dir_path(), path)
+    if not os.path.isabs(path):
+        path = os.path.join(UtilsDataView.get_run_dir_path(), path)
 
     if is_dir:
         os.makedirs(path, exist_ok=True)
     else:
-        dir, _ = os.path.split(path)
-        if dir:
-            os.makedirs(dir, exist_ok=True)
+        folder, _ = os.path.split(path)
+        os.makedirs(folder, exist_ok=True)
 
     return path

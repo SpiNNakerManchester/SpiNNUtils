@@ -61,9 +61,10 @@ def test_configs_None() -> None:
 def test_get_report_path() -> None:
     unittest_setup()
     _check_section_exists("Reports")
-    # HACK to directly read the underlying models to avoid triggering
-    # various autodetection systems. DO NOT COPY AS UNSUPPORTED!
-    data_model = UtilsDataView._UtilsDataView__data
+    # HACK to directly write the underlying models at this level
+    # DO NOT COPY AS UNSUPPORTED!
+    data_model = (UtilsDataView.  # type: ignore[attr-defined]
+                  _UtilsDataView__data)
 
     set_config("Reports", "foo", "foo.txt")
     path = get_report_path("foo")

@@ -646,7 +646,7 @@ def get_report_path(
 
     Creates the path's directory if it does not exist.
 
-    (n_run) will be replaced with the current/ or provided run number
+    (n_run) and (reset_str) will be replaced
 
     Later updates may replace other bracketed expressions as needed
     so avoid using brackets in file names
@@ -688,6 +688,22 @@ def get_report_path(
 
 
 def get_timestamp_path(option: str, section: str = "Reports") -> str:
+    """
+    Gets and fixes the path for this option
+
+    If the cfg path is relative it will be joined with the timestamp_path.
+
+    Creates the path's directory if it does not exist.
+
+    Later updates may replace bracketed expressions as needed
+    so avoid using brackets in file names
+
+    :param option: cfg option name
+    :param section: cfg section. Needed if not Reports
+    :param n_run: If provided will be used instead of the current run number
+    :return: An unchecked absolute path to the file or directory
+    """
+
     path = get_config_str(section, option)
     if not os.path.isabs(path):
         path = os.path.join(UtilsDataView.get_run_dir_path(), path)

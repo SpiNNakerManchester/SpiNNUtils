@@ -410,7 +410,7 @@ def _check_get_report_path(
     :param special_nones: What special values to except as None
     :raises ConfigException: If an unexpected or uncovered `get_config` found
     """
-    # dnot check this file
+    # Do not check this file
     if py_path.endswith('config_holder.py'):
         return
 

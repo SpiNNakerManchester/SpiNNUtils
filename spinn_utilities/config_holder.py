@@ -683,6 +683,7 @@ def get_report_path(
 
     return path
 
+
 def get_timestamp_path(option: str, section: str = "Reports") -> str:
     path = get_config_str(section, option)
     if not os.path.isabs(path):

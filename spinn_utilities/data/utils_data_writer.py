@@ -70,7 +70,6 @@ class UtilsDataWriter(UtilsDataView):
     ERRORED_FILENAME = "errored"
     FINISHED_FILENAME = "finished"
 
-
     def __init__(self, state: DataStatus):
         """
         :param state: State writer should be in

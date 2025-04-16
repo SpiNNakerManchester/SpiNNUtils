@@ -22,7 +22,7 @@ from spinn_utilities.data.utils_data_view import _UtilsDataModel
 from spinn_utilities.data.data_status import DataStatus
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.exceptions import (
-    DataNotYetAvialable, IllegalWriterException, InvalidDirectory,
+    IllegalWriterException, InvalidDirectory,
     NotSetupException,
     SimulatorNotRunException, SimulatorNotSetupException,
     SimulatorRunningException, SimulatorShutdownException,

@@ -43,7 +43,7 @@ def add_default_cfg(default: str) -> None:
         __default_config_files.append(default)
 
 
-def get_default_cfgs() -> Tuple[str]:
+def get_default_cfgs() -> Tuple[str, ...]:
     """
     Returns the default configuration files as a tuple.
 

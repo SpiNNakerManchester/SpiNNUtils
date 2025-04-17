@@ -45,7 +45,7 @@ class ConfigChecker(object):
         self._lines: List[str] = []
         self._used_cfgs: Dict[str, Set[str]] = defaultdict(set)
 
-    def check(self, local_defaults: bool = True):
+    def check(self, local_defaults: bool = True) -> None:
         """
         Runs the checks of py and cfg files
 
@@ -78,7 +78,7 @@ class ConfigChecker(object):
                         f"cfg:{self._default_cfgs} "
                         f"repeats [{section}]{option}")
 
-    def _read_files(self):
+    def _read_files(self) -> None:
         for directory in self._directories:
             for root, _, files in os.walk(directory):
                 for file_name in files:
@@ -156,7 +156,7 @@ class ConfigChecker(object):
                      line.find(")")].split(",")
         return parts
 
-    def _check_lines(self, parts) -> None:
+    def _check_lines(self, parts: List[str]) -> None:
         section = parts[0].strip().replace("'", "").replace('"', '')
         for i in range(1, len(parts)):
             option = parts[i].strip()
@@ -173,7 +173,7 @@ class ConfigChecker(object):
 
             self._used_cfgs[section].add(option)
 
-    def _check_get_report_path(self, parts) -> None:
+    def _check_get_report_path(self, parts: List[str]) -> None:
         section = "Reports"
         option = "No Option found"
         for part in parts:
@@ -208,7 +208,7 @@ class ConfigChecker(object):
 
         self._used_cfgs[section].add(option)
 
-    def _check_all_used(self):
+    def _check_all_used(self) -> None:
         current_config = TypedConfigParser()
         current_config.read(self._default_cfgs[-1])
         for section in current_config:

@@ -51,8 +51,8 @@ class ConfigChecker(object):
 
     def _check_defaults(self) -> None:
         """
-        Testing function to identify any configuration options in multiple default
-        files.
+        Testing function to identify any configuration options /
+        in multiple default files.
 
         :raises ConfigException:
             If two defaults configuration files set the same value
@@ -94,8 +94,8 @@ class ConfigChecker(object):
         config2.read(self._file_path)
         for section in config2.sections():
             if not self._configs.has_section(section):
-                raise ConfigException(
-                    f"cfg:{self._file_path} has unexpected section [{section}]")
+                raise ConfigException(f"cfg:{self._file_path} has "
+                                      f"unexpected section [{section}]")
             for option in config2.options(section):
                 if not self._configs.has_option(section, option):
                     raise ConfigException(
@@ -156,7 +156,6 @@ class ConfigChecker(object):
             elif option[0] == '"':
                 option = option.replace('"', '')
             else:
-                #print(parts)
                 return
 
             if not self._configs.has_option(section, option):
@@ -212,5 +211,5 @@ class ConfigChecker(object):
             for option in current_config.options(section):
                 if option not in self._used_cfgs[section]:
                     raise ConfigException(
-                        f"in {self._default_cfgs[-1]} cfg {section=} {option=} "
-                        f"was never used")
+                        f"in {self._default_cfgs[-1]} cfg "
+                        f"{section=} {option=} was never used")

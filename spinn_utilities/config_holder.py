@@ -12,15 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from configparser import NoOptionError, ConfigParser
+from configparser import NoOptionError
 import logging
 import os
-from typing import Callable, Collection, Dict, List, Optional, Set, Tuple, Union
+from typing import List, Optional, Tuple
 
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.data import UtilsDataView
-from spinn_utilities.configs.camel_case_config_parser import (
-    CamelCaseConfigParser, TypedConfigParser)
+from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import (
     FormatAdapter, ConfiguredFilter, ConfiguredFormatter)
@@ -43,6 +42,7 @@ def add_default_cfg(default: str) -> None:
     if default not in __default_config_files:
         __default_config_files.append(default)
 
+
 def get_default_cfgs() -> Tuple[str]:
     """
     Returns the default configuration files as a tuple.
@@ -50,6 +50,7 @@ def get_default_cfgs() -> Tuple[str]:
     This is a read only values to be used outside of normal operations
     """
     return tuple(__default_config_files)
+
 
 def clear_cfg_files(unittest_mode: bool) -> None:
     """
@@ -433,5 +434,3 @@ def print_configs() -> None:
                 value = config1.get(section, comment)
                 value = value.replace("\n", "\n\t\t\t")
                 print("\t\t", value)
-
-

@@ -55,7 +55,6 @@ class TypedConfigParser(configparser.RawConfigParser):
         super().__init__()
         self._read_files: List[str] = list()
 
-    @overrides(configparser.RawConfigParser.optionxform)
     def optionxform(self, optionstr: str) -> str:
         """
         Override so that option names are NOT case corrected.

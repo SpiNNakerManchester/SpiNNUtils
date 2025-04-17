@@ -282,23 +282,6 @@ def get_config_bool_or_none(section: str, option: str,
         return __config.get_bool(section, option, special_nones)
 
 
-def _check_section_exists(section: str) -> None:
-    """
-    Checks a section exists creating it if needed and in an unittest.
-
-    :param section:
-    :raises ConfigException: If no in an unittest
-    """
-    if not __unittest_mode:
-        raise ConfigException(
-            "check_section_exists is only allowed in unittests")
-    if __config is None:
-        _pre_load_config()
-    assert __config is not None
-    if not __config.has_section(section):
-        __config.add_section(section)
-
-
 def set_config(section: str, option: str, value: Optional[str]) -> None:
     """
     Sets the value of a configuration option.

@@ -62,7 +62,6 @@ class TypedConfigParser(configparser.RawConfigParser):
 
         Note: This is overridden in the CamelCaseConfigParser.
 
-        :param optionstr:
         :return: option string exactly as is
         """
         return optionstr

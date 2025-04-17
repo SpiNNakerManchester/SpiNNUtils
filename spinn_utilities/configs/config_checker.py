@@ -43,6 +43,12 @@ class ConfigChecker(object):
         self._used_cfgs: Dict[str, Set[str]] = defaultdict(set)
 
     def check(self, local_defaults: bool = True):
+        """
+        Runs the checks of py and cfg files
+
+        :param local_defaults:
+        :return:
+        """
         if local_defaults:
             self._check_defaults()
         self._read_files()

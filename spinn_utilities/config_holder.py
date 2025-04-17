@@ -452,7 +452,7 @@ def _check_get_report_path(
 
     if not defaults.has_option(section, option):
         raise ConfigException(f"{section=} {option=} is not a case "
-                          f"underscore match with defaults")
+                              f"underscore match with defaults")
 
 
 def _check_python_file(defaults: TypedConfigParser, py_path: str,

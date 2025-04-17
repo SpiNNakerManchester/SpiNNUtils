@@ -23,6 +23,9 @@ from spinn_utilities.exceptions import ConfigException
 
 
 class ConfigChecker(object):
+    """
+    Checks the py and cfg files after the defaults have been set,
+    """
 
     __slots__ = ["_configs",
                  "_default_cfgs",

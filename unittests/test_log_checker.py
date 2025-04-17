@@ -15,7 +15,7 @@
 import logging
 import pytest
 from spinn_utilities.log import FormatAdapter
-from testfixtures import LogCapture  # type: ignore[import]
+from testfixtures import LogCapture
 from spinn_utilities.testing import log_checker
 
 logger = FormatAdapter(logging.getLogger(__name__))

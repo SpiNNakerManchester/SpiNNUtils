@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import logging
-from testfixtures import LogCapture  # type: ignore[import]
+from testfixtures import LogCapture
 import unittest
 from spinn_utilities import logger_utils
 from spinn_utilities.log import FormatAdapter

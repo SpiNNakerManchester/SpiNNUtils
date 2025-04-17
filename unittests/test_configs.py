@@ -59,7 +59,7 @@ def test_configs_None() -> None:
 
 def test_get_report_path() -> None:
     unittest_setup()
-     # HACK to directly write the underlying models at this level
+    # HACK to directly write the underlying models
     # DO NOT COPY AS UNSUPPORTED!
     data_model = (UtilsDataView.  # type: ignore[attr-defined]
                   _UtilsDataView__data)

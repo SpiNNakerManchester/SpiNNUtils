@@ -17,8 +17,6 @@ from collections.abc import Iterable
 import configparser
 from typing import List, Optional, TYPE_CHECKING, Union
 
-from spinn_utilities.overrides import overrides
-
 
 NONES = ("none", )
 TRUES = ('y', 'yes', 't', 'true', 'on', '1')

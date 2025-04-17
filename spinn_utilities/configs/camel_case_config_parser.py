@@ -17,6 +17,8 @@ from collections.abc import Iterable
 import configparser
 from typing import List, Optional, TYPE_CHECKING, Union
 
+from spinn_utilities.overrides import overrides
+
 
 NONES = ("none", )
 TRUES = ('y', 'yes', 't', 'true', 'on', '1')
@@ -43,12 +45,27 @@ def optionxform(optionstr: str) -> str:
 class TypedConfigParser(configparser.RawConfigParser):
     """
     Extends the Parser to support different types and Nones
+
+    It is recommended to use CamelCaseConfigParser as this class does not
+    correct options names.
     """
     __slots__ = ["_read_files"]
 
     def __init__(self) -> None:
         super().__init__()
         self._read_files: List[str] = list()
+
+    @overrides(configparser.RawConfigParser.optionxform)
+    def optionxform(self, optionstr: str) -> str:
+        """
+        Override so that option names are NOT case corrected.
+
+        Note: This is overridden in the CamelCaseConfigParser.
+
+        :param optionstr:
+        :return: option string exactly as is
+        """
+        return optionstr
 
     def read(self, filenames: _Path,
              encoding: Optional[str] = None) -> List[str]:

@@ -28,7 +28,6 @@ class ConfigGroup(object):
         self._cfg: Dict[str, str] = dict()
 
     def add_option(self, option: str, value: str) -> None:
-        #print (self._title, option)
         self._cfg[option] = value
 
     def has_path(self) -> bool:
@@ -81,6 +80,8 @@ class ConfigMap(object):
 
         if title.startswith("draw_"):
             title = title[5:]
+        elif title.startswith("keep_"):
+            title = title[5:]
         elif title.startswith("path_"):
             title = title[5:]
         elif title.startswith("run_"):
@@ -102,7 +103,7 @@ class ConfigMap(object):
 
     def merge_see(self, config: TypedConfigParser) -> None:
         for section in self._sections:
-            print(section)
+            # print(section)
             titles = list(self._sections[section])
             groups = self._sections[section]
             for check_title in titles:
@@ -126,9 +127,9 @@ class ConfigMap(object):
                 group.print_config()
 
     def debug(self) -> None:
-        print("*** Debug  ***")
+        # print("*** Debug  ***")
         for section in self._sections:
-            print(section)
+            # print(section)
             for group in self._sections[section].values():
                 group.debug()
 

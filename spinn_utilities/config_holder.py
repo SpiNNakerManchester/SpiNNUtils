@@ -306,6 +306,16 @@ def set_config(section: str, option: str, value: Optional[str]) -> None:
         __config.set(section, option, value)
 
 
+def config_sections() -> List[str]:
+    """
+    Return a list of section names
+
+    """
+    if __config is None:
+        raise ConfigException("configuration not loaded")
+    return __config.sections()
+
+
 def has_config_option(section: str, option: str) -> bool:
     """
     Check if the section has this configuration option.
@@ -401,7 +411,7 @@ def get_timestamp_path(option: str, section: str = "Reports") -> str:
 
     path = get_config_str(section, option)
     if not os.path.isabs(path):
-        path = os.path.join(UtilsDataView.get_run_dir_path(), path)
+        path = os.path.join(UtilsDataView.get_timestamp_dir_path(), path)
 
     folder, _ = os.path.split(path)
     os.makedirs(folder, exist_ok=True)

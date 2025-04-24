@@ -13,12 +13,61 @@
 # limitations under the License.
 
 from collections import defaultdict
+import re
 from typing import Dict, List, Optional, TextIO
 
 from spinn_utilities.config_holder import (
     get_default_cfgs)
 from spinn_utilities.configs.camel_case_config_parser import (
     TypedConfigParser)
+
+
+def _trim_title(title: str) -> str:
+    if title.startswith("@"):
+        if title.startswith("@group"):
+            if title.startswith("@group_"):
+                title = title[7:]
+            else:
+                title = title[6:]
+        elif title.startswith("@_"):
+            title = title[2:]
+        else:
+            title = title[1:]
+
+    if title.startswith("draw_"):
+        title = title[5:]
+    elif title.startswith("keep_"):
+        title = title[5:]
+    elif title.startswith("path_"):
+        title = title[5:]
+    elif title.startswith("tpath_"):
+        title = title[6:]
+    elif title.startswith("run_"):
+        title = title[4:]
+    elif title.startswith("write_"):
+        title = title[6:]
+
+    return title
+
+
+def _md_write_doc(f: TextIO, raw: str) -> None:
+    while "\\t*" in raw:
+        raw = raw.replace("\\t*", "   *")
+    while "\\t" in raw:
+        raw = raw.replace("\\t", "&nbsp;&nbsp;")
+    raw = raw.replace("\\n\n", "  \n")
+
+    link_match = re.search(r"\[(\w|\s)*\]\((\s|\w)*\)", raw)
+    if link_match:
+        start = raw.index("(", link_match.start()) + 1
+        end = link_match.end() - 1
+        link = raw[start:end]
+        title = _trim_title(link)
+        if link != title:
+            raw = raw[:start] + "title" + raw[end:]
+
+    f.write(raw)
+    f.write("\n")
 
 
 class _ConfigGroup(object):
@@ -92,34 +141,24 @@ class _ConfigGroup(object):
             else:
                 t_keys.append(key)
 
-        if len(t_keys) == 1:
-            f.write("#### Trigger\n")
-            for key in t_keys:
-                f.write(f"* key: {key} \n* value: {self._cfg[key]}\n")
-        elif len(t_keys) > 1:
-            f.write("#### Triggers\n")
-            for key in t_keys:
-                f.write(f"* key: {key} \n  * value: {self._cfg[key]}\n")
+        f.write("#### Trigger\n")
+        for key in t_keys:
+            f.write(f"* key: {key} \n  * value: {self._cfg[key]}\n")
 
-        if len(p_keys) == 1:
-            f.write("#### Path\n")
-            for key in p_keys:
-                f.write(f"* key: {key} \n* value: {self._cfg[key]}\n")
-        elif len(p_keys) > 1:
-            f.write("#### Paths\n")
-            for key in p_keys:
-                f.write(f"* key: {key} \n  * value: {self._cfg[key]}\n")
+        f.write("#### Path\n")
+        for key in p_keys:
+            f.write(f"* key: {key} \n  * value: {self._cfg[key]}\n")
 
     def md(self, f: TextIO) -> None:
         f.write(f'### <a name="{self.title}"></a> {self.title}\n')
         if self._doc:
-            f.write(self._doc)
+            _md_write_doc(f, self._doc)
             f.write("\n")
         if self.has_path():
             self.md_with_path(f)
         else:
             for option, value in self._cfg.items():
-                f.write(f"* key: {option} \n* value: {value}\n")
+                f.write(f"* key: {option} \n  * value: {value}\n")
 
 
 class ConfigDocumentor(object):
@@ -136,37 +175,11 @@ class ConfigDocumentor(object):
                 value = config1.get(section, option)
                 self._add_option(section, option, value)
         self._merge_see(config1)
-
-    def _trim_title(self, title: str) -> str:
-        if title.startswith("@"):
-            if title.startswith("@group"):
-                if title.startswith("@group_"):
-                    title = title[5:]
-                else:
-                    title = title[4:]
-            elif title.startswith("@_"):
-                title = title[2:]
-            else:
-                title = title[1:]
-
-        if title.startswith("draw_"):
-            title = title[5:]
-        elif title.startswith("keep_"):
-            title = title[5:]
-        elif title.startswith("path_"):
-            title = title[5:]
-        elif title.startswith("tpath_"):
-            title = title[6:]
-        elif title.startswith("run_"):
-            title = title[4:]
-        elif title.startswith("write_"):
-            title = title[6:]
-
-        return title
+        a = 0
 
     def _add_option(self, section: str, option: str, value: str):
         groups = self._sections[section]
-        title = self._trim_title(option)
+        title = _trim_title(option)
         if title == "":  #  @
             self._docs[section] = value
         else:
@@ -187,7 +200,7 @@ class ConfigDocumentor(object):
                 see = check_group.get_see()
                 if see:
                     value = config.get(section, see)
-                    see_title = self._trim_title(value)
+                    see_title = _trim_title(value)
                     see_group = groups[see_title]
                     see_group.merge(check_group)
                     del groups[check_title]
@@ -224,13 +237,19 @@ class ConfigDocumentor(object):
         f.write("layout: default\n")
         f.write("published: true\n")
         f.write("---\n")
+        f.write("<!-- \n")
+        f.write("This file is autogenerated do not edit!\n")
+        f.write("Created by spinn_utilities/configs/config_documentor.py\n")
+        f.write("Based on the default cfg files\n")
+        f.write("See spinn_utilities/configs/notes.md\n")
+        f.write("-->\n")
 
         f.write("This guide covers the cfg settings and the reports created\n")
 
     def _md_section(self, section: str, f: TextIO) -> None:
         f.write(f'# <a name="{section}"></a> {section}\n')
         if section in self._docs:
-            f.write(f"{self._docs[section]}\n")
+            _md_write_doc(f,self._docs[section])
         titles = list(self._sections[section])
         titles.sort()
         for title in titles:
@@ -239,6 +258,22 @@ class ConfigDocumentor(object):
             group = self._sections[section][title]
             group.md(f)
 
+    def md_reports(self, f: TextIO) -> None:
+        f.write(f'# <a name="report_files"></a> Report Files\n')
+        p_map = dict()
+        for section in self._sections:
+            for group in self._sections[section].values():
+                for path in group.paths():
+                    p_map[path] = group.title
+        p_map = dict(sorted(p_map.items()))
+        for path, title in p_map.items():
+            f.write(f"  * [{path}](#{title})\n")
+
+    def md_notes(self, f: TextIO) -> None:
+        with open("/home/brenninc/spinnaker/SpiNNUtils/spinn_utilities/configs/notes.md") as notesfile:
+            lines = notesfile.readlines()
+            f.writelines(lines)
+
     def md_configs(self, filepath: str) -> None:
         with open(filepath, mode="w") as f:
             self._md_header(f)
@@ -246,16 +281,9 @@ class ConfigDocumentor(object):
             for section in self._sections:
                 f.write(f"  * [{section}](#{section})\n")
             f.write("* [Report Files](#report_files)\n")
+            f.write("* [Notes for Developers[(#notes)\n")
 
             for section in self._sections:
                 self._md_section(section, f)
-
-            f.write(f'# <a name="report_files"></a> Report Files\n')
-            p_map = dict()
-            for section in self._sections:
-                for group in self._sections[section].values():
-                    for path in group.paths():
-                        p_map[path] = group.title
-            p_map = dict(sorted(p_map.items()))
-            for path, title in p_map.items():
-                f.write(f"  * [{path}](#{title})\n")
+            self.md_reports(f)
+            self.md_notes(f)

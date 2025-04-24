@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import sys
 import unittest
 import spinn_utilities
 from spinn_utilities.configs.config_checker import ConfigChecker
+from spinn_utilities.configs.config_documentor import ConfigDocumentor
 from spinn_utilities.config_setup import unittest_setup
 
 
@@ -26,3 +29,15 @@ class TestCfgChecker(unittest.TestCase):
     def test_config_checks(self) -> None:
         spinn_utilities_dir = [spinn_utilities.__path__[0]]
         ConfigChecker(spinn_utilities_dir).check()
+
+    def test_cfg_documentor(self):
+        class_file = sys.modules[self.__module__].__file__
+        assert class_file is not None
+        abs_class_file = os.path.abspath(class_file)
+        class_dir = os.path.dirname(abs_class_file)
+        test_file = os.path.join(class_dir, 'test.md')
+
+        documentor = ConfigDocumentor()
+        documentor.print_section("Logging")
+        documentor.print_configs()
+        documentor.md_configs(test_file)

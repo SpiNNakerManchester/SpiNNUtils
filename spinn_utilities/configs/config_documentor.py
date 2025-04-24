@@ -122,7 +122,7 @@ class _ConfigGroup(object):
                 f.write(f"* key: {option} \n* value: {value}\n")
 
 
-class ConfigMap(object):
+class ConfigDocumentor(object):
 
     def __init__(self):
         self._sections: Dict[str, Dict[str, _ConfigGroup]] = defaultdict(dict)

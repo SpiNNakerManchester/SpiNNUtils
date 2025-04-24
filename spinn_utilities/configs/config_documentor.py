@@ -35,6 +35,8 @@ class _ConfigGroup(object):
         for option in self._cfg:
             if option.startswith("path_"):
                 return True
+            if option.startswith("tpath_"):
+                return True
         return False
 
     def paths(self) -> List[str]:
@@ -42,11 +44,13 @@ class _ConfigGroup(object):
         for option, value in self._cfg.items():
             if option.startswith("path_"):
                 paths.append(value)
+            if option.startswith("tpath_"):
+                paths.append(value)
         return paths
 
     def get_see(self) -> Optional[str]:
         for option in self._cfg:
-            if option.startswith("@see"):
+            if option.startswith("@group"):
                 return option
         return None
 
@@ -66,7 +70,7 @@ class _ConfigGroup(object):
 
     def merge(self, other: "ConfigGroup") -> None:
         for option, value in other._cfg.items():
-            if option.startswith("@see"):
+            if option.startswith("@group"):
                 continue
             self.add_option(option, value)
 
@@ -83,7 +87,7 @@ class _ConfigGroup(object):
         t_keys = list()
         p_keys = list()
         for key in self._cfg:
-            if key.startswith("path_"):
+            if key.startswith("path_") or key.startswith("tpath_"):
                 p_keys.append(key)
             else:
                 t_keys.append(key)
@@ -101,7 +105,7 @@ class _ConfigGroup(object):
             f.write("#### Path\n")
             for key in p_keys:
                 f.write(f"* key: {key} \n* value: {self._cfg[key]}\n")
-        elif len(t_keys) > 1:
+        elif len(p_keys) > 1:
             f.write("#### Paths\n")
             for key in p_keys:
                 f.write(f"* key: {key} \n  * value: {self._cfg[key]}\n")
@@ -135,8 +139,8 @@ class ConfigMap(object):
 
     def _trim_title(self, title: str) -> str:
         if title.startswith("@"):
-            if title.startswith("@see"):
-                if title.startswith("@see_"):
+            if title.startswith("@group"):
+                if title.startswith("@group_"):
                     title = title[5:]
                 else:
                     title = title[4:]
@@ -151,6 +155,8 @@ class ConfigMap(object):
             title = title[5:]
         elif title.startswith("path_"):
             title = title[5:]
+        elif title.startswith("tpath_"):
+            title = title[6:]
         elif title.startswith("run_"):
             title = title[4:]
         elif title.startswith("write_"):
@@ -239,7 +245,7 @@ class ConfigMap(object):
             f.write(f"* CFG Sections\n")
             for section in self._sections:
                 f.write(f"  * [{section}](#{section})\n")
-            f.write("* [Report Files](#report_files})\n")
+            f.write("* [Report Files](#report_files)\n")
 
             for section in self._sections:
                 self._md_section(section, f)

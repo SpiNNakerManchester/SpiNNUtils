@@ -6,7 +6,8 @@ This section is aimed at developers writing code that uses cfg settings or addin
   * Any cfg option used must be declared in the default files
   * All cfg options declared must be used
   * All cfg options must only be declared in one default file
-  * All cfg options keys should be unique even between sections
+  * All cfg options keys should be unique even between sections and not be section names.
+    * "mode" is a handled exception.
 * Documentation options
   * @: Adds documentation for this section
   * @(option): Adds documentation for this option

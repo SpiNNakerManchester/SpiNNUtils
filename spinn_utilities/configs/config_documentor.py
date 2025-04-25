@@ -150,7 +150,11 @@ class _ConfigGroup(object):
             f.write(f"* key: {key} \n  * value: {self._cfg[key]}\n")
 
     def md(self, f: TextIO) -> None:
-        f.write(f'### <a name="{self.title}"></a> {self.title}\n')
+        if self.title == "mode":
+            f.write('### mode\n')
+        else:
+            f.write(f'### <a name="{self.title}"></a> {self.title}\n')
+
         if self._doc:
             _md_write_doc(f, self._doc)
             f.write("\n")
@@ -252,8 +256,9 @@ class ConfigDocumentor(object):
             _md_write_doc(f,self._docs[section])
         titles = list(self._sections[section])
         titles.sort()
-        for title in titles:
-            f.write(f"* [{title}](#{title})\n")
+        if section != "Mode":
+            for title in titles:
+                f.write(f"* [{title}](#{title})\n")
         for title in titles:
             group = self._sections[section][title]
             group.md(f)

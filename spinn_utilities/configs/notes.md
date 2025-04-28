@@ -26,7 +26,7 @@ This section is aimed at developers writing code that uses cfg settings or addin
   * Can be multline. Just indent from the key.
   * Indent is stripped out.
   * Newlines are kept but remember are often ignored in md files
-  * Use \n at the end of a line if a new line is really wanted. (Adds 2 spaces)
+  * Use \</br> at the end of a line if a new line is needed.
   * Use \t* to add a sub bullet. (Will replace \t(s) with spaces)
   * Use \t (without the *) for a real none bullet indent. (Will replace \t with \&nbsp;\&nbsp;)
   * Supports md links in the \[Title\]\(Link\) format. 

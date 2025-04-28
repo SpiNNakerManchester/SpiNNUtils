@@ -55,6 +55,9 @@ def _md_write_doc(f: TextIO, raw: str) -> None:
         raw = raw.replace("\\t*", "   *")
     while "\\t" in raw:
         raw = raw.replace("\\t", "&nbsp;&nbsp;")
+    if raw[-2:] == "\\n":
+        raw = raw[:-2] + "\n"
+    raw = raw.replace("\\n\\n", "\n\n")
     raw = raw.replace("\\n\n", "  \n")
 
     link_match = re.search(r"\[(\w|\s)*\]\((\s|\w)*\)", raw)
@@ -150,10 +153,7 @@ class _ConfigGroup(object):
             f.write(f"* key: {key} \n  * value: {self._cfg[key]}\n")
 
     def md(self, f: TextIO) -> None:
-        if self.title == "mode":
-            f.write('### mode\n')
-        else:
-            f.write(f'### <a name="{self.title}"></a> {self.title}\n')
+        f.write(f'### <a name="{self.title}"></a> {self.title}\n')
 
         if self._doc:
             _md_write_doc(f, self._doc)

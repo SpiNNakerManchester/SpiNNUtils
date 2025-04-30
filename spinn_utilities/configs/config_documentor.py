@@ -22,19 +22,10 @@ from spinn_utilities.configs.camel_case_config_parser import (
     TypedConfigParser)
 
 
-def _trim_title(title: str) -> str:
+def _make_link(title: str) -> str:
     if title.startswith("@"):
-        if title.startswith("@group"):
-            if title.startswith("@group_"):
-                title = title[7:]
-            else:
-                title = title[6:]
-        elif title.startswith("@_"):
-            title = title[2:]
-        else:
-            title = title[1:]
-
-    if title.startswith("draw_"):
+        raise ValueError(f"{title=} has a @")
+    elif title.startswith("draw_"):
         title = title[5:]
     elif title.startswith("keep_"):
         title = title[5:]
@@ -46,7 +37,6 @@ def _trim_title(title: str) -> str:
         title = title[4:]
     elif title.startswith("write_"):
         title = title[6:]
-
     return title
 
 
@@ -65,7 +55,7 @@ def _md_write_doc(f: TextIO, raw: str) -> None:
         start = raw.index("(", link_match.start()) + 1
         end = link_match.end() - 1
         link = raw[start:end]
-        title = _trim_title(link)
+        title = _make_link(link)
         if link != title:
             raw = raw[:start] + "title" + raw[end:]
 
@@ -76,7 +66,7 @@ def _md_write_doc(f: TextIO, raw: str) -> None:
 class _ConfigGroup(object):
 
     def __init__(self, title: str):
-        self._doc: Optional[str] = None
+        self._docs: Optional[str] = None
         self.title = title
         self._cfg: Dict[str, str] = dict()
 
@@ -100,12 +90,6 @@ class _ConfigGroup(object):
                 paths.append(value)
         return paths
 
-    def get_see(self) -> Optional[str]:
-        for option in self._cfg:
-            if option.startswith("@group"):
-                return option
-        return None
-
     def print_config(self) -> None:
         if self.title:
             print(f"\t{self.title}")
@@ -126,14 +110,13 @@ class _ConfigGroup(object):
                 continue
             self.add_option(option, value)
 
-    def get_docs(self):
-        keys = list(self._cfg.keys())
-        for key in keys:
-            if key.startswith("@"):
-                if self._doc:
-                    raise ValueError(f"{self.title} has multiple @ keys {keys}")
-                self._doc = self._cfg[key]
-                del self._cfg[key]
+    def add_doc(self, docs):
+        if self._docs:
+            raise ValueError(f"{self.title} already has a docs")
+        self._docs = docs
+
+    def missing_docs(self) -> bool:
+        return self._docs is None
 
     def md_with_path(self, f: TextIO) -> None:
         t_keys = list()
@@ -153,10 +136,10 @@ class _ConfigGroup(object):
             f.write(f"* key: {key} \n  * value: {self._cfg[key]}\n")
 
     def md(self, f: TextIO) -> None:
-        f.write(f'### <a name="{self.title}"></a> {self.title}\n')
+        f.write(f'### <a name="{_make_link(self.title)}"></a> {self.title}\n')
 
-        if self._doc:
-            _md_write_doc(f, self._doc)
+        if self._docs:
+            _md_write_doc(f, self._docs)
             f.write("\n")
         if self.has_path():
             self.md_with_path(f)
@@ -170,6 +153,7 @@ class ConfigDocumentor(object):
     def __init__(self):
         self._sections: Dict[str, Dict[str, _ConfigGroup]] = defaultdict(dict)
         self._docs: Dict[str, str] = dict()
+        self._links: Dict[str, str] = dict()
         config1 = TypedConfigParser()
         config1.read(get_default_cfgs())
         for section in config1:
@@ -178,51 +162,78 @@ class ConfigDocumentor(object):
             for option in config1.options(section):
                 value = config1.get(section, option)
                 self._add_option(section, option, value)
-        self._merge_see(config1)
-        a = 0
+        self._process_special(config1)
+        self._check_all_doced()
 
     def _add_option(self, section: str, option: str, value: str):
         groups = self._sections[section]
-        title = _trim_title(option)
-        if title == "":  #  @
-            self._docs[section] = value
+        if option.startswith("@"):
+            return
+        if option in groups:
+            raise ValueError(f"{option=} used twice")
         else:
-            if title in groups:
-                group = groups[title]
-            else:
-                group = _ConfigGroup(title)
-                groups[title] = group
-            group.add_option(option, value)
+            group = _ConfigGroup(option)
+            groups[option] = group
+        group.add_option(option, value)
+        link = _make_link(option)
+        if link != option:
+            self._links[link] = option
 
-    def _merge_see(self, config: TypedConfigParser) -> None:
-        for section in self._sections:
-            # print(section)
-            titles = list(self._sections[section])
+    def _get_linked(self, option: str) -> str:
+        link = _make_link(option)
+        if link == option:
+            return option
+        return self._links[link]
+
+    def _process_special(self, config: TypedConfigParser) -> None:
+        remove_titles = set()
+        for section in config.sections():
             groups = self._sections[section]
-            for check_title in titles:
-                check_group = groups[check_title]
-                see = check_group.get_see()
-                if see:
-                    value = config.get(section, see)
-                    see_title = _trim_title(value)
-                    see_group = groups[see_title]
-                    see_group.merge(check_group)
-                    del groups[check_title]
+            for title in config.options(section):
+                if title.startswith("@"):
+                    if title.startswith("@group"):
+                        if title.startswith("@group_"):
+                            group_title = title[7:]
+                        else:
+                            group_title = title[6:]
+                        other_title = config.get(section, title)
+                        groups[other_title].merge(groups[group_title])
+                        remove_titles.add((section, group_title))
+                    else:
+                        if title == "@":
+                            self._docs[section] = config.get(section, title)
+                        else:
+                            other_title = title[1:]
+                            groups[other_title].add_doc(config.get(section, title))
+                if title.startswith("path_") or title.startswith("tpath_"):
+                    as_link = _make_link(title)
+                    if as_link in self._links:
+                        other_title = self._links[as_link]
+                        groups[other_title].merge(groups[title])
+                        remove_titles.add((section, title))
 
-        for groups in self._sections.values():
-            for group in groups.values():
-                group.get_docs()
+        for (section, group_title) in remove_titles:
+            del self._sections[section][group_title]
+
+    def _check_all_doced(self) -> None:
+        for section in self._sections:
+            if section not in self._docs:
+                raise ValueError(f"{section=} has no doc")
+            for title, group in self._sections[section].items():
+                if group.missing_docs():
+                    raise ValueError(f"{title=} has missing docs")
 
     def print_section(self, section: str) -> None:
         print(section)
-        if section in self._docs:
-            print(f"\t{self._docs[section]}")
+        #if section in self._docs:
+        #    print(f"\t{self._docs[section]}")
         titles = list(self._sections[section])
         titles.sort()
-        groups = self._sections[section]
+        #groups = self._sections[section]
         for title in titles:
-            group = groups[title]
-            group.print_config()
+            print("\t",title)
+        #    group = groups[title]
+        #    group.print_config()
 
     def print_configs(self) -> None:
         for section in self._sections:

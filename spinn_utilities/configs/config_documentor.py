@@ -13,7 +13,9 @@
 # limitations under the License.
 
 from collections import defaultdict
+import os
 import re
+import sys
 from typing import Dict, List, Optional, TextIO
 
 from spinn_utilities.config_holder import (
@@ -104,7 +106,7 @@ class _ConfigGroup(object):
         if key.startswith("path"):
             print("\t", key, self._cfg[key])
 
-    def merge(self, other: "ConfigGroup") -> None:
+    def merge(self, other: "_ConfigGroup") -> None:
         for option, value in other._cfg.items():
             if option.startswith("@group"):
                 continue
@@ -204,7 +206,8 @@ class ConfigDocumentor(object):
                             self._docs[section] = config.get(section, title)
                         else:
                             other_title = title[1:]
-                            groups[other_title].add_doc(config.get(section, title))
+                            groups[other_title].add_doc(config.get(
+                                section, title))
                 if title.startswith("path_") or title.startswith("tpath_"):
                     as_link = _make_link(title)
                     if as_link in self._links:
@@ -225,15 +228,13 @@ class ConfigDocumentor(object):
 
     def print_section(self, section: str) -> None:
         print(section)
-        #if section in self._docs:
-        #    print(f"\t{self._docs[section]}")
+        print(f"\t{self._docs[section]}")
         titles = list(self._sections[section])
         titles.sort()
-        #groups = self._sections[section]
+        groups = self._sections[section]
         for title in titles:
-            print("\t",title)
-        #    group = groups[title]
-        #    group.print_config()
+            group = groups[title]
+            group.print_config()
 
     def print_configs(self) -> None:
         for section in self._sections:
@@ -264,7 +265,7 @@ class ConfigDocumentor(object):
     def _md_section(self, section: str, f: TextIO) -> None:
         f.write(f'# <a name="{section}"></a> {section}\n')
         if section in self._docs:
-            _md_write_doc(f,self._docs[section])
+            _md_write_doc(f, self._docs[section])
         titles = list(self._sections[section])
         titles.sort()
         if section != "Mode":
@@ -275,7 +276,7 @@ class ConfigDocumentor(object):
             group.md(f)
 
     def md_reports(self, f: TextIO) -> None:
-        f.write(f'# <a name="report_files"></a> Report Files\n')
+        f.write('# <a name="report_files"></a> Report Files\n')
         p_map = dict()
         for section in self._sections:
             for group in self._sections[section].values():
@@ -286,14 +287,19 @@ class ConfigDocumentor(object):
             f.write(f"  * [{path}](#{title})\n")
 
     def md_notes(self, f: TextIO) -> None:
-        with open("/home/brenninc/spinnaker/SpiNNUtils/spinn_utilities/configs/notes.md") as notesfile:
+        class_file = sys.modules[self.__module__].__file__
+        assert class_file is not None
+        abs_class_file = os.path.abspath(class_file)
+        class_dir = os.path.dirname(abs_class_file)
+        notes_path = os.path.join(class_dir, 'notes.md')
+        with open(notes_path) as notesfile:
             lines = notesfile.readlines()
             f.writelines(lines)
 
     def md_configs(self, filepath: str) -> None:
         with open(filepath, mode="w") as f:
             self._md_header(f)
-            f.write(f"* CFG Sections\n")
+            f.write("* CFG Sections\n")
             for section in self._sections:
                 f.write(f"  * [{section}](#{section})\n")
             f.write("* [Report Files](#report_files)\n")

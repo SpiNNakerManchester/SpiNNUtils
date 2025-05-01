@@ -24,15 +24,20 @@ from spinn_utilities.configs.camel_case_config_parser import (
     TypedConfigParser)
 
 
-def _make_link(option: str) -> str:
+def _make_name(option: str) -> str:
     """
-    Converts an option to a possibly shortened link string.
+    Converts an option to a possibly shortened name string
+
+    This will no include a leading #
 
     This is used for cfg options that may be automatically group.
     So that either can be used in a link.
 
     :return: Possibly shortened option name
     """
+    # take the link marker out
+    if option.startswith("#"):
+        option = option[1:]
     if option.startswith("@"):
         raise ValueError(f"{option=} has a @")
     elif option.startswith("draw_"):
@@ -47,7 +52,21 @@ def _make_link(option: str) -> str:
         option = option[4:]
     elif option.startswith("write_"):
         option = option[6:]
+    ' put the link marker back'
     return option
+
+
+def _make_link(option: str) -> str:
+    """
+    Converts an option to a possibly shortened link string
+
+    This will include a leading #
+
+    see _ make_name
+
+    :return: Possibly shortened option link
+    """
+    return "#" + _make_name(option)
 
 
 def _md_write_doc(f: TextIO, raw: str) -> None:
@@ -67,17 +86,20 @@ def _md_write_doc(f: TextIO, raw: str) -> None:
     raw = raw.replace("\\n\\n", "\n\n")
     raw = raw.replace("\\n\n", "  \n")
 
-    link_match = re.search(r"\[(\w|\s)*\]\((\s|\w)*\)", raw)
-    if link_match:
-        start = raw.index("(", link_match.start()) + 1
-        end = link_match.end() - 1
-        link = raw[start:end]
-        title = _make_link(link)
-        if link != title:
-            raw = raw[:start] + "option" + raw[end:]
+    pointers = []
+    pointer_matchs = re.finditer(r"\[(\w|\s|\(|\))*\]\((\s|\w)*\)", raw)
+    for pointer_match in pointer_matchs:
+        pointers.append(raw[pointer_match.start():pointer_match.end()])
+    for pointer in pointers:
+        start = pointer.index("]", ) + 2
+        raw_link = pointer[start:-1]
+        link = _make_link(raw_link)
+        if link != raw_link:
+            fixed = pointer[:start] + link + ")"
+            raw = raw.replace(pointer, fixed)
 
     f.write(raw)
-    f.write("\n")
+    f.write("\n\n")
 
 
 class _ConfigGroup(object):
@@ -142,17 +164,31 @@ class _ConfigGroup(object):
         """
         return self._docs is None
 
+    def _md_value(self, value: str) -> str:
+        """
+        Writes the value adding a pointer to mode if applicable.
+        """
+        if value.lower() in ["debug", "info"]:
+            if self.title == "default":
+                # special case [Logging]default
+                return value
+            else:
+                return f"[{value}](#mode)"
+        else:
+            return value
+
     def md(self, f: TextIO) -> None:
         """
         Writes a markdown version of this group to the file.
         """
-        f.write(f'### <a name="{_make_link(self.title)}"></a> {self.title}\n')
+        f.write(f'### <a name="{_make_name(self.title)}"></a> {self.title}\n')
         if len(self._cfg) == 1:
-            for value in self._cfg.values():
-                f.write(f"Default: __{value}__\n")
+            value = next(iter(self._cfg.values()))
+            f.write(f"Default: __{self._md_value(value)}__\n")
         else:
             for option, value in self._cfg.items():
-                f.write(f"* key: {option} \n  * value: {value}\n")
+                f.write(f"* key: {option} \n")
+                f.write(f"  * value: {self._md_value(value)}\n")
         f.write("\n")
         _md_write_doc(f, self._docs)
 
@@ -168,7 +204,7 @@ class ConfigDocumentor(object):
     def __init__(self):
         self._sections: Dict[str, Dict[str, _ConfigGroup]] = defaultdict(dict)
         self._docs: Dict[str, str] = dict()
-        self._links: Dict[str, str] = dict()
+        self._names: Dict[str, str] = dict()
         config1 = TypedConfigParser()
         config1.read(get_default_cfgs())
         for section in config1:
@@ -195,14 +231,14 @@ class ConfigDocumentor(object):
         else:
             group = _ConfigGroup(option, value)
             groups[option] = group
-        link = _make_link(option)
-        if link != option:
+        name = _make_name(option)
+        if name != option:
             if option.startswith("path_") or option.startswith("tpath_"):
                 return
-            if link in self._links:
-                raise ValueError(f"Both {option} and {self._links[link]}"
+            if name in self._names:
+                raise ValueError(f"Both {option} and {self._names[name]}"
                                  f" have the same link.")
-            self._links[link] = option
+            self._names[name] = option
 
     def _process_special(self, config: TypedConfigParser) -> None:
         """
@@ -242,9 +278,9 @@ class ConfigDocumentor(object):
             remove_options = set()
             for option in groups:
                 if option.startswith("path_") or option.startswith("tpath_"):
-                    as_link = _make_link(option)
-                    if as_link in self._links:
-                        other_option = self._links[as_link]
+                    as_link = _make_name(option)
+                    if as_link in self._names:
+                        other_option = self._names[as_link]
                         groups[other_option].merge(groups[option])
                         remove_options.add(option)
             for option in remove_options:
@@ -259,21 +295,21 @@ class ConfigDocumentor(object):
 
         Expects all  sections and not grouped options to generate unique links.
         """
-        links: Set[str] = set()
+        names: Set[str] = set()
         for section in self._sections:
-            if section in links:
-                raise ValueError(f"{section=} has a duplicate link")
+            if section in names:
+                raise ValueError(f"{section=} has a duplicate name")
             else:
-                links.add(section)
+                names.add(section)
             if section not in self._docs:
                 raise ValueError(f"{section=} has no doc")
             for title, group in self._sections[section].items():
-                link = _make_link(title)
-                if link in links:
+                name = _make_name(title)
+                if name in names:
                     raise ValueError(
-                        f"{link=} from {title=} has a duplicate link")
+                        f"{name=} from {title=} has a duplicate link")
                 else:
-                    links.add(link)
+                    names.add(name)
                 if group.missing_docs():
                     raise ValueError(f"{title=} has missing docs")
 
@@ -311,6 +347,8 @@ class ConfigDocumentor(object):
         f.write("layout: default\n")
         f.write("published: true\n")
         f.write("---\n")
+        f.write("CFG Settings and Reports\n")
+        f.write("========================\n")
         f.write("<!-- \n")
         f.write("This file is autogenerated do not edit!\n")
         f.write("Created by spinn_utilities/configs/config_documentor.py\n")
@@ -329,9 +367,8 @@ class ConfigDocumentor(object):
             _md_write_doc(f, self._docs[section])
         titles = list(self._sections[section])
         titles.sort()
-        if section != "Mode":
-            for title in titles:
-                f.write(f"* [{title}](#{title})\n")
+        for title in titles:
+            f.write(f"* [{title}](#{title})\n")
         for title in titles:
             group = self._sections[section][title]
             group.md(f)
@@ -349,6 +386,8 @@ class ConfigDocumentor(object):
         p_map = dict(sorted(p_map.items()))
         for path, title in p_map.items():
             f.write(f"  * [{path}](#{title})\n")
+        f.write("\n\n")
+
 
     def md_notes(self, f: TextIO) -> None:
         """

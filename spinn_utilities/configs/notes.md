@@ -38,6 +38,7 @@ This section is aimed at developers writing code that uses cfg settings or addin
   * Use \t (without the *) for a real none bullet indent. (Will replace \t with \&nbsp;\&nbsp;)
   * Supports md links in the \[Title\]\(Link\) format. 
       * Link can be any cfg option key except those tagged with @group.
+      * The # reguired by markdown will be added if needed.
       * Where keys are auto grouped any of these can be used.
       * Link can be an external url.
 

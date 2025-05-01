@@ -89,7 +89,6 @@ class _ConfigGroup(object):
         self._cfg: Dict[str, str] = dict()
         self._cfg[option] = value
 
-
     def paths(self) -> List[str]:
         """
         Gets a list of the cfg settings in the group that point to a path.
@@ -157,6 +156,12 @@ class _ConfigGroup(object):
 
 
 class ConfigDocumentor(object):
+    """
+    This class will document all the default configs.
+
+    This can be called at any level but will only work with the
+    default cfg files set. (Typically up to that level)
+    """
 
     def __init__(self):
         self._sections: Dict[str, Dict[str, _ConfigGroup]] = defaultdict(dict)
@@ -201,7 +206,8 @@ class ConfigDocumentor(object):
         """
         This pass processes all the special (start with @) cfg keys.
 
-        See https://github.com/SpiNNakerManchester/SpiNNUtils/spinn_utilities/configs/notes.md
+        See
+        https://github.com/SpiNNakerManchester/SpiNNUtils/spinn_utilities/configs/notes.md
         """
         for section in config.sections():
             groups = self._sections[section]
@@ -227,7 +233,8 @@ class ConfigDocumentor(object):
         """
         Merges groups with path and similar option names.
 
-        See https://github.com/SpiNNakerManchester/SpiNNUtils/spinn_utilities/configs/notes.md
+        See
+        https://github.com/SpiNNakerManchester/SpiNNUtils/spinn_utilities/configs/notes.md
         """
         for groups in self._sections.values():
             remove_options = set()
@@ -240,7 +247,6 @@ class ConfigDocumentor(object):
                         remove_options.add(option)
             for option in remove_options:
                 del groups[option]
-
 
     def check(self) -> None:
         """
@@ -309,7 +315,8 @@ class ConfigDocumentor(object):
         f.write("Based on the default cfg files\n")
         f.write("See notes section at the bottom of this file.\n")
         f.write("-->\n")
-        f.write("This guide covers the cfg settings and the reports created.\n")
+        f.write("This guide covers the cfg settings "
+                "and the reports created.\n")
 
     def _md_section(self, section: str, f: TextIO) -> None:
         """

@@ -28,7 +28,7 @@ def _make_link(option: str) -> str:
     """
     Converts an option to a possibly shortened link string.
 
-    This is used for cfg optios that may be automatically group.
+    This is used for cfg options that may be automatically group.
     So that either can be used in a link.
 
     :return: Possibly shortened option name
@@ -54,7 +54,9 @@ def _md_write_doc(f: TextIO, raw: str) -> None:
     """
     Writes the raw (document text) with some minor corrections.
 
-    See notes.md for the changes that will be made.
+    See
+    https://github.com/SpiNNakerManchester/SpiNNUtils/spinn_utilities/configs/notes.md
+    for the changes that will be made.
     """
     while "\\t*" in raw:
         raw = raw.replace("\\t*", "   *")
@@ -350,14 +352,14 @@ class ConfigDocumentor(object):
 
     def md_notes(self, f: TextIO) -> None:
         """
-        Copied the notes.md file into this markdown file
+        Copied the notes file into this markdown file
         """
         class_file = sys.modules[self.__module__].__file__
         assert class_file is not None
         abs_class_file = os.path.abspath(class_file)
         class_dir = os.path.dirname(abs_class_file)
         notes_path = os.path.join(class_dir, 'notes.md')
-        with open(notes_path) as notesfile:
+        with open(notes_path, encoding="utf-8") as notesfile:
             lines = notesfile.readlines()
             f.writelines(lines)
 
@@ -365,7 +367,7 @@ class ConfigDocumentor(object):
         """
         Converts the cfg files into markdown at the path specified.
         """
-        with open(filepath, mode="w") as f:
+        with open(filepath, mode="w", encoding="utf-8") as f:
             self._md_header(f)
             f.write("* CFG Sections\n")
             for section in self._sections:

@@ -16,7 +16,7 @@ from collections import defaultdict
 import os
 import re
 import sys
-from typing import Dict, List, Optional, Set, TextIO
+from typing import Dict, List, Set, TextIO
 
 from spinn_utilities.config_holder import (
     get_default_cfgs)

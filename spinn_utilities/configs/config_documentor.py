@@ -95,7 +95,7 @@ class _ConfigGroup(object):
         """
         Gets a list of the cfg settings in the group that point to a path.
 
-        Path cfgs are those which start with path_ or tpath_
+        Path cfg options are those which start with path_ or tpath_
         """
         paths = []
         for option, value in self._cfg.items():

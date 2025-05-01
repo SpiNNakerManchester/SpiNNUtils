@@ -52,7 +52,6 @@ def _make_name(option: str) -> str:
         option = option[4:]
     elif option.startswith("write_"):
         option = option[6:]
-    ' put the link marker back'
     return option
 
 
@@ -62,7 +61,7 @@ def _make_link(option: str) -> str:
 
     This will include a leading #
 
-    see _ make_name
+    see _make_name
 
     :return: Possibly shortened option link
     """

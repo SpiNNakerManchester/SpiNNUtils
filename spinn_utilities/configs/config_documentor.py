@@ -388,7 +388,6 @@ class ConfigDocumentor(object):
             f.write(f"  * [{path}](#{title})\n")
         f.write("\n\n")
 
-
     def md_notes(self, f: TextIO) -> None:
         """
         Copied the notes file into this markdown file

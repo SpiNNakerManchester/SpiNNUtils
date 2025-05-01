@@ -15,6 +15,7 @@
 import os
 import sys
 import unittest
+
 import spinn_utilities
 from spinn_utilities.configs.config_checker import ConfigChecker
 from spinn_utilities.configs.config_documentor import ConfigDocumentor
@@ -38,6 +39,4 @@ class TestCfgChecker(unittest.TestCase):
         test_file = os.path.join(class_dir, 'test.md')
 
         documentor = ConfigDocumentor()
-        documentor.print_section("Logging")
-        documentor.print_configs()
         documentor.md_configs(test_file)

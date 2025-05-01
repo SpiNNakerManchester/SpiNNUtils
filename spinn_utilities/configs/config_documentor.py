@@ -107,7 +107,7 @@ class _ConfigGroup(object):
     """
 
     def __init__(self, option: str, value: str):
-        self._docs: Optional[str] = None
+        self._docs: str = ""  # Must be changed later
         self.title = option
         self._cfg: Dict[str, str] = dict()
         self._cfg[option] = value
@@ -150,7 +150,7 @@ class _ConfigGroup(object):
                 raise ValueError(f"{option} already exists in group")
             self._cfg[option] = value
 
-    def add_doc(self, docs):
+    def add_doc(self, docs: str) -> None:
         """
         Adds the docs (marked with @) into this group
         """
@@ -162,7 +162,7 @@ class _ConfigGroup(object):
         """
         Returns True if this group does not have any docs
         """
-        return self._docs is None
+        return not self._docs
 
     def _md_value(self, value: str) -> str:
         """
@@ -201,7 +201,7 @@ class ConfigDocumentor(object):
     default cfg files set. (Typically up to that level)
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._sections: Dict[str, Dict[str, _ConfigGroup]] = defaultdict(dict)
         self._docs: Dict[str, str] = dict()
         self._names: Dict[str, str] = dict()
@@ -217,7 +217,7 @@ class ConfigDocumentor(object):
         self._merge_paths()
         self.check()
 
-    def _add_option(self, section: str, option: str, value: str):
+    def _add_option(self, section: str, option: str, value: str) -> None:
         """
         Adds a cfg option.
 

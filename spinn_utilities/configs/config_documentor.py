@@ -145,6 +145,7 @@ class _ConfigGroup(object):
         """
         Merges the option form the other into this group.
         """
+        # pylint: disable=protected-access
         for option, value in other._cfg.items():
             if option in self._cfg:
                 raise ValueError(f"{option} already exists in group")
@@ -369,6 +370,7 @@ class ConfigDocumentor(object):
         titles.sort()
         for title in titles:
             f.write(f"* [{title}](#{title})\n")
+        f.write("\n")
         for title in titles:
             group = self._sections[section][title]
             group.md(f)
@@ -412,6 +414,7 @@ class ConfigDocumentor(object):
                 f.write(f"  * [{section}](#{section})\n")
             f.write("* [Report Files](#report_files)\n")
             f.write("* [Notes for Developers](#notes)\n")
+            f.write("\n")
 
             for section in self._sections:
                 self._md_section(section, f)

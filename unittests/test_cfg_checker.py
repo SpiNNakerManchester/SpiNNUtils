@@ -14,7 +14,7 @@
 
 import unittest
 import spinn_utilities
-from spinn_utilities.config_holder import run_config_checks
+from spinn_utilities.configs.config_checker import ConfigChecker
 from spinn_utilities.config_setup import unittest_setup
 
 
@@ -24,6 +24,5 @@ class TestCfgChecker(unittest.TestCase):
         unittest_setup()
 
     def test_config_checks(self) -> None:
-        spinn_utilities_dir = spinn_utilities.__path__[0]
-        run_config_checks(directories=[spinn_utilities_dir],
-                          exceptions=[])
+        spinn_utilities_dir = [spinn_utilities.__path__[0]]
+        ConfigChecker(spinn_utilities_dir).check()

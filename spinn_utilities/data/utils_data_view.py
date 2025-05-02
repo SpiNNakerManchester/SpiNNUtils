@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+import os
 from tempfile import TemporaryDirectory
 from typing import List, Optional
 
@@ -50,10 +51,13 @@ class _UtilsDataModel(object):
         "_report_dir_path",
         "_requires_data_generation",
         "_requires_mapping",
+        "_reset_number",
         "_reset_status",
         "_run_dir_path",
+        "_run_number",
         "_run_status",
         "_temporary_directory",
+        "_timestamp_dir_path",
     ]
 
     def __init__(self) -> None:
@@ -74,7 +78,10 @@ class _UtilsDataModel(object):
         """
         Clears out all data.
         """
+        self._reset_number = 0
+        self._run_number: Optional[int] = None
         self._report_dir_path: Optional[str] = None
+        self._timestamp_dir_path: Optional[str] = None
         self._hard_reset()
 
     def _hard_reset(self) -> None:
@@ -287,6 +294,54 @@ class UtilsDataView(object):
             f"{cls.__data._reset_status} and run status "
             f"{cls.__data._run_status}")
 
+    #  reset number
+
+    @classmethod
+    def get_reset_number(cls) -> int:
+        """
+        Get the number of times a reset has happened.
+
+        Only counts the first reset after each run.
+
+        So resets that are first soft then hard are ignored.
+        Double reset calls without a run and resets before run are ignored.
+
+        Reset numbers start at zero
+
+        :rtype: int
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            If the run_number is currently unavailable
+        """
+        if cls.__data._reset_number is None:
+            raise cls._exception("run_number")
+        return cls.__data._reset_number
+
+    @classmethod
+    def get_reset_str(cls) -> str:
+        """
+        Get the number of times a reset has happened as a string.
+
+        An empty string is returned if the system has never been reset
+        (i.e., the reset number is 0)
+
+        Only counts the first reset after each run.
+
+        So resets that are first soft then hard are ignored.
+        Double reset calls without a run and resets before run are ignored.
+
+        Reset numbers start at zero
+
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            If the run_number is currently unavailable
+        :rtype: str
+        """
+        if cls.__data._reset_number is None:
+            raise cls._exception("reset_number")
+        if cls.__data._reset_number:
+            return str(cls.__data._reset_number)
+        else:
+            return ""
+
     @classmethod
     def is_no_stop_requested(cls) -> bool:
         """
@@ -471,6 +526,68 @@ class UtilsDataView(object):
         if cls._is_mocked():
             return cls._temporary_dir_path()
         raise cls._exception("run_dir_path")
+
+    @classmethod
+    def get_timestamp_dir_path(cls) -> str:
+        """
+        Returns path to existing time-stamped directory in the reports
+        directory.
+
+        .. note::
+            In unit-test mode this returns a temporary directory
+            shared by all path methods.
+
+        :rtype: str
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            If the simulation_time_step is currently unavailable
+        """
+        if cls.__data._timestamp_dir_path is not None:
+            return cls.__data._timestamp_dir_path
+        if cls._is_mocked():
+            return cls._temporary_dir_path()
+        raise cls._exception("timestamp_dir_path")
+
+    @classmethod
+    def _child_folder(cls, parent: str, child_name: str,
+                      must_create: bool = False) -> str:
+        """
+        :param str parent:
+        :param str child_name:
+        :param bool must_create:
+            If `True`, the directory named by `child_name` (but not necessarily
+            its parents) must be created by this call, and an exception will be
+            thrown if this fails.
+        :return: The fully qualified name of the child folder.
+        :rtype: str
+        :raises OSError:
+            If the directory existed ahead of time and creation
+            was required by the user
+        """
+        child = os.path.join(parent, child_name)
+        if must_create:
+            # Throws OSError or FileExistsError (a subclass of OSError) if the
+            # directory exists.
+            os.makedirs(child)
+        elif not os.path.exists(child):
+            os.makedirs(child, exist_ok=True)
+        return child
+
+    #  run number
+
+    @classmethod
+    def get_run_number(cls) -> int:
+        """
+        Get the number of this or the next run.
+
+        Run numbers start at 1
+
+        :rtype: int
+        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+            If the run_number is currently unavailable
+        """
+        if cls.__data._run_number is None:
+            raise cls._exception("run_number")
+        return cls.__data._run_number
 
     @classmethod
     def get_executable_finder(cls) -> ExecutableFinder:

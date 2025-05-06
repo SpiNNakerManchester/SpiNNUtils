@@ -22,7 +22,7 @@ from spinn_utilities.data.utils_data_view import _UtilsDataModel
 from spinn_utilities.data.data_status import DataStatus
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.exceptions import (
-    DataNotYetAvialable, IllegalWriterException, InvalidDirectory,
+    IllegalWriterException, InvalidDirectory,
     NotSetupException,
     SimulatorNotRunException, SimulatorNotSetupException,
     SimulatorRunningException, SimulatorShutdownException,
@@ -980,13 +980,6 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.check_start_finish(writer)
 
-    def test_directories_setup(self) -> None:
-        writer = UtilsDataWriter.setup()
-        # setup should clear mocked
-        writer.setup()
-        with self.assertRaises(DataNotYetAvialable):
-            UtilsDataView.get_run_dir_path()
-
     def test_directories_mocked(self) -> None:
         UtilsDataWriter.mock()
         self.assertTrue(os.path.exists(UtilsDataView.get_run_dir_path()))
@@ -1066,3 +1059,30 @@ class TestUtilsData(unittest.TestCase):
             UtilsDataView.raise_skiptest("Skip me")
         with self.assertRaises(unittest.SkipTest):
             UtilsDataView.raise_skiptest("Skip me", ValueError("nope"))
+
+    def test_run_number(self) -> None:
+        writer = UtilsDataWriter.setup()
+        self.assertEqual(0, writer.get_reset_number())
+        self.assertEqual("", writer.get_reset_str())
+        self.assertEqual(1, UtilsDataView.get_run_number())
+        writer.start_run()
+        self.assertEqual(1, UtilsDataView.get_run_number())
+        writer.finish_run()
+        self.assertEqual(2, UtilsDataView.get_run_number())
+        # run_dir_path only changed on hard reset
+        writer.start_run()
+        self.assertEqual(2, UtilsDataView.get_run_number())
+        # run_dir_path only changed on hard reset
+        writer.finish_run()
+        self.assertEqual(3, UtilsDataView.get_run_number())
+        self.assertEqual(0, writer.get_reset_number())
+        self.assertEqual("", writer.get_reset_str())
+        writer.soft_reset()
+        self.assertEqual(3, UtilsDataView.get_run_number())
+        # run_dir_path only changed on hard reset
+        writer.hard_reset()
+        self.assertEqual(3, UtilsDataView.get_run_number())
+        writer.start_run()
+        self.assertEqual(3, UtilsDataView.get_run_number())
+        writer.finish_run()
+        self.assertEqual(4, UtilsDataView.get_run_number())

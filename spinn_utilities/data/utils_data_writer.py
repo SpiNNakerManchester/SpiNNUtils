@@ -12,9 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+import atexit
+import datetime
 import os.path
 import logging
-from typing_extensions import Self
+import time
+from typing_extensions import Optional, Self
+
+from spinn_utilities.config_holder import get_config_str
 from spinn_utilities.exceptions import (
     IllegalWriterException, InvalidDirectory, SimulatorNotRunException,
     UnexpectedStateChange)
@@ -60,6 +65,10 @@ class UtilsDataWriter(UtilsDataView):
     """
     __data = _UtilsDataModel()
     __slots__ = ()
+
+    REPORTS_DIRNAME = "reports"
+    ERRORED_FILENAME = "errored"
+    FINISHED_FILENAME = "finished"
 
     def __init__(self, state: DataStatus):
         """
@@ -112,6 +121,8 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._clear()
         self.__data._data_status = DataStatus.MOCKED
         self.__data._reset_status = ResetStatus.NOT_SETUP
+        # run numbers start at 1 and when not running this is the next one
+        self.__data._run_number = 1
         self.__data._run_status = RunStatus.NOT_SETUP
 
     def _setup(self) -> None:
@@ -121,7 +132,12 @@ class UtilsDataWriter(UtilsDataView):
         self.__data._clear()
         self.__data._data_status = DataStatus.SETUP
         self.__data._reset_status = ResetStatus.SETUP
+        # run numbers start at 1 and when not running this is the next one
+        self.__data._run_number = 1
         self.__data._run_status = RunStatus.NOT_RUNNING
+        self.__create_reports_directory()
+        self.__create_timestamp_directory()
+        self.__create_run_dir_path()
 
     def start_run(self) -> None:
         """
@@ -144,6 +160,8 @@ class UtilsDataWriter(UtilsDataView):
             raise UnexpectedStateChange(
                 f"Unexpected finish run when in run state "
                 f"{self.__data._run_status}")
+        assert self.__data._run_number is not None
+        self.__data._run_number += 1
         self.__data._run_status = RunStatus.NOT_RUNNING
         self.__data._reset_status = ResetStatus.HAS_RUN
         self.__data._requires_data_generation = False
@@ -154,7 +172,10 @@ class UtilsDataWriter(UtilsDataView):
         This method should only be called by `hard_setup`.
         """
         self.__data._hard_reset()
+        if self.is_ran_last():
+            self.__data._reset_number += 1
         self.__data._reset_status = ResetStatus.HARD_RESET
+        self.__create_run_dir_path()
 
     def hard_reset(self) -> None:
         """
@@ -185,6 +206,8 @@ class UtilsDataWriter(UtilsDataView):
         This method should only be called from `soft_reset`.
         """
         self.__data._soft_reset()
+        if self.is_ran_last():
+            self.__data._reset_number += 1
         self.__data._reset_status = ResetStatus.SOFT_RESET
 
     def soft_reset(self) -> None:
@@ -288,6 +311,87 @@ class UtilsDataWriter(UtilsDataView):
         else:
             self.__data._report_dir_path = None
             raise InvalidDirectory("run_dir_path", reports_dir_path)
+
+    def __create_run_dir_path(self) -> None:
+        self.set_run_dir_path(self._child_folder(
+            self.get_timestamp_dir_path(),
+            f"run_{self.get_run_number()}"))
+
+    def __create_reports_directory(self) -> None:
+        default_report_file_path = get_config_str(
+            "Reports", "default_report_file_path")
+        # determine common report folder
+        if default_report_file_path == "DEFAULT":
+            directory = os.getcwd()
+        else:
+            directory = default_report_file_path
+        # global reports folder
+        self.set_report_dir_path(
+            self._child_folder(directory, self.REPORTS_DIRNAME))
+
+    @classmethod
+    def _get_timestamp(cls) -> str:
+        now = datetime.datetime.now()
+        return (
+            f"{now.year:04}-{now.month:02}-{now.day:02}-{now.hour:02}"
+            f"-{now.minute:02}-{now.second:02}-{now.microsecond:06}")
+
+    def __create_timestamp_directory(self) -> None:
+        while True:
+            try:
+                self.__data._timestamp_dir_path = self._child_folder(
+                    self.get_report_dir_path(), self._get_timestamp(),
+                    must_create=True)
+                atexit.register(UtilsDataWriter.write_errored_file)
+                return
+            except OSError:
+                time.sleep(0.5)
+
+    @classmethod
+    def write_errored_file(cls, message: Optional[str] = None) -> None:
+        """
+        Writes an ``errored`` file that signals code if the code has errored
+
+        Not written if there is a finished file exists and
+        there is no error message.
+
+        This file signals the report directory can be removed.
+
+        This method can be called while there is still code to be run BUT
+        if running other simulations at the same time there is a possibility
+        that the report directory is no longer available for writing to.
+
+        :param message: An error message to included
+        """
+        errored_file_name = os.path.join(
+            cls.get_timestamp_dir_path(), cls.ERRORED_FILENAME)
+
+        if message is None:
+            finished_file_name = os.path.join(
+                cls.get_timestamp_dir_path(), cls.FINISHED_FILENAME)
+            if os.path.exists(finished_file_name):
+                return
+
+            if os.path.exists(errored_file_name):
+                return
+
+            message = "Unexpected end"
+
+        with open(errored_file_name, "w", encoding="utf-8") as f:
+            f.writelines(message)
+            f.writelines("\n")
+            f.writelines(cls._get_timestamp())
+
+    def write_finished_file(self) -> None:
+        """
+        Write a finished file to flag that the code has finished cleanly
+
+        This file signals the report directory can be removed.
+        """
+        finished_file_name = os.path.join(
+            self.get_timestamp_dir_path(), self.FINISHED_FILENAME)
+        with open(finished_file_name, "w", encoding="utf-8") as f:
+            f.writelines(self._get_timestamp())
 
     def _set_executable_finder(
             self, executable_finder: ExecutableFinder) -> None:

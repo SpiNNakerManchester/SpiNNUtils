@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import defaultdict
 from configparser import NoOptionError
 import logging
 import os
-from typing import Callable, Collection, Dict, List, Optional, Set, Union
+from typing import List, Optional, Tuple
+
 import spinn_utilities.conf_loader as conf_loader
+from spinn_utilities.data import UtilsDataView
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import (
@@ -40,6 +41,15 @@ def add_default_cfg(default: str) -> None:
     """
     if default not in __default_config_files:
         __default_config_files.append(default)
+
+
+def get_default_cfgs() -> Tuple[str, ...]:
+    """
+    Returns the default configuration files as a tuple.
+
+    This is a read only values to be used outside of normal operations
+    """
+    return tuple(__default_config_files)
 
 
 def clear_cfg_files(unittest_mode: bool) -> None:
@@ -296,6 +306,16 @@ def set_config(section: str, option: str, value: Optional[str]) -> None:
         __config.set(section, option, value)
 
 
+def config_sections() -> List[str]:
+    """
+    Return a list of section names
+
+    """
+    if __config is None:
+        raise ConfigException("configuration not loaded")
+    return __config.sections()
+
+
 def has_config_option(section: str, option: str) -> bool:
     """
     Check if the section has this configuration option.
@@ -321,239 +341,79 @@ def config_options(section: str) -> List[str]:
     return __config.options(section)
 
 
-# Tried to give method a more exact type but expects method to handle both!
-# Union[Callable[[str, str], Any],
-# Callable[[str, str, Optional[List[str]]], Any]]
-def _check_lines(py_path: str, line: str, lines: List[str], index: int,
-                 method: Callable, used_cfgs: Dict[str, Set[str]], start: str,
-                 special_nones: Optional[List[str]] = None) -> None:
+def get_report_path(
+        option: str, section: str = "Reports", n_run: Optional[int] = None,
+        is_dir: bool = False) -> str:
     """
-    Support for `_check_python_file`. Gets section and option name.
+    Gets and fixes the path for this option
 
-    :param line: Line with get_config call
-    :param lines: All lines in the file
-    :param index: index of line with `get_config` call
-    :param method: Method to call to check cfg
-    :param used_cfgs:
-        Dict of used cfg options to be added to
-    :param special_nones: What special values to except as None
-    :raises ConfigException: If an unexpected or uncovered `get_config` found
+    If the cfg path is relative it will be joined with the run_dir_path.
+
+    Creates the path's directory if it does not exist.
+
+    (n_run) and (reset_str) will be replaced
+
+    Later updates may replace other bracketed expressions as needed
+    so avoid using brackets in file names
+
+    :param option: cfg option name
+    :param section: cfg section. Needed if not Reports
+    :param n_run: If provided will be used instead of the current run number
+    :return: An unchecked absolute path to the file or directory
     """
-    while ")" not in line:
-        index += 1
-        line += lines[index]
-    parts = line[line.find("(", line.find(start)) + 1:
-                 line.find(")")].split(",")
-    section = parts[0].strip().replace("'", "").replace('"', '')
-    for i in range(1, len(parts)):
-        try:
-            option = parts[i].strip()
-        except IndexError as original:
-            raise ConfigException(
-                f"failed in line:{index} of file: {py_path} with {line}") \
-                from original
-        if option[0] == "'":
-            option = option.replace("'", "")
-        elif option[0] == '"':
-            option = option.replace('"', '')
-        else:
-            print(line)
-            return
-        try:
-            if special_nones:
-                method(section, option, special_nones)
-            else:
-                method(section, option)
-        except Exception as original:
-            raise ConfigException(
-                f"failed in line:{index} of file: {py_path} with "
-                f"section:{section} option:{option}") from original
-        used_cfgs[section].add(option)
+    path = get_config_str(section, option)
 
+    if n_run is not None and n_run > 1:
+        if "(n_run)" not in path:
+            logger.warning(
+                f"cfg option {option} does not have a (n_run) so "
+                f"files from different runs may be overwritten")
+    if "(n_run)" in path:
+        if n_run is None:
+            n_run = UtilsDataView.get_run_number()
+        path = path.replace("(n_run)", str(n_run))
 
-def _check_python_file(py_path: str, used_cfgs: Dict[str, Set[str]],
-                       special_nones: Optional[List[str]] = None) -> None:
-    """
-    A testing function to check that all the `get_config` calls work.
+    if "(reset_str)" in path:
+        reset_str = UtilsDataView.get_reset_str()
+        path = path.replace("(reset_str)", str(reset_str))
 
-    :param py_path: path to file to be checked
-    :param used_cfgs: dict of cfg options found
-    :param special_nones: What special values to except as None
-    :raises ConfigException: If an unexpected or uncovered `get_config` found
-    """
-    with open(py_path, 'r', encoding="utf-8") as py_file:
-        lines = list(py_file)
-        for index, line in enumerate(lines):
-            if ("skip_if_cfg" in line):
-                _check_lines(py_path, line, lines, index,
-                             get_config_bool_or_none, used_cfgs, "skip_if_cfg",
-                             special_nones)
-            if ("configuration.get" in line):
-                _check_lines(py_path, line, lines, index,
-                             get_config_bool_or_none, used_cfgs,
-                             "configuration.get")
-            if "get_config" not in line:
-                continue
-            if (("get_config_bool(" in line) or
-                    ("get_config_bool_or_none(" in line)):
-                _check_lines(py_path, line, lines, index,
-                             get_config_bool_or_none, used_cfgs,
-                             "get_config_bool", special_nones)
-            if (("get_config_float(" in line) or
-                    ("get_config_float_or_none(" in line)):
-                _check_lines(py_path, line, lines, index,
-                             get_config_float_or_none, used_cfgs, "get_config")
-            if (("get_config_int(" in line) or
-                    ("get_config_int_or_none(" in line)):
-                _check_lines(py_path, line, lines, index,
-                             get_config_int_or_none, used_cfgs, "get_config")
-            if (("get_config_str(" in line) or
-                    ("get_config_str_or_none(" in line)):
-                _check_lines(py_path, line, lines, index,
-                             get_config_str_or_none, used_cfgs, "get_config")
-            if "get_config_str_list(" in line:
-                _check_lines(py_path, line, lines, index,
-                             get_config_str_list, used_cfgs, "get_config")
+    if "\\" in path:
+        path = path.replace("\\", os.sep)
 
+    if not os.path.isabs(path):
+        path = os.path.join(UtilsDataView.get_run_dir_path(), path)
 
-def _find_double_defaults(repeaters: Optional[Collection[str]] = ()) -> None:
-    """
-    Testing function to identify any configuration options in multiple default
-    files.
-
-    :param repeaters: List of options that are expected to be repeated.
-    :raises ConfigException:
-        If two defaults configuration files set the same value
-    """
-    config1 = CamelCaseConfigParser()
-    for default in __default_config_files[:-1]:
-        config1.read(default)
-    config2 = CamelCaseConfigParser()
-    config2.read(__default_config_files[-1])
-    if repeaters is None:
-        repeaters = []
+    if is_dir:
+        os.makedirs(path, exist_ok=True)
     else:
-        repeaters = frozenset(map(config2.optionxform, repeaters))
-    for section in config2.sections():
-        for option in config2.options(section):
-            if config1.has_option(section, option):
-                if option not in repeaters:
-                    raise ConfigException(
-                        f"cfg:{__default_config_files[-1]} "
-                        f"repeats [{section}]{option}")
+        folder, _ = os.path.split(path)
+        os.makedirs(folder, exist_ok=True)
+
+    return path
 
 
-def _check_cfg_file(config1: CamelCaseConfigParser, cfg_path: str) -> None:
+def get_timestamp_path(option: str, section: str = "Reports") -> str:
     """
-    Support method for :py:func:`check_cfgs`.
+    Gets and fixes the path for this option
 
-    :param config1:
-    :param cfg_path:
-    :raises ConfigException: If an unexpected option is found
+    If the cfg path is relative it will be joined with the timestamp_path.
+
+    Creates the path's directory if it does not exist.
+
+    Later updates may replace bracketed expressions as needed
+    so avoid using brackets in file names
+
+    :param option: cfg option name
+    :param section: cfg section. Needed if not Reports
+    :param n_run: If provided will be used instead of the current run number
+    :return: An unchecked absolute path to the file or directory
     """
-    config2 = CamelCaseConfigParser()
-    config2.read(cfg_path)
-    for section in config2.sections():
-        if not config1.has_section(section):
-            raise ConfigException(
-                f"cfg:{cfg_path} has unexpected section [{section}]")
-        for option in config2.options(section):
-            if not config1.has_option(section, option):
-                raise ConfigException(
-                    f"cfg:{cfg_path} "
-                    f"has unexpected options [{section}]{option}")
 
+    path = get_config_str(section, option)
+    if not os.path.isabs(path):
+        path = os.path.join(UtilsDataView.get_timestamp_dir_path(), path)
 
-def _check_cfgs(path: str) -> None:
-    """
-    A testing function check local configuration files against the defaults.
+    folder, _ = os.path.split(path)
+    os.makedirs(folder, exist_ok=True)
 
-    It only checks that the option exists in a default.
-    It does not check if the option is used or if the value is the expected
-    type.
-
-    :param str path: Absolute path to the parent directory to search
-    :raises ConfigException: If an unexpected option is found
-    """
-    config1 = CamelCaseConfigParser()
-    for default in __default_config_files:
-        config1.read(default)
-    directory = os.path.dirname(path)
-    for root, _, files in os.walk(directory):
-        for file_name in files:
-            if file_name.endswith(".cfg"):
-                cfg_path = os.path.join(root, file_name)
-                if cfg_path in __default_config_files:
-                    continue
-                print(cfg_path)
-                _check_cfg_file(config1, cfg_path)
-
-
-def run_config_checks(directories: Union[str, Collection[str]], *,
-                      exceptions: Union[str, Collection[str]] = (),
-                      repeaters: Optional[Collection[str]] = (),
-                      check_all_used: bool = True,
-                      special_nones: Optional[List[str]] = None) -> None:
-    """
-    Master test.
-
-    Checks that all cfg options read have a default value in one of the
-    default files.
-
-    Checks that all default options declared in the current repository
-    are used in that repository.
-
-    :param module:
-    :param exceptions:
-    :param repeaters:
-    :param bool check_all_used: Toggle for the used test.
-    :param special_nones: What special values to except as None
-    :raises ConfigException: If an incorrect directory passed in
-    """
-    if isinstance(directories, str):
-        directories = [directories]
-
-    if exceptions is None:
-        exceptions = []
-    elif isinstance(exceptions, str):
-        exceptions = [exceptions]
-
-    _find_double_defaults(repeaters)
-
-    config1 = CamelCaseConfigParser()
-    config1.read(__default_config_files)
-
-    used_cfgs: Dict[str, Set[str]] = defaultdict(set)
-    for directory in directories:
-        if not os.path.isdir(directory):
-            raise ConfigException(f"Unable find {directory}")
-        for root, _, files in os.walk(directory):
-            for file_name in files:
-                if file_name in exceptions:
-                    pass
-                elif file_name.endswith(".cfg"):
-                    cfg_path = os.path.join(root, file_name)
-                    if cfg_path in __default_config_files:
-                        continue
-                    print(cfg_path)
-                    _check_cfg_file(config1, cfg_path)
-                elif file_name.endswith(".py"):
-                    py_path = os.path.join(root, file_name)
-                    _check_python_file(py_path, used_cfgs, special_nones)
-
-    if not check_all_used:
-        return
-
-    config2 = CamelCaseConfigParser()
-    config2.read(__default_config_files[-1])
-    for section in config2:
-        if section not in used_cfgs:
-            if section == config1.default_section:
-                continue
-            raise ConfigException(f"cfg {section=} was never used")
-        found_options = used_cfgs[section]
-        found_options = set(map(config2.optionxform, found_options))
-        for option in config2.options(section):
-            if option not in found_options:
-                raise ConfigException(
-                    f"cfg {section=} {option=} was never used")
+    return path

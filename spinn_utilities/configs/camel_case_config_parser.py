@@ -31,23 +31,37 @@ else:
     _Path = str
 
 
-class CamelCaseConfigParser(configparser.RawConfigParser):
+def optionxform(optionstr: str) -> str:
     """
-    Extends the Parser to allow for differences in case and underscores
+    Transforms the name of an option to lower case and strips
+    underscores, so matching is more user-friendly.
+    """
+    lower = optionstr.lower()
+    return lower.replace("_", "")
+
+
+class TypedConfigParser(configparser.RawConfigParser):
+    """
+    Extends the Parser to support different types and Nones
+
+    It is recommended to use CamelCaseConfigParser as this class does not
+    correct options names.
     """
     __slots__ = ["_read_files"]
-
-    def optionxform(self, optionstr: str) -> str:
-        """
-        Transforms the name of an option to lower case and strips
-        underscores, so matching is more user-friendly.
-        """
-        lower = optionstr.lower()
-        return lower.replace("_", "")
 
     def __init__(self) -> None:
         super().__init__()
         self._read_files: List[str] = list()
+
+    def optionxform(self, optionstr: str) -> str:
+        """
+        Override so that option names are NOT case corrected.
+
+        Note: This is overridden in the CamelCaseConfigParser.
+
+        :return: option string exactly as is
+        """
+        return optionstr
 
     def read(self, filenames: _Path,
              encoding: Optional[str] = None) -> List[str]:
@@ -146,3 +160,17 @@ class CamelCaseConfigParser(configparser.RawConfigParser):
         if special_nones and lower in special_nones:
             return None
         raise ValueError(f"invalid truth value {value}")
+
+
+class CamelCaseConfigParser(TypedConfigParser):
+    """
+    Extends the Parser to allow for differences in case and underscores
+    """
+    __slots__ = []
+
+    def optionxform(self, optionstr: str) -> str:
+        """
+        Transforms the name of an option to lower case and strips
+        underscores, so matching is more user-friendly.
+        """
+        return optionxform(optionstr)

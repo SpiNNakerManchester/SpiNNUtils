@@ -167,6 +167,9 @@ class ConfigChecker(object):
             else:
                 return
 
+            if option.startswith("@"):
+                raise ConfigException(
+                    f"{self._file_path} has {option=} which starts with @")
             if not self._configs.has_option(section, option):
                 raise ConfigException(
                     f"{self._file_path} has unexpected {section=} {option=}")
@@ -218,6 +221,8 @@ class ConfigChecker(object):
                 raise ConfigException(
                     f"in {self._default_cfgs[-1]} {section=} was never used")
             for option in current_config.options(section):
+                if option.startswith("@"):
+                    continue
                 if option not in self._used_cfgs[section]:
                     raise ConfigException(
                         f"in {self._default_cfgs[-1]} cfg "

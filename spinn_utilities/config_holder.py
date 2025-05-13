@@ -24,7 +24,6 @@ from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import (
     FormatAdapter, ConfiguredFilter, ConfiguredFormatter)
 
-# pylint: disable=global-statement
 logger = FormatAdapter(logging.getLogger(__file__))
 
 __config: Optional[CamelCaseConfigParser] = None

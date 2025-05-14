@@ -30,7 +30,6 @@ class OrderedSet(MutableSet, Generic[T]):
     )
 
     def __init__(self, iterable: Optional[Iterable[T]] = None):
-        # pylint: disable=super-init-not-called
         # Always use OrderedDict as plain dict does not support
         # __reversed__ and key indexing
         self._map: Dict[T, None] = OrderedDict()
@@ -81,7 +80,7 @@ class OrderedSet(MutableSet, Generic[T]):
         for item in iterable:
             self.add(item)
 
-    def pop(self, last: bool = True) -> T:  # pylint: disable=arguments-differ
+    def pop(self, last: bool = True) -> T:
         key = self.peek(last)
         self.discard(key)
         return key

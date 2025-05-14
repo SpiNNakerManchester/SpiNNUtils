@@ -26,6 +26,8 @@ from spinn_utilities.log import (
 
 logger = FormatAdapter(logging.getLogger(__file__))
 
+# pylint: disable=global-statement
+# Any cleaner method than globals would add extra overhead
 __config: Optional[CamelCaseConfigParser] = None
 __default_config_files: List[str] = []
 __config_file: Optional[str] = None

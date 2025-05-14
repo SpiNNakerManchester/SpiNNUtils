@@ -30,7 +30,6 @@ class RangedListOfList(RangedList[List[T]], Generic[T]):
     """
     A Ranged object for lists of list.
     """
-    # pylint: disable=unused-argument
     @overrides(RangedList.listness_check)
     def listness_check(self, value: _ValueType) -> bool:
         if callable(value):

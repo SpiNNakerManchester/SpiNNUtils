@@ -99,4 +99,3 @@ class AbstractView(
             self, key: str, value: T, use_list_as_value: bool = False) -> None:
         raise NotImplementedError
 
-

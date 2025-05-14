@@ -120,11 +120,10 @@ class ProgressBar(object):
             chars_to_print = length - self._chars_done
 
         for _ in range(int(chars_to_print)):
-            self._print_progress_unit(chars_to_print)
+            self._print_progress_unit()
         self._destination.flush()
 
-    def _print_progress_unit(self, chars_to_print: int) -> None:
-        # pylint: disable=unused-argument
+    def _print_progress_unit(self) -> None:
         print(self._step_character, end='', file=self._destination)
 
     def _print_progress_done(self) -> None:

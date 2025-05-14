@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 from typing import List, Optional
+from spinn_utilities.log import FormatAdapter
 from spinn_utilities.ordered_set import OrderedSet
+
+logger = FormatAdapter(logging.getLogger(__file__))
 
 
 class ExecutableFinder(object):
@@ -141,9 +145,12 @@ class ExecutableFinder(object):
 
         in_folders = set()
         for folder in folders:
-            for file_name in os.listdir(folder):
-                if file_name.endswith(".aplx"):
-                    in_folders.add(os.path.join(folder, file_name))
+            try:
+                for file_name in os.listdir(folder):
+                    if file_name.endswith(".aplx"):
+                        in_folders.add(os.path.join(folder, file_name))
+            except FileNotFoundError:
+                logger.error(f"Directory {folder} not found")
 
         used_binaries = set()
         if self._binary_log:

@@ -113,6 +113,7 @@ class Replacer(LogSqlLiteDatabase):
                         replacement = parts[i]
                     replaced = replaced.replace(match, replacement, 1)
             except Exception:  # pylint: disable=broad-except
+                # If anything goes wrong don't do replace
                 return None
         return (log_level, file_name, line_num, replaced)
 

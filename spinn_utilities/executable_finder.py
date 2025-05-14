@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 from typing import List, Optional
+from spinn_utilities.log import FormatAdapter
 from spinn_utilities.ordered_set import OrderedSet
+
+logger = FormatAdapter(logging.getLogger(__file__))
 
 
 class ExecutableFinder(object):
@@ -34,7 +38,7 @@ class ExecutableFinder(object):
                 # It might now exist if run in parallel
                 try:
                     os.makedirs(global_reports)
-                except Exception:  # pylint: disable=broad-except
+                except FileExistsError:
                     pass
             self._paths_log: Optional[str] = os.path.join(
                 global_reports, "binary_paths_used.log")
@@ -57,12 +61,9 @@ class ExecutableFinder(object):
         """
         self._binary_search_paths.add(path)
         if self._paths_log:
-            try:
-                with open(self._paths_log, "a", encoding="utf-8") as log_file:
-                    log_file.write(path)
-                    log_file.write("\n")
-            except Exception:  # pylint: disable=broad-except
-                pass
+            with open(self._paths_log, "a", encoding="utf-8") as log_file:
+                log_file.write(path)
+                log_file.write("\n")
 
     @property
     def binary_paths(self) -> str:
@@ -92,13 +93,10 @@ class ExecutableFinder(object):
             # If this filename exists, return it
             if os.path.isfile(potential_filename):
                 if self._binary_log:
-                    try:
-                        with open(self._binary_log, "a", encoding="utf-8") \
-                                as log_file:
-                            log_file.write(potential_filename)
-                            log_file.write("\n")
-                    except Exception:  # pylint: disable=broad-except
-                        pass
+                    with open(self._binary_log, "a", encoding="utf-8") \
+                            as log_file:
+                        log_file.write(potential_filename)
+                        log_file.write("\n")
                 return potential_filename
 
         # No executable found
@@ -151,9 +149,8 @@ class ExecutableFinder(object):
                 for file_name in os.listdir(folder):
                     if file_name.endswith(".aplx"):
                         in_folders.add(os.path.join(folder, file_name))
-            except Exception:  # pylint: disable=broad-except
-                # Skip folders not found
-                pass
+            except FileNotFoundError:
+                logger.error(f"Directory {folder} not found")
 
         used_binaries = set()
         if self._binary_log:
@@ -183,12 +180,3 @@ class ExecutableFinder(object):
             os.remove(self._paths_log)
         if self._binary_log and os.path.isfile(self._binary_log):
             os.remove(self._binary_log)
-
-
-if __name__ == "__main__":
-    ef = ExecutableFinder()
-    try:
-        ef.check_logs()
-        ef.clear_logs()
-    except Exception as ex:  # pylint: disable=broad-except
-        print(ex)

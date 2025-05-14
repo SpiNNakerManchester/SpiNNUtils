@@ -87,7 +87,7 @@ class RangedList(AbstractList[T], Generic[T]):
                                  "determine the unsupplied size") from e
         super().__init__(size=size, key=key)
         if not use_list_as_value and (
-                not self.is_list(value, size) or self.__length(value) != size):
+                not self.is_list(value) or self.__length(value) != size):
             self._default: Optional[T] = cast(Optional[T], value)
         else:
             self._default = None
@@ -290,10 +290,8 @@ class RangedList(AbstractList[T], Generic[T]):
                 previous_value = value
         yield (previous_start, slice_stop, previous_value)
 
-    # pylint: disable=unused-argument
     @final
-    def is_list(self, value: _ValueType,
-                size: Optional[int]) -> TypeGuard[_ListType]:
+    def is_list(self, value: _ValueType) -> TypeGuard[_ListType]:
         """
         Determines if the value should be treated as a list.
 
@@ -353,7 +351,7 @@ class RangedList(AbstractList[T], Generic[T]):
         """
 
         # If the value to set is a list, just copy the values
-        if not use_list_as_value and self.is_list(value, self._size):
+        if not use_list_as_value and self.is_list(value):
             self._ranges = self.as_list(value, self._size)
             self._ranged_based = False
 
@@ -443,8 +441,7 @@ class RangedList(AbstractList[T], Generic[T]):
             return  # Empty list so do nothing
 
         # If the value to set is a list, set the values directly
-        if not use_list_as_value and self.is_list(
-                value, size=slice_stop - slice_start):
+        if not use_list_as_value and self.is_list(value):
             return self._set_values_list(range(slice_start, slice_stop), value)
 
         # If non-ranged-based, set the values directly
@@ -523,7 +520,7 @@ class RangedList(AbstractList[T], Generic[T]):
         :type ids: iter(int) or numpy.array
         :param value:
         """
-        if not use_list_as_value and self.is_list(value, len(ids)):
+        if not use_list_as_value and self.is_list(value):
             self._set_values_list(ids, value)
         else:
             for id_value in ids:

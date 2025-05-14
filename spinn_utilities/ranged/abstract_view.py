@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
-from typing import Generic, Iterable, Optional, Union, TYPE_CHECKING
+from typing import Generic, Iterable, Optional, Sequence, Union, TYPE_CHECKING
+from spinn_utilities.abstract_base import abstractmethod
 from spinn_utilities.overrides import overrides
 from .abstract_dict import AbstractDict, T
 if TYPE_CHECKING:
     from .range_dictionary import RangeDictionary
 
 
-class AbstractView(  # pylint: disable=abstract-method
+class AbstractView(
         AbstractDict[T], Generic[T]):
     """
     A view over a ranged dictionary.
@@ -86,3 +87,14 @@ class AbstractView(  # pylint: disable=abstract-method
     @overrides(AbstractDict.keys)
     def keys(self) -> Iterable[str]:
         return self._range_dict.keys()
+
+    @abstractmethod
+    @overrides(AbstractDict.ids)
+    def ids(self) -> Sequence[int]:
+        raise NotImplementedError
+
+    @abstractmethod
+    @overrides(AbstractDict.set_value)
+    def set_value(
+            self, key: str, value: T, use_list_as_value: bool = False) -> None:
+        raise NotImplementedError

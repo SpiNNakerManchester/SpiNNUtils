@@ -58,5 +58,4 @@ def reset() -> None:
     .. note::
         Only normally needed by test code.
     """
-    global _already_issued     # pylint: disable=global-statement
-    _already_issued = set()
+    _already_issued.clear()

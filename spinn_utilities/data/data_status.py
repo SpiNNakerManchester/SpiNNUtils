@@ -40,7 +40,8 @@ class DataStatus(Enum):
         return obj
 
     def __init__(self, value: int, exception: Type[SpiNNUtilsException]):
-        # pylint: disable=unused-argument
+        # use argument
+        _ = value
         self._exception = exception
 
     def exception(self, data: str) -> SpiNNUtilsException:

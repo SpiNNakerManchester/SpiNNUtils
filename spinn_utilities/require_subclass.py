@@ -55,7 +55,7 @@ def require_subclass(required_class: Type) -> Callable[[Type], Type]:
     # really don't want to debug that stuff.
 
     def decorate(target_class: Type) -> Type:
-        _ = target_class
+        __class__ = target_class  # @ReservedAssignment # noqa: F841
 
         def __init_subclass__(
                 cls: Type, allow_derivation: bool = False,

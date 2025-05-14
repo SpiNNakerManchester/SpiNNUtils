@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from .range_dictionary import RangeDictionary
 
 
-class AbstractView(  # pylint: disable=abstract-method
+class AbstractView(
         AbstractDict[T], Generic[T]):
     """
     A view over a ranged dictionary.

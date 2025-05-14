@@ -285,6 +285,7 @@ class FormatAdapter(logging.LoggerAdapter):
                 messages = cls.__log_store.retreive_log_messages(
                     cls.__repeat_at_end)
             except Exception:  # pylint: disable=broad-except
+                # No matter what we don't want an extra Exception reported here
                 pass
 
         messages.extend(map(lambda x: x[2],
@@ -317,15 +318,11 @@ class FormatAdapter(logging.LoggerAdapter):
             Should only be called externally from test code!
         """
         result: List[Tuple[datetime, int, str]] = []
-        try:
-            for timestamp, level, message in cls.__not_stored_messages:
-                if level >= min_level:
-                    result.append((timestamp, level, message))
-            return result
-        except Exception:  # pylint: disable=broad-except
-            return result
-        finally:
-            cls.__not_stored_messages = []
+        for timestamp, level, message in cls.__not_stored_messages:
+            if level >= min_level:
+                result.append((timestamp, level, message))
+        cls.__not_stored_messages = []
+        return result
 
 
 atexit.register(FormatAdapter.atexit_handler)

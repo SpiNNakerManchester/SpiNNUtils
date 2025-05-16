@@ -14,8 +14,6 @@
 
 from typing import List
 
-# pylint: skip-file
-
 
 class Base(object):
     """ The parent """
@@ -214,7 +212,11 @@ class AddDefaults(Base):
 class RemoveDefaults(Base):
     """removed default values"""
     def defaulted_param(self, x: int, y: int, z: int = 3) -> List[int]:
-        """ Less defaults"""
+        """
+        Less defaults
+
+        mypy: override
+        """
         return [x, y, z]
 
 

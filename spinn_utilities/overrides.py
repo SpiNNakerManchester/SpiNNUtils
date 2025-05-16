@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import inspect
-import os
 from types import FunctionType, MethodType
 from typing import Any, Callable, Iterable, Optional, List, Tuple, TypeVar
 

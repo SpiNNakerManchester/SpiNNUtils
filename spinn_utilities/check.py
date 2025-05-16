@@ -201,11 +201,19 @@ class ChangeOrder(Base):
 class AddDefaults(Base):
     """ Add more default values """
     def four_params(self, x: int, y: int, z: int = 3) -> List[int]:
-        """More default values"""
+        """
+        More default values
+
+        No pylint or mypy error
+        """
         return [x, y, z]
 
     def named_params(self, x: int, *, y: int, z: int = 3) -> List[int]:
-        """More default values"""
+        """
+        More default values
+
+        No pylint or mypy error
+        """
         return [x, y, z]
 
 
@@ -215,6 +223,7 @@ class RemoveDefaults(Base):
         """
         Less defaults
 
+        pylint: signature-differs
         mypy: override
         """
         return [x, y, z]
@@ -223,7 +232,11 @@ class RemoveDefaults(Base):
 class ChangeDefaults(Base):
     """Change default values"""
     def defaulted_param(self, x: int, y: int = 22, z: int = 33) -> List[int]:
-        """ Change defaults"""
+        """
+        Change defaults
+
+        No pylint or mypy error
+        """
         return [x, y, z]
 
 

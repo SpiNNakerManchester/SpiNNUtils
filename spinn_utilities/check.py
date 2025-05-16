@@ -17,12 +17,27 @@ from spinn_utilities.overrides import overrides
 
 
 class Base(object):
-    def foo(self, x: int, y: int, z: int) -> List[int]:
-        """this is the doc"""
+    def four_params(self, x: int, y: int, z: int) -> List[int]:
+        """I have four params including self"""
         return [x, y, z]
 
 
-class Sub(Base):
-    @overrides(Base.foo)
-    def foo(self, x: int, y: int, z: int, w: int) -> List[int]:
+class TooMany(Base):
+    @overrides(Base.four_params)
+    def four_params(self, x: int, y: int, z: int, w: int) -> List[int]:
+        """ Oops 1 param too many"""
         return [w, z, y, x]
+
+
+class TooFew(Base):
+    @overrides(Base.four_params)
+    def four_params(self, x: int, y: int, z: int, w: int) -> List[int]:
+        """ Oops 1 param missing"""
+        return [w, z, y, x]
+
+
+class Renamed(Base):
+    @overrides(Base.four_params)
+    def four_params(self, x: int, p: int, z: int) -> List[int]:
+        """ Oops 1 param missing"""
+        return [x, p, z]

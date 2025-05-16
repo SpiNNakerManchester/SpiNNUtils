@@ -17,8 +17,6 @@ import sys
 import traceback
 from typing import List, Optional, Set
 
-from spinn_utilities.overrides import overrides
-
 
 def all_modules(directory: str, prefix: str,
                 remove_pyc_files: bool = False) -> Set[str]:
@@ -118,7 +116,6 @@ def load_module(
     :param gather_errors:
         True if errors should be gathered, False to report on first error
     """
-    overrides.check_types()
     if exclusions is None:
         exclusions = []
     module = __import__(name)

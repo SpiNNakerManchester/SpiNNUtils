@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from types import FunctionType, MethodType
-from typing import Any, Callable, Iterable, Optional, List, Tuple, TypeVar
+from typing import Any, Callable, Optional, List, Tuple, TypeVar
 
 #: :meta private:
 Method = TypeVar("Method", bound=Callable[..., Any])

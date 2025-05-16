@@ -15,6 +15,8 @@
 from typing import List
 # from spinn_utilities.overrides import overrides
 
+# pylint: skip-file
+
 
 class Base(object):
     """ The parent """
@@ -166,15 +168,27 @@ class ChangeNamed(Base):
 class ChangeOrder(Base):
     """ Changing order of params"""
     def four_params(self, x: int, z: int, y: int) -> List[int]:
-        """I have four params including self"""
+        """
+        I have four params including self
+
+        arguments-differ
+        """
         return [x, y, z]
 
     def named_params(self, x: int, *, z: int, y: int) -> List[int]:
-        """I have two unnamed (including self) and two named params"""
+        """
+        I have two unnamed (including self) and two named params
+
+        No pylint error
+        """
         return [x, y, z]
 
     def defaulted_param(self, x: int, z: int = 3, y: int = 2) -> List[int]:
-        """ I have one defaulted param"""
+        """
+        Changed order
+
+        arguments-renamed
+        """
         return [x, y, z]
 
 

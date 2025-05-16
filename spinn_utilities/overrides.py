@@ -144,12 +144,3 @@ class overrides(object):
             method.__doc__ = (
                 self._superclass_method.__doc__ + (method.__doc__ or ""))
         return method
-
-    @classmethod
-    def check_types(cls) -> None:
-        """
-        If called will trigger check that all parameters are checked.
-
-        Used for testing, to avoid users being affected by the strict checks
-        """
-        cls.__CHECK_TYPES = True

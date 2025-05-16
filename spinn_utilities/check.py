@@ -15,8 +15,6 @@
 from typing import List
 # from spinn_utilities.overrides import overrides
 
-# pylint: skip-file
-
 
 class Base(object):
     """ The parent """
@@ -40,7 +38,8 @@ class TooMany(Base):
         """
         1 param too many
 
-        arguments-differ
+        pylint: arguments-differ
+        mypy: override
         """
         return [x, y, z, w]
 
@@ -48,7 +47,8 @@ class TooMany(Base):
         """
         1 named param too many
 
-        arguments-differ
+        pylint: arguments-differ
+        mypy: override
         """
         return [x, y, z, w]
 
@@ -60,7 +60,7 @@ class ExtraDefaulted(Base):
         """
         OK to add a param if defaulted
 
-        No pylint error
+        No pylint or mypy error
         """
         return [x, y, z, w]
 
@@ -68,7 +68,7 @@ class ExtraDefaulted(Base):
         """
         1 named param too many
 
-        No pylint error
+        No pylint or mypy error
         """
         return [x, y, z, w]
 
@@ -77,7 +77,7 @@ class ExtraDefaulted(Base):
         """
         1 named param too many
 
-        No pylint error
+        No pylint or mypy error
         """
         return [x, y, z, w]
 
@@ -89,7 +89,8 @@ class TooFew(Base):
         """
         1 param missing
 
-        arguments-differ
+        pylint: arguments-differ
+        mypy: override
         """
         return [x, z]
 
@@ -97,7 +98,8 @@ class TooFew(Base):
         """
         1 param missing
 
-        arguments-differ
+        pylint: arguments-differ
+        mypy: override
         """
         return [x, z]
 
@@ -105,7 +107,8 @@ class TooFew(Base):
         """
         1 param missing
 
-        arguments-differ
+        pylint: arguments-differ
+        mypy: override
         """
         return [x, y]
 
@@ -117,7 +120,8 @@ class Renamed(Base):
         """
         1 param renamed
 
-        arguments-renamed
+        pylint: arguments-renamed
+        mypy: no error
         """
         return [x, p, z]
 
@@ -125,7 +129,8 @@ class Renamed(Base):
         """
         1 param renamed
 
-        arguments-differ
+        pylint: arguments-differ
+        mypy: override
         """
         return [x, p, z]
 
@@ -133,7 +138,8 @@ class Renamed(Base):
         """
         I have one defaulted param renamed
 
-        arguments-renamed
+        pylint: arguments-renamed
+        mypy: no error
         """
         return [x, y, p]
 
@@ -144,7 +150,8 @@ class ChangeNamed(Base):
         """
         More named
 
-        arguments-differ
+        pylint: arguments-differ
+        mypy: override
         """
         return [x, y, z]
 
@@ -152,7 +159,8 @@ class ChangeNamed(Base):
         """
         Less named
 
-        arguments-differ
+        pylint: arguments-differ
+        mypy: no error
         """
         return [x, y, z]
 
@@ -160,7 +168,8 @@ class ChangeNamed(Base):
         """
         default now named
 
-        arguments-differ
+        pylint: arguments-differ
+        mypy: override
         """
         return [x, y, z]
 
@@ -171,7 +180,8 @@ class ChangeOrder(Base):
         """
         I have four params including self
 
-        arguments-differ
+        pylint: arguments-differ
+        mypy: override
         """
         return [x, y, z]
 
@@ -179,7 +189,7 @@ class ChangeOrder(Base):
         """
         I have two unnamed (including self) and two named params
 
-        No pylint error
+        No pylint or mypy error
         """
         return [x, y, z]
 
@@ -187,7 +197,8 @@ class ChangeOrder(Base):
         """
         Changed order
 
-        arguments-renamed
+        pylint: arguments-renamed
+        mypy: override
         """
         return [x, y, z]
 
@@ -197,10 +208,10 @@ too_many = TooMany()
 print(too_many.four_params(1, 2, 3, 4))
 print(too_many.named_params(1, y=2, z=3, w=4))
 
-too_many = ExtraDefaulted()
-print(too_many.four_params(1, 2, 3, 4))
-print(too_many.named_params(1, y=2, z=3, w=4))
-print(too_many.defaulted_param(1, 2, 3, 4))
+extra = ExtraDefaulted()
+print(extra.four_params(1, 2, 3, 4))
+print(extra.named_params(1, y=2, z=3, w=4))
+print(extra.defaulted_param(1, 2, 3, 4))
 
 too_few = TooFew()
 print(too_few.four_params(1, 2))

@@ -42,7 +42,8 @@ class TooMany(Base):
         """1 named param too many"""
         return [x, y, z, w]
 
-    def defaulted_param(self, x: int, y: int, z: int = 3, w = 4) -> List[int]:
+    def defaulted_param(
+            self, x: int, y: int, z: int = 3, w: int = 4) -> List[int]:
         """1 named param too many"""
         return [x, y, z, w]
 
@@ -58,7 +59,8 @@ class ExtraDefaulted(Base):
         """1 named param too many"""
         return [x, y, z, w]
 
-    def defaulted_param(self, x: int, y: int, z: int = 3, w = 4) -> List[int]:
+    def defaulted_param(
+            self, x: int, y: int, z: int = 3, w: int = 4) -> List[int]:
         """1 named param too many"""
         return [x, y, z, w]
 

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from typing import List
-from spinn_utilities.overrides import overrides
+# from spinn_utilities.overrides import overrides
 
 
 class Base(object):

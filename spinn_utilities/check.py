@@ -23,21 +23,21 @@ class Base(object):
 
 
 class TooMany(Base):
-    @overrides(Base.four_params)
+    # overrides(Base.four_params)
     def four_params(self, x: int, y: int, z: int, w: int) -> List[int]:
         """ Oops 1 param too many"""
         return [w, z, y, x]
 
 
 class TooFew(Base):
-    @overrides(Base.four_params)
+    # overrides(Base.four_params)
     def four_params(self, x: int, y: int, z: int, w: int) -> List[int]:
         """ Oops 1 param missing"""
         return [w, z, y, x]
 
 
 class Renamed(Base):
-    @overrides(Base.four_params)
+    # overrides(Base.four_params)
     def four_params(self, x: int, p: int, z: int) -> List[int]:
-        """ Oops 1 param missing"""
+        """ Oops 1 param renamed """
         return [x, p, z]

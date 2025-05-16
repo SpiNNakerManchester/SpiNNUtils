@@ -20,8 +20,6 @@ from spinn_utilities.overrides import overrides
 WRONG_ARGS = "Method has {} arguments but super class method has 4 arguments"
 BAD_DEFS = "Default arguments don't match super class method"
 
-overrides.check_types()
-
 
 class Base(object):
     def foo(self, x: int, y: int, z: int) -> List[int]:
@@ -323,16 +321,6 @@ def test_sister_different2() -> None:
         pass
 
 
-def test_add_return() -> None:
-    with pytest.raises(AttributeError) as e:
-        class Sub(Base):
-            @overrides(Base.bad)
-            def bad(self, x: int, y: int, z: int) -> List[int]:
-                return super().foo(z, y, x)
-    assert str(e.value) == "Super Method bad has no return type, " \
-                           "while this does"
-
-
 def test_dont_add_return() -> None:
     # This demonstrates that if both have no return we can not check it.
     # It would be better if there was an error!
@@ -341,17 +329,6 @@ def test_dont_add_return() -> None:
         def bad(self, x: int, y: int, z: int):  # type: ignore[no-untyped-def]
             return super().foo(z, y, x)
     assert Sub().bad(1, 2, 3) == [3, 2, 1]
-
-
-def test_missing_return_type() -> None:
-    with pytest.raises(AttributeError) as e:
-        class Sub(Base):
-            @property
-            @overrides(Base.boo)
-            def boo(self):  # type: ignore[no-untyped-def]
-                return 2
-    assert str(e.value) == "Method boo has no arguments " \
-                           "so should declare a return type"
 
 
 def test_with_missing_return() -> None:
@@ -373,13 +350,3 @@ def test_with_missing_return_super() -> None:
         @overrides(Base.with_param_no_return2)
         def with_param_no_return2(self, x: int) -> None:
             pass
-
-
-def test_no_param_missing_return() -> None:
-    with pytest.raises(AttributeError) as e:
-        class Sub(Base):
-            @overrides(Base.no_param_no_return)
-            def no_param_no_return(self):   # type: ignore[no-untyped-def]
-                pass
-    assert str(e.value) == "Super Method no_param_no_return has " \
-                           "no arguments so should declare a return type"

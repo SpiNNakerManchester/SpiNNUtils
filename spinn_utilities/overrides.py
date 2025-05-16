@@ -29,10 +29,6 @@ class overrides(object):
     copies the doc-string for the method, and enforces that the method
     overridden is specified, making maintenance easier.
     """
-    # This near constant is changed by unit tests to check our code
-    # Github actions sets TYPE_OVERRIDES as True
-    __CHECK_TYPES: Optional[Any] = os.getenv("TYPE_OVERRIDES")
-
     __slots__ = [
         # The method in the superclass that this method overrides
         "_superclass_method",

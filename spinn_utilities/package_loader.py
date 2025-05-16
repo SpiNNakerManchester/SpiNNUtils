@@ -118,7 +118,6 @@ def load_module(
     :param gather_errors:
         True if errors should be gathered, False to report on first error
     """
-    overrides.check_types()
     if exclusions is None:
         exclusions = []
     module = __import__(name)

@@ -260,8 +260,7 @@ class FormatAdapter(logging.LoggerAdapter):
                 log_kwargs["exc_info"] = kwargs["exc_info"]
             self.do_log(level, message, (), **log_kwargs)
 
-    @overrides(logging.LoggerAdapter.process, extend_doc=False,
-               adds_typing=True)
+    @overrides(logging.LoggerAdapter.process, extend_doc=False)
     def process(self, msg: object, kwargs: Any) -> Tuple[object, dict]:
         """
         Process the logging message and keyword arguments passed in to a

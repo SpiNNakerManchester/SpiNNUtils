@@ -23,5 +23,5 @@ class Base(object):
 
 class Sub(Base):
     @overrides(Base.foo)
-    def foo(self, x: int, y: int, z: int, w: int) -> List[int]:
-        return [w, z, y, x]
+    def foo(self, x: int, z: int) -> List[int]:
+        return [x, z]

@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from typing import List
-# from spinn_utilities.overrides import overrides
+
+# pylint: skip-file
 
 
 class Base(object):
@@ -33,7 +34,6 @@ class Base(object):
 
 class TooMany(Base):
     """  param too many"""
-    # overrides(Base.four_params)
     def four_params(self, x: int, y: int, z: int, w: int) -> List[int]:
         """
         1 param too many
@@ -55,7 +55,6 @@ class TooMany(Base):
 
 class ExtraDefaulted(Base):
     """ OK to add a param if defaulted """
-    # overrides(Base.four_params)
     def four_params(self, x: int, y: int, z: int, w: int = 2) -> List[int]:
         """
         OK to add a param if defaulted
@@ -84,7 +83,6 @@ class ExtraDefaulted(Base):
 
 class TooFew(Base):
     """1 param missing"""
-    # overrides(Base.four_params)
     def four_params(self, x: int, z: int) -> List[int]:
         """
         1 param missing
@@ -115,7 +113,6 @@ class TooFew(Base):
 
 class Renamed(Base):
     """ 1 param renamed """
-    # overrides(Base.four_params)
     def four_params(self, x: int, p: int, z: int) -> List[int]:
         """
         1 param renamed
@@ -203,6 +200,31 @@ class ChangeOrder(Base):
         return [x, y, z]
 
 
+class AddDefaults(Base):
+    """ Add more default values """
+    def four_params(self, x: int, y: int, z: int = 3) -> List[int]:
+        """More default values"""
+        return [x, y, z]
+
+    def named_params(self, x: int, *, y: int, z: int = 3) -> List[int]:
+        """More default values"""
+        return [x, y, z]
+
+
+class RemoveDefaults(Base):
+    """removed default values"""
+    def defaulted_param(self, x: int, y: int, z: int = 3) -> List[int]:
+        """ Less defaults"""
+        return [x, y, z]
+
+
+class ChangeDefaults(Base):
+    """removed default values"""
+    def defaulted_param(self, x: int, y: int = 22, z: int = 33) -> List[int]:
+        """ Less defaults"""
+        return [x, y, z]
+
+
 # while if all works does not mean we like it
 too_many = TooMany()
 print(too_many.four_params(1, 2, 3, 4))
@@ -232,3 +254,13 @@ change_order = ChangeOrder()
 print(change_order.four_params(1, 2, 3))
 print(change_order.named_params(1, y=2, z=3))
 print(change_order.defaulted_param(1, 2, 3))
+
+add_defaults = AddDefaults()
+print(add_defaults.four_params(1, 2))
+print(add_defaults.named_params(1, y=2))
+
+remove_defaults = RemoveDefaults()
+print(remove_defaults.defaulted_param(1, 2))
+
+change_defaults = ChangeDefaults()
+print(change_defaults.defaulted_param(1))

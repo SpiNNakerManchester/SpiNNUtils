@@ -226,7 +226,7 @@ class FormatAdapter(logging.LoggerAdapter):
         super().__init__(logger, extra)
         self.do_log = logger._log  # pylint: disable=protected-access
 
-    @overrides(logging.LoggerAdapter.log, extend_doc=False, adds_typing=True)
+    @overrides(logging.LoggerAdapter.log, extend_doc=False)
     def log(self, level: int, msg: object,
             *args: object, **kwargs: object) -> None:
         """

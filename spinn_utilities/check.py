@@ -219,9 +219,9 @@ class RemoveDefaults(Base):
 
 
 class ChangeDefaults(Base):
-    """removed default values"""
+    """Change default values"""
     def defaulted_param(self, x: int, y: int = 22, z: int = 33) -> List[int]:
-        """ Less defaults"""
+        """ Change defaults"""
         return [x, y, z]
 
 

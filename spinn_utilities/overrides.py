@@ -46,14 +46,12 @@ class overrides(object):
         "_relax_name_check",
         # The name of the thing being overridden for error messages
         "_override_name",
-        # True if this method adds typing info not in the original
-        "_adds_typing"
     ]
 
     def __init__(
             self, super_class_method: Callable, *, extend_doc: bool = True,
             additional_arguments: Optional[Iterable[str]] = None,
-            extend_defaults: bool = False, adds_typing: bool = False,):
+            extend_defaults: bool = False,):
         """
         :param super_class_method: The method to override in the superclass
         :param bool extend_doc:
@@ -65,9 +63,6 @@ class overrides(object):
             superclass method, e.g., that are to be injected
         :param bool extend_defaults:
             Whether the subclass may specify extra defaults for the parameters
-        :param adds_typing:
-            Allows more typing (of non additional) than in the subclass.
-            Should only be used for built in super classes
         """
         if isinstance(super_class_method, property):
             super_class_method = super_class_method.fget
@@ -83,7 +78,6 @@ class overrides(object):
             self._additional_arguments = frozenset(additional_arguments)
         else:
             self._additional_arguments = frozenset()
-        self._adds_typing = adds_typing
 
     @staticmethod
     def __match_defaults(default_args: Optional[List[Any]],
@@ -96,55 +90,6 @@ class overrides(object):
         if extend_ok:
             return len(default_args) >= len(super_defaults)
         return len(default_args) == len(super_defaults)
-
-    def _verify_types(self, method_args: inspect.FullArgSpec,
-                      super_args: inspect.FullArgSpec,
-                      all_args: List[str]) -> None:
-        """
-        Check that the arguments match.
-        """
-        if not self.__CHECK_TYPES:
-            return
-        if "self" in all_args:
-            all_args.remove("self")
-        elif "cls" in all_args:
-            all_args.remove("cls")
-        method_types = method_args.annotations
-        super_types = super_args.annotations
-        for arg in all_args:
-            if arg not in super_types and not self._adds_typing:
-                raise AttributeError(
-                    f"Super Method {self._superclass_method.__name__} "
-                    f"has untyped arguments including {arg}")
-            if arg not in method_types:
-                raise AttributeError(
-                    f"Method {self._superclass_method.__name__} "
-                    f"has untyped arguments including {arg}")
-
-        if len(all_args) == 0:
-            if "return" not in super_types and not self._adds_typing and \
-                    not method_args.varkw and not method_args.varargs:
-                raise AttributeError(
-                    f"Super Method {self._superclass_method.__name__} "
-                    f"has no arguments so should declare a return type")
-            if "return" not in method_types and \
-                    not method_args.varkw and not method_args.varargs:
-                raise AttributeError(
-                    f"Method {self._superclass_method.__name__} "
-                    f"has no arguments so should declare a return type")
-
-        if "return" in super_types:
-            if "return" not in method_types:
-                if super_types["return"] is not None:
-                    raise AttributeError(
-                        f"Method {self._superclass_method.__name__} "
-                        f"has no return type, while super does")
-        else:
-            if "return" in method_types and not self._adds_typing:
-                if method_types["return"] is not None:
-                    raise AttributeError(
-                        f"Super Method {self._superclass_method.__name__} "
-                        f"has no return type, while this does")
 
     def __verify_method_arguments(self, method: Method) -> None:
         """
@@ -171,7 +116,6 @@ class overrides(object):
                 default_args, super_args.defaults, self._extend_defaults):
             raise AttributeError(
                 f"Default arguments don't match {self._override_name}")
-        self._verify_types(method_args, super_args, all_args)
 
     def __call__(self, method: Method) -> Method:
         """

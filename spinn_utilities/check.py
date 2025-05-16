@@ -26,6 +26,10 @@ class Base(object):
         """I have two unnamed (including self) and two named params"""
         return [x, y, z]
 
+    def defaulted_param(self, x: int, y: int, z: int = 3) -> List[int]:
+        """ I have one defaulted param"""
+        return [x, y, z]
+
 
 class TooMany(Base):
     """  param too many"""
@@ -38,15 +42,23 @@ class TooMany(Base):
         """1 named param too many"""
         return [x, y, z, w]
 
+    def defaulted_param(self, x: int, y: int, z: int = 3, w = 4) -> List[int]:
+        """1 named param too many"""
+        return [x, y, z, w]
+
 
 class ExtraDefaulted(Base):
-    """ Ok to add a param if defaulted """
+    """ OK to add a param if defaulted """
     # overrides(Base.four_params)
     def four_params(self, x: int, y: int, z: int, w: int = 2) -> List[int]:
-        """ Ok to add a param if defaulted """
+        """ OK to add a param if defaulted """
         return [x, y, z, w]
 
     def named_params(self, x: int, *, y: int, z: int, w: int = 2) -> List[int]:
+        """1 named param too many"""
+        return [x, y, z, w]
+
+    def defaulted_param(self, x: int, y: int, z: int = 3, w = 4) -> List[int]:
         """1 named param too many"""
         return [x, y, z, w]
 
@@ -62,6 +74,10 @@ class TooFew(Base):
         """ 1 param missing"""
         return [x, z]
 
+    def defaulted_param(self, x: int, y: int) -> List[int]:
+        """ I have one defaulted param"""
+        return [x, y]
+
 
 class Renamed(Base):
     """ 1 param renamed """
@@ -74,20 +90,48 @@ class Renamed(Base):
         """ 1 param renamed """
         return [x, p, z]
 
+    def defaulted_param(self, x: int, y: int, p: int = 3) -> List[int]:
+        """ I have one defaulted param renamed"""
+        return [x, y, p]
+
+
+class ChangeNamed(Base):
+    """ Changing which params have to be named """
+    def four_params(self, x: int, y: int, *, z: int) -> List[int]:
+        """More named"""
+        return [x, y, z]
+
+    def named_params(self, x: int, *, y: int, z: int) -> List[int]:
+        """Less named"""
+        return [x, y, z]
+
+    def defaulted_param(self, x: int, y: int, *, z: int = 3) -> List[int]:
+        """ default now named """
+        return [x, y, z]
+
 
 # while if all works does not mean we like it
 too_many = TooMany()
 print(too_many.four_params(1, 2, 3, 4))
 print(too_many.named_params(1, y=2, z=3, w=4))
+print(too_many.defaulted_param(1, 2, 3, 4))
 
 too_many = ExtraDefaulted()
 print(too_many.four_params(1, 2, 3, 4))
 print(too_many.named_params(1, y=2, z=3, w=4))
+print(too_many.defaulted_param(1, 2, 3, 4))
 
 too_few = TooFew()
 print(too_few.four_params(1, 2))
 print(too_few.named_params(1, z=2))
+print(too_few.defaulted_param(1, 2))
 
 renamed = Renamed()
 print(renamed.four_params(1, 2, 3))
 print(renamed.named_params(1, p=2, z=3))
+print(renamed.defaulted_param(1, 2, p=3))
+
+change_named = ChangeNamed()
+print(change_named.four_params(1, 2, z=3))
+print(change_named.named_params(1, y=2, z=3))
+print(change_named.defaulted_param(1, 2, z=3))

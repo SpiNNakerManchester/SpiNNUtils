@@ -103,7 +103,7 @@ class ChangeNamed(Base):
         """More named"""
         return [x, y, z]
 
-    def named_params(self, x: int, *, y: int, z: int) -> List[int]:
+    def named_params(self, x: int, y: int, *, z: int) -> List[int]:
         """Less named"""
         return [x, y, z]
 

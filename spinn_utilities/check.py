@@ -162,6 +162,7 @@ class ChangeNamed(Base):
         """
         return [x, y, z]
 
+
 class ChangeOrder(Base):
     """ Changing order of params"""
     def four_params(self, x: int, z: int, y: int) -> List[int]:
@@ -175,7 +176,6 @@ class ChangeOrder(Base):
     def defaulted_param(self, x: int, z: int = 3, y: int = 2) -> List[int]:
         """ I have one defaulted param"""
         return [x, y, z]
-
 
 
 # while if all works does not mean we like it

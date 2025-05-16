@@ -23,7 +23,7 @@ class Base(object):
         return [x, y, z]
 
     def named_params(self, x: int, *, y: int, z: int) -> List[int]:
-        """I have twoe unnamed (including self) and two named params"""
+        """I have two unnamed (including self) and two named params"""
         return [x, y, z]
 
 

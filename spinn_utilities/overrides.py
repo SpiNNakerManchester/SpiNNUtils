@@ -51,18 +51,6 @@ class overrides(object):
         self._superclass_method = super_class_method
         self._extend_doc = bool(extend_doc)
 
-    @staticmethod
-    def __match_defaults(default_args: Optional[List[Any]],
-                         super_defaults: Optional[Tuple[Any]],
-                         extend_ok: bool) -> bool:
-        if default_args is None:
-            return super_defaults is None
-        elif super_defaults is None:
-            return extend_ok
-        if extend_ok:
-            return len(default_args) >= len(super_defaults)
-        return len(default_args) == len(super_defaults)
-
     def __call__(self, method: Method) -> Method:
         """
         Apply the decorator to the given method.

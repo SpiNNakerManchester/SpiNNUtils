@@ -32,7 +32,7 @@ class TooMany(Base):
     # overrides(Base.four_params)
     def four_params(self, x: int, y: int, z: int, w: int) -> List[int]:
         """1 param too many"""
-        return  [x, y, z, w]
+        return [x, y, z, w]
 
     def named_params(self, x: int, *, y: int, z: int, w: int) -> List[int]:
         """1 named param too many"""

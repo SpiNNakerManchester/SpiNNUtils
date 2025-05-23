@@ -153,9 +153,9 @@ class CitationAggregator(object):
         """
         Handle a C code dependency.
 
-        :param str top_citation_file: YAML file for the top citation file
+        :param top_citation_file: YAML file for the top citation file
         :param str module: module to find
-        :param set(str) modules_seen_so_far:
+        :param modules_seen_so_far:
         """
         cleaned_path = self.locate_path_for_c_dependency(module)
         if cleaned_path is not None:
@@ -306,9 +306,7 @@ class CitationAggregator(object):
 
         :param imported_module:
             the module currently trying to find the version of
-        :type imported_module: python module
         :return: reference entry for this python module
-        :rtype: dict
         """
         reference_entry: Dict[str, Any] = dict()
         reference_entry[REFERENCES_TYPE_TYPE] = REFERENCES_SOFTWARE_TYPE
@@ -375,7 +373,7 @@ def generate_aggregate(arguments: Optional[List[str]] = None) -> None:
     """
     Command-line tool to generate a single ``citation.cff`` from others.
 
-    :param list(str) arguments: Command line arguments.
+    :param arguments: Command line arguments.
 
         * ``--output_path``: \
             Where to write the aggregate file

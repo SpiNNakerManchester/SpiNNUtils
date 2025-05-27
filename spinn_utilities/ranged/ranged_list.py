@@ -40,15 +40,14 @@ def function_iterator(
 
         list(function_iterator(lambda x: x * 2 , 3, ids=[2, 4, 6]))
 
-    :param ~collections.abc.Callable[[int],object] function:
+    :param function:
         A function with one integer parameter that returns a value
-    :param int size:
+    :param size:
         The number of elements to put in the list. If used, the function will
         be called with ``range(size)``. Ignored if ``ids`` provided
-    :param ~collections.abc.Iterable(int) ids:
+    :param ids:
         A list of IDs to call the function for or ``None`` to use the size.
     :return: a sequence of values returned by the function
-    :rtype: ~collections.abc.Iterable(object)
     """
     if ids is None:
         ids = range(size)
@@ -72,12 +71,10 @@ class RangedList(AbstractList[T], Generic[T]):
         :param size:
             Fixed length of the list;
             if ``None``, the value must be a sized object.
-        :type size: int or None
         :param value: value to given to all elements in the list
-        :type value: object or ~collections.abc.Sized
         :param key: The dict key this list covers.
             This is used only for better Exception messages
-        :param bool use_list_as_value: True if the value *is* a list
+        :param use_list_as_value: True if the value *is* a list
         """
         if size is None:
             try:
@@ -370,8 +367,8 @@ class RangedList(AbstractList[T], Generic[T]):
             Use ``set`` or ``__set__`` for slices, tuples, lists and negative
             indexes.
 
-        :param int the_id: Single ID
-        :param object value: The value to save
+        :param the_id: Single ID
+        :param value: The value to save
         """
         the_id = self._check_id_in_range(the_id)
 
@@ -431,9 +428,9 @@ class RangedList(AbstractList[T], Generic[T]):
             Use ``set`` or ``__set__`` for slices, tuples, lists and negative
             indexes.
 
-        :param int slice_start: Start of the range
-        :param int slice_stop: Exclusive end of the range
-        :param object value: The value to save
+        :param slice_start: Start of the range
+        :param slice_stop: Exclusive end of the range
+        :param value: The value to save
         """
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
@@ -516,8 +513,7 @@ class RangedList(AbstractList[T], Generic[T]):
         """
         Sets a already existing key to the new value. For the ids specified.
 
-        :param str key:
-        :type ids: iter(int) or numpy.array
+        :param key:
         :param value:
         """
         if not use_list_as_value and self.is_list(value):
@@ -533,8 +529,7 @@ class RangedList(AbstractList[T], Generic[T]):
         Support for the ``list[x] =`` format.
 
         :param selector: A single ID, a slice of IDs or a list of IDs
-        :type selector: int or slice or list(int)
-        :param object value:
+        :param value:
         """
         if selector is None:
             self.set_value(value, use_list_as_value=use_list_as_value)
@@ -559,8 +554,6 @@ class RangedList(AbstractList[T], Generic[T]):
 
         .. note::
             As this is a copy it will not reflect any updates.
-
-        :rtype: list(tuple(int,int,object))
         """
         if self._ranged_based:
             return list(self.__the_ranges)
@@ -573,7 +566,7 @@ class RangedList(AbstractList[T], Generic[T]):
         .. note::
             Does not change the value of any element in the list.
 
-        :param object default: new default value
+        :param default: new default value
         """
         self._default = default
 
@@ -583,7 +576,6 @@ class RangedList(AbstractList[T], Generic[T]):
         Returns the default value for this list.
 
         :return: Default Value
-        :rtype: object
         """
         try:
             return self._default
@@ -597,7 +589,7 @@ class RangedList(AbstractList[T], Generic[T]):
         Depth is just enough so that any changes done through the RangedList
         API on other will not change self
 
-        :param RangedList other: Another Ranged List to copy the values from
+        :param other: Another Ranged List to copy the values from
         """
         # Assume the _default and key remain unchanged
         self._ranged_based = other.range_based()
@@ -616,7 +608,6 @@ class RangedList(AbstractList[T], Generic[T]):
         API on other will not change self
 
         :return: The copy
-        :rtype: RangedList
         """
         clone: RangedList[T] = RangedList(
             self._size, self._default, self._key)

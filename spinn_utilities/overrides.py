@@ -56,14 +56,14 @@ class overrides(object):
             extend_defaults: bool = False, adds_typing: bool = False,):
         """
         :param super_class_method: The method to override in the superclass
-        :param bool extend_doc:
+        :param extend_doc:
             True the method doc string should be appended to the super-method
             doc string, False if the documentation should be set to the
             super-method doc string only if there isn't a doc string already
-        :param iterable(str) additional_arguments:
+        :param additional_arguments:
             Additional arguments taken by the subclass method over the
             superclass method, e.g., that are to be injected
-        :param bool extend_defaults:
+        :param extend_defaults:
             Whether the subclass may specify extra defaults for the parameters
         :param adds_typing:
             Allows more typing (of non additional) than in the subclass.

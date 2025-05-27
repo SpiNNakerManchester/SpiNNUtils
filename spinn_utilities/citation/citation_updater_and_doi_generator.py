@@ -301,8 +301,8 @@ class CitationUpdaterAndDoiGenerator(object):
         """
         Add in data to the Zenodo metadata.
 
-        :param str doi_title: the title of the DOI
-        :param str doi_description: the description of the DOI
+        :param doi_title: the title of the DOI
+        :param doi_description: the description of the DOI
         :param yaml_file: the citation file once read into the system
         :return: dict containing Zenodo metadata
         """

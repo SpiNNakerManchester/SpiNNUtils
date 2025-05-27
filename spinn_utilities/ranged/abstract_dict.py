@@ -46,7 +46,6 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         Gets a single shared value for all IDs covered by this view.
 
         :param key: The key or keys to get the value of. Use `None` for all
-        :type key: str or iterable(str) or None
         :return: If key is a str, this returns the single object.
             If key is iterable (list, tuple, set, etc.) of str (or `None`),
             returns a dictionary object
@@ -83,7 +82,6 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
             (Currently multiple ranges not yet supported.)
 
         :param key: key to value being set
-        :type key: str
         :param value: any object
         :param use_list_as_value: True if the value *is* a list
         :raise KeyError: If a new key is being used.
@@ -103,7 +101,6 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
             ID `4` and not `2`
 
         :return: list of IDs
-        :rtype: list(int)
         """
         raise NotImplementedError
 
@@ -127,7 +124,6 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
 
         :param key:
             The key or keys to get the value of. Use `None` for all keys
-        :type key: str or iterable(str) or None
         :param update_safe: If set True the iteration will work even if values
             are updated during iteration. If left False the iterator may be
             faster but behaviour is *undefined* and *unchecked* if *any*
@@ -164,7 +160,6 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
             by any updates.
 
         :param key: The key or keys to get the value of. Use `None` for all
-        :type key: str or iterable(str) or None
         :return: List of tuples of (`start`, `stop`, `value`).
             `start` is *inclusive* so is the first ID in the range.
             `stop` is *exclusive* so is the last ID in the range + 1.
@@ -198,7 +193,6 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
             changed during iteration.
 
         :param key: The key or keys to get the value of. Use `None` for all
-        :type key: str or iterable(str) or None
         :return: yields tuples of (`start`, `stop`, `value`).
             `start` is *inclusive* so is the first ID in the range.
             `stop` is *exclusive* so is the last ID in the range + 1.
@@ -219,7 +213,6 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
             would do
 
         :param key: Existing dict key
-        :type key: str
         :return: default for this key.
         """
         raise NotImplementedError
@@ -234,7 +227,6 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         the ``value``\\s are dictionary objects.
 
         :return: List of (``key``, ``value``) tuples
-        :rtype: list(tuple)
         :raises ~spinn_utilities.ranged.MultipleValuesException:
             If even one of the keys has multiple values set.
         """
@@ -257,7 +249,6 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         added during iteration.
 
         :return: yield (``key``, ``value``) tuples
-        :rtype: iterable(tuple)
         :raises ~spinn_utilities.ranged.MultipleValuesException:
             If even one of the keys has multiple values set.
         """
@@ -307,10 +298,8 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         Checks if the key is a dictionary key or a range ID.
 
         :param key: Dictionary key or ID to check
-        :type key: str or int
         :return: True if the str key is one of the dict keys or
             if the int key is one of the range IDs. Otherwise False
-        :rtype: bool
         """
         if isinstance(key, str):
             return key in self.keys()
@@ -326,9 +315,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
             Int keys to IDs are not supported.
 
         :param key: the key
-        :type key: str
         :return: If the key is in dict
-        :rtype: bool
         """
         return key in self.keys()
 
@@ -337,7 +324,6 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         Sets the value(s) for a single key back to the default value.
 
         :param key: Existing dict key
-        :type key: str
         :param default: Value to be used by reset
         """
         default = self.get_default(key)

@@ -308,8 +308,7 @@ class UtilsDataView(object):
 
         Reset numbers start at zero
 
-        :rtype: int
-        :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
+         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the run_number is currently unavailable
         """
         if cls.__data._reset_number is None:
@@ -333,7 +332,6 @@ class UtilsDataView(object):
 
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the run_number is currently unavailable
-        :rtype: str
         """
         if cls.__data._reset_number is None:
             raise cls._exception("reset_number")
@@ -537,7 +535,6 @@ class UtilsDataView(object):
             In unit-test mode this returns a temporary directory
             shared by all path methods.
 
-        :rtype: str
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the simulation_time_step is currently unavailable
         """
@@ -551,14 +548,13 @@ class UtilsDataView(object):
     def _child_folder(cls, parent: str, child_name: str,
                       must_create: bool = False) -> str:
         """
-        :param str parent:
-        :param str child_name:
-        :param bool must_create:
+        :param parent:
+        :param child_name:
+        :param must_create:
             If `True`, the directory named by `child_name` (but not necessarily
             its parents) must be created by this call, and an exception will be
             thrown if this fails.
         :return: The fully qualified name of the child folder.
-        :rtype: str
         :raises OSError:
             If the directory existed ahead of time and creation
             was required by the user
@@ -581,7 +577,6 @@ class UtilsDataView(object):
 
         Run numbers start at 1
 
-        :rtype: int
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the run_number is currently unavailable
         """
@@ -716,7 +711,6 @@ class UtilsDataView(object):
 
         :param reason: Message for the Skip
         :param parent: Exception which triggered the skip if any
-        :type parent: Exception or None
         :raises: SkipTest very time called
         """
         cls.__data._data_status = DataStatus.SHUTDOWN

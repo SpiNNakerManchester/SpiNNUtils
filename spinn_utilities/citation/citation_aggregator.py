@@ -136,9 +136,8 @@ class CitationAggregator(object):
         """
         Read the PYPI to import name map.
 
-        :param str aggregated_citation_file: path to the PYPI map file
+        :param aggregated_citation_file: path to the PYPI map file
         :return: map between PYPI names and import names
-        :rtype: dict(str,str)
         """
         pypi_to_import_map: Dict[str, str] = dict()
         with open(aggregated_citation_file, encoding=ENCODING) as f:
@@ -154,7 +153,7 @@ class CitationAggregator(object):
         Handle a C code dependency.
 
         :param top_citation_file: YAML file for the top citation file
-        :param str module: module to find
+        :param module: module to find
         :param modules_seen_so_far:
         """
         cleaned_path = self.locate_path_for_c_dependency(module)
@@ -174,8 +173,7 @@ class CitationAggregator(object):
     @staticmethod
     def locate_path_for_c_dependency(true_software_name: str) -> Optional[str]:
         """
-        :param str true_software_name:
-        :rtype: str or None
+        :param true_software_name:
         """
         environment_path_variable = os.environ.get('PATH')
         if environment_path_variable is not None:
@@ -228,7 +226,6 @@ class CitationAggregator(object):
         :param top_citation_file:
             YAML file for the top citation file
         :param imported_module: the actual imported module
-        :type imported_module: ModuleType
         :param modules_seen_so_far:
             list of names of dependencies already processed
         :param module_name:

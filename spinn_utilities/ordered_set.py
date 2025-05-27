@@ -100,6 +100,5 @@ class OrderedSet(MutableSet, Generic[T]):
         Comparison method for comparing ordered sets.
 
         :param other: instance of OrderedSet
-        :rtype: None
         """
         return not self.__eq__(other)

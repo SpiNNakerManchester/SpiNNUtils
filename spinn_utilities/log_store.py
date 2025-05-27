@@ -28,10 +28,9 @@ class LogStore(object):
         """
         Writes the log message for later retrieval.
 
-        :param int level: The logging level.
-        :param str message: The logged message.
+        :param level: The logging level.
+        :param message: The logged message.
         :param timestamp: The time-stamp of the message.
-        :type timestamp: ~datetime.datetime or None
         """
         raise NotImplementedError
 
@@ -41,7 +40,7 @@ class LogStore(object):
         """
         Retrieves all log messages at or above the `min_level`.
 
-        :param int min_level:
+        :param min_level:
             Constraint on the minimum logging level to retrieve.
         :return:
             A list of messages that satisfy the constraint.
@@ -52,7 +51,5 @@ class LogStore(object):
     def get_location(self) -> str:
         """
         Retrieves the location of the log store.
-
-        :rtype: str
         """
         raise NotImplementedError

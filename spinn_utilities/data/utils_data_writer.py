@@ -398,7 +398,7 @@ class UtilsDataWriter(UtilsDataView):
         """
         Only usable by unit tests!
 
-        :param ExecutableFinder executable_finder:
+        :param executable_finder:
         """
         if not self._is_mocked():
             raise NotImplementedError("Only valid in Mocked state!")

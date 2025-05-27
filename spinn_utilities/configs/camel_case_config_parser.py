@@ -114,10 +114,9 @@ class TypedConfigParser(configparser.RawConfigParser):
         """
         Get the integer value of an option.
 
-        :param str section: What section to get the option from.
-        :param str option: What option to read.
+        :param section: What section to get the option from.
+        :param option: What option to read.
         :return: The option value
-        :rtype: int
         """
         value = self.get(section, option)
         if str(value).lower() in NONES:
@@ -128,10 +127,9 @@ class TypedConfigParser(configparser.RawConfigParser):
         """
         Get the float value of an option.
 
-        :param str section: What section to get the option from.
-        :param str option: What option to read.
+        :param section: What section to get the option from.
+        :param option: What option to read.
         :return: The option value.
-        :rtype: float
         """
         value = self.get(section, option)
         if str(value).lower() in NONES:
@@ -143,11 +141,10 @@ class TypedConfigParser(configparser.RawConfigParser):
         """
         Get the Boolean value of an option.
 
-        :param str section: What section to get the option from.
-        :param str option: What option to read.
+        :param section: What section to get the option from.
+        :param option: What option to read.
         :param special_nones: What special values to except as None
         :return: The option value.
-        :rtype: bool
         """
         value = self.get(section, option)
         lower = str(value).lower()

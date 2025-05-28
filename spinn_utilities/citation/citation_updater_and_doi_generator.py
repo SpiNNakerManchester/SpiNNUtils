@@ -163,8 +163,6 @@ class CitationUpdaterAndDoiGenerator(object):
         :param previous_doi: DOI to append the created DOI to
         :param doi_title: Title for the created DOI
         :param module_path: Path to the module to zip up
-        :param update_version:
-            Whether we should update the citation version
         """
         self.__zenodo = _Zenodo(zenodo_access_token)
 

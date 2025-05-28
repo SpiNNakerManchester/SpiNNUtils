@@ -406,7 +406,6 @@ def get_timestamp_path(option: str, section: str = "Reports") -> str:
 
     :param option: cfg option name
     :param section: cfg section. Needed if not Reports
-    :param n_run: If provided will be used instead of the current run number
     :return: An unchecked absolute path to the file or directory
     """
 

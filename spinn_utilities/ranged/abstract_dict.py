@@ -324,7 +324,6 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         Sets the value(s) for a single key back to the default value.
 
         :param key: Existing dict key
-        :param default: Value to be used by reset
         """
         default = self.get_default(key)
         if default is None:

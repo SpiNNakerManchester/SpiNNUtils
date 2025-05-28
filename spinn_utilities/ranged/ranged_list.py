@@ -511,10 +511,7 @@ class RangedList(AbstractList[T], Generic[T]):
             self, ids: IdsType, value: _ValueType,
             use_list_as_value: bool = False) -> None:
         """
-        Sets a already existing key to the new value. For the ids specified.
-
-        :param key:
-        :param value:
+        Sets an already existing key to the new value. For the ids specified.
         """
         if not use_list_as_value and self.is_list(value):
             self._set_values_list(ids, value)

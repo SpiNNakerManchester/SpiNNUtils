@@ -173,7 +173,7 @@ class CitationAggregator(object):
     @staticmethod
     def locate_path_for_c_dependency(true_software_name: str) -> Optional[str]:
         """
-        :param true_software_name:
+        Tries to find the software in the environment PATH (s)
         """
         environment_path_variable = os.environ.get('PATH')
         if environment_path_variable is not None:

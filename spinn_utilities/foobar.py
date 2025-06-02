@@ -28,6 +28,9 @@ def __private_no_class() -> None:
 class Foo(object):
     """ two """
 
+    def __init__(self):
+        print("foo")
+
     def public(self) -> None:
         """ three """
         self._protected()
@@ -40,6 +43,10 @@ class Foo(object):
 
 
 class _Bar(object):
+
+    def __init__(self):
+        print("bar")
+
     def public(self) -> None:
         """ four """
         self._protected()

@@ -15,8 +15,10 @@
 def public_no_class() -> None:
     print(1)
 
+
 def _protected_no_class() -> None:
     print(2)
+
 
 def __private_no_class() -> None:
     print(3)

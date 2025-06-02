@@ -137,13 +137,16 @@ def test_logger_exception() -> None:
 
 class MockConfig1(CamelCaseConfigParser):
 
-    def get(self, section: str, option: str) -> str:  # type: ignore[override]
+    @overrides(CamelCaseConfigParser.get)
+    def get(self, section: Any, option: Any) -> str:
         return "debug"
 
-    def has_section(self, section: str) -> bool:
+    @overrides(CamelCaseConfigParser.has_section)
+    def has_section(self, section: Any) -> bool:
         return False
 
-    def has_option(self, section: str, option: str) -> bool:
+    @overrides(CamelCaseConfigParser.has_option)
+    def has_option(self, section: Any, option: Any) -> bool:
         return False
 
 
@@ -154,13 +157,16 @@ def test_weird_config1() -> None:
 
 class MockConfig2(CamelCaseConfigParser):
 
-    def get(self, section: str, option: str) -> str:  # type: ignore[override]
+    @overrides(CamelCaseConfigParser.get)
+    def get(self, section: Any, option: Any) -> str:
         return "critical"
 
-    def has_section(self, section: str) -> bool:
+    @overrides(CamelCaseConfigParser.has_section)
+    def has_section(self, section: Any) -> bool:
         return True
 
-    def has_option(self, section: str, option: str) -> bool:
+    @overrides(CamelCaseConfigParser.has_option)
+    def has_option(self, section: Any, option: Any) -> bool:
         return option == 'warning'
 
 

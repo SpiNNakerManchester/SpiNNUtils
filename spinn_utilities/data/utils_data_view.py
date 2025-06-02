@@ -548,6 +548,8 @@ class UtilsDataView(object):
     def _child_folder(cls, parent: str, child_name: str,
                       must_create: bool = False) -> str:
         """
+        Returns the child folder creating it if needed.
+
         :param parent:
         :param child_name:
         :param must_create:

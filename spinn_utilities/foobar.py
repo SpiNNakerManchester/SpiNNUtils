@@ -13,7 +13,7 @@
 # limitations under the License.
 
 def public_no_class() -> None:
-    """ a docstring """
+    """ one """
     print(1)
 
 
@@ -26,10 +26,10 @@ def __private_no_class() -> None:
 
 
 class Foo(object):
-    """ a docstring """
+    """ two """
 
     def public(self) -> None:
-        """ a docstring """
+        """ three """
         self._protected()
 
     def _protected(self) -> None:
@@ -41,7 +41,7 @@ class Foo(object):
 
 class _Bar(object):
     def public(self) -> None:
-        """ a docstring """
+        """ four """
         self._protected()
 
     def _protected(self) -> None:

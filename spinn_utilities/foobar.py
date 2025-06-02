@@ -28,7 +28,7 @@ def __private_no_class() -> None:
 class Foo(object):
     """ two """
 
-    def __init__(self):
+    def __init__(self) -> None:
         print("foo")
 
     def public(self) -> None:
@@ -44,7 +44,7 @@ class Foo(object):
 
 class _Bar(object):
 
-    def __init__(self):
+    def __init__(self) -> None:
         print("bar")
 
     def public(self) -> None:

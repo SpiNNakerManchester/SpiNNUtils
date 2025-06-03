@@ -16,11 +16,11 @@
 Types for coordinates.
 """
 
-from typing import Tuple
+from typing import Final, Tuple
 from typing_extensions import TypeAlias
 
 #: The type of X,Y pairs.
-XY: TypeAlias = Tuple[int, int]
+XY: Final[TypeAlias] = Tuple[int, int]
 
 #: The type of X,Y,P triples.
-XYP: TypeAlias = Tuple[int, int, int]
+XYP: Final[TypeAlias] = Tuple[int, int, int]

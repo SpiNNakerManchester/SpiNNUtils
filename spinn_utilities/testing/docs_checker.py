@@ -115,7 +115,7 @@ class DocsChecker(object):
         if node.name == "__init__":
             if len(docstring.params) != len(param_names):
                 if self.__check_init:
-                    error += f"Missing params"
+                    error += "Missing params"
         else:
             if docstring.short_description is None:
                 if self.__check_short:

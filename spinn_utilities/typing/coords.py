@@ -20,7 +20,7 @@ from typing import Final, Tuple
 from typing_extensions import TypeAlias
 
 #: The type of X,Y pairs.
-XY: Final[TypeAlias] = Tuple[int, int]
+XY: Final['TypeAlias'] = Tuple[int, int]
 
 #: The type of X,Y,P triples.
-XYP: Final[TypeAlias] = Tuple[int, int, int]
+XYP: Final['TypeAlias'] = Tuple[int, int, int]

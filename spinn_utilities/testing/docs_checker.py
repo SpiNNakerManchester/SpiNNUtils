@@ -14,7 +14,7 @@
 
 import ast
 import os
-from typing import Set
+from typing import cast, Set
 
 import docstring_parser
 
@@ -99,7 +99,8 @@ class DocsChecker(object):
         if function_docs is None and node.name != "__init__":
             return
 
-        docstring = docstring_parser.parse(function_docs)
+        # docstring_parser.parse does handle None it is annotated incorrectly
+        docstring = docstring_parser.parse(cast(str, function_docs))
         error = ""
 
         param_names = self.get_param_names(node)
@@ -146,7 +147,7 @@ class DocsChecker(object):
 
         return param_names
 
-    def check_no_errors(self):
+    def check_no_errors(self) -> None:
         """
         Checks that there are no errors found.
 
@@ -161,4 +162,4 @@ class DocsChecker(object):
 if __name__ == "__main__":
     checker = DocsChecker(
         check_init=False, check_short=False, check_params=False)
-    checker.check_dir("")
+    checker.check_dir("/home/brenninc/spinnaker/SpiNNUtils/spinn_utilities/make_tools")

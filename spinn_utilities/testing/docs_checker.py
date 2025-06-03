@@ -44,13 +44,13 @@ class DocsChecker(object):
         """
         Sets up the doc checker.
 
-        Which functions need to be decumented is left to pylint to check.
+        Which functions need to be documented is left to pylint to check.
         Currently, that is public methods and public methods of public classes.
 
-        :param check_init: flag to tigger checking of __init__ methods.
+        :param check_init: flag to trigger checking of __init__ methods.
             If True all init methods must have all params documented
             Descriptions not required on __init__ files
-        :param check_short: Flag to tigger checking of description.
+        :param check_short: Flag to trigger checking of description.
             If there is a documentation (except for __init__)
             this must include a short description
         :param check_params: Flag to trigger checking of param docs.
@@ -130,7 +130,7 @@ class DocsChecker(object):
 
     def get_param_names(self, node: ast.FunctionDef) -> Set[str]:
         """
-        Gets the names of the parameters found on the ast.
+        Gets the names of the parameters found in the abstract syntax tree.
 
         These are the ones actually declared.
         """

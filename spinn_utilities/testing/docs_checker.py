@@ -152,7 +152,7 @@ class DocsChecker(object):
 
         Does not run any checks just check status after they are run
 
-        :raises AssertionError: If any previous check founbd an error
+        :raises AssertionError: If any previous check found an error
         """
         if self.__error_level > ERROR_NONE:
             raise AssertionError("The documentation checker failed")

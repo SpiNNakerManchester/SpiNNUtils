@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import ast
-
-import docstring_parser
 import os
 from typing import Set
+
+import docstring_parser
 
 ERROR_NONE = 0
 ERROR_OTHER = ERROR_NONE + 1
@@ -27,7 +27,7 @@ class DocsChecker(object):
     """
     A utility class to check the docs strings for our rules.
 
-    As we use type annotations dioc stings should not have types.
+    As we use type annotations doc strings should not have types.
     At best they are the same otherwise they are wrong.
 
     We check that all documented params are actually ones used.
@@ -37,7 +37,7 @@ class DocsChecker(object):
 
     __slots__ = [
         "__check_init", "__check_short", "__check_params",
-        "__error_level", "__file_path", "__node"]
+        "__error_level", "__file_path"]
 
     def __init__(self, check_init: bool, check_short: bool,
                  check_params: bool) -> None:
@@ -46,6 +46,7 @@ class DocsChecker(object):
 
         Which functions need to be documented is left to pylint to check.
         Currently, that is public methods and public methods of public classes.
+        pylint does not insist init methods are documented.
 
         :param check_init: flag to trigger checking of __init__ methods.
             If True all init methods must have all params documented
@@ -62,7 +63,6 @@ class DocsChecker(object):
         self.__check_params = check_params
         self.__check_short = check_short
         self.__file_path = "None"
-        self.__node: ast.stmt = ast.Pass
 
     def check_dir(self, dir_path: str) -> None:
         """

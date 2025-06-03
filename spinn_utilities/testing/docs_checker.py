@@ -82,7 +82,7 @@ class DocsChecker(object):
         if self.__error_level > ERROR_OTHER:
             self.__error_level = ERROR_OTHER
         self.__file_path = file_path
-        with open(file_path, "r") as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             raw_tree = file.read()
         ast_tree = ast.parse(raw_tree, type_comments=True)
         for node in ast.walk(ast_tree):
@@ -147,6 +147,13 @@ class DocsChecker(object):
         return param_names
 
     def check_no_errors(self):
+        """
+        Checks that there are no errors found.
+
+        Does not run any checks just check status after they are run
+
+        :raises AssertionError: If any previous check founbd an error
+        """
         if self.__error_level > ERROR_NONE:
             raise AssertionError("The documentation checker failed")
 

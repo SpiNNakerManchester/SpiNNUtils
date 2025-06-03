@@ -162,4 +162,4 @@ class DocsChecker(object):
 if __name__ == "__main__":
     checker = DocsChecker(
         check_init=False, check_short=False, check_params=False)
-    checker.check_dir("/home/brenninc/spinnaker/SpiNNUtils/spinn_utilities/make_tools")
+    checker.check_dir("")

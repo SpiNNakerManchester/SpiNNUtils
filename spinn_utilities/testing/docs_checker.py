@@ -132,7 +132,7 @@ class DocsChecker(object):
                         index = key_index
             if index < sys.maxsize:
                 while index > 1 and docs[index-1] in [" ", "\t"]:
-                    index-= 1
+                    index -= 1
                 if index >= 2:
                     if docs[index-2: index] != "\n\n":
                         error += "Missing blank line after description"

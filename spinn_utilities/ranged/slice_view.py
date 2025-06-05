@@ -86,7 +86,7 @@ class _SliceView(AbstractView[T], Generic[T]):
             update_safe: bool = False) -> Iterator[Dict[str, T]]:
         ...
 
-    @overrides(AbstractDict.iter_all_values, extend_defaults=True)
+    @overrides(AbstractDict.iter_all_values)
     def iter_all_values(self, key: _Keys = None, update_safe: bool = False
                         ) -> Union[Iterator[T], Iterator[Dict[str, T]]]:
         if isinstance(key, str):

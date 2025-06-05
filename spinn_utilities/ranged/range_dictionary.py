@@ -170,7 +170,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     @overload
     def get_value(self, key: Optional[_StrSeq] = None) -> Dict[str, T]: ...
 
-    @overrides(AbstractDict.get_value, extend_defaults=True)
+    @overrides(AbstractDict.get_value)
     def get_value(self, key: Union[str, None, _StrSeq] = None
                   ) -> Union[T, Dict[str, T]]:
         if isinstance(key, str):
@@ -248,7 +248,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
                         update_safe: bool = False) -> Iterator[Dict[str, T]]:
         ...
 
-    @overrides(AbstractDict.iter_all_values, extend_defaults=True)
+    @overrides(AbstractDict.iter_all_values)
     def iter_all_values(self, key: _Keys, update_safe: bool = False
                         ) -> Union[Iterator[T], Iterator[Dict[str, T]]]:
         if isinstance(key, str):

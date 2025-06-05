@@ -18,7 +18,6 @@ from .abstract_has_label import AbstractHasLabel
 from .abstract_has_id import AbstractHasId
 from .grandparent import GrandParent
 from .no_label import NoLabel
-from .unchecked_bad_param import UncheckedBadParam
 
 
 def test_create() -> None:
@@ -33,16 +32,3 @@ def test_create() -> None:
 def test_no_has_label() -> None:
     with pytest.raises(TypeError):
         NoLabel()
-
-
-# What this test checks is actually undesirable but it shows it happens
-def test_unchecked_bad_param() -> None:
-    o = UncheckedBadParam()
-    assert o is not None
-
-
-def test_checked_bad_param() -> None:
-    with pytest.raises(AttributeError):
-        from .checked_bad_param import CheckedBadParam
-        # This line never reached but there for pep8
-        CheckedBadParam()

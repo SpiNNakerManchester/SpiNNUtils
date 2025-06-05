@@ -21,6 +21,9 @@ def as_string(byte_string: bytes, start: Optional[int] = None,
 
     The length is always the full length irrespective of the start and end.
 
+    Usage::
+        Do we need a line after if next is note
+
     .. note::
         no new line after
     :param byte_string: data as a byte string

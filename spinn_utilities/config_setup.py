@@ -27,8 +27,6 @@ def unittest_setup() -> None:
 
     .. note::
         This file should only be called from `SpiNNUtils/unittests`
-
-    :param unittest_mode: Flag to indicate in unit tests
     """
     clear_cfg_files(True)
     add_spinn_utilities_cfg()

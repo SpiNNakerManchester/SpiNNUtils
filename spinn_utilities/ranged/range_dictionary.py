@@ -54,9 +54,8 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         .. warning::
             Using mutable default values can result in weird problems.
 
-        :param int size: Fixed number of IDs / Length of lists
+        :param size: Fixed number of IDs / Length of lists
         :param defaults: Default dictionary where all keys must be str
-        :type defaults: dict(str,object)
         """
         super().__init__(size)
         self._value_lists: Dict[str, RangedList[T]] = dict()
@@ -160,7 +159,6 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
 
         :param key: a str, int, or iterable of int values
         :return: An AbstractList or AbstractView
-        :rtype: AbstractList or AbstractView
         """
         if isinstance(key, str):
             return self._value_lists[key]
@@ -216,8 +214,6 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             Mainly intended by Views to access the data for one key directly.
 
         :param key: a key which must be present in the dict
-        :type key: str
-        :rtype: :py:class:`.ranged_list.RangedList`
         """
         return self._value_lists[key]
 
@@ -346,7 +342,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         then it must be exactly the size of all lists in this dictionary.
         ``value`` can be an ``AbstractList``
 
-        :param str key: Existing or *new* dictionary key
+        :param key: Existing or *new* dictionary key
         :param value: List or value to create list based on.
         """
         if isinstance(key, str):
@@ -372,7 +368,6 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         Returns a list of the IDs in this Range
 
         :return: a list of the IDs in this Range
-        :rtype: list(int)
         """
         return list(range(self._size))
 
@@ -548,7 +543,6 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             and not just the view.
 
         :param key: Existing dict key
-        :type key: str
         :param default: Value to be used by reset; should not be mutable!
         """
         self._value_lists[key].set_default(default)
@@ -561,7 +555,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         """
         Turns this dict into a copy of the other dict but keep its id.
 
-        :param RangeDictionary other:
+        :param other:
             Another ranged dictionary assumed created by cloning this one
         """
         for key in other.keys():
@@ -582,7 +576,6 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         inner leaf values are shallow copied.
 
         :return: The copy.
-        :rtype: RangeDictionary
         """
         copy: RangeDictionary[T] = RangeDictionary(self._size)
         copy.copy_into(self)

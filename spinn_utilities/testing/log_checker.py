@@ -51,7 +51,7 @@ def assert_logs_contains_once(
 
     :param level: The log level. Probably "INFO", "WARNING" or "ERROR".
     :param log_records: list of log records returned by testfixtures.LogCapture
-    :param submessage: String which should be part of a log record
+    :param message: String which should be part of a log record
     :raises AssertionError: If the submessage is not present in the log
     """
     found = False

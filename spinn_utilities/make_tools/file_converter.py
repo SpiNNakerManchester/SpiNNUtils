@@ -461,7 +461,6 @@ class FileConverter(object):
 
         :param dest_f: Open file like Object to write modified source to
         :param line_num: Line number in the source C file
-        :param text: Text of that line including whitespace
         """
         self._log_full = self._log_full.replace('""', '')
         short_log = self._short_log(line_num)

@@ -28,8 +28,6 @@ class AbstractHasConstraints(object, metaclass=AbstractBase):
         """ Add a new constraint to the collection of constraints
 
         :param constraint: constraint to add
-        :type constraint:
-            ~pacman.model.constraints.abstract_constraint.AbstractConstraint
         :raise pacman.exceptions.PacmanInvalidParameterException:
             If the constraint is not valid
         """
@@ -40,6 +38,4 @@ class AbstractHasConstraints(object, metaclass=AbstractBase):
         """ An iterable of constraints
 
         :return: iterable of constraints
-        :rtype:
-            iterable(~pacman.model.constraints.abstract_constraint.AbstractConstraint)
         """

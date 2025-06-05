@@ -93,7 +93,6 @@ class ConfigChecker(object):
         """
         Support method for :py:func:`check_cfgs`.
 
-        :param cfg_path:
         :raises ConfigException: If an unexpected option is found
         """
         if self._file_path in self._default_cfgs:
@@ -115,7 +114,6 @@ class ConfigChecker(object):
         """
         A testing function to check that all the `get_config` calls work.
 
-        :param py_path: path to file to be checked
         :raises ConfigException:
             If an unexpected or uncovered `get_config` found
         """

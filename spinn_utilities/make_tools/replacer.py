@@ -81,9 +81,8 @@ class Replacer(LogSqlLiteDatabase):
         """
         Apply the replacements to a short message.
 
-        :param str short: The short message to apply the transform to.
+        :param short: The short message to apply the transform to.
         :return: The expanded message.
-        :rtype: str
         """
         parts = short.split(TOKEN)
         if not parts[0].isdigit():
@@ -121,8 +120,7 @@ class Replacer(LogSqlLiteDatabase):
         """
         Apply the replacements to a short message.
 
-        :param str short:
-        :rtype: str
+        :param short:
         """
         data = self._replace(short)
         if data is None:

@@ -92,7 +92,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
 
     def __init__(self, size: int, key: Optional[str] = None) -> None:
         """
-        :param int size: Fixed length of the list
+        :param size: Fixed length of the list
         :param key: The dict key this list covers.
             This is used only for better Exception messages
         """
@@ -111,7 +111,6 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         case the ranges are created on demand.
 
         :return: True if and only if Ranged based calls are recommended.
-        :rtype: bool
         """
         raise NotImplementedError
 
@@ -173,7 +172,6 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         Returns the value for one item in the list.
 
         :param the_id: One of the IDs of an element in the list
-        :type the_id: int
         :return: The value of that element
         """
         raise NotImplementedError
@@ -380,7 +378,6 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :param selector: See :py:meth:`AbstractSized.selector_to_ids`
         :return: returns a list if the item which may be empty or have only
             single value
-        :rtype: list
         """
         return list(self.iter_by_selector(selector))
 
@@ -394,7 +391,6 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
 
         :param x:
         :return: count of matching elements
-        :rtype: int
         """
         return sum(
             stop - start
@@ -471,7 +467,6 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
             The start and stop of the range will be reduced to just the IDs
 
         :return: yields each range one by one
-        :rtype: iterable
         """
         range_pointer = 0
         result = None
@@ -517,9 +512,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         the original lists are reflected.
 
         :param other: another list
-        :type other: AbstractList
         :return: new list
-        :rtype: AbstractList
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
@@ -541,9 +534,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         the original lists are reflected.
 
         :param other: another list
-        :type other: AbstractList
         :return: new list
-        :rtype: AbstractList
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
@@ -565,9 +556,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         the original lists are reflected.
 
         :param other: another list
-        :type other: AbstractList
         :return: new list
-        :rtype: AbstractList
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
@@ -590,9 +579,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         the original lists are reflected.
 
         :param other: another list
-        :type other: AbstractList
         :return: new list
-        :rtype: AbstractList
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
@@ -614,9 +601,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         Applies the floor division operator over this and other.
 
         :param other: another list
-        :type other: AbstractList
         :return: new list
-        :rtype: AbstractList
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
@@ -642,7 +627,6 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
             A function that can be applied over the individual values to
             create new ones.
         :return: new list
-        :rtype: AbstractList
         """
         return SingleList(a_list=self, operation=operation)
 
@@ -659,8 +643,8 @@ class SingleList(AbstractList[R], Generic[T, R],
                  operation: Callable[[T], R],
                  key: Optional[str] = None):
         """
-        :param AbstractList a_list: The list to perform the operation on
-        :param callable operation:
+        :param a_list: The list to perform the operation on
+        :param operation:
             A function which takes a single value and returns the result of
             the operation on that value
         :param key: The dict key this list covers.
@@ -721,9 +705,9 @@ class DualList(AbstractList[R], Generic[T, U, R],
                  operation: Callable[[T, U], R],
                  key: Optional[str] = None):
         """
-        :param AbstractList left: The first list to combine
-        :param AbstractList right: The second list to combine
-        :param callable operation:
+        :param left: The first list to combine
+        :param right: The second list to combine
+        :param operation:
             The operation to perform as a function that takes two values and
             returns the result of the operation
         :param key:

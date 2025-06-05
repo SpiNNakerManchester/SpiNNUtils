@@ -38,7 +38,7 @@ def add_default_cfg(default: str) -> None:
     """
     Adds an extra default configuration file to be read after earlier ones.
 
-    :param str default: Absolute path to the configuration file
+    :param default: Absolute path to the configuration file
     """
     if default not in __default_config_files:
         __default_config_files.append(default)
@@ -60,7 +60,7 @@ def clear_cfg_files(unittest_mode: bool) -> None:
     After this method :py:func:`add_default_cfg` and :py:func:`set_cfg_files`
     need to be called.
 
-    :param bool unittest_mode: Flag to put the holder into unit testing mode
+    :param unittest_mode: Flag to put the holder into unit testing mode
     """
     global __config, __config_file, __unittest_mode
     __config = None
@@ -406,7 +406,6 @@ def get_timestamp_path(option: str, section: str = "Reports") -> str:
 
     :param option: cfg option name
     :param section: cfg section. Needed if not Reports
-    :param n_run: If provided will be used instead of the current run number
     :return: An unchecked absolute path to the file or directory
     """
 

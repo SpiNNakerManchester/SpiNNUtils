@@ -35,7 +35,6 @@ def abstractmethod(funcobj: T) -> T:
             @abstractmethod
             def my_abstract_method(self, ...):
                 ...
-    :param funcobj: The class to be decorated.
     """
     funcobj.__isabstractmethod__ = True  # type: ignore[attr-defined]
     return funcobj
@@ -51,7 +50,8 @@ class AbstractBase(type):
     This is a trimmed down version of ABC.
     Unlike ABC you can not register unrelated concrete classes.
 
-    Usage::
+    Usage ::
+        space after
         class C(object, metaclass=AbstractBase):
             @abstractmethod
             def my_abstract_method(self, ...):

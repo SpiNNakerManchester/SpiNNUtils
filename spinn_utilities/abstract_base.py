@@ -28,12 +28,14 @@ def abstractmethod(funcobj: T) -> T:
     cannot be instantiated unless all of its abstract methods are overridden.
     The abstract methods can be called using any of the normal
     'super' call mechanisms.
+
     Usage::
 
         class C(object, metaclass=AbstractBase):
             @abstractmethod
             def my_abstract_method(self, ...):
                 ...
+    :param funcobj: The class to be decorated.
     """
     funcobj.__isabstractmethod__ = True  # type: ignore[attr-defined]
     return funcobj

@@ -29,6 +29,7 @@ class AbstractContextManager(object, metaclass=AbstractBase):
     def close(self) -> None:
         """
         How to actually close the underlying resources.
+
         .. note:: no new line
         """
 

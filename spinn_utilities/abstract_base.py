@@ -28,7 +28,6 @@ def abstractmethod(funcobj: T) -> T:
     cannot be instantiated unless all of its abstract methods are overridden.
     The abstract methods can be called using any of the normal
     'super' call mechanisms.
-
     Usage::
 
         class C(object, metaclass=AbstractBase):
@@ -51,7 +50,6 @@ class AbstractBase(type):
     Unlike ABC you can not register unrelated concrete classes.
 
     Usage::
-
         class C(object, metaclass=AbstractBase):
             @abstractmethod
             def my_abstract_method(self, ...):

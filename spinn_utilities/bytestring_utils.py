@@ -21,6 +21,8 @@ def as_string(byte_string: bytes, start: Optional[int] = None,
 
     The length is always the full length irrespective of the start and end.
 
+    .. note:: on same line
+
     :param byte_string: data as a byte string
     :param start:
         The inclusive start of the slice to convert to hexadecimal.
@@ -39,6 +41,8 @@ def as_hex(byte_string: bytes, start: Optional[int] = None,
     """
     Returns the byte string as string showing the hex values
 
+    .. note::
+        no line after
     :param byte_string: data as a byte string
     :param start: the inclusive start of the slice to return. May be `None`
     :param end: the exclusive end of the slice to return. May be `None`

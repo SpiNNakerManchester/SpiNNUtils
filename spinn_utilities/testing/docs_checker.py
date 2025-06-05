@@ -123,6 +123,7 @@ class DocsChecker(object):
                 if self.__check_short:
                     error += "No short description provided."
 
+        if docs is not None:
             index = sys.maxsize
             for key in [":param", ":return", ":raises"]:
                 if key in docs:

@@ -55,6 +55,7 @@ class OrderedSet(MutableSet, Generic[T]):
     def peek(self, last: bool = True) -> T:
         """
         Retrieve the first element from the set without removing it
+
         :param last:
         :return:
         """

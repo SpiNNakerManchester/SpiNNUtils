@@ -209,6 +209,7 @@ class FormatAdapter(logging.LoggerAdapter):
     def set_log_store(cls, log_store: Optional[LogStore]) -> None:
         """
         Sets a Object to write the log messages to
+
         :param log_store:
         """
         if log_store is not None and not isinstance(log_store, LogStore):

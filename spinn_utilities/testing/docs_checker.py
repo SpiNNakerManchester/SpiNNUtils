@@ -14,6 +14,7 @@
 
 import ast
 import os
+import sys
 from typing import cast, Set
 
 import docstring_parser
@@ -95,12 +96,12 @@ class DocsChecker(object):
         """
         if self.__error_level > ERROR_FILE:
             self.__error_level = ERROR_FILE
-        function_docs = ast.get_docstring(node)
-        if function_docs is None and node.name != "__init__":
+        docs = ast.get_docstring(node)
+        if docs is None and node.name != "__init__":
             return
 
         # docstring_parser.parse does handle None it is annotated incorrectly
-        docstring = docstring_parser.parse(cast(str, function_docs))
+        docstring = docstring_parser.parse(cast(str, docs))
         error = ""
 
         param_names = self.get_param_names(node)
@@ -121,6 +122,19 @@ class DocsChecker(object):
             if docstring.short_description is None:
                 if self.__check_short:
                     error += "No short description provided."
+
+            index = sys.maxsize
+            for key in [":param", ":return", ":raises"]:
+                if key in docs:
+                    key_index = docs.index(key)
+                    if key_index < index:
+                        index = key_index
+            if index < sys.maxsize:
+                while index > 1 and docs[index-1] in [" ", "\t"]:
+                    index-= 1
+                if index >= 2:
+                    if docs[index-2: index] != "\n\n":
+                        error += "Missing blank line after description"
 
         if error:
             if self.__error_level < ERROR_FILE:
@@ -162,4 +176,4 @@ class DocsChecker(object):
 if __name__ == "__main__":
     checker = DocsChecker(
         check_init=False, check_short=False, check_params=False)
-    checker.check_dir("")
+    checker.check_file("")

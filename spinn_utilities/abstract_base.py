@@ -29,8 +29,9 @@ def abstractmethod(funcobj: T) -> T:
     The abstract methods can be called using any of the normal
     'super' call mechanisms.
 
-    Usage::
+    Usage:
 
+        one semi
         class C(object, metaclass=AbstractBase):
             @abstractmethod
             def my_abstract_method(self, ...):
@@ -51,7 +52,7 @@ class AbstractBase(type):
     Unlike ABC you can not register unrelated concrete classes.
 
     Usage::
-
+        space after
         class C(object, metaclass=AbstractBase):
             @abstractmethod
             def my_abstract_method(self, ...):

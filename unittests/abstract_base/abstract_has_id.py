@@ -30,7 +30,6 @@ class AbstractHasId(object, metaclass=AbstractBase):
         """ The id of the item
 
         :return: The id
-        :rtype: str
         :raise None: Raises no known exceptions
         """
         raise NotImplementedError()

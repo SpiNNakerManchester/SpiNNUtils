@@ -163,8 +163,6 @@ class CitationUpdaterAndDoiGenerator(object):
         :param previous_doi: DOI to append the created DOI to
         :param doi_title: Title for the created DOI
         :param module_path: Path to the module to zip up
-        :param update_version:
-            Whether we should update the citation version
         """
         self.__zenodo = _Zenodo(zenodo_access_token)
 
@@ -301,11 +299,10 @@ class CitationUpdaterAndDoiGenerator(object):
         """
         Add in data to the Zenodo metadata.
 
-        :param str doi_title: the title of the DOI
-        :param str doi_description: the description of the DOI
-        :param dict yaml_file: the citation file once read into the system
+        :param doi_title: the title of the DOI
+        :param doi_description: the description of the DOI
+        :param yaml_file: the citation file once read into the system
         :return: dict containing Zenodo metadata
-        :rtype: dict
         """
         # add basic meta data
         metadata: Dict[str, Any] = {

@@ -52,7 +52,7 @@ class AbstractSized(object):
 
     def __init__(self, size: Union[int, float]):
         """
-        :param int size: Fixed length of the list.
+        :param size: Fixed length of the list.
         """
         # Strictly doesn't need to be int, but really should be!
         self._size = max(int(round(size)), 0)
@@ -193,7 +193,7 @@ class AbstractSized(object):
             unordered and contain duplicates.
 
         :param selector: Some object that identifies a range of IDs.
-        :param bool warn:
+        :param warn:
             If True, this method will warn about problems with the selector.
         :return: a (possibly sorted) list of IDs
         """

@@ -57,7 +57,7 @@ class ExecutableFinder(object):
         added to the end of the list, so it is searched after all the
         paths currently in the list.
 
-        :param str path: The path to add
+        :param path: The path to add
         """
         self._binary_search_paths.add(path)
         if self._paths_log:
@@ -70,8 +70,6 @@ class ExecutableFinder(object):
         """
         The set of folders to search for binaries, as a printable
         colon-separated string.
-
-        :rtype: str
         """
         return " : ".join(self._binary_search_paths)
 
@@ -80,9 +78,8 @@ class ExecutableFinder(object):
         Finds an executable within the set of folders. The set of folders
         is searched sequentially and the first match is returned.
 
-        :param str executable_name: The name of the executable to find
+        :param executable_name: The name of the executable to find
         :return: The full path of the discovered executable
-        :rtype: str
         :raises KeyError: If no executable was found in the set of folders
         """
         # Loop through search paths
@@ -113,12 +110,11 @@ class ExecutableFinder(object):
 
         Names not found are ignored and not added to the list.
 
-        :param str executable_names: The name of the executable to find.
+        :param executable_names: The name of the executable to find.
             Assumed to be comma separated.
         :return:
             The full path of the discovered executable, or ``None`` if no
             executable was found in the set of folders
-        :rtype: list(str)
         """
         results = list()
         for name in executable_names.split(","):

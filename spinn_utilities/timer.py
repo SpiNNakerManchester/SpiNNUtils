@@ -64,8 +64,6 @@ class Timer(object):
         """
         Describes how long has elapsed since the instance that the
         :py:meth:`start_timing` method was last called.
-
-        :rtype: datetime.timedelta
         """
         time_now = perf_counter_ns()
         diff = time_now - (self._start_time or 0)
@@ -83,7 +81,5 @@ class Timer(object):
     def measured_interval(self) -> Optional[timedelta]:
         """
         Get how long elapsed during the measured section.
-
-        :rtype: datetime.timedelta
         """
         return self._measured_section_interval

@@ -33,14 +33,11 @@ class SocketAddress(object):
         """
         :param notify_host_name:
             Host to talk to tell that the database (and application) is ready.
-        :type notify_host_name: str or None
         :param notify_port_no:
             Port to talk to tell that the database (and application) is ready.
-        :type notify_port_no: int or None
         :param listen_port:
             Port on which to listen for an acknowledgement that the
             simulation should start.
-        :type listen_port: int or None
         """
         if notify_port_no is None:
             notify_port_no = get_config_int("Database", "notify_port")

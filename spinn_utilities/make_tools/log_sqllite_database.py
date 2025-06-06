@@ -51,7 +51,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         Connects to a log dict. The location of the file can be overridden
         using the ``C_LOGS_DICT`` environment variable.
 
-        :param bool new_dict: Flag to say if this is a new dict or not.
+        :param new_dict: Flag to say if this is a new dict or not.
             If True, clears and previous values.
             If False, makes sure the dict exists.
         """

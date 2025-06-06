@@ -197,7 +197,7 @@ class FormatAdapter(logging.LoggerAdapter):
         .. note::
             This is a static method; it affects all log messages.
 
-        :param int level:
+        :param level:
             The level to set. The values in :py:mod:`logging` are recommended.
         """
         if level is None:
@@ -209,7 +209,7 @@ class FormatAdapter(logging.LoggerAdapter):
     def set_log_store(cls, log_store: Optional[LogStore]) -> None:
         """
         Sets a Object to write the log messages to
-        :param LogStore log_store:
+        :param log_store:
         """
         if log_store is not None and not isinstance(log_store, LogStore):
             raise TypeError("log_store must be a LogStore")

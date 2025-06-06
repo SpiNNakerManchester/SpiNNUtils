@@ -21,16 +21,22 @@ def as_string(byte_string: bytes, start: Optional[int] = None,
 
     The length is always the full length irrespective of the start and end.
 
-    :param bytes byte_string: data as a byte string
-    :param int start:
+    Usage::
+
+        Do we need a line after if next is note
+        this is th enext line
+
+    .. note::
+        no new line after
+    :param byte_string: data as a byte string
+    :param start:
         The inclusive start of the slice to convert to hexadecimal.
         May be `None`
-    :param int end:
+    :param end:
         The exclusive end of the slice to convert to hexadecimal. May be `None`
     :return:
         The length of the byte string and the comma separated hex values, as a
         descriptive string
-    :rtype: str
     """
     return "(" + str(len(byte_string)) + ")" + as_hex(byte_string, start, end)
 
@@ -40,10 +46,139 @@ def as_hex(byte_string: bytes, start: Optional[int] = None,
     """
     Returns the byte string as string showing the hex values
 
-    :param bytes byte_string: data as a byte string
-    :param int start: the inclusive start of the slice to return. May be `None`
-    :param int end: the exclusive end of the slice to return. May be `None`
+    Usage::
+
+        Some weird stuff here
+        Then some more stuff
+    .. note ::
+        Space after note
+    :param byte_string: data as a byte string
+    :param start: the inclusive start of the slice to return. May be `None`
+    :param end: the exclusive end of the slice to return. May be `None`
     :return: Comma-separated hex values
-    :rtype: str
     """
     return ','.join(f"{i:02x}" for i in iter(byte_string[start:end]))
+
+
+def as_foo(byte_string: bytes, start: Optional[int] = None,
+           end: Optional[int] = None) -> str:
+    """
+    Returns the byte string as string showing the hex values
+
+    Usage::
+
+        Some weird stuff here
+        Then some more stuff
+
+    one
+    two
+
+    three
+    four
+
+    .. note ::
+        Space after note
+
+    five
+    six
+
+    :param byte_string: data as a byte string
+    :param start: the inclusive start of the slice to return. May be `None`
+    :param end: the exclusive end of the slice to return. May be `None`
+    :return: Comma-separated hex values
+    """
+    return ','.join(f"{i:02x}" for i in iter(byte_string[start:end]))
+
+
+def as_foo1(byte_string: bytes, start: Optional[int] = None,
+           end: Optional[int] = None) -> str:
+    """
+    Returns the byte string as string showing the hex values
+
+    Usage::
+
+        Some weird stuff here
+        Then some more stuff
+
+    one
+    two
+
+    three
+    four
+
+    .. note ::
+        Space after note
+
+    :param byte_string: data as a byte string
+    :param start: the inclusive start of the slice to return. May be `None`
+    :param end: the exclusive end of the slice to return. May be `None`
+    :return: Comma-separated hex values
+    """
+    return ','.join(f"{i:02x}" for i in iter(byte_string[start:end]))
+
+
+def as_foo2(byte_string: bytes, start: Optional[int] = None,
+           end: Optional[int] = None) -> str:
+    """
+    Returns the byte string as string showing the hex values
+
+    Usage::
+
+        Some weird stuff here
+        Then some more stuff
+
+    .. note ::
+        Space after note
+
+    five
+    six
+
+    :param byte_string: data as a byte string
+    :param start: the inclusive start of the slice to return. May be `None`
+    :param end: the exclusive end of the slice to return. May be `None`
+    :return: Comma-separated hex values
+    """
+    return ','.join(f"{i:02x}" for i in iter(byte_string[start:end]))
+
+
+def as_bar(byte_string: bytes, start: Optional[int] = None,
+           end: Optional[int] = None) -> str:
+    """
+    Returns the byte string as string showing the hex values
+
+    Usage::
+
+        Some weird stuff here
+        Then some more stuff
+
+    .. note::
+        no Space after note
+
+    :param byte_string: data as a byte string
+    :param start: the inclusive start of the slice to return. May be `None`
+    :param end: the exclusive end of the slice to return. May be `None`
+    :return: Comma-separated hex values
+    """
+    return ','.join(f"{i:02x}" for i in iter(byte_string[start:end]))
+
+
+def as_bar(byte_string: bytes, start: Optional[int] = None,
+           end: Optional[int] = None) -> str:
+    """
+    Returns the byte string as string showing the hex values
+
+    Usage::
+
+        Some weird stuff here
+        Then some more stuff
+
+    .. note ::
+        Space after note
+
+    :param byte_string: data as a byte string
+    :param start: the inclusive start of the slice to return. May be `None`
+    :param end: the exclusive end of the slice to return. May be `None`
+    :return: Comma-separated hex values
+    """
+    return ','.join(f"{i:02x}" for i in iter(byte_string[start:end]))
+

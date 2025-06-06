@@ -48,3 +48,42 @@ def classproperty(func: Callable) -> _ClassPropertyDescriptor:
         func = classmethod(func)  # type: ignore[assignment]
 
     return _ClassPropertyDescriptor(func)
+
+
+def classproperty1(func: Callable) -> _ClassPropertyDescriptor:
+    """
+    Defines a property at the class-level.
+
+    Usage::
+        class C(object):
+            _my_property = "Value"
+
+            @classproperty
+            def my_property(cls):
+                return cls._my_property
+    """
+    if not isinstance(func, (classmethod, staticmethod)):
+        # mypy claims expression has type "classmethod ...
+        func = classmethod(func)  # type: ignore[assignment]
+
+    return _ClassPropertyDescriptor(func)
+
+def classproperty2(func: Callable) -> _ClassPropertyDescriptor:
+    """
+    Defines a property at the class-level.
+
+    Usage::
+
+        class C(object):
+            _my_property = "Value"
+
+            @classproperty
+            def my_property(cls):
+                return cls._my_property
+    :param func: one
+    """
+    if not isinstance(func, (classmethod, staticmethod)):
+        # mypy claims expression has type "classmethod ...
+        func = classmethod(func)  # type: ignore[assignment]
+
+    return _ClassPropertyDescriptor(func)

@@ -21,8 +21,9 @@ def as_string(byte_string: bytes, start: Optional[int] = None,
 
     The length is always the full length irrespective of the start and end.
 
-    usage::
+    Usage::
         Do we need a line after if next is note
+        this is th enext line
 
     .. note::
         no new line after
@@ -46,6 +47,7 @@ def as_hex(byte_string: bytes, start: Optional[int] = None,
 
     Usage::
         Some weird stuff here
+        Then some more stuff
     .. note ::
         Space after note
     :param byte_string: data as a byte string
@@ -54,3 +56,4 @@ def as_hex(byte_string: bytes, start: Optional[int] = None,
     :return: Comma-separated hex values
     """
     return ','.join(f"{i:02x}" for i in iter(byte_string[start:end]))
+

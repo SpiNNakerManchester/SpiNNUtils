@@ -21,7 +21,7 @@ def as_string(byte_string: bytes, start: Optional[int] = None,
 
     The length is always the full length irrespective of the start and end.
 
-    Usage::
+    usage::
         Do we need a line after if next is note
 
     .. note::
@@ -48,7 +48,6 @@ def as_hex(byte_string: bytes, start: Optional[int] = None,
         Some weird stuff here
     .. note ::
         Space after note
-
     :param byte_string: data as a byte string
     :param start: the inclusive start of the slice to return. May be `None`
     :param end: the exclusive end of the slice to return. May be `None`

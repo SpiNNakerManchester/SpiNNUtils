@@ -51,7 +51,7 @@ class AbstractBase(type):
     This is a trimmed down version of ABC.
     Unlike ABC you can not register unrelated concrete classes.
 
-    Usage ::
+    Usage::
         space after
         class C(object, metaclass=AbstractBase):
             @abstractmethod

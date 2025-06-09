@@ -23,7 +23,7 @@ import numpy
 logger = logging.getLogger(__file__)
 
 #: Type of integers for selectors
-_Integer: TypeAlias = Union[int, numpy.integer, SupportsInt]
+_Integer: TypeAlias = Union[int, numpy.uint32, SupportsInt]
 #: The type of selectors; properly, SupportsInt should exclude numpy.ndarray
 #: because that's there just to handle special edge cases.
 Selector: TypeAlias = Union[

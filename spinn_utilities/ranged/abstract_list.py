@@ -30,7 +30,7 @@ T = TypeVar("T")
 #: :meta private:
 U = TypeVar("U")
 #: :meta private:
-IdsType: TypeAlias = Union[Sequence[int], NDArray[numpy.integer]]
+IdsType: TypeAlias = Union[Sequence[int], NDArray[numpy.uint32]]
 
 
 def _eq(x: Any, y: Any) -> bool:

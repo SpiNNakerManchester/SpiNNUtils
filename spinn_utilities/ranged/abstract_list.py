@@ -30,6 +30,7 @@ T = TypeVar("T")
 #: :meta private:
 U = TypeVar("U")
 #: :meta private:
+IdType: TypeAlias = Union[int, numpy.integer]
 IdsType: TypeAlias = Union[Sequence[int], NDArray[numpy.integer]]
 
 
@@ -168,7 +169,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         return only_range[2]
 
     @abstractmethod
-    def get_value_by_id(self, the_id: int) -> T:
+    def get_value_by_id(self, the_id: IdType) -> T:
         """
         Returns the value for one item in the list.
 
@@ -675,7 +676,7 @@ class SingleList(AbstractList[R], Generic[T, R],
         return self._a_list.range_based()
 
     @overrides(AbstractList.get_value_by_id)
-    def get_value_by_id(self, the_id: int) -> R:
+    def get_value_by_id(self, the_id: IdType) -> R:
         return self._operation(self._a_list.get_value_by_id(the_id))
 
     @overrides(AbstractList.get_single_value_by_slice)
@@ -743,7 +744,7 @@ class DualList(AbstractList[R], Generic[T, U, R],
         return self._left.range_based() and self._right.range_based()
 
     @overrides(AbstractList.get_value_by_id)
-    def get_value_by_id(self, the_id: int) -> R:
+    def get_value_by_id(self, the_id: IdType) -> R:
         return self._operation(
             self._left.get_value_by_id(the_id),
             self._right.get_value_by_id(the_id))

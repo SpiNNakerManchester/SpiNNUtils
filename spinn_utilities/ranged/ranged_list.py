@@ -20,7 +20,7 @@ from typing_extensions import TypeAlias, TypeGuard
 from spinn_utilities.overrides import overrides
 from spinn_utilities.helpful_functions import is_singleton
 from .abstract_sized import Selector
-from .abstract_list import AbstractList, T, _eq, IdsType
+from .abstract_list import AbstractList, T, _eq, IdType, IdsType
 from .multiple_values_exception import MultipleValuesException
 
 #: The type of a range descriptor
@@ -117,7 +117,7 @@ class RangedList(AbstractList[T], Generic[T]):
         return cast(List[T], self._ranges)
 
     @overrides(AbstractList.get_value_by_id)
-    def get_value_by_id(self, the_id: int) -> T:
+    def get_value_by_id(self, the_id: IdType) -> T:
         the_id = self._check_id_in_range(the_id)
 
         # If range based, find the range containing the value and return

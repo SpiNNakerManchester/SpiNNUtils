@@ -30,7 +30,7 @@ T = TypeVar("T")
 #: :meta private:
 U = TypeVar("U")
 #: :meta private:
-IdType: TypeAlias = Union[int,numpy.integer]
+IdType: TypeAlias = Union[int, numpy.integer]
 IdsType: TypeAlias = Union[Sequence[int], NDArray[numpy.integer]]
 
 

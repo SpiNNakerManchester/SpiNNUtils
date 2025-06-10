@@ -18,7 +18,8 @@ from numpy.typing import NDArray
 
 int_list: List[int] = [0, 1, 2]
 int_array: NDArray[numpy.integer] = numpy.array(int_list, dtype=numpy.int32)
-float_array: NDArray[numpy.floating] = numpy.array([1, 2, 3], dtype=numpy.float32)
+float_array: NDArray[numpy.floating] = numpy.array(
+    [1, 2, 3], dtype=numpy.float32)
 print(int_array)
 for i in int_array:
     print(float_array[i])

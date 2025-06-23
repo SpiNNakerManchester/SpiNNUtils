@@ -73,7 +73,6 @@ class SafeEval(object):
         Evaluate an expression and return the result.
 
         :param expression: The expression to evaluate
-        :type expression: str
         :param kwargs:
             The extra symbol bindings to use for this evaluation.
             This is useful for passing in particular parameters to an

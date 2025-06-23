@@ -69,8 +69,7 @@ class _SliceView(AbstractView[T], Generic[T]):
         """
         Iterate over the Values in a way that will work even between updates
 
-        :param str key:
-        :rtype: iter
+        :param key:
         """
         ranged_list = self._range_dict.get_list(key)
         for the_id in self.ids():

@@ -198,12 +198,11 @@ class ProgressBar(object):
         The progress bar should have been initialised to the size of the
         collection being iterated over.
 
-        :param ~collections.abc.Iterable collection:
+        :param collection:
             The base collection (any iterable) being iterated over
-        :param bool finish_at_end:
+        :param finish_at_end:
             Flag to say if the bar should finish at the end of the collection
         :return: An iterable. Expected to be directly used in a for.
-        :rtype: ~collections.abc.Iterable
         """
         try:
             for item in collection:

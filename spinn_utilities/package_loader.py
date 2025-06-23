@@ -26,10 +26,9 @@ def all_modules(directory: str, prefix: str,
     Any file that ends in either ``.py`` or ``.pyc`` is assume a python module
     and added to the result set.
 
-    :param str directory: path to check for python files
-    :param str prefix: package prefix top add to the file name
+    :param directory: path to check for python files
+    :param prefix: package prefix top add to the file name
     :return: set of python package names
-    :rtype: set(str)
     """
     results = set()
     for module in os.listdir(directory):

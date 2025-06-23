@@ -75,8 +75,8 @@ class _IdsView(AbstractView[T], Generic[T]):
         """
         Sets a already existing key to the new value. For the view specified.
 
-        :param str key:
-        :param iter(int) ids:
+        :param key:
+        :param ids:
         :param value:
         """
         rl = self._range_dict[key]

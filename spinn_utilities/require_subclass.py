@@ -35,7 +35,7 @@ def require_subclass(required_class: Type) -> Callable[[Type], Type]:
         class AbstractVirtual(object):
             ...
 
-    :param type required_class:
+    :param required_class:
         The class that the subclass of the decorated class must be an instance
         of (if that subclass is concrete).
     """

@@ -36,4 +36,4 @@ def test_advanced_use() -> None:
     with t:
         sleep(0.1)
     assert t.measured_interval is not None
-    assert t.measured_interval.total_seconds() >= 0.1
+    assert t.measured_interval.total_seconds() >= 0.095

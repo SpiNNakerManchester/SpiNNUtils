@@ -20,4 +20,4 @@
 # pip install --upgrade mypy
 
 
-mypy --python-version 3.8 spinn_utilities unittests
+mypy spinn_utilities unittests

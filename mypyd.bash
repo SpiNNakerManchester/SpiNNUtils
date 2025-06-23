@@ -20,4 +20,4 @@
 # pip install --upgrade mypy
 
 
-mypy --python-version 3.8 --disallow-untyped-defs spinn_utilities unittests
+mypy --disallow-untyped-defs spinn_utilities unittests

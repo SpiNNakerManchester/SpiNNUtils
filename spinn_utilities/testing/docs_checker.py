@@ -124,6 +124,9 @@ class DocsChecker(object):
                     error += "No short description provided."
 
         if docs is not None:
+            for key in [":type", ":rtype"]:
+                if key in docs:
+                    error += f"found {key} "
             index = sys.maxsize
             for key in [":param", ":return", ":raises"]:
                 if key in docs:

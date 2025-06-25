@@ -108,7 +108,7 @@ class DocsChecker(object):
         for param in docstring.params:
             if param.arg_name not in param_names:
                 error += f"{param.arg_name}: is incorrect "
-            elif param.type_name is not None:
+            elif param.type_name:
                 error += f"{param.arg_name}: is typed "
             elif not param.description:
                 if self.__check_params:

@@ -85,7 +85,10 @@ class DocsChecker(object):
         self.__file_path = file_path
         with open(file_path, "r", encoding="utf-8") as file:
             raw_tree = file.read()
-        ast_tree = ast.parse(raw_tree, type_comments=True)
+        try:
+            ast_tree = ast.parse(raw_tree, type_comments=True)
+        except SyntaxError as ex:
+            raise SyntaxError(f"{ex.msg} of {file_path}")
         for node in ast.walk(ast_tree):
             if isinstance(node, ast.FunctionDef):
                 self.check_function(node)

@@ -7,5 +7,5 @@ class Compare(object):
 
     def doc_param(self, foo:int) -> None:
         """
-        :param foo: Thefunny odd object to set
+        :param foo: The funny odd object to set
         """

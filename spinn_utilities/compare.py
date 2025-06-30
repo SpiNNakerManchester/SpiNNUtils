@@ -1,6 +1,6 @@
 class Compare(object):
 
-    def short_description(self, foo:int) -> None:
+    def short_description_setter(self, foo:int) -> None:
         """
         Sets funny odd object
         """
@@ -11,6 +11,12 @@ class Compare(object):
         :param foo: The funny odd object to set
         """
         self.foo = foo
+
+    def doc_return(self) -> int:
+        """
+        :return: the number 1
+        """
+        return 1
 
     @property
     def foo(self) -> int:
@@ -41,15 +47,9 @@ class Compare(object):
         self.bar = bar
 
     @property
-    def alpha(self) -> int:
+    def no_setter(self) -> int:
         """
         :return: The first number
         """
         return 1
 
-    @property
-    def beta(self) -> int:
-        """
-        The second number
-        """
-        return 2

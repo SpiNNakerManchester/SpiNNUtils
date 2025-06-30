@@ -319,7 +319,7 @@ def config_sections() -> List[str]:
 
 def configs_loaded() -> bool:
     """
-    :return: True if and only if the configuration was loaded
+    True if and only if the configuration was loaded
     """
     if __config is None:
         return False

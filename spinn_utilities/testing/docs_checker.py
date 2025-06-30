@@ -88,7 +88,7 @@ class DocsChecker(object):
         try:
             ast_tree = ast.parse(raw_tree, type_comments=True)
         except SyntaxError as ex:
-            raise SyntaxError(f"{ex.msg} of {file_path}")
+            raise SyntaxError(f"{ex.msg} of {file_path}") from ex
         for node in ast.walk(ast_tree):
             if isinstance(node, ast.FunctionDef):
                 self.check_function(node)

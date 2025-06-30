@@ -108,12 +108,21 @@ class DocsChecker(object):
         error = self._check_params(node, docstring)
         error += self._check_docs(docs)
 
+        if docs is not None and not self.is_property(node):
+            print(node.name)
+
         if error:
             if self.__error_level < ERROR_FILE:
                 print(f"{self.__file_path}")
             self.__error_level = ERROR_FILE
             print(f"\t{node.name} {node.lineno}")
             print(f"\t{error}")
+
+    def is_property(self, node: ast.FunctionDef):
+        for decorator in node.decorator_list:
+            if decorator.id == "property":
+                return True
+        return False
 
     def _check_params(self, node: ast.FunctionDef,
                       docstring: docstring_parser.common.Docstring) -> str:
@@ -159,7 +168,6 @@ class DocsChecker(object):
                         error += "Missing blank line after description"
 
         return error
-
 
     def get_param_names(self, node: ast.FunctionDef) -> Set[str]:
         """

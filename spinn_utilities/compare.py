@@ -1,11 +1,11 @@
 class Compare(object):
 
-    def short_description(self) -> int:
+    def short_description(self, foo:int) -> None:
         """
-        The number 1
+        Sets funny odd object
         """
 
-    def doc_return(self) -> int:
+    def doc_param(self, foo:int) -> None:
         """
-        :return: The number 1
+        :param foo: Thefunny odd object to set
         """

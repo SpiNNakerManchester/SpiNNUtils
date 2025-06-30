@@ -326,6 +326,7 @@ def configs_loaded() -> bool:
     else:
         return True
 
+
 def has_config_option(section: str, option: str) -> bool:
     """
     Check if the section has this configuration option.

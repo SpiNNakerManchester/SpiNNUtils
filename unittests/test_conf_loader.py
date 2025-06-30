@@ -266,7 +266,7 @@ def test_config_holder(not_there: Tuple[str, str]) -> None:
     config_holder.clear_cfg_files(False)
     name, place = not_there
     config_holder.set_cfg_files(name, TYPESPATH)
-    assert config_holder.configs_loaded() == False
+    assert not config_holder.configs_loaded()
     # first time creates file and errors
     try:
         config_holder.load_config()
@@ -275,7 +275,7 @@ def test_config_holder(not_there: Tuple[str, str]) -> None:
         assert name in str(ex)
     # Should work the second time
     config_holder.load_config()
-    assert config_holder.configs_loaded() == True
+    assert config_holder.configs_loaded()
     # Note these values come from the template file not the default!
     assert "from template" == config_holder.get_config_str("sect", "a_string")
     assert ["alpha", "beta", "gamma"] == config_holder.get_config_str_list(

@@ -1,8 +1,14 @@
 class Compare(object):
 
-    def short_description_setter(self, foo:int) -> None:
+    def setter_doced(self, foo:int) -> None:
         """
         Sets funny odd object
+        """
+        self.foo = foo
+
+    def setter_param(self, foo:int) -> None:
+        """
+        :param foo: funny even object to set to foo
         """
         self.foo = foo
 
@@ -12,9 +18,15 @@ class Compare(object):
         """
         self.foo = foo
 
-    def doc_return(self) -> int:
+    def return_doced(self) -> int:
         """
         :return: the number 1
+        """
+        return 1
+
+    def return_description(self) -> int:
+        """
+        the number 1
         """
         return 1
 
@@ -38,18 +50,3 @@ class Compare(object):
         The basic alpha ram
         """
         return self.bar
-
-    @bar.setter
-    def bar(self, bar: int):
-        """
-        Sets basic alpha ram
-        """
-        self.bar = bar
-
-    @property
-    def no_setter(self) -> int:
-        """
-        :return: The first number
-        """
-        return 1
-

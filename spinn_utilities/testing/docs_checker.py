@@ -15,7 +15,7 @@
 import ast
 import os
 import sys
-from typing import cast, Set
+from typing import cast, Optional, Set
 
 import docstring_parser
 
@@ -105,8 +105,19 @@ class DocsChecker(object):
 
         # docstring_parser.parse does handle None it is annotated incorrectly
         docstring = docstring_parser.parse(cast(str, docs))
-        error = ""
+        error = self._check_params(node, docstring)
+        error += self._check_docs(docs)
 
+        if error:
+            if self.__error_level < ERROR_FILE:
+                print(f"{self.__file_path}")
+            self.__error_level = ERROR_FILE
+            print(f"\t{node.name} {node.lineno}")
+            print(f"\t{error}")
+
+    def _check_params(self, node: ast.FunctionDef,
+                      docstring: docstring_parser.common.Docstring) -> str:
+        error = ""
         param_names = self.get_param_names(node)
         for param in docstring.params:
             if param.arg_name not in param_names:
@@ -126,6 +137,10 @@ class DocsChecker(object):
                 if self.__check_short:
                     error += "No short description provided."
 
+        return error
+
+    def _check_docs(self, docs: Optional[str]) -> str:
+        error = ""
         if docs is not None:
             for key in [":type", ":rtype"]:
                 if key in docs:
@@ -143,12 +158,8 @@ class DocsChecker(object):
                     if docs[index-2: index] != "\n\n":
                         error += "Missing blank line after description"
 
-        if error:
-            if self.__error_level < ERROR_FILE:
-                print(f"{self.__file_path}")
-            self.__error_level = ERROR_FILE
-            print(f"\t{node.name} {node.lineno}")
-            print(f"\t{error}")
+        return error
+
 
     def get_param_names(self, node: ast.FunctionDef) -> Set[str]:
         """
@@ -183,4 +194,4 @@ class DocsChecker(object):
 if __name__ == "__main__":
     checker = DocsChecker(
         check_init=False, check_short=False, check_params=False)
-    checker.check_file("")
+    checker.check_file("/home/brenninc/spinnaker/SpiNNUtils/spinn_utilities/socket_address.py")

@@ -85,7 +85,10 @@ class DocsChecker(object):
         self.__file_path = file_path
         with open(file_path, "r", encoding="utf-8") as file:
             raw_tree = file.read()
-        ast_tree = ast.parse(raw_tree, type_comments=True)
+        try:
+            ast_tree = ast.parse(raw_tree, type_comments=True)
+        except SyntaxError as ex:
+            raise SyntaxError(f"{ex.msg} of {file_path}") from ex
         for node in ast.walk(ast_tree):
             if isinstance(node, ast.FunctionDef):
                 self.check_function(node)
@@ -108,7 +111,7 @@ class DocsChecker(object):
         for param in docstring.params:
             if param.arg_name not in param_names:
                 error += f"{param.arg_name}: is incorrect "
-            elif param.type_name is not None:
+            elif param.type_name:
                 error += f"{param.arg_name}: is typed "
             elif not param.description:
                 if self.__check_params:
@@ -124,6 +127,9 @@ class DocsChecker(object):
                     error += "No short description provided."
 
         if docs is not None:
+            for key in [":type", ":rtype"]:
+                if key in docs:
+                    error += f"found {key} "
             index = sys.maxsize
             for key in [":param", ":return", ":raises"]:
                 if key in docs:

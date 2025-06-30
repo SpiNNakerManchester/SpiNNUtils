@@ -34,7 +34,7 @@ class Compare(object):
         return self.bar
 
     @bar.setter
-    def foo(self, bar: int):
+    def bar(self, bar: int):
         """
         Sets basic alpha ram
         """

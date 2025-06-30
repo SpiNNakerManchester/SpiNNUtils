@@ -317,6 +317,15 @@ def config_sections() -> List[str]:
     return __config.sections()
 
 
+def configs_loaded() -> bool:
+    """
+    :return: True if and only if the configuration was loaded
+    """
+    if __config is None:
+        return False
+    else:
+        return True
+
 def has_config_option(section: str, option: str) -> bool:
     """
     Check if the section has this configuration option.

@@ -326,7 +326,7 @@ def has_config_option(section: str, option: str) -> bool:
     :return: True if and only if the option is defined. It may be `None`
     """
     if __config is None:
-        raise ConfigException("configuration not loaded")
+        return False
     else:
         return __config.has_option(section, option)
 

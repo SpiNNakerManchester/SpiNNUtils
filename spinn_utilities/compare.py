@@ -12,12 +12,6 @@ class Compare(object):
         """
         self.foo = foo
 
-    def doc_param(self, foo:int) -> None:
-        """
-        :param foo: The funny odd object to set
-        """
-        self.foo = foo
-
     def return_doced(self) -> int:
         """
         :return: the number 1

@@ -15,13 +15,27 @@ class Compare(object):
     @property
     def foo(self) -> int:
         """
-        :return: The funny odd object - property
+        :return: The fancy old orange
         """
         return self.foo
 
     @foo.setter
     def foo(self, foo: int):
         """
-        Sets funny odd object - setter
+        Sets fancy old orange
         """
         self.foo = foo
+
+    @property
+    def bar(self) -> int:
+        """
+        The basic alpha ram
+        """
+        return self.bar
+
+    @bar.setter
+    def foo(self, bar: int):
+        """
+        Sets basic alpha ram
+        """
+        self.bar = bar

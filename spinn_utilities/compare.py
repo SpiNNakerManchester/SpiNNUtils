@@ -39,3 +39,17 @@ class Compare(object):
         Sets basic alpha ram
         """
         self.bar = bar
+
+    @property
+    def alpha(self) -> int:
+        """
+        :return: The first number
+        """
+        return 1
+
+    @property
+    def beta(self) -> int:
+        """
+        The second number
+        """
+        return 2

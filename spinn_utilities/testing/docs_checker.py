@@ -184,7 +184,7 @@ class DocsChecker(object):
 
     def is_property(self, node: ast.FunctionDef) -> bool:
         """
-        :return: Truie if and only if there is a @property decorator
+        :return: True if and only if there is a @property decorator
         """
         for decorator in node.decorator_list:
             if isinstance(decorator, ast.Name) and decorator.id == "property":

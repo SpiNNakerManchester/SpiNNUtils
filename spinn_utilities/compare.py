@@ -32,26 +32,29 @@ class Compare(object):
     @property
     def property_bad2(self) -> int:
         """
-        Another property
-        :return: Having a return even with a descpition is ugly
+        short description
+
+        :return: Having a return even with a description is ugly
         """
         return 3
 
     @property
-    def property_good(self) -> int:
+    def property_best1(self) -> int:
         """
-         Just a description reads the cleanest
+        Just a description reads the cleanest
         """
         return 4
 
     @property
-    def property_good2(self) -> int:
+    def property_best2(self) -> int:
         """
-        Just a description reads the cleanest (Settable)
+        Just a description reads the cleanest
+
+        Settable
         """
         return 5
 
-    @property_good2.setter
+    @property_best1.setter
     def property_good2(self, a: int) -> None:
         """
         Docs on setters are ignored
@@ -70,12 +73,12 @@ class Compare(object):
 
     def params_best2(self, x: int, y: int, label: str) -> str:
         """
-        Having a short description is nice even with a return
+        Having a short description is best even with a return
 
         :param x: chip x
         :param y: chip y
         :param label:  name of vertex
-        :return: Text description
+        :return: Return description
         """
         return f"{label} on {x}:{y}"
 
@@ -84,7 +87,7 @@ class Compare(object):
         :param x: chip x
         :param y: chip y
         :param label:  name of vertex
-        :return: Just a text description is still good
+        :return: Just a return description is still good
         """
         return f"{label} on {x}:{y}"
 

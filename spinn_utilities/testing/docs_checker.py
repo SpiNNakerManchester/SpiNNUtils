@@ -15,7 +15,7 @@
 import ast
 import os
 import sys
-from typing import cast, Optional, Set
+from typing import cast, Set
 
 import docstring_parser
 
@@ -38,12 +38,14 @@ class DocsChecker(object):
 
     __slots__ = [
         "__check_init", "__check_short", "__check_params",
-        "__check_returns",
-        "__error_level", "__file_path", "__file_errors", "__functions_errors"]
+        "__check_properties", "__check_returns",
+        "__error_level", "__file_path", "__file_errors",
+        "__functions_errors"]
 
     def __init__(
-            self, check_init: bool, check_short: bool,
-            check_params: bool, check_returns: Optional[bool] = False) -> None:
+            self, *, check_init: bool = True, check_short: bool = True,
+            check_params: bool = True, check_properties: bool = True,
+            check_returns: bool = True) -> None:
         """
         Sets up the doc checker.
 
@@ -53,19 +55,24 @@ class DocsChecker(object):
 
         :param check_init: flag to trigger checking of __init__ methods.
             If True all init methods must have all params documented
-            Descriptions not required on __init__ files
-        :param check_short: Flag to trigger checking of description.
-            If there is a documentation (except for __init__)
-            this must include a short description
-        :param check_params: Flag to trigger checking of param docs.
-            This will not check if all params are documented.
-            However, if a param is documented it must include a description.
+            Descriptions not allowed on __init__ files
+            as they should be on the class only.
+        :param check_short: Flag to trigger checking of a description.
+            For public (None init) methods (except setters) with no return
+            there must be a short description
+        :param check_params: Flag to trigger checking of params.
+            If any param is listed all must be.
+            The param does not need to be documented.
+        :param check_properties: Flag to trigger checking of Properties
+            They must include a description.
+            They should not have a return annotation
         :param check_returns: Flag to trigger checking of return annotations
             when not a property
         """
         self.__error_level = ERROR_NONE
         self.__check_init = check_init
         self.__check_params = check_params
+        self.__check_properties = check_properties
         self.__check_short = check_short
         self.__check_returns = check_returns
         self.__file_path = "None"
@@ -118,21 +125,45 @@ class DocsChecker(object):
             docs = cast(str, _docs)
 
         docstring = docstring_parser.parse(docs)
-        error = self._check_params(node, docstring)
+        param_names = self.get_param_names(node)
+        error = self._check_params_correct(param_names, docstring)
 
         if node.name.startswith("_"):
             # these are not included by readthedocs so less important
             return error
-        error += self._check_docs(docs)
 
-        if self.is_property(node):
+        if node.name == "__init__":
+            if self.__check_init:
+                if len(docstring.params) != len(param_names):
+                    error += "Missing params"
+                if docstring.short_description is not None:
+                    error += "Short description provided."
+                if len(docstring.many_returns) > 0:
+                    error += ("Unexpected returns")
+        elif self.has_returns(node):
+            if self.is_property(node):
+                if self.__check_properties:
+                    if docstring.short_description is None:
+                        error += "No short description provided."
+                    if len(docstring.many_returns) > 0:
+                        error += "Unexpected returns"
+                        if self.__check_params:
+                            self._check_params_all_or_none(
+                                param_names, docstring)
+            else:
+                if self.__check_returns:
+                    if len(docstring.many_returns) == 0:
+                        error += "No returns"
+                if self.__check_params:
+                    self._check_params_all_or_none(param_names, docstring)
+        else:
+            if len(docstring.many_returns) > 0:
+                error += "Unexpected returns"
             if self.__check_short:
                 if docstring.short_description is None:
                     error += "No short description provided."
-        elif self.__check_returns:
-            if self.has_returns(node):
-                if len(docstring.many_returns) == 0:
-                    error += "No returns"
+
+        error += self._check_blank_lines(docs)
 
         return error
 
@@ -166,27 +197,37 @@ class DocsChecker(object):
                 return False
         return True
 
-    def _check_params(self, node: ast.FunctionDef,
-                      docstring: docstring_parser.common.Docstring) -> str:
+    def _check_params_correct(
+            self, param_names: Set[str],
+            docstring: docstring_parser.common.Docstring) -> str:
+        """
+        Checks that all params listed are used and not typed
+        """
         error = ""
-        param_names = self.get_param_names(node)
         for param in docstring.params:
             if param.arg_name not in param_names:
                 error += f"{param.arg_name}: is incorrect "
             elif param.type_name:
                 error += f"{param.arg_name}: is typed "
-            elif not param.description:
-                if self.__check_params:
-                    error += f"{param.arg_name}: is blank "
-
-        if node.name == "__init__":
-            if len(docstring.params) != len(param_names):
-                if self.__check_init:
-                    error += "Missing params"
-
         return error
 
-    def _check_docs(self, docs: str) -> str:
+    def _check_params_all_or_none(
+            self, param_names: Set[str],
+            docstring: docstring_parser.common.Docstring) -> str:
+        """
+        Checks that either no or all params are listed
+        """
+        if len(docstring.params) == 0:
+            return ""
+        elif len(docstring.params) != len(param_names):
+            return "Missing params"
+        else:
+            return ""
+
+    def _check_blank_lines(self, docs: str) -> str:
+        """
+        Check there are blank lines where needed
+        """
         error = ""
 
         for key in [":type", ":rtype"]:

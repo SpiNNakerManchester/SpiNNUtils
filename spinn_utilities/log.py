@@ -49,7 +49,7 @@ class ConfiguredFilter(object):
 
     def filter(self, record: logging.LogRecord) -> bool:
         """
-        Get the level for the deepest parent, and filter appropriately.
+        :returns: The level for the deepest parent, and filter appropriately.
         """
         level = ConfiguredFormatter.level_of_deepest_parent(
             self._levels, record.name)
@@ -79,7 +79,9 @@ class ConfiguredFormatter(logging.Formatter):
     def construct_logging_parents(
             conf: configparser.RawConfigParser) -> Dict[str, int]:
         """
-        Create a dictionary of module names and logging levels.
+        Create a dictionary of logging levels based on the cfg
+
+        :returns: Dictionary of logging names to logging levels
         """
         # Construct the dictionary
         _levels: Dict[str, int] = {}
@@ -98,7 +100,7 @@ class ConfiguredFormatter(logging.Formatter):
     @staticmethod
     def deepest_parent(parents: KeysView[str], child: str) -> Optional[str]:
         """
-        Greediest match between child and parent.
+        :returns: Greediest match between child and parent.
         """
         # TODO: this can almost certainly be neater!
         # Repeatedly strip elements off the child until we match an item in
@@ -118,7 +120,8 @@ class ConfiguredFormatter(logging.Formatter):
     def level_of_deepest_parent(
             parents: Dict[str, int], child: str) -> Optional[int]:
         """
-        The logging level of the greediest match between child and parent.
+        :returns:
+           The logging level of the greediest match between child and parent.
         """
         # child = re.sub( r'^pacman103\.', '', child )
         parent = ConfiguredFormatter.deepest_parent(parents.keys(), child)
@@ -267,7 +270,9 @@ class FormatAdapter(logging.LoggerAdapter):
         Process the logging message and keyword arguments passed in to a
         logging call to insert contextual information. You can either
         manipulate the message itself, the keyword arguments or both.
-        Return the message and *kwargs* modified (or not) to suit your needs.
+
+        :returns:
+            The message and *kwargs* modified (or not) to suit your needs.
         """
         return msg, {
             key: kwargs[key]

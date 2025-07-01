@@ -44,3 +44,35 @@ class Compare(object):
         The basic alpha ram
         """
         return self.bar
+
+    def params_none(self, a:int, b:float, c:str) -> bool:
+        """
+        No parameters listed
+
+        :return: True
+        """
+        print(a, b, c)
+        return True
+
+    def params_all(self, a: int, b: float, c: str) -> bool:
+        """
+        all parameters listed
+
+        :param a:
+        :param b:
+        :param c:
+        :return: True
+        """
+        print(a, b, c)
+        return True
+
+    def params_some(self, a: int, b: float, c: str) -> bool:
+        """
+        all parameters listed
+
+        :param a:
+        :param c:
+        :return: True
+        """
+        print(a, b, c)
+        return True

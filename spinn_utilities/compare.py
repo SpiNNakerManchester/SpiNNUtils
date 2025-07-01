@@ -56,7 +56,7 @@ class Compare(object):
 
     def params_all(self, a: int, b: float, c: str) -> bool:
         """
-        all parameters listed
+        all parameters listed all empty
 
         :param a:
         :param b:
@@ -66,12 +66,58 @@ class Compare(object):
         print(a, b, c)
         return True
 
-    def params_some(self, a: int, b: float, c: str) -> bool:
+    def params_all_1(self, a: int, b: float, c: str) -> bool:
         """
-        all parameters listed
+        all parameters listed some empty
+
+        :param a: alpha
+        :param b:
+        :param c: charlie
+        :return: True
+        """
+        print(a, b, c)
+        return True
+
+    def params_all_2(self, a: int, b: float, c: str) -> bool:
+        """
+        all parameters listed none empty
+
+        :param a: alpha
+        :param b: beta
+        :param c: charlie
+        :return: True
+        """
+        print(a, b, c)
+        return True
+
+    def params_some_1(self, a: int, b: float, c: str) -> bool:
+        """
+        some parameters listed all empty
 
         :param a:
         :param c:
+        :return: True
+        """
+        print(a, b, c)
+        return True
+
+    def params_some_1(self, a: int, b: float, c: str) -> bool:
+        """
+        some parameters listed some empty
+
+        :param a: alpha
+        :param c:
+        :return: True
+        """
+        print(a, b, c)
+        return True
+
+    def params_some_2(self, a: int, b: float, c: str) -> bool:
+        """
+        some parameters listed none empty
+
+        :param a: alpha
+        :param c: Charlie
         :return: True
         """
         print(a, b, c)

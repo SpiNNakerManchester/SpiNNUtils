@@ -110,8 +110,6 @@ class DocsChecker(object):
     def _check_function(self, node: ast.FunctionDef) -> str:
         """
         Check the documentation in this function.
-
-        :return: The error string. Empty if all ok
         """
         if self.__error_level > ERROR_FILE:
             self.__error_level = ERROR_FILE

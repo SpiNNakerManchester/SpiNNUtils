@@ -38,10 +38,12 @@ class DocsChecker(object):
 
     __slots__ = [
         "__check_init", "__check_short", "__check_params",
-        "__error_level", "__file_path"]
+        "__check_returns",
+        "__error_level", "__file_path", "__file_errors", "__functions_errors"]
 
-    def __init__(self, check_init: bool, check_short: bool,
-                 check_params: bool) -> None:
+    def __init__(
+            self, check_init: bool, check_short: bool,
+            check_params: bool, check_returns: Optional[bool] = False) -> None:
         """
         Sets up the doc checker.
 
@@ -58,12 +60,17 @@ class DocsChecker(object):
         :param check_params: Flag to trigger checking of param docs.
             This will not check if all params are documented.
             However, if a param is documented it must include a description.
+        :param check_returns: Flag to trigger checking of return annotations
+            when not a property
         """
         self.__error_level = ERROR_NONE
         self.__check_init = check_init
         self.__check_params = check_params
         self.__check_short = check_short
+        self.__check_returns = check_returns
         self.__file_path = "None"
+        self.__file_errors = 0
+        self.__functions_errors = 0
 
     def check_dir(self, dir_path: str) -> None:
         """
@@ -93,36 +100,71 @@ class DocsChecker(object):
             if isinstance(node, ast.FunctionDef):
                 self.check_function(node)
 
+    def _check_function(self, node: ast.FunctionDef) -> str:
+        """
+        Check the documentation in this function.
+
+        :return: The error string. Empty if all ok
+        """
+        if self.__error_level > ERROR_FILE:
+            self.__error_level = ERROR_FILE
+        _docs = ast.get_docstring(node)
+        if _docs is None:
+            # pylint does not require init to have docs
+            if node.name == "__init__" and self.__check_init:
+                return "missing docstring"
+            return ""
+        else:
+            docs = cast(str, _docs)
+
+        docstring = docstring_parser.parse(docs)
+        error = self._check_params(node, docstring)
+
+        if node.name.startswith("_"):
+            # these are not included by readthedocs so less important
+            return error
+        error += self._check_docs(docs)
+
+        if self.is_property(node):
+            if self.__check_short:
+                if docstring.short_description is None:
+                    error += "No short description provided."
+        elif self.__check_returns:
+            if self.has_returns(node):
+                if len(docstring.many_returns) == 0:
+                    error += "No returns"
+
+        return error
+
     def check_function(self, node: ast.FunctionDef) -> None:
         """
         Check the documentation in this function.
         """
         if self.__error_level > ERROR_FILE:
             self.__error_level = ERROR_FILE
-        docs = ast.get_docstring(node)
-        if docs is None and node.name != "__init__":
-            return
-
-        # docstring_parser.parse does handle None it is annotated incorrectly
-        docstring = docstring_parser.parse(cast(str, docs))
-        error = self._check_params(node, docstring)
-        error += self._check_docs(docs)
-
-        if docs is not None and not self.is_property(node):
-            print(node.name)
+        error = self._check_function(node)
 
         if error:
             if self.__error_level < ERROR_FILE:
                 print(f"{self.__file_path}")
+                self.__file_errors += 1
             self.__error_level = ERROR_FILE
             print(f"\t{node.name} {node.lineno}")
             print(f"\t{error}")
+            self.__functions_errors += 1
 
     def is_property(self, node: ast.FunctionDef):
         for decorator in node.decorator_list:
-            if decorator.id == "property":
+            if isinstance(decorator, ast.Name) and decorator.id == "property":
                 return True
         return False
+
+    def has_returns(self, node: ast.FunctionDef) -> bool:
+        returns = node.returns
+        if isinstance(returns, ast.Constant):
+            if returns.value is None:
+                return False
+        return True
 
     def _check_params(self, node: ast.FunctionDef,
                       docstring: docstring_parser.common.Docstring) -> str:
@@ -141,31 +183,27 @@ class DocsChecker(object):
             if len(docstring.params) != len(param_names):
                 if self.__check_init:
                     error += "Missing params"
-        else:
-            if docstring.short_description is None:
-                if self.__check_short:
-                    error += "No short description provided."
 
         return error
 
-    def _check_docs(self, docs: Optional[str]) -> str:
+    def _check_docs(self, docs: str) -> str:
         error = ""
-        if docs is not None:
-            for key in [":type", ":rtype"]:
-                if key in docs:
-                    error += f"found {key} "
-            index = sys.maxsize
-            for key in [":param", ":return", ":raises"]:
-                if key in docs:
-                    key_index = docs.index(key)
-                    if key_index < index:
-                        index = key_index
-            if index < sys.maxsize:
-                while index > 1 and docs[index-1] in [" ", "\t"]:
-                    index -= 1
-                if index >= 2:
-                    if docs[index-2: index] != "\n\n":
-                        error += "Missing blank line after description"
+
+        for key in [":type", ":rtype"]:
+            if key in docs:
+                error += f"found {key} "
+        index = sys.maxsize
+        for key in [":param", ":return", ":raises"]:
+            if key in docs:
+                key_index = docs.index(key)
+                if key_index < index:
+                    index = key_index
+        if index < sys.maxsize:
+            while index > 1 and docs[index-1] in [" ", "\t"]:
+                index -= 1
+            if index >= 2:
+                if docs[index-2: index] != "\n\n":
+                    error += "Missing blank line after description"
 
         return error
 
@@ -196,10 +234,14 @@ class DocsChecker(object):
         :raises AssertionError: If any previous check found an error
         """
         if self.__error_level > ERROR_NONE:
-            raise AssertionError("The documentation checker failed")
+            raise AssertionError(
+                f"The documentation checker failed "
+                f"on {self.__functions_errors} errors "
+                f"in {self.__file_errors} files")
 
 
 if __name__ == "__main__":
     checker = DocsChecker(
-        check_init=False, check_short=False, check_params=False)
-    checker.check_file("/home/brenninc/spinnaker/SpiNNUtils/spinn_utilities/socket_address.py")
+        check_returns = True, check_init=False, check_short=False, check_params=False)
+    #checker.check_dir("/home/brenninc/spinnaker/SpiNNUtils/")
+    checker.check_file("/home/brenninc/spinnaker/SpiNNUtils/spinn_utilities/classproperty.py")

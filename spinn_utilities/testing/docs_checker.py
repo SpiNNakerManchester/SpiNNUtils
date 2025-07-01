@@ -153,7 +153,7 @@ class DocsChecker(object):
             print(f"\t{error}")
             self.__functions_errors += 1
 
-    def is_property(self, node: ast.FunctionDef):
+    def is_property(self, node: ast.FunctionDef) -> bool:
         for decorator in node.decorator_list:
             if isinstance(decorator, ast.Name) and decorator.id == "property":
                 return True

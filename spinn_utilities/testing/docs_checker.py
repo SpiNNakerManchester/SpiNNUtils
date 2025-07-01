@@ -280,8 +280,8 @@ class DocsChecker(object):
         """
         if self.__error_level > ERROR_NONE:
             raise AssertionError(
-                f"The documentation checker failed "
-                f"on {self.__functions_errors} errors "
+                f"The documentation checker found "
+                f"{self.__functions_errors} errors "
                 f"in {self.__file_errors} files")
 
 

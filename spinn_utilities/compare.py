@@ -1,124 +1,158 @@
 class Compare(object):
+    """
+    Test class
+    """
 
-    def setter_doced(self, foo:int) -> None:
-        """
-        Sets funny odd object
-        """
-        self.foo = foo
-
-    def setter_param(self, foo:int) -> None:
-        """
-        :param foo: funny even object to set to foo
-        """
-        self.foo = foo
-
-    def return_doced(self) -> int:
+    def return_good(self) -> int:
         """
         :return: the number 1
         """
         return 1
 
-    def return_description(self) -> int:
+    def return_bad(self) -> int:
         """
-        the number 1
+        There should be a return tag
+        """
+        return 1
+
+    def return_best(self) -> int:
+        """
+        Having a short description is nice but not required
+        :return: the number 1
         """
         return 1
 
     @property
-    def foo(self) -> int:
+    def property_bad1(self) -> int:
         """
-        :return: The fancy old orange
+        :return: Having just a return on properties is ugly
         """
-        return self.foo
-
-    @foo.setter
-    def foo(self, foo: int):
-        """
-        Sets fancy old orange
-        """
-        self.foo = foo
+        return 2
 
     @property
-    def bar(self) -> int:
+    def property_bad2(self) -> int:
         """
-        The basic alpha ram
+        Another property
+        :return: Having a return even with a descpition is ugly
         """
-        return self.bar
+        return 3
 
-    def params_none(self, a:int, b:float, c:str) -> bool:
+    @property
+    def property_good(self) -> int:
         """
-        No parameters listed
+         Just a description reads the cleanest
+        """
+        return 4
 
-        :return: True
+    @property
+    def property_good2(self) -> int:
         """
-        print(a, b, c)
-        return True
+        Just a description reads the cleanest (Settable)
+        """
+        return 5
 
-    def params_all(self, a: int, b: float, c: str) -> bool:
+    @property_good2.setter
+    def property_good2(self, a: int) -> None:
         """
-        all parameters listed all empty
+        Docs on setters are ignored
+        """
+        print(a)
 
-        :param a:
-        :param b:
-        :param c:
-        :return: True
+    def params_best1(self, x:int, y:int, label:str) -> None:
         """
-        print(a, b, c)
-        return True
+        Having a short description is needed if no return
 
-    def params_all_1(self, a: int, b: float, c: str) -> bool:
+        :param x: chip x
+        :param y: chip y
+        :param label: name of vertex
         """
-        all parameters listed some empty
+        print(x, y, label)
 
-        :param a: alpha
-        :param b:
-        :param c: charlie
-        :return: True
+    def params_best2(self, x: int, y: int, label: str) -> str:
         """
-        print(a, b, c)
-        return True
+        Having a short description is nice even with a return
 
-    def params_all_2(self, a: int, b: float, c: str) -> bool:
+        :param x: chip x
+        :param y: chip y
+        :param label:  name of vertex
+        :return: Text description
         """
-        all parameters listed none empty
+        return f"{label} on {x}:{y}"
 
-        :param a: alpha
-        :param b: beta
-        :param c: charlie
-        :return: True
+    def params_good(self, x: int, y: int, label: str) -> str:
         """
-        print(a, b, c)
-        return True
+        :param x: chip x
+        :param y: chip y
+        :param label:  name of vertex
+        :return: Just a text description is still good
+        """
+        return f"{label} on {x}:{y}"
 
-    def params_some_1(self, a: int, b: float, c: str) -> bool:
+    def params_ok1(self, x:int, y:int, label:str) -> None:
         """
-        some parameters listed all empty
+        Having just some params with text is ok
 
-        :param a:
-        :param c:
-        :return: True
+        :param x:
+        :param y:
+        :param label:  name of vertex
         """
-        print(a, b, c)
-        return True
+        print(x, y, label)
 
-    def params_some_1(self, a: int, b: float, c: str) -> bool:
+    def params_ok2(self, x:int, y:int, label:str) -> None:
         """
-        some parameters listed some empty
+        Having no params is ok
+        """
+        print(x, y, label)
 
-        :param a: alpha
-        :param c:
-        :return: True
+    def params_acceptable(self, x:int, y:int, label:str) -> None:
         """
-        print(a, b, c)
-        return True
+        Having just all params empty is weird not wrong
 
-    def params_some_2(self, a: int, b: float, c: str) -> bool:
+        :param x:
+        :param y:
+        :param label:
         """
-        some parameters listed none empty
+        print(x, y, label)
 
-        :param a: alpha
-        :param c: Charlie
-        :return: True
+    def params_bad1(self, x:int, y:int, label:str) -> None:
         """
-        print(a, b, c)
-        return True
+        Having just some params is bad even with text
+
+        :param label:  name of vertex
+        """
+        print(x, y, label)
+
+    def params_bad2(self, x:int, y:int, label:str) -> None:
+        """
+        Having just some params with no text is worst
+
+        :param label:
+        """
+        print(x, y, label)
+
+
+class InInit(object):
+    """
+    The params are in the init method docs
+    """
+
+    def __init__(self, x: int, y: int, label: str):
+        """
+        :param x: chip x
+        :param y: chip y
+        :param label:  name of vertex
+        """
+        print(x, y, label)
+
+
+class InClass(object):
+    """
+    The params are in the class docs
+
+    :param x: chip x
+    :param y: chip y
+    :param label:  name of vertex
+    """
+
+    def __init__(self, x: int, y: int, label: str):
+        print(x, y, label)

@@ -242,6 +242,7 @@ class DocsChecker(object):
 
 if __name__ == "__main__":
     checker = DocsChecker(
-        check_returns = True, check_init=False, check_short=False, check_params=False)
-    #checker.check_dir("/home/brenninc/spinnaker/SpiNNUtils/")
-    checker.check_file("/home/brenninc/spinnaker/SpiNNUtils/spinn_utilities/classproperty.py")
+        check_returns=True, check_init=False, check_short=False,
+        check_params=False)
+    # checker.check_dir("")
+    checker.check_file("")

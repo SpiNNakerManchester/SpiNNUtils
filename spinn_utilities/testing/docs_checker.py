@@ -146,20 +146,24 @@ class DocsChecker(object):
                     if len(docstring.many_returns) > 0:
                         error += "Unexpected returns"
                         if self.__check_params:
-                            self._check_params_all_or_none(
+                            error += self._check_params_all_or_none(
                                 param_names, docstring)
             else:
                 if self.__check_returns:
                     if len(docstring.many_returns) == 0:
                         error += "No returns"
                 if self.__check_params:
-                    self._check_params_all_or_none(param_names, docstring)
+                    error += self._check_params_all_or_none(
+                        param_names, docstring)
         else:
             if len(docstring.many_returns) > 0:
                 error += "Unexpected returns"
             if self.__check_short:
                 if docstring.short_description is None:
                     error += "No short description provided."
+            if self.__check_params:
+                error += self._check_params_all_or_none(
+                    param_names, docstring)
 
         error += self._check_blank_lines(docs)
 
@@ -287,7 +291,7 @@ class DocsChecker(object):
 
 if __name__ == "__main__":
     checker = DocsChecker(
-        check_returns=True, check_init=False, check_short=False,
-        check_params=False)
+        check_returns=False, check_init=False, check_short=False,
+        check_params=True)
     # checker.check_dir("")
-    checker.check_file("")
+    checker.check_file("/home/brenninc/spinnaker/SpiNNUtils/spinn_utilities/make_tools/converter.py")

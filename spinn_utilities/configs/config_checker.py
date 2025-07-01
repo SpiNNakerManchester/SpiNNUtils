@@ -50,7 +50,6 @@ class ConfigChecker(object):
         Runs the checks of py and cfg files
 
         :param local_defaults:
-        :return:
         """
         if local_defaults:
             self._check_defaults()

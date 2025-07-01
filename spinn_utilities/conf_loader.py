@@ -52,6 +52,7 @@ def install_cfg_and_error(
         were looked for. Only used for the message
     :raise spinn_utilities.configs.NoConfigFoundException:
         Always raised
+    :return: An Exception to raise after calling this method.
     """
     home_cfg = os.path.join(os.path.expanduser("~"), f".{filename}")
 

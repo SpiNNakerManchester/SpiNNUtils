@@ -35,6 +35,8 @@ def abstractmethod(funcobj: T) -> T:
             @abstractmethod
             def my_abstract_method(self, ...):
                 ...
+
+    :return: Method annotated as abstract
     """
     funcobj.__isabstractmethod__ = True  # type: ignore[attr-defined]
     return funcobj

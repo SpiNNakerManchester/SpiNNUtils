@@ -183,12 +183,18 @@ class DocsChecker(object):
             self.__functions_errors += 1
 
     def is_property(self, node: ast.FunctionDef) -> bool:
+        """
+        :return: Truie if and only if there is a @property decorator
+        """
         for decorator in node.decorator_list:
             if isinstance(decorator, ast.Name) and decorator.id == "property":
                 return True
         return False
 
     def has_returns(self, node: ast.FunctionDef) -> bool:
+        """
+        :return: True if and only if there is a return declared
+        """
         returns = node.returns
         if isinstance(returns, ast.Constant):
             if returns.value is None:

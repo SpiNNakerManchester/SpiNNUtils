@@ -291,7 +291,11 @@ class DocsChecker(object):
 
 if __name__ == "__main__":
     checker = DocsChecker(
-        check_returns=False, check_init=False, check_short=False,
-        check_params=True)
+        check_init=False,
+        check_short=False,
+        check_params=False,
+        check_returns=False,
+        check_properties=False
+    )
     # checker.check_dir("")
-    checker.check_file("/home/brenninc/spinnaker/SpiNNUtils/spinn_utilities/make_tools/converter.py")
+    # checker.check_file("")

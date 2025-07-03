@@ -141,7 +141,7 @@ class _BraceMessage(object):
     """
     __slots__ = [
 
-        "args", "fmt", "kwargs"]
+        "args", "message", "kwargs"]
 
     def __init__(self, message: object,
                  args: Collection, kwargs: Dict[str, object]) -> None:

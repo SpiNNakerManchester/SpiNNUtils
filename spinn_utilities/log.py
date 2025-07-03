@@ -42,6 +42,9 @@ class ConfiguredFilter(object):
         "_default_level", "_levels"]
 
     def __init__(self, conf: configparser.RawConfigParser):
+        """
+        :param conf: Parser that read the cfg files
+        """
         self._levels = ConfiguredFormatter.construct_logging_parents(conf)
         self._default_level = logging.INFO
         if conf.has_option("Logging", "default"):
@@ -68,6 +71,9 @@ class ConfiguredFormatter(logging.Formatter):
     __last_component = re.compile(r'\.[^.]+$')
 
     def __init__(self, conf: CamelCaseConfigParser) -> None:
+        """
+        :param conf: Parser that read the cfg files
+        """
         if (conf.has_option("Logging", "default") and
                 conf.get("Logging", "default") == "debug"):
             fmt = "%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s"
@@ -139,6 +145,11 @@ class _BraceMessage(object):
 
     def __init__(self, fmt: object,
                  args: Collection, kwargs: Dict[str, object]) -> None:
+        """
+        :param fmt: The log message before formatting
+        :param args: Any simple arguments to pass to the formatter
+        :param kwargs:Any named arguements to pass to the formatter
+        """
         self.fmt = fmt
         self.args = args
         self.kwargs = kwargs
@@ -222,6 +233,12 @@ class FormatAdapter(logging.LoggerAdapter):
     def __init__(
             self, logger: logging.Logger,
             extra: Optional[Mapping[str, object]] = None) -> None:
+        """
+
+        :param logger: Logger being wrapped by this adapter
+        :param extra:  keyword arguments to pass to the underlying
+            standard LoggerAdapter
+        """
         if extra is None:
             extra = {}
         super().__init__(logger, extra)

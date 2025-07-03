@@ -40,6 +40,10 @@ class DataStatus(Enum):
         return obj
 
     def __init__(self, value: int, exception: Type[SpiNNUtilsException]):
+        """
+        :param value: An int ID
+        :param exception: The Exception to raise for any missing values
+        """
         # use argument
         _ = value
         self._exception = exception

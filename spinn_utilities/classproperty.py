@@ -21,6 +21,9 @@ class _ClassPropertyDescriptor(object):
     """
 
     def __init__(self, fget: Callable) -> None:
+        """
+        :param fget: Method being wrapped
+        """
         self.fget = fget
 
     def __get__(

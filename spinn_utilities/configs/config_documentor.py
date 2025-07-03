@@ -107,6 +107,10 @@ class _ConfigGroup(object):
     """
 
     def __init__(self, option: str, value: str):
+        """
+        :param option: cfg option name
+        :param value: value assigned to this option in the cfg file
+        """
         self._docs: str = ""  # Must be changed later
         self.title = option
         self._cfg: Dict[str, str] = dict()

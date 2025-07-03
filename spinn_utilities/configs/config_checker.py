@@ -35,6 +35,9 @@ class ConfigChecker(object):
                  "_used_cfgs"]
 
     def __init__(self, directories: Collection[str]) -> None:
+        """
+        :param directories: Path to find the cfg and py files to check
+        """
         # SpiNNGym needs check_all_used
         self._configs = TypedConfigParser()
         self._default_cfgs = get_default_cfgs()

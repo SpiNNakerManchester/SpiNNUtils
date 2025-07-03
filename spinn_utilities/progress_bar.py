@@ -51,6 +51,13 @@ class ProgressBar(object):
     def __init__(self, total_number_of_things_to_do: Union[int, Sized],
                  string_describing_what_being_progressed: str,
                  step_character: str = "=", end_character: str = "|"):
+        """
+        :param total_number_of_things_to_do: Steps in the progressbar.
+           Will use the length of any object if possible.
+        :param string_describing_what_being_progressed: text for the bar
+        :param step_character: Optional: characters to print
+        :param end_character: Optional: characters to print as start and end
+        """
         if isinstance(total_number_of_things_to_do, Sized):
             self._number_of_things = len(total_number_of_things_to_do)
         else:

@@ -21,6 +21,11 @@ class MultipleValuesException(Exception):
     """
 
     def __init__(self, key: Optional[str], value1: Any, value2: Any):
+        """
+        :param key: The name of the value
+        :param value1: One of the values used
+        :param value2: Another of the Values used.
+        """
         if key is None:
             msg = "Multiple values found"
         else:

@@ -50,6 +50,8 @@ class ConfiguredFilter(object):
     def filter(self, record: logging.LogRecord) -> bool:
         """
         Get the level for the deepest parent, and filter appropriately.
+
+        :returns: If and only if the log should be done
         """
         level = ConfiguredFormatter.level_of_deepest_parent(
             self._levels, record.name)
@@ -80,6 +82,10 @@ class ConfiguredFormatter(logging.Formatter):
             conf: configparser.RawConfigParser) -> Dict[str, int]:
         """
         Create a dictionary of module names and logging levels.
+
+        This is based on the values if any found in the cfg files.
+
+        :returns: A dictionary of module names and logging levels.
         """
         # Construct the dictionary
         _levels: Dict[str, int] = {}
@@ -98,7 +104,7 @@ class ConfiguredFormatter(logging.Formatter):
     @staticmethod
     def deepest_parent(parents: KeysView[str], child: str) -> Optional[str]:
         """
-        Greediest match between child and parent.
+        :returns: Greediest match between child and parent.
         """
         # TODO: this can almost certainly be neater!
         # Repeatedly strip elements off the child until we match an item in
@@ -118,7 +124,8 @@ class ConfiguredFormatter(logging.Formatter):
     def level_of_deepest_parent(
             parents: Dict[str, int], child: str) -> Optional[int]:
         """
-        The logging level of the greediest match between child and parent.
+        :returns:
+           The logging level of the greediest match between child and parent.
         """
         # child = re.sub( r'^pacman103\.', '', child )
         parent = ConfiguredFormatter.deepest_parent(parents.keys(), child)
@@ -268,6 +275,9 @@ class FormatAdapter(logging.LoggerAdapter):
         logging call to insert contextual information. You can either
         manipulate the message itself, the keyword arguments or both.
         Return the message and *kwargs* modified (or not) to suit your needs.
+
+        :returns: the message and kwargs arguments in both the call
+           and the underlying logger.
         """
         return msg, {
             key: kwargs[key]

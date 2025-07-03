@@ -51,5 +51,7 @@ class LogStore(object):
     def get_location(self) -> str:
         """
         Retrieves the location of the log store.
+
+        :returns: Path to the database holding the log store.
         """
         raise NotImplementedError

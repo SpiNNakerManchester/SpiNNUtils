@@ -21,6 +21,10 @@ class _ClassPropertyDescriptor(object):
     """
 
     def __init__(self, fget: Callable) -> None:
+        """
+        :param fget: function to be wrapped
+        :param fget:
+        """
         self.fget = fget
 
     def __get__(
@@ -42,6 +46,8 @@ def classproperty(func: Callable) -> _ClassPropertyDescriptor:
             @classproperty
             def my_property(cls):
                 return cls._my_property
+
+    :returns: An object describing the property.
     """
     if not isinstance(func, (classmethod, staticmethod)):
         # mypy claims expression has type "classmethod ...

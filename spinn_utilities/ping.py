@@ -63,6 +63,7 @@ class Ping(object):
         :param ip_address:
             The IP address to ping. Hostnames can be used, but are not
             recommended.
+        :returns: True if and only if the ping worked when first tried.
         """
         if ip_address in Ping.unreachable:
             return False

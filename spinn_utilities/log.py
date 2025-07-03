@@ -156,23 +156,23 @@ class _BraceMessage(object):
 
     def __str__(self) -> str:
         try:
-            return str(self.fmt).format(*self.args, **self.kwargs)
+            return str(self.message).format(*self.args, **self.kwargs)
         except KeyError:
             try:
                 if (not self.args and not self.kwargs and
-                        isinstance(self.fmt, str)):
+                        isinstance(self.message, str)):
                     # nothing to format with so assume brackets not formatting
-                    return self.fmt
-                return "KeyError: " + str(self.fmt)
+                    return self.message
+                return "KeyError: " + str(self.message)
             except KeyError:
                 return "Double KeyError"
         except IndexError:
             try:
                 if self.args or self.kwargs:
-                    return "IndexError: " + str(self.fmt)
+                    return "IndexError: " + str(self.message)
                 else:
                     # nothing to format with so assume brackets not formatting
-                    return str(self.fmt)
+                    return str(self.message)
             except IndexError:
                 return "Double IndexError"
 

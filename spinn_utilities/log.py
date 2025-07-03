@@ -72,7 +72,7 @@ class ConfiguredFormatter(logging.Formatter):
 
     def __init__(self, config: CamelCaseConfigParser) -> None:
         """
-        :param conf: Parser that read the cfg files
+        :param config: Parser that read the cfg files
         """
         if (config.has_option("Logging", "default") and
                 config.get("Logging", "default") == "debug"):

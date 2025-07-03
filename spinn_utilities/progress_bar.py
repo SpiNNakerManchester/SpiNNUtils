@@ -52,7 +52,7 @@ class ProgressBar(object):
                  string_describing_what_being_progressed: str,
                  step_character: str = "=", end_character: str = "|"):
         """
-        :param total_number_of_things_to_do: Steps in the progressbar.
+        :param total_number_of_things_to_do: number of steps being shown..
            Will use the length of any object if possible.
         :param string_describing_what_being_progressed: text for the bar
         :param step_character: Optional: characters to print

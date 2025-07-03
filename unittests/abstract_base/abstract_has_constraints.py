@@ -36,6 +36,4 @@ class AbstractHasConstraints(object, metaclass=AbstractBase):
     @abstractmethod
     def constraints(self) -> Any:
         """ An iterable of constraints
-
-        :return: iterable of constraints
         """

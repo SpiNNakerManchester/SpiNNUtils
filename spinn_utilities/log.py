@@ -41,14 +41,14 @@ class ConfiguredFilter(object):
     __slots__ = [
         "_default_level", "_levels"]
 
-    def __init__(self, conf: configparser.RawConfigParser):
+    def __init__(self, config: configparser.RawConfigParser):
         """
-        :param conf: Parser that read the cfg files
+        :param config: Parser that read the cfg files
         """
-        self._levels = ConfiguredFormatter.construct_logging_parents(conf)
+        self._levels = ConfiguredFormatter.construct_logging_parents(config)
         self._default_level = logging.INFO
-        if conf.has_option("Logging", "default"):
-            self._default_level = _LEVELS[conf.get("Logging", "default")]
+        if config.has_option("Logging", "default"):
+            self._default_level = _LEVELS[config.get("Logging", "default")]
 
     def filter(self, record: logging.LogRecord) -> bool:
         """
@@ -70,12 +70,12 @@ class ConfiguredFormatter(logging.Formatter):
     # Precompile this RE; it gets used quite a few times
     __last_component = re.compile(r'\.[^.]+$')
 
-    def __init__(self, conf: CamelCaseConfigParser) -> None:
+    def __init__(self, config: CamelCaseConfigParser) -> None:
         """
         :param conf: Parser that read the cfg files
         """
-        if (conf.has_option("Logging", "default") and
-                conf.get("Logging", "default") == "debug"):
+        if (config.has_option("Logging", "default") and
+                config.get("Logging", "default") == "debug"):
             fmt = "%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s"
         else:
             fmt = "%(asctime)-15s %(levelname)s: %(message)s"
@@ -83,20 +83,20 @@ class ConfiguredFormatter(logging.Formatter):
 
     @staticmethod
     def construct_logging_parents(
-            conf: configparser.RawConfigParser) -> Dict[str, int]:
+            config: configparser.RawConfigParser) -> Dict[str, int]:
         """
         Create a dictionary of module names and logging levels.
         """
         # Construct the dictionary
         _levels: Dict[str, int] = {}
 
-        if not conf.has_section("Logging"):
+        if not config.has_section("Logging"):
             return _levels
 
         for label, level in _LEVELS.items():
-            if conf.has_option("Logging", label):
+            if config.has_option("Logging", label):
                 modules = [s.strip() for s in
-                           conf.get('Logging', label).split(',')]
+                           config.get('Logging', label).split(',')]
                 if '' not in modules:
                     _levels.update(dict((m, level) for m in modules))
         return _levels
@@ -143,14 +143,14 @@ class _BraceMessage(object):
 
         "args", "fmt", "kwargs"]
 
-    def __init__(self, fmt: object,
+    def __init__(self, message: object,
                  args: Collection, kwargs: Dict[str, object]) -> None:
         """
-        :param fmt: The log message before formatting
+        :param message: The log message before formatting
         :param args: Any simple arguments to pass to the formatter
-        :param kwargs:Any named arguements to pass to the formatter
+        :param kwargs:Any named arguments to pass to the formatter
         """
-        self.fmt = fmt
+        self.message = message
         self.args = args
         self.kwargs = kwargs
 

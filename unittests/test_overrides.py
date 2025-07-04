@@ -71,7 +71,7 @@ def test_doc_no_sub_extend() -> None:
         @overrides(Base.foo, extend_doc=True)
         def foo(self, x: int, y: int, z: int) -> List[int]:
             return [z, y, x]
-    assert Sub.foo.__doc__ == "this is the doc"
+    assert Sub.foo.__doc__ == "this is the doc\n\n:returns:\n"
 
 
 def test_doc_no_sub_no_extend() -> None:
@@ -79,7 +79,7 @@ def test_doc_no_sub_no_extend() -> None:
         @overrides(Base.foo, extend_doc=False)
         def foo(self, x: int, y: int, z: int) -> List[int]:
             return [z, y, x]
-    assert Sub.foo.__doc__ == "this is the doc"
+    assert Sub.foo.__doc__ == "this is the doc\n\n:returns:\n"
 
 
 def test_doc_sub_no_extend() -> None:
@@ -91,7 +91,7 @@ def test_doc_sub_no_extend() -> None:
             :returns:
             """
             return [z, y, x]
-    assert Sub.foo.__doc__ == "(abc)"
+    assert Sub.foo.__doc__ == "(abc)\n\n:returns:\n"
 
 
 def test_doc_sub_extend() -> None:
@@ -103,7 +103,8 @@ def test_doc_sub_extend() -> None:
             :returns:
             """
             return [z, y, x]
-    assert Sub.foo.__doc__ == "this is the doc(abc)"
+    assert (Sub.foo.__doc__ ==
+            "this is the doc\n\n:returns:\n(abc)\n\n:returns:\n")
 
 
 def test_changes_params_defaults() -> None:

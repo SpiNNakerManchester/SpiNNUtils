@@ -209,7 +209,7 @@ class UtilsDataView(object):
         .. warning::
             During the first run after reset this continues to return True!
 
-        Returns False after a reset that was considered soft.
+        :returns: True between a hard reset and the end of the next run.
         """
         return cls.__data._reset_status == ResetStatus.HARD_RESET
 
@@ -222,6 +222,9 @@ class UtilsDataView(object):
             During the first run after reset this continues to return True!
 
         Returns False after a reset that was considered hard.
+
+        :returns: True between a soft reset and either a hard reset
+            or the end of the next run.
         """
         return cls.__data._reset_status == ResetStatus.SOFT_RESET
 
@@ -230,6 +233,7 @@ class UtilsDataView(object):
         """
         Check if the simulation has run at least once, ignoring resets.
 
+        :returns: True if the simulation has ever run since setup
         :raises NotImplementedError:
             If this is called from an unexpected state
         """
@@ -250,6 +254,9 @@ class UtilsDataView(object):
 
         :raises NotImplementedError:
             If this is called from an unexpected state
+
+        :returns: True if and only if the simulation has run
+           but not been reset.
         """
         if cls.__data._reset_status == ResetStatus.HAS_RUN:
             return True
@@ -271,6 +278,7 @@ class UtilsDataView(object):
 
         It also returns False after a `sim.stop` or `sim.end` call starts
 
+        :returns: True if a reset was called since the last `sim.run`
         :raises NotImplementedError:
             If this is called from an unexpected state
         """
@@ -308,6 +316,7 @@ class UtilsDataView(object):
 
         Reset numbers start at zero
 
+        :returns: The reset number which may be 0
          :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the run_number is currently unavailable
         """
@@ -330,6 +339,7 @@ class UtilsDataView(object):
 
         Reset numbers start at zero
 
+        :returns: The reset number or an empty string if not reset
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the run_number is currently unavailable
         """
@@ -347,6 +357,7 @@ class UtilsDataView(object):
 
         :raises NotImplementedError:
             If this is called from an unexpected state
+        :returns: False unless a stop request has been sent.
         """
         if cls.__data._run_status == RunStatus.IN_RUN:
             return True
@@ -361,8 +372,12 @@ class UtilsDataView(object):
         """
         Checks if there is currently a simulation running.
 
+        This includes the not just the time code is running on Chip but also
+        all the pre- and post-stages such as mapping, loading and reading data
+
         That is a call to run has started but not yet stopped.
 
+        :returns: TRue if and only if the simulation is running
         """
         return cls.__data._run_status in [
             RunStatus.IN_RUN, RunStatus.STOP_REQUESTED]
@@ -420,6 +435,7 @@ class UtilsDataView(object):
 
         :raises NotImplementedError:
             If this is called from an unexpected state
+        :returns: True if setup has been called, False otherwise
         """
         if cls.__data._run_status in [RunStatus.NOT_SETUP, RunStatus.SHUTDOWN]:
             return False
@@ -441,6 +457,7 @@ class UtilsDataView(object):
 
         :raises NotImplementedError:
             If the data has not yet been set up or on an unexpected run_status
+        :returns: True if user's script may access data
         """
         if cls.__data._run_status in [
                 RunStatus.IN_RUN, RunStatus.STOPPING,
@@ -486,6 +503,8 @@ class UtilsDataView(object):
         Determines if simulator has already been shutdown.
 
         This returns False in the Mocked state
+
+        :returns: True if the simulation has been shutdown
         """
         return cls.__data._run_status == RunStatus.SHUTDOWN
 
@@ -516,6 +535,7 @@ class UtilsDataView(object):
             In unit test mode this returns a temporary directory
             shared by all path methods.
 
+        :returns: Path to last run directory created
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the run_dir_path is currently unavailable
         """
@@ -537,6 +557,7 @@ class UtilsDataView(object):
 
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the simulation_time_step is currently unavailable
+        :returns: The path to the directory that holds all the reports
         """
         if cls.__data._timestamp_dir_path is not None:
             return cls.__data._timestamp_dir_path
@@ -579,6 +600,7 @@ class UtilsDataView(object):
 
         Run numbers start at 1
 
+        :returns: The current run number
         :raises ~spinn_utilities.exceptions.SpiNNUtilsException:
             If the run_number is currently unavailable
         """
@@ -589,8 +611,7 @@ class UtilsDataView(object):
     @classmethod
     def get_executable_finder(cls) -> ExecutableFinder:
         """
-        The ExcutableFinder object created at time code is imported.
-
+        :returns: The ExcutableFinder object created at time code is imported.
         """
         return cls.__data._executable_finder
 
@@ -652,6 +673,7 @@ class UtilsDataView(object):
         Remains True during the first run after a data change
         Only set to False at the *end* of the first run
 
+        :returns: True if the data generation steps should be included
         """
         return cls.__data._requires_data_generation
 
@@ -674,6 +696,8 @@ class UtilsDataView(object):
         any mapping stage to be called
         Remains True during the first run after a requires mapping.
         Only set to False at the *end* of the first run
+
+        :returns: True if the mapping steps should be included
         """
         return cls.__data._requires_mapping
 

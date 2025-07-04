@@ -120,7 +120,8 @@ class Replacer(LogSqlLiteDatabase):
         """
         Apply the replacements to a short message.
 
-        :param short:
+        :param short: The short string as read of the machine
+        :returns: The message as it would if short codes where not used.
         """
         data = self._replace(short)
         if data is None:

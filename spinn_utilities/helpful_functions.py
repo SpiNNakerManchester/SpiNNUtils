@@ -33,6 +33,8 @@ def is_singleton(value: Any) -> TypeGuard[Union[bool, int, float]]:
 
     Strings are considered singleton as only rarely will someone use a string
     to represent an iterable of characters.
+
+    :returns: True if the value is a singleton, False otherwise.
     """
     return not hasattr(value, '__iter__') or isinstance(value, str)
 

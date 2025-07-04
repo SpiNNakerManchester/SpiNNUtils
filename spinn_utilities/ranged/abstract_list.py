@@ -46,6 +46,8 @@ def _is_zero(value: Any) -> bool:
 def is_number(value: T) -> TypeGuard[float]:
     """
     Is the Value a simple integer or float?
+
+    :returns: True if the value is a Number
     """
     return isinstance(value, Number)
 

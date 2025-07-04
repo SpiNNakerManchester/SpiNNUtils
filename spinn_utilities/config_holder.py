@@ -46,9 +46,11 @@ def add_default_cfg(default: str) -> None:
 
 def get_default_cfgs() -> Tuple[str, ...]:
     """
-    Returns the default configuration files as a tuple.
+    The default configuration files
 
     This is a read only values to be used outside of normal operations
+
+    :returns: The default configuration files as a tuple.
     """
     return tuple(__default_config_files)
 
@@ -124,6 +126,7 @@ def load_config() -> CamelCaseConfigParser:
     Reads in all the configuration files, resetting all values.
 
     :raises ConfigException: If called before setting defaults
+    :returns: A fully loaded parser object
     """
     global __config
     if not __default_config_files:
@@ -309,8 +312,7 @@ def set_config(section: str, option: str, value: Optional[str]) -> None:
 
 def config_sections() -> List[str]:
     """
-    Return a list of section names
-
+    :returns: A list of section names
     """
     if __config is None:
         raise ConfigException("configuration not loaded")
@@ -319,7 +321,7 @@ def config_sections() -> List[str]:
 
 def configs_loaded() -> bool:
     """
-    True if and only if the configuration was loaded
+    :returns: True if and only if the configuration was loaded
     """
     if __config is None:
         return False
@@ -343,9 +345,8 @@ def has_config_option(section: str, option: str) -> bool:
 
 def config_options(section: str) -> List[str]:
     """
-    Return a list of option names for the given section name.
-
     :param section: What section to list options for.
+    :returns: a list of option names for the given section name.
     """
     if __config is None:
         raise ConfigException("configuration not loaded")

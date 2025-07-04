@@ -64,6 +64,8 @@ class Timer(object):
         """
         Describes how long has elapsed since the instance that the
         :py:meth:`start_timing` method was last called.
+
+        :returns: now - start_timing
         """
         time_now = perf_counter_ns()
         diff = time_now - (self._start_time or 0)

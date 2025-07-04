@@ -20,14 +20,17 @@ class _ClassPropertyDescriptor(object):
     A class to handle the management of class properties.
     """
 
-    def __init__(self, fget: Callable) -> None:
-        self.fget = fget
+    def __init__(self, method: Callable) -> None:
+        """
+        :param method: Function being wrapped
+        """
+        self.method = method
 
     def __get__(
             self, obj: Optional[Any], klass: Optional[Type] = None) -> Any:
         if klass is None:
             klass = type(obj)
-        return self.fget.__get__(obj, klass)()
+        return self.method.__get__(obj, klass)()
 
 
 def classproperty(func: Callable) -> _ClassPropertyDescriptor:
@@ -42,6 +45,8 @@ def classproperty(func: Callable) -> _ClassPropertyDescriptor:
             @classproperty
             def my_property(cls):
                 return cls._my_property
+
+    :returns: An object describing the property.
     """
     if not isinstance(func, (classmethod, staticmethod)):
         # mypy claims expression has type "classmethod ...

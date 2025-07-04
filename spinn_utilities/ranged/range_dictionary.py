@@ -214,6 +214,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             Mainly intended by Views to access the data for one key directly.
 
         :param key: a key which must be present in the dict
+        :returns: The list like object for a single key
         """
         return self._value_lists[key]
 
@@ -233,6 +234,11 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         Same as
         :py:meth:`iter_all_values`
         but limited to a collection of IDs and update-safe.
+
+        :return: If key is a str, this yields single objects.
+            If key is iterable (list, tuple, set, etc.) of str (or `None`),
+            yields dictionary objects
+
         """
         return (
             self.get_values_by_id(key=key, the_id=id_value)
@@ -281,6 +287,11 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             Iterator[T], Iterator[Dict[str, T]]]:
         """
         Same as :py:meth:`iter_all_values` but limited to a simple slice.
+
+        :return: If key is a str, this yields single objects.
+            If key is iterable (list, tuple, set, etc.) of str (or `None`),
+            yields dictionary objects
+
         """
         if isinstance(key, str) and not update_safe:
             return self._value_lists[key].iter_by_slice(
@@ -310,6 +321,11 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             Generator[T, None, None], Generator[Dict[str, T], None, None]]:
         """
         Same as :py:meth:`iter_all_values` but limited to a simple slice.
+
+        :return: If key is a str, this yields single objects.
+            If key is iterable (list, tuple, set, etc.) of str (or `None`),
+            yields dictionary objects
+
         """
         if update_safe:
             return self.update_safe_iter_all_values(key, ids)
@@ -452,6 +468,10 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         :param key: see :py:meth:`iter_ranges` parameter key
         :param the_id:
             single ID which is the actual ID and not an index into IDs
+        :return: If key is a str, this yields single objects.
+            If key is iterable (list, tuple, set, etc.) of str (or `None`),
+            yields dictionary objects
+
         """
         if isinstance(key, str):
             return self._value_lists[key].iter_ranges_by_id(the_id=the_id)

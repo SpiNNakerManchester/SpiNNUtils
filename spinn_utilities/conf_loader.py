@@ -50,6 +50,7 @@ def install_cfg_and_error(
     :param config_locations:
         List of paths where the user configuration files
         were looked for. Only used for the message
+    :return: Exception to be raised by caller
     :raise spinn_utilities.configs.NoConfigFoundException:
         Always raised
     """

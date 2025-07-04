@@ -23,17 +23,11 @@ BAD_DEFS = "Default arguments don't match super class method"
 
 class Base(object):
     def foo(self, x: int, y: int, z: int) -> List[int]:
-        """this is the doc
-
-        :returns:
-        """
+        """this is the doc"""
         return [x, y, z]
 
     def foodef(self, x: Any, y: int, z: Any = True) -> List[Any]:
-        """this is the doc
-
-        :returns:
-        """
+        """this is the doc"""
         return [x, y, z]
 
     @property
@@ -51,10 +45,7 @@ class Base(object):
 
     # This is bad as it does not define a return
     def bad(self, x: int, y: int, z: int):   # type: ignore[no-untyped-def]
-        """this is the doc
-
-        :returns:
-        """
+        """this is the doc"""
         return [x, y, z]
 
 
@@ -71,7 +62,7 @@ def test_doc_no_sub_extend() -> None:
         @overrides(Base.foo, extend_doc=True)
         def foo(self, x: int, y: int, z: int) -> List[int]:
             return [z, y, x]
-    assert Sub.foo.__doc__ == "this is the doc\n\n:returns:\n"
+    assert Sub.foo.__doc__ == "this is the doc"
 
 
 def test_doc_no_sub_no_extend() -> None:
@@ -79,32 +70,25 @@ def test_doc_no_sub_no_extend() -> None:
         @overrides(Base.foo, extend_doc=False)
         def foo(self, x: int, y: int, z: int) -> List[int]:
             return [z, y, x]
-    assert Sub.foo.__doc__ == "this is the doc\n\n:returns:\n"
+    assert Sub.foo.__doc__ == "this is the doc"
 
 
 def test_doc_sub_no_extend() -> None:
     class Sub(Base):
         @overrides(Base.foo, extend_doc=False)
         def foo(self, x: int, y: int, z: int) -> List[int]:
-            """(abc)
-
-            :returns:
-            """
+            """(abc)"""
             return [z, y, x]
-    assert Sub.foo.__doc__ == "(abc)\n\n:returns:\n"
+    assert Sub.foo.__doc__ == "(abc)"
 
 
 def test_doc_sub_extend() -> None:
     class Sub(Base):
         @overrides(Base.foo, extend_doc=True)
         def foo(self, x: int, y: int, z: int) -> List[int]:
-            """(abc)
-
-            :returns:
-            """
+            """(abc)"""
             return [z, y, x]
-    assert (Sub.foo.__doc__ ==
-            "this is the doc\n\n:returns:\n(abc)\n\n:returns:\n")
+    assert Sub.foo.__doc__ == "this is the doc(abc)"
 
 
 def test_changes_params_defaults() -> None:

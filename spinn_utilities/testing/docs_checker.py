@@ -261,6 +261,8 @@ class DocsChecker(object):
         Gets the names of the parameters found in the abstract syntax tree.
 
         These are the ones actually declared.
+
+        :returns: Names of all parameter including normal and kwargs ones
         """
         param_names: Set[str] = set()
         for arg in node.args.args:

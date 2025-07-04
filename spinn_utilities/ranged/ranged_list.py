@@ -293,6 +293,7 @@ class RangedList(AbstractList[T], Generic[T]):
         Determines if the value should be treated as a list.
 
         :param value: The value to examine.
+        :returns: True if the value should be treated as a list
         """
         return self.listness_check(value)
 
@@ -305,6 +306,7 @@ class RangedList(AbstractList[T], Generic[T]):
             case :py:meth:`as_list` must also be extended.
 
         :param value: The value to examine.
+        :returns: True if the value should be treated as a list
         """
         # Assume any iterable is a list
         if callable(value):
@@ -551,6 +553,8 @@ class RangedList(AbstractList[T], Generic[T]):
 
         .. note::
             As this is a copy it will not reflect any updates.
+
+        :returns: A shallow copy of the list of ranges
         """
         if self._ranged_based:
             return list(self.__the_ranges)

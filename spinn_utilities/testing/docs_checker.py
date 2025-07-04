@@ -117,7 +117,9 @@ class DocsChecker(object):
         if _docs is None:
             # pylint does not require init to have docs
             if node.name == "__init__" and self.__check_init:
-                return "missing docstring"
+                param_names = self.get_param_names(node)
+                if len(param_names) != 1:  # self
+                    return "missing docstring"
             return ""
         else:
             docs = cast(str, _docs)

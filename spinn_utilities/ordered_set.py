@@ -30,6 +30,9 @@ class OrderedSet(MutableSet, Generic[T]):
     )
 
     def __init__(self, iterable: Optional[Iterable[T]] = None):
+        """
+        :param iterable: An iterable of items to add to the set.
+        """
         # Always use OrderedDict as plain dict does not support
         # __reversed__ and key indexing
         self._map: Dict[T, None] = OrderedDict()

@@ -28,6 +28,7 @@ def all_modules(directory: str, prefix: str,
 
     :param directory: path to check for python files
     :param prefix: package prefix top add to the file name
+    :param remove_pyc_files: True if ``.pyc`` files should be deleted
     :return: set of python package names
     """
     results = set()

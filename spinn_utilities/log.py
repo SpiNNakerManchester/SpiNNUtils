@@ -41,11 +41,14 @@ class ConfiguredFilter(object):
     __slots__ = [
         "_default_level", "_levels"]
 
-    def __init__(self, conf: configparser.RawConfigParser):
-        self._levels = ConfiguredFormatter.construct_logging_parents(conf)
+    def __init__(self, config: configparser.RawConfigParser):
+        """
+        :param config: Parser that read the cfg files
+        """
+        self._levels = ConfiguredFormatter.construct_logging_parents(config)
         self._default_level = logging.INFO
-        if conf.has_option("Logging", "default"):
-            self._default_level = _LEVELS[conf.get("Logging", "default")]
+        if config.has_option("Logging", "default"):
+            self._default_level = _LEVELS[config.get("Logging", "default")]
 
     def filter(self, record: logging.LogRecord) -> bool:
         """
@@ -67,9 +70,12 @@ class ConfiguredFormatter(logging.Formatter):
     # Precompile this RE; it gets used quite a few times
     __last_component = re.compile(r'\.[^.]+$')
 
-    def __init__(self, conf: CamelCaseConfigParser) -> None:
-        if (conf.has_option("Logging", "default") and
-                conf.get("Logging", "default") == "debug"):
+    def __init__(self, config: CamelCaseConfigParser) -> None:
+        """
+        :param config: Parser that read the cfg files
+        """
+        if (config.has_option("Logging", "default") and
+                config.get("Logging", "default") == "debug"):
             fmt = "%(asctime)-15s %(levelname)s: %(pathname)s: %(message)s"
         else:
             fmt = "%(asctime)-15s %(levelname)s: %(message)s"
@@ -77,20 +83,20 @@ class ConfiguredFormatter(logging.Formatter):
 
     @staticmethod
     def construct_logging_parents(
-            conf: configparser.RawConfigParser) -> Dict[str, int]:
+            config: configparser.RawConfigParser) -> Dict[str, int]:
         """
         Create a dictionary of module names and logging levels.
         """
         # Construct the dictionary
         _levels: Dict[str, int] = {}
 
-        if not conf.has_section("Logging"):
+        if not config.has_section("Logging"):
             return _levels
 
         for label, level in _LEVELS.items():
-            if conf.has_option("Logging", label):
+            if config.has_option("Logging", label):
                 modules = [s.strip() for s in
-                           conf.get('Logging', label).split(',')]
+                           config.get('Logging', label).split(',')]
                 if '' not in modules:
                     _levels.update(dict((m, level) for m in modules))
         return _levels
@@ -135,33 +141,38 @@ class _BraceMessage(object):
     """
     __slots__ = [
 
-        "args", "fmt", "kwargs"]
+        "args", "message", "kwargs"]
 
-    def __init__(self, fmt: object,
+    def __init__(self, message: object,
                  args: Collection, kwargs: Dict[str, object]) -> None:
-        self.fmt = fmt
+        """
+        :param message: The log message before formatting
+        :param args: Any simple arguments to pass to the formatter
+        :param kwargs:Any named arguments to pass to the formatter
+        """
+        self.message = message
         self.args = args
         self.kwargs = kwargs
 
     def __str__(self) -> str:
         try:
-            return str(self.fmt).format(*self.args, **self.kwargs)
+            return str(self.message).format(*self.args, **self.kwargs)
         except KeyError:
             try:
                 if (not self.args and not self.kwargs and
-                        isinstance(self.fmt, str)):
+                        isinstance(self.message, str)):
                     # nothing to format with so assume brackets not formatting
-                    return self.fmt
-                return "KeyError: " + str(self.fmt)
+                    return self.message
+                return "KeyError: " + str(self.message)
             except KeyError:
                 return "Double KeyError"
         except IndexError:
             try:
                 if self.args or self.kwargs:
-                    return "IndexError: " + str(self.fmt)
+                    return "IndexError: " + str(self.message)
                 else:
                     # nothing to format with so assume brackets not formatting
-                    return str(self.fmt)
+                    return str(self.message)
             except IndexError:
                 return "Double IndexError"
 
@@ -222,6 +233,12 @@ class FormatAdapter(logging.LoggerAdapter):
     def __init__(
             self, logger: logging.Logger,
             extra: Optional[Mapping[str, object]] = None) -> None:
+        """
+
+        :param logger: Logger being wrapped by this adapter
+        :param extra:  keyword arguments to pass to the underlying
+            standard LoggerAdapter
+        """
         if extra is None:
             extra = {}
         super().__init__(logger, extra)

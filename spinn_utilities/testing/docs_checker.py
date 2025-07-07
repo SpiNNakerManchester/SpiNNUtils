@@ -117,7 +117,9 @@ class DocsChecker(object):
         if _docs is None:
             # pylint does not require init to have docs
             if node.name == "__init__" and self.__check_init:
-                return "missing docstring"
+                param_names = self.get_param_names(node)
+                if len(param_names) > 0 and self.is_not_overload(node):
+                    return "missing docstring"
             return ""
         else:
             docs = cast(str, _docs)
@@ -194,6 +196,15 @@ class DocsChecker(object):
             if isinstance(decorator, ast.Name) and decorator.id == "property":
                 return True
         return False
+
+    def is_not_overload(self, node: ast.FunctionDef) -> bool:
+        """
+        :return: True if and only if there is NO @overload decorator
+        """
+        for decorator in node.decorator_list:
+            if isinstance(decorator, ast.Name) and decorator.id == "overload":
+                return False
+        return True
 
     def has_returns(self, node: ast.FunctionDef) -> bool:
         """
@@ -272,6 +283,10 @@ class DocsChecker(object):
         if node.args.kwarg:
             param_names.add(node.args.kwarg.arg)
 
+        if "self" in param_names:
+            param_names.remove("self")
+        if "cls" in param_names:
+            param_names.remove("cls")
         return param_names
 
     def check_no_errors(self) -> None:

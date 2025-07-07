@@ -31,6 +31,9 @@ class NotSetupException(SpiNNUtilsException):
     """
 
     def __init__(self, data: str) -> None:
+        """
+        :param data: The value not yet setup
+        """
         super().__init__(f"Requesting {data} is not valid before setup")
 
 
@@ -39,6 +42,10 @@ class InvalidDirectory(SpiNNUtilsException):
     Raised when trying to set an invalid directory.
     """
     def __init__(self, name: str, value: str) -> None:
+        """
+        :param name: The field trying to be set
+        :param value: The path that is invalid
+        """
         super().__init__(f"Unable to set {name} has {value} is not a dir.")
 
 
@@ -47,6 +54,9 @@ class DataNotYetAvialable(SpiNNUtilsException):
     Raised when trying to get data before simulator has created it.
     """
     def __init__(self, data: str) -> None:
+        """
+        :param data: Name of the data that was accessed before it was created.
+        """
         super().__init__(f"{data} has not yet been created.")
 
 
@@ -55,6 +65,9 @@ class DataNotMocked(DataNotYetAvialable):
     Raised when trying to get data before a mocked simulator has created it.
     """
     def __init__(self, data: str) -> None:
+        """
+        :param data: Name of data accessed but not mocked
+        """
         super().__init__(f"MOCK {data}")
 
 
@@ -63,6 +76,9 @@ class ShutdownException(SpiNNUtilsException):
     Raised when trying to get simulator data after it has been shut down.
     """
     def __init__(self, data: str) -> None:
+        """
+        :param data: Name of data being accessed after shutdown
+        """
         super().__init__(f"Requesting {data} is not valid after end")
 
 

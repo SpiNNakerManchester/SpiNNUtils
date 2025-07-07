@@ -216,6 +216,9 @@ class DocsChecker(object):
         if isinstance(returns, ast.Constant):
             if returns.value is None:
                 return False
+        elif isinstance(returns, ast.Name):
+            if returns.id == "Never":
+                return False
         return True
 
     def _check_params_correct(
@@ -317,4 +320,4 @@ if __name__ == "__main__":
         check_properties=False
     )
     # checker.check_dir("")
-    # checker.check_file("")
+    checker.check_file("/home/brenninc/spinnaker/SpiNNMachine/spinn_machine/version/version_factory.py")

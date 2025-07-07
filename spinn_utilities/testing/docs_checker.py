@@ -118,7 +118,7 @@ class DocsChecker(object):
             # pylint does not require init to have docs
             if node.name == "__init__" and self.__check_init:
                 param_names = self.get_param_names(node)
-                if len(param_names) != 1:  # self
+                if len(param_names) > 0:
                     return "missing docstring"
             return ""
         else:
@@ -274,6 +274,10 @@ class DocsChecker(object):
         if node.args.kwarg:
             param_names.add(node.args.kwarg.arg)
 
+        if "self" in param_names:
+            param_names.remove("self")
+        if "cls" in param_names:
+            param_names.remove("cls")
         return param_names
 
     def check_no_errors(self) -> None:

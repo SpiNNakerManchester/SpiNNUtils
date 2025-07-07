@@ -272,7 +272,7 @@ class UtilsDataWriter(UtilsDataView):
 
     def get_report_dir_path(self) -> str:
         """
-        Returns path to existing reports directory.
+        Path to existing reports directory.
 
         This is the high level directory which in which `timestamp` directories
         and `run` directories are placed.
@@ -282,6 +282,8 @@ class UtilsDataWriter(UtilsDataView):
 
         :raises SpiNNUtilsException:
             If the `simulation_time_step` is currently unavailable
+        :returns: path to existing reports directory.
+
         """
         if self.__data._report_dir_path:
             return self.__data._report_dir_path

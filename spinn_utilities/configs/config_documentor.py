@@ -121,6 +121,8 @@ class _ConfigGroup(object):
         Gets a list of the cfg settings in the group that point to a path.
 
         Path cfg options are those which start with path_ or tpath_
+
+        :returns: The List of cfg values which point to a path
         """
         paths = []
         for option, value in self._cfg.items():
@@ -164,7 +166,7 @@ class _ConfigGroup(object):
 
     def missing_docs(self) -> bool:
         """
-        Returns True if this group does not have any docs
+        :returns: True if this group does not have any docs
         """
         return not self._docs
 

@@ -168,6 +168,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
 
         :param src_path:
         :param dest_path:
+        :returns: The ID for this directory.
         """
         assert self._db is not None
         with self._db:
@@ -198,6 +199,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
 
         :param directory_id:
         :param file_name:
+        :returns: The ID for this file
         """
         assert self._db is not None
         with self._db:
@@ -229,6 +231,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         :param line_num:
         :param original:
         :param file_id:
+        :returns: ID for this log message
         """
         assert self._db is not None
         with self._db:
@@ -268,6 +271,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         Gets the data needed to replace a short log back to the original.
 
         :param log_id: The int id as a String
+        :returns: log level, file name, line number and the original text
         """
         assert self._db is not None
         with self._db:
@@ -309,7 +313,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
 
     def get_max_log_id(self) -> Optional[int]:
         """
-        Get the max id of any log message.
+        :returns: the max id of any log message, or None it there  none
         """
         assert self._db is not None
         with self._db:

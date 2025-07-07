@@ -23,6 +23,8 @@ ERROR_NONE = 0
 ERROR_OTHER = ERROR_NONE + 1
 ERROR_FILE = ERROR_OTHER + 1
 
+UNITTESTS = os.sep + "unittests" + os.sep
+
 
 class DocsChecker(object):
     """
@@ -128,7 +130,7 @@ class DocsChecker(object):
         param_names = self.get_param_names(node)
         error = self._check_params_correct(param_names, docstring)
 
-        if node.name.startswith("_"):
+        if node.name.startswith("_") or UNITTESTS in self.__file_path:
             # these are not included by readthedocs so less important
             return error
 
@@ -272,6 +274,8 @@ class DocsChecker(object):
         Gets the names of the parameters found in the abstract syntax tree.
 
         These are the ones actually declared.
+
+        :returns: Names of all parameter including normal and kwargs ones
         """
         param_names: Set[str] = set()
         for arg in node.args.args:

@@ -35,6 +35,8 @@ def optionxform(optionstr: str) -> str:
     """
     Transforms the name of an option to lower case and strips
     underscores, so matching is more user-friendly.
+
+    :returns: optionstr in all lower case with underscores removed
     """
     lower = optionstr.lower()
     return lower.replace("_", "")
@@ -67,6 +69,8 @@ class TypedConfigParser(configparser.RawConfigParser):
              encoding: Optional[str] = None) -> List[str]:
         """
         Read and parse a filename or a list of filenames.
+
+        :returns: list of successfully read files.
         """
         new_files = super().read(filenames, encoding)
         self._read_files.extend(new_files)
@@ -169,5 +173,8 @@ class CamelCaseConfigParser(TypedConfigParser):
         """
         Transforms the name of an option to lower case and strips
         underscores, so matching is more user-friendly.
+
+        :param optionstr: What option label to transform.
+        :returns: optionstr in all lower case with underscores removed
         """
         return optionxform(optionstr)

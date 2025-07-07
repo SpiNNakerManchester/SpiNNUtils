@@ -53,5 +53,6 @@ class DataStatus(Enum):
         Returns an instance of the most suitable data-not-available exception.
 
         :param data: Parameter to pass to the relevant constructor.
+        :returns: The exception to be raise based on the current status.
          """
         return self._exception(data)

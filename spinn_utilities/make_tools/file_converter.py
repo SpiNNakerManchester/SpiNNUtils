@@ -325,7 +325,7 @@ class FileConverter(object):
         # Now check for the end of log command
         return self._process_line_in_log(dest_f, line_num, text[start_len:])
 
-    def quote_part(self, text: str) -> int:
+    def _quote_part(self, text: str) -> int:
         """
         Net count of double quotes in line.
 
@@ -333,7 +333,7 @@ class FileConverter(object):
         """
         return (text.count('"') - text.count('\\"')) % 2 > 0
 
-    def bracket_count(self, text: str) -> int:
+    def _bracket_count(self, text: str) -> int:
         """
         Net count of open brackets in line.
 
@@ -341,7 +341,7 @@ class FileConverter(object):
         """
         return (text.count('(') - text.count(')'))
 
-    def split_by_comma_plus(self, main: str, line_num: int) -> List[str]:
+    def _split_by_comma_plus(self, main: str, line_num: int) -> List[str]:
         """
         Split line by comma and partially parse.
 
@@ -373,14 +373,14 @@ class FileConverter(object):
                     parts.insert(i, new_part)
                 else:
                     # Not a String so look for function
-                    count = self.bracket_count(part)
+                    count = self._bracket_count(part)
                     if count > 0:
                         # More opening and closing brackets so in function
                         new_part = parts.pop(i)
                         # Keep combining parts until you find the last closing
                         while count > 0:
                             next_part = parts.pop(i)
-                            count += self.bracket_count(next_part)
+                            count += self._bracket_count(next_part)
                             new_part += "," + next_part
                         # Put the new part back into the list
                         parts.insert(i, new_part)
@@ -407,7 +407,7 @@ class FileConverter(object):
             raise UnexpectedCException(
                 f"Unexpected line {self._log_full} at "
                 f"{line_num} in {self._src}") from e
-        parts = self.split_by_comma_plus(main, line_num)
+        parts = self._split_by_comma_plus(main, line_num)
         original = parts[0]
 
         message_id = self._log_database.set_log_info(

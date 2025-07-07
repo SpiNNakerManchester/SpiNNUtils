@@ -320,4 +320,4 @@ if __name__ == "__main__":
         check_properties=False
     )
     # checker.check_dir("")
-    checker.check_file("/home/brenninc/spinnaker/SpiNNMachine/spinn_machine/version/version_factory.py")
+    checker.check_file("")

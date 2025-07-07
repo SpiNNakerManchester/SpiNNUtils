@@ -102,7 +102,7 @@ class ExecutableFinder(object):
 
     def get_executable_paths(self, executable_names: str) -> List[str]:
         """
-        Finds each executables within the set of folders.
+        Finds each executable within the set of folders.
 
         The names are assumed to be comma separated
         The set of folders is searched sequentially

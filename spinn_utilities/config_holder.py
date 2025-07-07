@@ -370,6 +370,9 @@ def get_report_path(
     :param option: cfg option name
     :param section: cfg section. Needed if not Reports
     :param n_run: If provided will be used instead of the current run number
+    :param is_dir:
+        When true will make sure this path exists as a directory.
+        When False will make sure the parent directory is exists.
     :return: An unchecked absolute path to the file or directory
     """
     path = get_config_str(section, option)

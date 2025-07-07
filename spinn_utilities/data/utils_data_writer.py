@@ -311,7 +311,7 @@ class UtilsDataWriter(UtilsDataView):
             self.__data._report_dir_path = reports_dir_path
         else:
             self.__data._report_dir_path = None
-            raise InvalidDirectory("run_dir_path", reports_dir_path)
+            raise InvalidDirectory("report_dir_path", reports_dir_path)
 
     def __create_run_dir_path(self) -> None:
         self.set_run_dir_path(self._child_folder(

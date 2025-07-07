@@ -57,6 +57,12 @@ class _ZenodoException(Exception):
 
     def __init__(
             self, operation: str, expected: int, request: requests.Response):
+        """
+
+        :param operation: Name of operation tied
+        :param expected: Value that had been expected
+        :param request: The errored response received
+        """
         super().__init__(
             "don't know what went wrong. got wrong status code when trying "
             f"to {operation}. Got error code {request.status_code} "
@@ -87,6 +93,10 @@ class _Zenodo(object):
     _VALID_STATUS_REQUEST_PUBLISH = 202
 
     def __init__(self, token: str):
+        """
+
+        :param token: Token to pass to https://zenodo.org/api
+        """
         self.__zenodo_token = token
 
     @staticmethod

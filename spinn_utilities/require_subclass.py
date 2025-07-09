@@ -38,6 +38,7 @@ def require_subclass(required_class: Type) -> Callable[[Type], Type]:
     :param required_class:
         The class that the subclass of the decorated class must be an instance
         of (if that subclass is concrete).
+    :returns: The decorate method to be called later
     """
 
     # Beware! This is all deep shenanigans!

@@ -25,9 +25,6 @@ class AbstractHasLabel(object, metaclass=AbstractBase):
     @abstractmethod
     def label(self) -> str:
         """ The label of the item
-
-        :return: The label
-        :raise None: Raises no known exceptions
         """
         raise NotImplementedError()
 

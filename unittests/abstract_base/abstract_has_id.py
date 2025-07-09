@@ -28,8 +28,5 @@ class AbstractHasId(object, metaclass=AbstractBase):
     @abstractmethod
     def id(self) -> str:
         """ The id of the item
-
-        :return: The id
-        :raise None: Raises no known exceptions
         """
         raise NotImplementedError()

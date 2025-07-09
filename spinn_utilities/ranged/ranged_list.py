@@ -293,6 +293,7 @@ class RangedList(AbstractList[T], Generic[T]):
         Determines if the value should be treated as a list.
 
         :param value: The value to examine.
+        :returns: True if the value should be treated as a list
         """
         return self.listness_check(value)
 
@@ -305,6 +306,7 @@ class RangedList(AbstractList[T], Generic[T]):
             case :py:meth:`as_list` must also be extended.
 
         :param value: The value to examine.
+        :returns: True if the value should be treated as a list
         """
         # Assume any iterable is a list
         if callable(value):
@@ -322,7 +324,13 @@ class RangedList(AbstractList[T], Generic[T]):
             This method can be extended to add other conversions to list in
             which case :py:meth:`listness_check` must also be extended.
 
-        :param value:
+        :param value: Either a method that takes an int as input
+            or something that can have the list method applied.
+        :param size:
+            The number of elements to put in the list.
+        :param ids:
+            A list of IDs to call the function for or ``None`` to use the size.
+            Only used if the value is a callable.
         :return: value as a list
         :raises Exception: if the number of values and the size do not match
         """
@@ -343,7 +351,7 @@ class RangedList(AbstractList[T], Generic[T]):
         .. note::
             Does not change the default.
 
-        :param value: new value
+        :param value: new value(s)
         :param use_list_as_value: True if the value to be set *is* a list
         """
 
@@ -430,7 +438,8 @@ class RangedList(AbstractList[T], Generic[T]):
 
         :param slice_start: Start of the range
         :param slice_stop: Exclusive end of the range
-        :param value: The value to save
+        :param value: The value(s) to save
+        :param use_list_as_value: True if the value to be set *is* a list
         """
         slice_start, slice_stop = self._check_slice_in_range(
             slice_start, slice_stop)
@@ -526,7 +535,8 @@ class RangedList(AbstractList[T], Generic[T]):
         Support for the ``list[x] =`` format.
 
         :param selector: A single ID, a slice of IDs or a list of IDs
-        :param value:
+        :param value: new value(s)
+        :param use_list_as_value: True if the value to be set *is* a list
         """
         if selector is None:
             self.set_value(value, use_list_as_value=use_list_as_value)
@@ -551,6 +561,8 @@ class RangedList(AbstractList[T], Generic[T]):
 
         .. note::
             As this is a copy it will not reflect any updates.
+
+        :returns: A shallow copy of the list of ranges
         """
         if self._ranged_based:
             return list(self.__the_ranges)

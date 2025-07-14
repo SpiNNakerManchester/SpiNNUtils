@@ -130,7 +130,8 @@ class DocsChecker(object):
         param_names = self.get_param_names(node)
         error = self._check_params_correct(param_names, docstring)
 
-        if node.name.startswith("_") or UNITTESTS in self.__file_path:
+        if (node.name.startswith("_") or UNITTESTS in self.__file_path or
+                self._overrides(node)):
             # these are not included by readthedocs so less important
             return error
 
@@ -220,6 +221,20 @@ class DocsChecker(object):
             if returns.id == "Never":
                 return False
         return True
+
+    def _overrides(self, node: ast.FunctionDef) -> bool:
+        """
+        Detects the overrides annotation and the extend_docs is not False
+        """
+        for decorator in node.decorator_list:
+            if (isinstance(decorator, ast.Call) and
+                    decorator.func.id == "overrides"):
+                for keyword in decorator.keywords:
+                    if keyword.arg == "extend_doc":
+                        a = keyword.value.value
+                        return keyword.value.value
+                return True
+        return False
 
     def _check_params_correct(
             self, param_names: Set[str],
@@ -316,7 +331,6 @@ if __name__ == "__main__":
         check_init=False,
         check_short=False,
         check_params=False,
-        check_returns=False,
         check_properties=False
     )
     # checker.check_dir("")

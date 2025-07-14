@@ -234,7 +234,8 @@ class DocsChecker(object):
                         decorator.func.id == "overrides"):
                     for keyword in decorator.keywords:
                         if keyword.arg == "extend_doc":
-                            return keyword.value.value
+                            value = cast(ast.Constant, keyword.value)
+                            return value.value
                     return True
             except AttributeError:
                 print(decorator)
@@ -338,4 +339,4 @@ if __name__ == "__main__":
         check_properties=False
     )
     # checker.check_dir("")
-    checker.check_file("")
+    checker.check_file("/home/brenninc/spinnaker/SpiNNMan/spinnman/connections/udp_packet_connections/bmp_connection.py")

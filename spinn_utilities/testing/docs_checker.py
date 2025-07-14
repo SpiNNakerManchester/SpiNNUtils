@@ -130,6 +130,9 @@ class DocsChecker(object):
         param_names = self.get_param_names(node)
         error = self._check_params_correct(param_names, docstring)
 
+        if not self.has_returns(node) and len(docstring.many_returns) > 0:
+            error += "Unexpected returns"
+
         if (node.name.startswith("_") or UNITTESTS in self.__file_path or
                 self._overrides(node)):
             # these are not included by readthedocs so less important
@@ -161,8 +164,6 @@ class DocsChecker(object):
                     error += self._check_params_all_or_none(
                         param_names, docstring)
         else:
-            if len(docstring.many_returns) > 0:
-                error += "Unexpected returns"
             if self.__check_short:
                 if docstring.short_description is None:
                     error += "No short description provided."
@@ -227,13 +228,16 @@ class DocsChecker(object):
         Detects the overrides annotation and the extend_docs is not False
         """
         for decorator in node.decorator_list:
-            if (isinstance(decorator, ast.Call) and
-                    decorator.func.id == "overrides"):
-                for keyword in decorator.keywords:
-                    if keyword.arg == "extend_doc":
-                        a = keyword.value.value
-                        return keyword.value.value
-                return True
+            try:
+                if (isinstance(decorator, ast.Call) and
+                        isinstance(decorator.func, ast.Name) and
+                        decorator.func.id == "overrides"):
+                    for keyword in decorator.keywords:
+                        if keyword.arg == "extend_doc":
+                            return keyword.value.value
+                    return True
+            except AttributeError:
+                print(decorator)
         return False
 
     def _check_params_correct(

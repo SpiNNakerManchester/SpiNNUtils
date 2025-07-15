@@ -23,8 +23,6 @@ ERROR_NONE = 0
 ERROR_OTHER = ERROR_NONE + 1
 ERROR_FILE = ERROR_OTHER + 1
 
-UNITTESTS = os.sep + "unittests" + os.sep
-
 
 class DocsChecker(object):
     """
@@ -120,7 +118,8 @@ class DocsChecker(object):
             # pylint does not require init to have docs
             if node.name == "__init__" and self.__check_init:
                 param_names = self.get_param_names(node)
-                if len(param_names) > 0 and self.is_not_overload(node):
+                if (len(param_names) > 0 and self.is_not_overload(node) and
+                        not self._test_path()):
                     return "missing docstring"
             return ""
         else:
@@ -133,7 +132,7 @@ class DocsChecker(object):
         if not self.has_returns(node) and len(docstring.many_returns) > 0:
             error += "Unexpected returns"
 
-        if (node.name.startswith("_") or UNITTESTS in self.__file_path or
+        if (node.name.startswith("_") or self._test_path() or
                 self._overrides(node)):
             # these are not included by readthedocs so less important
             return error
@@ -241,6 +240,14 @@ class DocsChecker(object):
                 print(decorator)
         return False
 
+    def _test_path(self):
+        test_paths = ["pacman_test_objects", "unittests"]
+        for test_path in test_paths:
+            check = os.sep + test_path + os.sep
+            if check in self.__file_path:
+                return True
+        return False
+
     def _check_params_correct(
             self, param_names: Set[str],
             docstring: docstring_parser.common.Docstring) -> str:
@@ -339,4 +346,4 @@ if __name__ == "__main__":
         check_properties=False
     )
     # checker.check_dir("")
-    checker.check_file("/home/brenninc/spinnaker/SpiNNMan/spinnman/connections/udp_packet_connections/bmp_connection.py")
+    checker.check_file("")

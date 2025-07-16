@@ -234,13 +234,16 @@ class DocsChecker(object):
                     for keyword in decorator.keywords:
                         if keyword.arg == "extend_doc":
                             value = cast(ast.Constant, keyword.value)
-                            return value.value
+                            return bool(value.value)
                     return True
             except AttributeError:
                 print(decorator)
         return False
 
-    def _test_path(self):
+    def _test_path(self) -> bool:
+        """
+        :returns: True if the path is likely for tests
+        """
         test_paths = ["pacman_test_objects", "unittests"]
         for test_path in test_paths:
             check = os.sep + test_path + os.sep

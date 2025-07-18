@@ -983,6 +983,11 @@ class TestUtilsData(unittest.TestCase):
     def test_directories_mocked(self) -> None:
         UtilsDataWriter.mock()
         self.assertTrue(os.path.exists(UtilsDataView.get_run_dir_path()))
+        self.assertTrue(os.path.exists(UtilsDataView.get_timestamp_dir_path()))
+        reports = UtilsDataView.get_global_reports_dir()
+        self.assertTrue(os.path.exists(reports))
+        error_file = UtilsDataView.get_error_file()
+        assert error_file.startswith(reports)
 
     def test_set_run_dir_path(self) -> None:
         writer = UtilsDataWriter.setup()
@@ -1086,3 +1091,38 @@ class TestUtilsData(unittest.TestCase):
         self.assertEqual(3, UtilsDataView.get_run_number())
         writer.finish_run()
         self.assertEqual(4, UtilsDataView.get_run_number())
+
+    def test_directories_not_setup(self) -> None:
+        writer = UtilsDataWriter.mock()
+        # Hacks as normally not done
+        writer._UtilsDataWriter__data._clear()  # type: ignore[attr-defined]
+        # VERY UGLY HACK DO NOT COPY!!!!!!!!!!!!
+        _UtilsDataModel()._data_status = DataStatus.NOT_SETUP
+        with self.assertRaises(NotSetupException):
+            writer.get_report_dir_path()
+        with self.assertRaises(NotSetupException):
+            UtilsDataView.get_timestamp_dir_path()
+        with self.assertRaises(NotSetupException):
+            UtilsDataView.get_run_dir_path()
+        reports = UtilsDataView.get_global_reports_dir()
+        self.assertTrue(os.path.exists(reports))
+        error_file = UtilsDataView.get_error_file()
+        assert error_file.startswith(reports)
+
+    def test_directories_normal(self) -> None:
+        writer = UtilsDataWriter.setup()
+        report_dir = writer.get_report_dir_path()
+        self.assertTrue(os.path.exists(report_dir))
+
+        timestramp_dir = UtilsDataView.get_timestamp_dir_path()
+        self.assertTrue(os.path.exists(report_dir))
+        self.assertIn(report_dir, timestramp_dir)
+
+        run_dir = UtilsDataView.get_run_dir_path()
+        self.assertTrue(os.path.exists(run_dir))
+        self.assertIn(timestramp_dir, run_dir)
+
+        reports = UtilsDataView.get_global_reports_dir()
+        self.assertTrue(os.path.exists(reports))
+        error_file = UtilsDataView.get_error_file()
+        assert error_file.startswith(reports)

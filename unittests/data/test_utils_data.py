@@ -1092,7 +1092,6 @@ class TestUtilsData(unittest.TestCase):
         writer.finish_run()
         self.assertEqual(4, UtilsDataView.get_run_number())
 
-
     def test_directories_not_setup(self) -> None:
         writer = UtilsDataWriter.mock()
         # Hacks as normally not done

@@ -983,6 +983,11 @@ class TestUtilsData(unittest.TestCase):
     def test_directories_mocked(self) -> None:
         UtilsDataWriter.mock()
         self.assertTrue(os.path.exists(UtilsDataView.get_run_dir_path()))
+        self.assertTrue(os.path.exists(UtilsDataView.get_timestamp_dir_path()))
+        reports = UtilsDataView.get_global_reports_dir()
+        self.assertTrue(os.path.exists(reports))
+        error_file = UtilsDataView.get_error_file()
+        assert error_file.startswith(reports)
 
     def test_set_run_dir_path(self) -> None:
         writer = UtilsDataWriter.setup()
@@ -1086,15 +1091,6 @@ class TestUtilsData(unittest.TestCase):
         self.assertEqual(3, UtilsDataView.get_run_number())
         writer.finish_run()
         self.assertEqual(4, UtilsDataView.get_run_number())
-
-    def test_directories_mocked(self) -> None:
-        UtilsDataWriter.mock()
-        self.assertTrue(os.path.exists(UtilsDataView.get_run_dir_path()))
-        self.assertTrue(os.path.exists(UtilsDataView.get_timestamp_dir_path()))
-        reports = UtilsDataView.get_global_reports_dir()
-        self.assertTrue(os.path.exists(reports))
-        error_file = UtilsDataView.get_error_file()
-        assert error_file.startswith(reports)
 
 
     def test_directories_not_setup(self) -> None:

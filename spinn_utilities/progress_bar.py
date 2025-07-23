@@ -17,11 +17,13 @@ import logging
 import math
 import os
 import sys
+import time
 from types import TracebackType
 from typing import Iterable, Optional, Type, TypeVar, Union
 
 from typing_extensions import Literal, Self
 
+from spinn_utilities.data import UtilsDataView
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.overrides import overrides
 from spinn_utilities import logger_utils
@@ -46,6 +48,7 @@ class ProgressBar(object):
         "_number_of_things", "_currently_completed", "_destination",
         "_chars_per_thing", "_chars_done", "_string",
         "_step_character", "_end_character", "_in_bad_terminal",
+        "__bar_start", "__step_start", "__max_step"
     )
 
     def __init__(self, total_number_of_things_to_do: Union[int, Sized],
@@ -77,6 +80,10 @@ class ProgressBar(object):
         self._create_initial_progress_bar(
             string_describing_what_being_progressed)
 
+        self.__bar_start = time.time()
+        self.__step_start = time.time()
+        self.__max_step = 0
+
     def update(self, amount_to_add: int = 1) -> None:
         """
         Update the progress bar by a given amount.
@@ -88,6 +95,9 @@ class ProgressBar(object):
             return
         self._currently_completed += amount_to_add
         self._check_differences()
+        step = time.time()
+        self.__max_step = max(self.__max_step, step - self.__step_start)
+        self.__step_start = step
 
     def _print_overwritten_line(self, string: str) -> None:
         print("\r" + string, end="", file=self._destination)
@@ -166,6 +176,13 @@ class ProgressBar(object):
         self._currently_completed += difference
         self._check_differences()
         self._print_progress_done()
+        step = time.time()
+        self.__max_step = max(self.__max_step, step - self.__step_start)
+        total = step - self.__bar_start
+        dir = UtilsDataView.get_global_reports_dir()
+        report_file = os.path.join(dir, "progress.cvs")
+        with open(report_file, "a") as f:
+            f.write(f"{self._string},{total},{self.__max_step},{total - self.__max_step},\n")
 
     def __repr__(self) -> str:
         return f"<ProgressBar:{self._string}>"

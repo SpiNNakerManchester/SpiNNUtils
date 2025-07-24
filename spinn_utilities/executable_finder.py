@@ -41,9 +41,9 @@ class ExecutableFinder(object):
                 except FileExistsError:
                     pass
             self._paths_log: Optional[str] = os.path.join(
-                global_reports, "binary_paths_used.log")
+                global_reports, "executables", "binary_paths_used.log")
             self._binary_log: Optional[str] = os.path.join(
-                global_reports, "binary_files_used.log")
+                global_reports, "executables", "binary_files_used.log")
 
         else:
             self._paths_log = None
@@ -176,3 +176,6 @@ class ExecutableFinder(object):
             os.remove(self._paths_log)
         if self._binary_log and os.path.isfile(self._binary_log):
             os.remove(self._binary_log)
+
+if __name__ == '__main__':
+    ExecutableFinder().check_logs()

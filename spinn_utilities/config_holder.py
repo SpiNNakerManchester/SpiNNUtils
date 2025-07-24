@@ -424,7 +424,9 @@ def get_timestamp_path(option: str, section: str = "Reports") -> str:
     """
 
     path = get_config_str(section, option)
-    if not os.path.isabs(path):
+    if path.startswith("(global)"):
+        path = os.path.join(UtilsDataView.get_global_reports_dir(), path[8:])
+    elif not os.path.isabs(path):
         path = os.path.join(UtilsDataView.get_timestamp_dir_path(), path)
 
     folder, _ = os.path.split(path)

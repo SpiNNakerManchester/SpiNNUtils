@@ -14,12 +14,13 @@
 
 from testfixtures import LogCapture
 import os
+from tempfile import TemporaryDirectory
 
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.config_holder import (
     get_config_bool, get_config_bool_or_none, get_config_float,
     get_config_float_or_none, get_config_int, get_config_int_or_none,
-    get_report_path,
+    get_report_path, get_timestamp_path,
     get_config_str, get_config_str_or_none,  set_config)
 from spinn_utilities.data import UtilsDataView
 from spinn_utilities.exceptions import ConfigException, SpiNNUtilsException
@@ -97,3 +98,28 @@ def test_get_report_path() -> None:
     dirs, file = os.path.split(path)
     assert dirs.endswith("json_files")
     assert file == "foo.json"
+
+
+def test_get_timestamp_path() -> None:
+    unittest_setup()
+    set_config("Reports", "use_global", "(global)foo.txt")
+    set_config("Reports", "no_global", "bar.txt")
+
+    if "GLOBAL_REPORTS" not in os.environ:
+        temp = TemporaryDirectory().name
+        os.environ["GLOBAL_REPORTS"] = temp
+        foo = get_timestamp_path("use_global")
+        foo1 = os.path.join(temp, "foo.txt")
+
+        if os.environ["GLOBAL_REPORTS"] == temp:
+            os.environ.pop("GLOBAL_REPORTS")
+    else:
+        reports = UtilsDataView.get_global_reports_dir()
+        foo = get_timestamp_path("use_global")
+        foo1 = os.path.join(reports, "foo.txt")
+    assert foo == foo1
+
+    bar = get_timestamp_path("no_global")
+    timestramp_dir = UtilsDataView.get_timestamp_dir_path()
+    bar1 = os.path.join(timestramp_dir, "bar.txt")
+    assert bar == bar1

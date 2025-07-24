@@ -34,6 +34,7 @@ class ExecutableFinder(object):
     def __init__(self) -> None:
         global_reports = os.environ.get("GLOBAL_REPORTS", None)
         if global_reports:
+            global_reports = os.path.join(global_reports, "executables")
             if not os.path.exists(global_reports):
                 # It might now exist if run in parallel
                 try:
@@ -41,10 +42,9 @@ class ExecutableFinder(object):
                 except FileExistsError:
                     pass
             self._paths_log: Optional[str] = os.path.join(
-                global_reports, "executables", "binary_paths_used.log")
+                global_reports, "binary_paths_used.log")
             self._binary_log: Optional[str] = os.path.join(
-                global_reports, "executables", "binary_files_used.log")
-
+                global_reports, "binary_files_used.log")
         else:
             self._paths_log = None
             self._binary_log = None

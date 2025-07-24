@@ -377,6 +377,8 @@ def get_report_path(
     :return: An unchecked absolute path to the file or directory
     """
     path = get_config_str(section, option)
+    if path.startswith("(global)"):
+        path = os.path.join(UtilsDataView.get_global_reports_dir(), path[8:])
 
     if n_run is not None and n_run > 1:
         if "(n_run)" not in path:

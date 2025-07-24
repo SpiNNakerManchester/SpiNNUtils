@@ -109,15 +109,18 @@ def test_get_timestamp_path() -> None:
         temp = TemporaryDirectory().name
         os.environ["GLOBAL_REPORTS"] = temp
         foo = get_timestamp_path("use_global")
-        foo1 = os.path.join(temp, "foo.txt")
+        foo1 = get_report_path("use_global")
+        foo2 = os.path.join(temp, "foo.txt")
 
         if os.environ["GLOBAL_REPORTS"] == temp:
             os.environ.pop("GLOBAL_REPORTS")
     else:
         reports = UtilsDataView.get_global_reports_dir()
         foo = get_timestamp_path("use_global")
-        foo1 = os.path.join(reports, "foo.txt")
-    assert foo == foo1
+        foo1 = get_report_path("use_global")
+        foo2 = os.path.join(reports, "foo.txt")
+    assert foo == foo2
+    assert foo1 == foo2
 
     bar = get_timestamp_path("no_global")
     timestramp_dir = UtilsDataView.get_timestamp_dir_path()

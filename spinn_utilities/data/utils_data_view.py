@@ -566,6 +566,42 @@ class UtilsDataView(object):
         raise cls._exception("timestamp_dir_path")
 
     @classmethod
+    def get_global_reports_dir(cls) -> str:
+        """
+        The most suitable directory to write global reports to.
+
+        If set (for example by Jenkins) will be environment "GLOBAL_REPORTS"
+
+        Otherwise the report timestamp path is used
+
+        As a backup the temporary directory shared by all path methods.
+        In this case even if not mocked so there is never an exception here.
+
+        :return: Directory to write global reports to
+        """
+        global_reports = os.environ.get("GLOBAL_REPORTS", None)
+        if global_reports:
+            return global_reports
+        elif cls.__data._timestamp_dir_path is not None:
+            return cls.__data._timestamp_dir_path
+        else:
+            return cls._temporary_dir_path()
+
+    @classmethod
+    def get_error_file(cls) -> str:
+        """
+        The file any error can be reported to.
+
+        Will be in cls.get_global_reports_dir.
+        May change before and after setting the environment or timestamp path
+
+        If not empty the Jenkins "Check Destroy" phase to fail.
+
+        :return: Path to (hopefully none existent) error file
+        """
+        return os.path.join(cls.get_global_reports_dir(), "ErrorFile.txt")
+
+    @classmethod
     def _child_folder(cls, parent: str, child_name: str,
                       must_create: bool = False) -> str:
         """

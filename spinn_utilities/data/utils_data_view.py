@@ -577,10 +577,16 @@ class UtilsDataView(object):
         As a backup the temporary directory shared by all path methods.
         In this case even if not mocked so there is never an exception here.
 
-        :return: Directory to write global reports to
+        :return: Existing directory to write global reports to
         """
         global_reports = os.environ.get("GLOBAL_REPORTS", None)
         if global_reports:
+            if not os.path.exists(global_reports):
+                # It might now exist if run in parallel
+                try:
+                    os.makedirs(global_reports)
+                except FileExistsError:
+                    pass
             return global_reports
         elif cls.__data._timestamp_dir_path is not None:
             return cls.__data._timestamp_dir_path

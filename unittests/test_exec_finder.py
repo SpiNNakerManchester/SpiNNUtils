@@ -110,6 +110,9 @@ def test_logs(tmpdir: Any) -> None:
     ef2.check_logs()
     ef2.clear_logs()
 
+    if os.environ["GLOBAL_REPORTS"] == tmpdir.strpath:
+        os.environ.pop("GLOBAL_REPORTS")
+
 
 def test_find_no_duplicates(tmpdir: Any) -> None:
     ef = ExecutableFinder()

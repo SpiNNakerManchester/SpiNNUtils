@@ -245,7 +245,7 @@ class DocsChecker(object):
         :returns: True if the path is likely for tests
         """
         test_paths = ["fec_integration_tests", "pacman_test_objects",
-                      "tests", "unittests"]
+                      "spynnaker_integration_tests", "tests", "unittests"]
         for test_path in test_paths:
             check = os.sep + test_path + os.sep
             if check in self.__file_path:

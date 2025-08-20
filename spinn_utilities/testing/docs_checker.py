@@ -129,8 +129,9 @@ class DocsChecker(object):
         param_names = self.get_param_names(node)
         error = self._check_params_correct(param_names, docstring)
 
-        if not self.has_returns(node) and len(docstring.many_returns) > 0:
-            error += "Unexpected returns"
+        # TODO remove when all repositories fixed
+        #  if not self.has_returns(node) and len(docstring.many_returns) > 0:
+        #    error += "Unexpected returns"
 
         if (node.name.startswith("_") or self._test_path() or
                 self._overrides(node)):

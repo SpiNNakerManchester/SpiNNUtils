@@ -23,8 +23,6 @@ ERROR_NONE = 0
 ERROR_OTHER = ERROR_NONE + 1
 ERROR_FILE = ERROR_OTHER + 1
 
-UNITTESTS = os.sep + "unittests" + os.sep
-
 
 class DocsChecker(object):
     """
@@ -120,7 +118,8 @@ class DocsChecker(object):
             # pylint does not require init to have docs
             if node.name == "__init__" and self.__check_init:
                 param_names = self.get_param_names(node)
-                if len(param_names) > 0 and self.is_not_overload(node):
+                if (len(param_names) > 0 and self.is_not_overload(node) and
+                        not self._test_path()):
                     return "missing docstring"
             return ""
         else:
@@ -130,7 +129,11 @@ class DocsChecker(object):
         param_names = self.get_param_names(node)
         error = self._check_params_correct(param_names, docstring)
 
-        if node.name.startswith("_") or UNITTESTS in self.__file_path:
+        if not self.has_returns(node) and len(docstring.many_returns) > 0:
+            error += "Unexpected returns"
+
+        if (node.name.startswith("_") or self._test_path() or
+                self._overrides(node)):
             # these are not included by readthedocs so less important
             return error
 
@@ -160,8 +163,6 @@ class DocsChecker(object):
                     error += self._check_params_all_or_none(
                         param_names, docstring)
         else:
-            if len(docstring.many_returns) > 0:
-                error += "Unexpected returns"
             if self.__check_short:
                 if docstring.short_description is None:
                     error += "No short description provided."
@@ -220,6 +221,36 @@ class DocsChecker(object):
             if returns.id == "Never":
                 return False
         return True
+
+    def _overrides(self, node: ast.FunctionDef) -> bool:
+        """
+        Detects the overrides annotation and the extend_docs is not False
+        """
+        for decorator in node.decorator_list:
+            try:
+                if (isinstance(decorator, ast.Call) and
+                        isinstance(decorator.func, ast.Name) and
+                        decorator.func.id == "overrides"):
+                    for keyword in decorator.keywords:
+                        if keyword.arg == "extend_doc":
+                            value = cast(ast.Constant, keyword.value)
+                            return bool(value.value)
+                    return True
+            except AttributeError:
+                print(decorator)
+        return False
+
+    def _test_path(self) -> bool:
+        """
+        :returns: True if the path is likely for tests
+        """
+        test_paths = ["fec_integration_tests", "pacman_test_objects",
+                      "spynnaker_integration_tests", "tests", "unittests"]
+        for test_path in test_paths:
+            check = os.sep + test_path + os.sep
+            if check in self.__file_path:
+                return True
+        return False
 
     def _check_params_correct(
             self, param_names: Set[str],
@@ -316,7 +347,6 @@ if __name__ == "__main__":
         check_init=False,
         check_short=False,
         check_params=False,
-        check_returns=False,
         check_properties=False
     )
     # checker.check_dir("")

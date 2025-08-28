@@ -149,7 +149,8 @@ class DocsChecker(object):
             if self.is_property(node):
                 if self.__check_properties:
                     if docstring.short_description is None:
-                        # docstring_parser can not handle these RTD can
+                        # docstring_parser can not handle  these
+                        # Read The Docs can
                         if not docs.startswith(":math:"):
                             error += "No short description provided."
                     if len(docstring.many_returns) > 0:

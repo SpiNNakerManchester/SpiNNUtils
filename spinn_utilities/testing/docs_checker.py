@@ -39,13 +39,15 @@ class DocsChecker(object):
     __slots__ = [
         "__check_init", "__check_short", "__check_params",
         "__check_properties", "__check_returns",
+        "__check_types_in_docs",
         "__error_level", "__file_path", "__file_errors",
         "__functions_errors"]
 
     def __init__(
             self, *, check_init: bool = True, check_short: bool = True,
             check_params: bool = True, check_properties: bool = True,
-            check_returns: bool = True) -> None:
+            check_returns: bool = True,
+            check_types_in_docs: bool = True) -> None:
         """
         Sets up the doc checker.
 
@@ -68,8 +70,11 @@ class DocsChecker(object):
             They should not have a return annotation
         :param check_returns: Flag to trigger checking of return annotations
             when not a property
+        :param check_types_in_docs:
+            Flag to trigger checking that docstring have no types
         """
         self.__error_level = ERROR_NONE
+        self.__check_types_in_docs = check_types_in_docs
         self.__check_init = check_init
         self.__check_params = check_params
         self.__check_properties = check_properties
@@ -266,7 +271,8 @@ class DocsChecker(object):
             if param.arg_name not in param_names:
                 error += f"{param.arg_name}: is incorrect "
             elif param.type_name:
-                error += f"{param.arg_name}: is typed "
+                if self.__check_types_in_docs:
+                    error += f"{param.arg_name}: is typed "
         return error
 
     def _check_params_all_or_none(
@@ -288,9 +294,10 @@ class DocsChecker(object):
         """
         error = ""
 
-        for key in [":type", ":rtype"]:
-            if key in docs:
-                error += f"found {key} "
+        if self.__check_types_in_docs:
+            for key in [":type", ":rtype"]:
+                if key in docs:
+                    error += f"found {key} "
         index = sys.maxsize
         for key in [":param", ":return", ":raises"]:
             if key in docs:

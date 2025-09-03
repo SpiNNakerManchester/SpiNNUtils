@@ -32,8 +32,7 @@ def find_max_success(max_possible: int, check: _Check) -> int:
     return search_for_max_success(0, max_possible, check)
 
 
-def search_for_max_success(
-        best_success: int, min_fail: int, check: _Check) -> int:
+def search_for_max_success(best_success: int, min_fail: int, check: _Check) -> int:
     """
     Finds the maximum value in the range that pass the check
 

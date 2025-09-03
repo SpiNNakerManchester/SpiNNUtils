@@ -99,7 +99,7 @@ def install_cfg_and_error(
     return NoConfigFoundException(msg)
 
 
-def _check_config(cfg_file: str, default_configs: CamelCaseConfigParser,
+def _check_config(cfg_file: int, default_configs: CamelCaseConfigParser,
                   strict: bool) -> None:
     """
     Checks the configuration read up to this point to see if it is outdated.

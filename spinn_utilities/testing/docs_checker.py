@@ -71,7 +71,7 @@ class DocsChecker(object):
         :param check_returns: Flag to trigger checking of return annotations
             when not a property
         :param check_types_in_docs:
-            Flag to trigger checking that docstring have no types
+            Flag to trigger checking that doc-string have no types
         """
         self.__error_level = ERROR_NONE
         self.__check_types_in_docs = check_types_in_docs

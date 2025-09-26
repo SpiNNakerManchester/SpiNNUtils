@@ -201,24 +201,6 @@ def test_intermediate_use(tmpdir: ModuleType, default_config: str,
             log_checker.assert_logs_info_contains(lc.records, name)
 
 
-def test_advanced_use(tmpdir: ModuleType, default_config: str,
-                      not_there: Tuple[str, str]) -> None:
-    def parseAbc(parser: CamelCaseConfigParser) -> None:
-        f = parser.getfloat("Abc", "def")
-        parser.set("Abc", "ghi", str(f*3))
-        parser.remove_option("Abc", "def")
-
-    name, place = not_there
-    default_config += "\n[Abc]\ndef=1.25\n"
-    with open(place, "w") as f:
-        f.write(default_config)
-    with tmpdir.as_cwd():
-        config = conf_loader.load_config(
-            name, [], config_parsers=[("Abc", parseAbc)])
-        assert config.options("Abc") == ["ghi"]
-        assert config.getfloat("Abc", "ghi") == 3.75
-
-
 def test_str_list(tmpdir: ModuleType, not_there: Tuple[str, str]) -> None:
     name, place = not_there
     with open(place, "w") as f:

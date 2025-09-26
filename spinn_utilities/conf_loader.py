@@ -185,9 +185,7 @@ def _config_locations(filename: str) -> List[str]:
 
 
 def load_config(
-        filename: str, defaults: List[str], config_parsers: Union[
-            Sequence[Tuple[str, _SectionParser]],
-            Dict[str, _SectionParser]] = ()) -> CamelCaseConfigParser:
+        filename: str, defaults: List[str]) -> CamelCaseConfigParser:
     """
     Load the configuration.
 
@@ -225,12 +223,6 @@ def load_config(
         _read_a_config(configs, cfg_file, default_configs, False)
     cfg_file = os.path.join(os.curdir, filename)
     _read_a_config(configs, cfg_file, default_configs, True)
-
-    parsers = dict(config_parsers)
-
-    for section in parsers:
-        if configs.has_section(section):
-            parsers[section](configs)
 
     # Log which configs files we read
     print(configs.read_files)

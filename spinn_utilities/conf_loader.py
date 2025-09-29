@@ -114,6 +114,13 @@ def _config_locations(filename: str) -> List[str]:
 
 
 def load_defaults(defaults: List[str]) -> CamelCaseConfigParser:
+    """
+    Load the default configuration.
+
+    :param defaults:
+        The list of files to get default configurations from.
+    :return: the fully-loaded configuration
+    """
     default_configs = CamelCaseConfigParser()
     default_configs.read(defaults)
     return default_configs
@@ -125,7 +132,7 @@ def load_config(
     Load the configuration.
 
     :param user_cfg:
-        Path to existing user cfg.
+        Path to existing user cfg. This file must exist.
     :param defaults:
         The list of files to get default configurations from.
     :return: the fully-loaded and checked configuration

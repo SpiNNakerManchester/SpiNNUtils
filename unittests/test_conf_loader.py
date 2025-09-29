@@ -85,7 +85,7 @@ def mach_spec(tmpdir: ModuleType) -> str:
     return str(msf)
 
 def test_different_value(
-        not_there: Tuple[str, str], default_config: str) -> None:
+        not_there: str, default_config: str) -> None:
     place = not_there
     default_config = default_config.replace("bar", "cat")
     with open(not_there, "w") as f:

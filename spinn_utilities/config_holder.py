@@ -49,6 +49,7 @@ def add_default_cfg(default: str) -> None:
     if default not in __default_config_files:
         __default_config_files.append(default)
 
+
 def add_template(template: str) -> None:
     """
     Adds an extra default configuration file to be read after earlier ones.
@@ -60,6 +61,7 @@ def add_template(template: str) -> None:
         __template = template
     else:
         raise ConfigException("Second template")
+
 
 def get_default_cfgs() -> Tuple[str, ...]:
     """
@@ -138,6 +140,7 @@ def logging_parser(config: CamelCaseConfigParser) -> None:
     except NoOptionError:
         pass
 
+
 def _user_cfg() -> Optional[str]:
     """
     Defines the list of places we can get configuration files from.
@@ -160,6 +163,7 @@ def _user_cfg() -> Optional[str]:
             else:
                 found = check
     return found
+
 
 def _install_cfg_and_error() -> NoConfigFoundException:
     """
@@ -198,6 +202,7 @@ def _install_cfg_and_error() -> NoConfigFoundException:
            '***********************************************************\n')
     print(msg)
     return NoConfigFoundException(msg)
+
 
 def load_config() -> CamelCaseConfigParser:
     """

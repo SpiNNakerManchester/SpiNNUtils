@@ -11,16 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import string
 
-import copy
 import logging
 import os
 import pytest
 import random
 import configparser
 from types import ModuleType
-from typing import Iterator, Tuple
+from typing import Iterator
 
 import unittests  # CRITICAL: *THIS* package!
 from testfixtures import LogCapture
@@ -28,7 +26,6 @@ from testfixtures import LogCapture
 import spinn_utilities.conf_loader as conf_loader
 import spinn_utilities.config_holder as config_holder
 from spinn_utilities.configs import (
-    ConfigTemplateException,
     NoConfigFoundException, UnexpectedConfigException)
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import FormatAdapter
@@ -51,6 +48,7 @@ VALIDATION_PATH = os.path.join(os.path.dirname(unittests.__file__),
                                "validation_config.cfg")
 
 logger = FormatAdapter(logging.getLogger(__name__))
+
 
 def _random_name() -> str:
     return "test_config_for_spinnutils_unittests.{}.txt".format(
@@ -83,6 +81,7 @@ def mach_spec(tmpdir: ModuleType) -> str:
     msf = tmpdir.join("machspec.cfg")
     msf.write("[Machine]\nmachineName=foo\nversion=5\n")
     return str(msf)
+
 
 def test_different_value(
         not_there: str, default_config: str) -> None:
@@ -236,6 +235,7 @@ def test_logging(tmpdir: ModuleType, not_there: str) -> None:
 
     logger = FormatAdapter(logging.getLogger(__name__))
     logger.warning("trigger filter")
+
 
 @pytest.mark.xdist_group(name="config_holder")
 def test_no_default() -> None:

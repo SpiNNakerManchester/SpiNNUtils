@@ -118,6 +118,7 @@ def load_defaults(defaults: List[str]) -> CamelCaseConfigParser:
     default_configs.read(defaults)
     return default_configs
 
+
 def load_config(
         user_cfg: str, defaults: List[str]) -> CamelCaseConfigParser:
     """

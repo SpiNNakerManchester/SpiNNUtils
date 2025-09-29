@@ -161,9 +161,9 @@ def test_no_templates(tmpdir: ModuleType, default_config: str) -> None:
 @pytest.mark.xdist_group(name="config_holder")
 def test_two_templates() -> None:
     config_holder.clear_cfg_files(unittest_mode=False)
-    config_holder.add_template(template=ONEPATH)
+    config_holder.add_template(template=ONEPATH + ".template")
     with pytest.raises(ConfigException):
-        config_holder.add_template(template=TWOFILE)
+        config_holder.add_template(template=TWOFILE + ".template")
 
 
 def test_None_machine_spec_file(tmpdir: ModuleType, default_config: str,

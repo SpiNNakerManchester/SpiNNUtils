@@ -222,10 +222,8 @@ def load_config() -> CamelCaseConfigParser:
         elif __config_file:
             logger.info(f"No default configs {__config_file} "
                         f"found in home directory")
-        __config = conf_loader.load_defaults(__default_config_files)
-    else:
-        __config = conf_loader.load_config(
-            user_cfg, __default_config_files)
+    __config = conf_loader.load_config(
+        __config_file, user_cfg, __default_config_files)
 
     logging_parser(__config)
     return __config

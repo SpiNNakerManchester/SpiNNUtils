@@ -44,8 +44,6 @@ FOURFILE = "config_four.cfg"
 FOURPATH = os.path.join(os.path.dirname(unittests.__file__), FOURFILE)
 TYPESFILE = "config_types.cfg"
 TYPESPATH = os.path.join(os.path.dirname(unittests.__file__), TYPESFILE)
-VALIDATION_PATH = os.path.join(os.path.dirname(unittests.__file__),
-                               "validation_config.cfg")
 
 logger = FormatAdapter(logging.getLogger(__name__))
 
@@ -89,7 +87,8 @@ def test_different_value(
     default_config = default_config.replace("bar", "cat")
     with open(not_there, "w") as f:
         f.write(default_config)
-    config = conf_loader.load_config(place, [CFGPATH])
+    config = conf_loader.load_config(
+        local_name=None, user_cfg=place, defaults=[CFGPATH])
     assert config is not None
     assert config.sections() == ["sect"]
     assert config.options("sect") == ["foobob"]
@@ -103,7 +102,8 @@ def test_new_option_local(tmpdir: ModuleType, default_config: str) -> None:
         default_config = default_config + "sam=cat\n"
         f.write(default_config)
         with pytest.raises(UnexpectedConfigException):
-            conf_loader.load_config(f, [CFGPATH])
+            conf_loader.load_config(
+                local_name=name, user_cfg=None, defaults=[CFGPATH])
 
 
 def test_new_option_home(
@@ -113,7 +113,8 @@ def test_new_option_home(
     with open(place, "w") as f:
         f.write(default_config)
     with LogCapture() as lc:
-        conf_loader.load_config(place, [CFGPATH])
+        conf_loader.load_config(
+            local_name=None, user_cfg=place, defaults=[CFGPATH])
         log_checker.assert_logs_warning_contains(
             lc.records, "Unexpected Option: [sect]sam")
 
@@ -124,7 +125,8 @@ def test_dead_section(not_there: str, default_config: str) -> None:
     with open(place, "w") as f:
         f.write(default_config)
     with LogCapture() as lc:
-        conf_loader.load_config(place, [CFGPATH])
+        conf_loader.load_config(
+            local_name=None, user_cfg=place, defaults=[CFGPATH])
         log_checker.assert_logs_warning_contains(
             lc.records, "Unexpected Section: [Pets]")
 
@@ -174,7 +176,8 @@ def test_None_machine_spec_file(tmpdir: ModuleType, default_config: str,
         f.write(default_config)
     with tmpdir.as_cwd():
         with LogCapture() as lc:
-            config = conf_loader.load_config(place, [])
+            config = conf_loader.load_config(
+                local_name=None, user_cfg=place, defaults=[])
             assert config is not None
             assert config.sections() == ["sect", "Machine"]
             assert config.options("sect") == ["foobob"]
@@ -190,7 +193,8 @@ def test_intermediate_use(tmpdir: ModuleType, default_config: str,
         f.write(default_config)
     with tmpdir.as_cwd():
         with LogCapture() as lc:
-            config = conf_loader.load_config(place, [])
+            config = conf_loader.load_config(
+                local_name=None, user_cfg=place, defaults=[])
             assert config is not None
             assert config.sections() == ["sect", "Machine"]
             assert config.options("sect") == ["foobob"]
@@ -210,7 +214,8 @@ def test_str_list(tmpdir: ModuleType, not_there: str) -> None:
                 "as_empty=\n"
                 "fluff=more\n")
     with tmpdir.as_cwd():
-        config = conf_loader.load_config(place, [])
+        config = conf_loader.load_config(
+            local_name=None, user_cfg=place, defaults=[])
         assert config.get_str_list("abc", "as_list") == \
                ["bacon", "is", "so", "cool"]
         assert config.get_str_list("abc", "as_none") == []
@@ -231,7 +236,7 @@ def test_logging(tmpdir: ModuleType, not_there: str) -> None:
                 "error =\n"
                 "critical =\n")
     with tmpdir.as_cwd():
-        conf_loader.load_config(place, [])
+        conf_loader.load_config(local_name=None, user_cfg=place, defaults=[])
 
     logger = FormatAdapter(logging.getLogger(__name__))
     logger.warning("trigger filter")
@@ -294,3 +299,12 @@ def test_preload_bool() -> None:
     config_holder.clear_cfg_files(True)
     config_holder.set_cfg_files(None, TYPESPATH)
     assert not config_holder.get_config_bool("sect", "a_bool")
+
+"""
+def test_local_name() -> None:
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(this_dir)
+    config = conf_loader.load_config(
+        local_name=ONEFILE, user_cfg=None, defaults=[])
+    assert config.get_str("sect", "foo") == "notbar"
+"""

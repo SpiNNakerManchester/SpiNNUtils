@@ -15,7 +15,7 @@
 
 import logging
 import os
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 import appdirs
 from typing_extensions import TypeAlias
@@ -113,7 +113,7 @@ def _config_locations(filename: str) -> List[str]:
             user_home_cfg_file]
 
 
-def load_defaults(defaults: List[str]) -> CamelCaseConfigParser:
+def _load_defaults(defaults: List[str]) -> CamelCaseConfigParser:
     """
     Load the default configuration.
 
@@ -126,27 +126,29 @@ def load_defaults(defaults: List[str]) -> CamelCaseConfigParser:
     return default_configs
 
 
-def load_config(
-        user_cfg: str, defaults: List[str]) -> CamelCaseConfigParser:
+def load_config(local_name: Optional[str], user_cfg: Optional[str],
+                defaults: List[str]) -> CamelCaseConfigParser:
     """
     Load the configuration.
 
+    :param local_name:
+        Name of the file to look for in the current directory
     :param user_cfg:
         Path to existing user cfg. This file must exist.
     :param defaults:
         The list of files to get default configurations from.
     :return: the fully-loaded and checked configuration
     """
-    configs = load_defaults(defaults)
-    default_configs = load_defaults(defaults)
+    configs = _load_defaults(defaults)
+    default_configs = _load_defaults(defaults)
 
-    _read_a_config(configs, user_cfg, default_configs, False)
-    filename = os.path.basename(user_cfg)
-    cfg_file = os.path.join(os.curdir, filename)
-    _read_a_config(configs, cfg_file, default_configs, True)
+    if user_cfg is not None:
+        _read_a_config(configs, user_cfg, default_configs, False)
+    if local_name is not None:
+        local_path = os.path.join(os.curdir, local_name)
+        _read_a_config(configs, local_path, default_configs, True)
 
     # Log which configs files we read
-    print(configs.read_files)
     logger.info("Read configs files: {}", ", ".join(configs.read_files))
 
     return configs

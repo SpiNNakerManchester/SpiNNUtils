@@ -161,7 +161,7 @@ def _user_cfg() -> Optional[str]:
                 found = check
     return found
 
-def install_cfg_and_error() -> NoConfigFoundException:
+def _install_cfg_and_error() -> NoConfigFoundException:
     """
     Installs a local configuration file based on the templates and raises
     an exception.
@@ -173,6 +173,8 @@ def install_cfg_and_error() -> NoConfigFoundException:
 
     :return: Exception to be raised by caller
     """
+    assert __config_file is not None
+    assert __template is not None
     home_cfg = os.path.join(os.path.expanduser("~"), f".{__config_file}")
 
     with open(home_cfg, "w", encoding="utf-8") as dst:
@@ -211,10 +213,11 @@ def load_config() -> CamelCaseConfigParser:
     user_cfg = _user_cfg()
     if not user_cfg:
         if __template:
-            raise install_cfg_and_error()
+            raise _install_cfg_and_error()
         elif __config_file:
             logger.info(f"No default configs {__config_file} "
                         f"found in home directory")
+        __config = conf_loader.load_defaults(__default_config_files)
     else:
         __config = conf_loader.load_config(
             user_cfg, __default_config_files)

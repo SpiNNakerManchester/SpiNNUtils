@@ -58,7 +58,7 @@ def _random_name() -> str:
 
 
 @pytest.fixture
-def not_there() -> Iterator[Tuple[str, str]]:
+def not_there() -> Iterator[str]:
     name = "test_config_for_spinnutils_unittests.{}.txt".format(
         random.randint(1, 1000000))
     place = os.path.join(os.path.expanduser("~"), f".{name}")

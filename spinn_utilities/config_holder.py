@@ -153,6 +153,9 @@ def _user_cfg() -> Optional[str]:
     dotname = "." + __config_file
     found = None
 
+    a = [os.path.join(appdirs.site_config_dir(), dotname),
+                  os.path.join(appdirs.user_config_dir(), dotname),
+                  os.path.join(os.path.expanduser("~"), dotname)]
     for check in [os.path.join(appdirs.site_config_dir(), dotname),
                   os.path.join(appdirs.user_config_dir(), dotname),
                   os.path.join(os.path.expanduser("~"), dotname)]:
@@ -215,15 +218,18 @@ def load_config() -> CamelCaseConfigParser:
     if not __default_config_files:
         raise ConfigException("No default configs set")
 
-    user_cfg = _user_cfg()
-    if not user_cfg:
-        if __template:
-            raise _install_cfg_and_error()
-        elif __config_file:
-            logger.info(f"No default configs {__config_file} "
-                        f"found in home directory")
-    __config = conf_loader.load_config(
-        __config_file, user_cfg, __default_config_files)
+    if __config_file:
+        user_cfg = _user_cfg()
+        if not user_cfg:
+            if __template:
+                raise _install_cfg_and_error()
+            elif __config_file:
+                logger.info(f"No default configs {__config_file} "
+                            f"found in home directory")
+        __config = conf_loader.load_config(
+            __config_file, user_cfg, __default_config_files)
+    else:
+        __config = conf_loader.load_defaults(__default_config_files)
 
     logging_parser(__config)
     return __config

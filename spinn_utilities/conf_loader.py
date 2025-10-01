@@ -113,7 +113,7 @@ def _config_locations(filename: str) -> List[str]:
             user_home_cfg_file]
 
 
-def _load_defaults(defaults: List[str]) -> CamelCaseConfigParser:
+def load_defaults(defaults: List[str]) -> CamelCaseConfigParser:
     """
     Load the default configuration.
 
@@ -139,8 +139,8 @@ def load_config(local_name: Optional[str], user_cfg: Optional[str],
         The list of files to get default configurations from.
     :return: the fully-loaded and checked configuration
     """
-    configs = _load_defaults(defaults)
-    default_configs = _load_defaults(defaults)
+    configs = load_defaults(defaults)
+    default_configs = load_defaults(defaults)
 
     if user_cfg is not None:
         _read_a_config(configs, user_cfg, default_configs, False)

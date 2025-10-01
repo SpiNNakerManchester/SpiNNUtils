@@ -300,11 +300,10 @@ def test_preload_bool() -> None:
     config_holder.set_cfg_files(None, TYPESPATH)
     assert not config_holder.get_config_bool("sect", "a_bool")
 
-"""
+
 def test_local_name() -> None:
     this_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(this_dir)
     config = conf_loader.load_config(
         local_name=ONEFILE, user_cfg=None, defaults=[])
     assert config.get_str("sect", "foo") == "notbar"
-"""

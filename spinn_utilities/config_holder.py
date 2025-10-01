@@ -153,9 +153,6 @@ def _user_cfg() -> Optional[str]:
     dotname = "." + __config_file
     found = None
 
-    a = [os.path.join(appdirs.site_config_dir(), dotname),
-                  os.path.join(appdirs.user_config_dir(), dotname),
-                  os.path.join(os.path.expanduser("~"), dotname)]
     for check in [os.path.join(appdirs.site_config_dir(), dotname),
                   os.path.join(appdirs.user_config_dir(), dotname),
                   os.path.join(os.path.expanduser("~"), dotname)]:

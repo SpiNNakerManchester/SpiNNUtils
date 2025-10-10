@@ -11,15 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from configparser import NoOptionError
 import logging
 import os
 from typing import List, Optional, Tuple
 
+import appdirs
+
 import spinn_utilities.conf_loader as conf_loader
 from spinn_utilities.data import UtilsDataView
 from spinn_utilities.configs import CamelCaseConfigParser
+from spinn_utilities.configs.no_config_found_exception import (
+    NoConfigFoundException)
+from spinn_utilities.configs.two_user_configs_exception import (
+    TwoUserConfigsException)
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import (
     FormatAdapter, ConfiguredFilter, ConfiguredFormatter)
@@ -31,6 +36,7 @@ logger = FormatAdapter(logging.getLogger(__file__))
 __config: Optional[CamelCaseConfigParser] = None
 __default_config_files: List[str] = []
 __config_file: Optional[str] = None
+__template: Optional[str] = None
 __unittest_mode: bool = False
 
 
@@ -42,6 +48,19 @@ def add_default_cfg(default: str) -> None:
     """
     if default not in __default_config_files:
         __default_config_files.append(default)
+
+
+def add_template(template: str) -> None:
+    """
+    Adds an extra default configuration file to be read after earlier ones.
+
+    :param template: Absolute path to the template file
+    """
+    global __template
+    if __template is None:
+        __template = template
+    else:
+        raise ConfigException("Second template")
 
 
 def get_default_cfgs() -> Tuple[str, ...]:
@@ -64,10 +83,11 @@ def clear_cfg_files(unittest_mode: bool) -> None:
 
     :param unittest_mode: Flag to put the holder into unit testing mode
     """
-    global __config, __config_file, __unittest_mode
+    global __config, __config_file, __template, __unittest_mode
     __config = None
     __default_config_files.clear()
     __config_file = None
+    __template = None
     __unittest_mode = unittest_mode
 
 
@@ -121,6 +141,69 @@ def logging_parser(config: CamelCaseConfigParser) -> None:
         pass
 
 
+def _user_cfg() -> Optional[str]:
+    """
+    Defines the list of places we can get configuration files from.
+
+    :return: existing fully-qualified filename
+    """
+    if __config_file is None:
+        return None
+
+    dotname = "." + __config_file
+    found = None
+
+    for check in [os.path.join(appdirs.site_config_dir(), dotname),
+                  os.path.join(appdirs.user_config_dir(), dotname),
+                  os.path.join(os.path.expanduser("~"), dotname)]:
+        if os.path.isfile(check):
+            if found:
+                raise TwoUserConfigsException(
+                    f"Two user cfg files found {check} and {found}")
+            else:
+                found = check
+    return found
+
+
+def _install_cfg_and_error() -> NoConfigFoundException:
+    """
+    Installs a local configuration file based on the templates and raises
+    an exception.
+
+    This method is called when no user configuration file is found.
+
+    It will create a file in the users home directory based on the defaults.
+    Then it prints a helpful message and throws an error with the same message.
+
+    :return: Exception to be raised by caller
+    """
+    assert __config_file is not None
+    assert __template is not None
+    home_cfg = os.path.join(os.path.expanduser("~"), f".{__config_file}")
+
+    with open(home_cfg, "w", encoding="utf-8") as dst:
+        with open(__template, "r", encoding="utf-8") as src:
+            dst.write(src.read())
+            dst.write("\n")
+        dst.write("\n# Additional config options can be found in:\n")
+        for source in __default_config_files:
+            dst.write(f"# {source}\n")
+        dst.write("\n# Copy any additional settings you want to change"
+                  " here including section headings\n")
+
+    msg = ('Unable to find config file in your home directory\n'
+           '**********************************************************\n'
+           f'{home_cfg} has been created. \n'
+           'Please edit this file and change "machineName" '
+           'to the IP address of your SpiNNaker board '
+           "or change spalloc_server to the server urls "
+           'and change "version" to the version of '
+           'SpiNNaker hardware you are running on:\n'
+           '***********************************************************\n')
+    print(msg)
+    return NoConfigFoundException(msg)
+
+
 def load_config() -> CamelCaseConfigParser:
     """
     Reads in all the configuration files, resetting all values.
@@ -131,13 +214,19 @@ def load_config() -> CamelCaseConfigParser:
     global __config
     if not __default_config_files:
         raise ConfigException("No default configs set")
+
     if __config_file:
+        user_cfg = _user_cfg()
+        if not user_cfg:
+            if __template:
+                raise _install_cfg_and_error()
+            elif __config_file:
+                logger.info(f"No default configs {__config_file} "
+                            f"found in home directory")
         __config = conf_loader.load_config(
-            filename=__config_file, defaults=__default_config_files)
+            __config_file, user_cfg, __default_config_files)
     else:
-        __config = CamelCaseConfigParser()
-        for default in __default_config_files:
-            __config.read(default)
+        __config = conf_loader.load_defaults(__default_config_files)
 
     logging_parser(__config)
     return __config

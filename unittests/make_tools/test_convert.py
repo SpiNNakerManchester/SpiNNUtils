@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import pytest
 import shutil
 import sys
 import tempfile
@@ -24,6 +25,7 @@ from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 
 class TestConverter(unittest.TestCase):
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_convert(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))

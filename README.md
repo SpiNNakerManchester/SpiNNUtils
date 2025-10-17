@@ -1,6 +1,6 @@
 [![PyPi version](https://img.shields.io/pypi/v/SpiNNUtilities.svg?style=flat)](https://pypi.org/project/SpiNNUtilities/)
 [![Python Actions](https://github.com/SpiNNakerManchester/SpiNNUtils/actions/workflows/python_actions.yml/badge.svg?branch=master)](https://github.com/SpiNNakerManchester/SpiNNUtils/actions/workflows/python_actions.yml)
-[![Documentation Status](https://readthedocs.org/projects/spinnutils/badge/?version=7.4.1)](https://spinnutils.readthedocs.io/en/7.4.1)
+[![Documentation Status](https://readthedocs.org/projects/spinnutils/badge/?version=latest)](https://spinnutils.readthedocs.io/en/latest)
 
 SpiNNUtils
 ==========
@@ -70,6 +70,6 @@ optional arguments:
 
 Documentation
 =============
-[SpiNNUtils python documentation](http://spinnutils.readthedocs.io/en/7.4.1)
+[SpiNNUtils python documentation](http://spinnutils.readthedocs.io/en/latest)
 
-[Combined python documentation](http://spinnakermanchester.readthedocs.io/en/7.4.1)
+[Combined python documentation](http://spinnakermanchester.readthedocs.io/en/latest)

@@ -83,28 +83,11 @@ def clear_cfg_files(unittest_mode: bool) -> None:
 
     :param unittest_mode: Flag to put the holder into unit testing mode
     """
-    global __config, __config_file, __template, __unittest_mode
+    global __config,  __template, __unittest_mode
     __config = None
     __default_config_files.clear()
-    __config_file = None
     __template = None
     __unittest_mode = unittest_mode
-
-
-def set_cfg_files(config_file: Optional[str], default: str) -> None:
-    """
-    Adds the configuration files to be loaded.
-
-    :param config_file:
-        The base name of the configuration file(s).
-        Should not include any path components.
-        Use None to not read any file
-    :param default:
-        Full path to the extra file to get default configurations from.
-    """
-    global __config_file
-    __config_file = config_file
-    add_default_cfg(default)
 
 
 def _pre_load_config() -> CamelCaseConfigParser:
@@ -117,7 +100,7 @@ def _pre_load_config() -> CamelCaseConfigParser:
     if not __unittest_mode:
         raise ConfigException(
             "Accessing config values before setup is not supported")
-    return load_config()
+    return load_config(None)
 
 
 def logging_parser(config: CamelCaseConfigParser) -> None:
@@ -141,16 +124,13 @@ def logging_parser(config: CamelCaseConfigParser) -> None:
         pass
 
 
-def _user_cfg() -> Optional[str]:
+def _user_cfg(config_file: str) -> Optional[str]:
     """
     Defines the list of places we can get configuration files from.
 
     :return: existing fully-qualified filename
     """
-    if __config_file is None:
-        return None
-
-    dotname = "." + __config_file
+    dotname = "." + config_file
     found = None
 
     for check in [os.path.join(appdirs.site_config_dir(), dotname),
@@ -165,7 +145,7 @@ def _user_cfg() -> Optional[str]:
     return found
 
 
-def _install_cfg_and_error() -> NoConfigFoundException:
+def _install_cfg_and_error(config_file: str) -> NoConfigFoundException:
     """
     Installs a local configuration file based on the templates and raises
     an exception.
@@ -177,9 +157,8 @@ def _install_cfg_and_error() -> NoConfigFoundException:
 
     :return: Exception to be raised by caller
     """
-    assert __config_file is not None
     assert __template is not None
-    home_cfg = os.path.join(os.path.expanduser("~"), f".{__config_file}")
+    home_cfg = os.path.join(os.path.expanduser("~"), f".{config_file}")
 
     with open(home_cfg, "w", encoding="utf-8") as dst:
         with open(__template, "r", encoding="utf-8") as src:
@@ -204,7 +183,7 @@ def _install_cfg_and_error() -> NoConfigFoundException:
     return NoConfigFoundException(msg)
 
 
-def load_config() -> CamelCaseConfigParser:
+def load_config(config_file: Optional[str]) -> CamelCaseConfigParser:
     """
     Reads in all the configuration files, resetting all values.
 
@@ -215,20 +194,21 @@ def load_config() -> CamelCaseConfigParser:
     if not __default_config_files:
         raise ConfigException("No default configs set")
 
-    if __config_file:
-        user_cfg = _user_cfg()
+    if config_file:
+        user_cfg = _user_cfg(config_file)
         if not user_cfg:
             if __template:
-                raise _install_cfg_and_error()
-            elif __config_file:
-                logger.info(f"No default configs {__config_file} "
+                raise _install_cfg_and_error(config_file)
+            elif config_file:
+                logger.info(f"No default configs {config_file} "
                             f"found in home directory")
         __config = conf_loader.load_config(
-            __config_file, user_cfg, __default_config_files)
+            config_file, user_cfg, __default_config_files)
     else:
         __config = conf_loader.load_defaults(__default_config_files)
 
     logging_parser(__config)
+    logger.info("config files read = {}", __config.read_files)
     return __config
 
 

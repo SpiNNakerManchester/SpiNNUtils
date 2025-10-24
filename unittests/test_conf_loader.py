@@ -138,10 +138,10 @@ def test_use_one_default(not_there: str, tmpdir: ModuleType) -> None:
     config_holder.add_template(template=CFGPATH)
     # Based name less the start .
     name = os.path.basename(place)[1:]
-    config_holder.set_cfg_files(name, CFGPATH)
+    config_holder.add_default_cfg(CFGPATH)
     with tmpdir.as_cwd():
         with pytest.raises(NoConfigFoundException):
-            config_holder.load_config()
+            config_holder.load_config(name)
         # Load the now created file
         config = configparser.ConfigParser()
         config.read(place)
@@ -155,9 +155,9 @@ def test_use_one_default(not_there: str, tmpdir: ModuleType) -> None:
 def test_no_templates(tmpdir: ModuleType, default_config: str) -> None:
     config_holder.clear_cfg_files(unittest_mode=False)
     name = _random_name()
-    config_holder.set_cfg_files(name, CFGPATH)
+    config_holder.add_default_cfg(CFGPATH)
     with tmpdir.as_cwd():
-        config_holder.load_config()
+        config_holder.load_config(name)
 
 
 @pytest.mark.xdist_group(name="config_holder")
@@ -246,7 +246,7 @@ def test_logging(tmpdir: ModuleType, not_there: str) -> None:
 def test_no_default() -> None:
     config_holder.clear_cfg_files(False)
     try:
-        config_holder.load_config()
+        config_holder.load_config(None)
         raise NotImplementedError("Why am I here")
     except Exception as ex:
         assert "No default configs set" in str(ex)
@@ -255,7 +255,7 @@ def test_no_default() -> None:
 @pytest.mark.xdist_group(name="config_holder")
 def test_preload_not_unittest() -> None:
     config_holder.clear_cfg_files(False)
-    config_holder.set_cfg_files(None, TYPESPATH)
+    config_holder.add_default_cfg(TYPESPATH)
     try:
         assert "from default" == config_holder.get_config_str(
             "sect", "a_string")
@@ -268,14 +268,14 @@ def test_preload_not_unittest() -> None:
 @pytest.mark.xdist_group(name="config_holder")
 def test_preload_str() -> None:
     config_holder.clear_cfg_files(True)
-    config_holder.set_cfg_files(None, TYPESPATH)
+    config_holder.add_default_cfg(TYPESPATH)
     assert "from default" == config_holder.get_config_str("sect", "a_string")
 
 
 @pytest.mark.xdist_group(name="config_holder")
 def test_preload_str_list() -> None:
     config_holder.clear_cfg_files(True)
-    config_holder.set_cfg_files(None, TYPESPATH)
+    config_holder.add_default_cfg(TYPESPATH)
     assert ["foo", "bar"] == config_holder.get_config_str_list(
         "sect", "string_list")
 
@@ -283,21 +283,21 @@ def test_preload_str_list() -> None:
 @pytest.mark.xdist_group(name="config_holder")
 def test_preload_int() -> None:
     config_holder.clear_cfg_files(True)
-    config_holder.set_cfg_files(None, TYPESPATH)
+    config_holder.add_default_cfg(TYPESPATH)
     assert 321 == config_holder.get_config_int("sect", "a_int")
 
 
 @pytest.mark.xdist_group(name="config_holder")
 def test_preload_float() -> None:
     config_holder.clear_cfg_files(True)
-    config_holder.set_cfg_files(None, TYPESPATH)
+    config_holder.add_default_cfg(TYPESPATH)
     assert 56.44 == config_holder.get_config_float("sect", "a_float")
 
 
 @pytest.mark.xdist_group(name="config_holder")
 def test_preload_bool() -> None:
     config_holder.clear_cfg_files(True)
-    config_holder.set_cfg_files(None, TYPESPATH)
+    config_holder.add_default_cfg(TYPESPATH)
     assert not config_holder.get_config_bool("sect", "a_bool")
 
 

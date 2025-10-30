@@ -156,16 +156,14 @@ def check_user_cfg() -> None:
     """
     Checks for a user cfg and if not create one and errors
 
-    Expected to be called when a cfg value is missing
+    Expected to be called when options to create a machine are missing
 
-    Installs a local configuration file based on the templates and raises
-    an exception.
+    Installs a local configuration file based on the templates.
 
-    It will create a file in the users home directory based on the defaults.
     Then it prints a helpful message and throws an error with the same message.
     """
     if __missing_config_file is None:
-        # Creating a template and erroring is incorrect here
+        # Creating a template and raising an error is incorrect here
         return
 
     assert __template is not None

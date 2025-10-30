@@ -147,7 +147,7 @@ def _find_user_cfg(config_file: str) -> None:
         if os.path.isfile(check):
             if __user_cfg:
                 raise TwoUserConfigsException(
-                    f"Two user cfg files found {check} and { __user_cfg}")
+                    f"Two user cfg files found {check} and {__user_cfg}")
             else:
                 __user_cfg = check
 

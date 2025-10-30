@@ -81,18 +81,37 @@ def mach_spec(tmpdir: ModuleType) -> str:
     return str(msf)
 
 
-def test_different_value(
+def test_user_cfg(
         not_there: str, default_config: str) -> None:
-    place = not_there
     default_config = default_config.replace("bar", "cat")
     with open(not_there, "w") as f:
         f.write(default_config)
-    config = conf_loader.load_config(
-        local_name=None, user_cfg=place, defaults=[CFGPATH])
-    assert config is not None
-    assert config.sections() == ["sect"]
-    assert config.options("sect") == ["foobob"]
-    assert config.get("sect", "foobob") == "cat"
+    name = os.path.basename(not_there)[1:]
+    config_holder.clear_cfg_files(unittest_mode=False)
+    config_holder.add_default_cfg(CFGPATH)
+    # not relevant for this test but needed
+    config_holder.add_template(TWOPATH)
+    config_holder.load_config(name)
+    assert config_holder.config_sections() == ["sect"]
+    assert config_holder.config_options("sect") == ["foobob"]
+    assert config_holder.get_config_str("sect", "foobob") == "cat"
+
+
+def test_current_dir_cfg(
+        tmpdir: ModuleType, default_config: str) -> None:
+    default_config = default_config.replace("bar", "cat")
+    name = _random_name()
+    with tmpdir.as_cwd():
+        f = tmpdir.join(name)
+        f.write(default_config)
+        config_holder.clear_cfg_files(unittest_mode=False)
+        config_holder.add_default_cfg(CFGPATH)
+        # not relevant for this test but needed
+        config_holder.add_template(TWOPATH)
+        config_holder.load_config(name)
+    assert config_holder.config_sections() == ["sect"]
+    assert config_holder.config_options("sect") == ["foobob"]
+    assert config_holder.get_config_str("sect", "foobob") == "cat"
 
 
 def test_new_option_local(tmpdir: ModuleType, default_config: str) -> None:
@@ -132,7 +151,7 @@ def test_dead_section(not_there: str, default_config: str) -> None:
 
 
 @pytest.mark.xdist_group(name="config_holder")
-def test_use_one_default(not_there: str, tmpdir: ModuleType) -> None:
+def test_create_user(not_there: str, tmpdir: ModuleType) -> None:
     config_holder.clear_cfg_files(unittest_mode=False)
     place = not_there
     config_holder.add_template(template=CFGPATH)
@@ -140,8 +159,9 @@ def test_use_one_default(not_there: str, tmpdir: ModuleType) -> None:
     name = os.path.basename(place)[1:]
     config_holder.add_default_cfg(CFGPATH)
     with tmpdir.as_cwd():
+        config_holder.load_config(name)
         with pytest.raises(NoConfigFoundException):
-            config_holder.load_config(name)
+            config_holder.check_user_cfg()
         # Load the now created file
         config = configparser.ConfigParser()
         config.read(place)
@@ -156,7 +176,7 @@ def test_no_templates(tmpdir: ModuleType, default_config: str) -> None:
     config_holder.clear_cfg_files(unittest_mode=False)
     name = _random_name()
     config_holder.add_default_cfg(CFGPATH)
-    with tmpdir.as_cwd():
+    with pytest.raises(ConfigException):
         config_holder.load_config(name)
 
 
@@ -246,7 +266,7 @@ def test_logging(tmpdir: ModuleType, not_there: str) -> None:
 def test_no_default() -> None:
     config_holder.clear_cfg_files(False)
     try:
-        config_holder.load_config(None)
+        config_holder.load_config("irrelevant.cfg")
         raise NotImplementedError("Why am I here")
     except Exception as ex:
         assert "No default configs set" in str(ex)

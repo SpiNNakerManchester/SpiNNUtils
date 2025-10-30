@@ -36,7 +36,9 @@ logger = FormatAdapter(logging.getLogger(__file__))
 __config: Optional[CamelCaseConfigParser] = None
 __default_config_files: List[str] = []
 __config_file: Optional[str] = None
+__missing_config_file: Optional[str] = None
 __template: Optional[str] = None
+__user_cfg: Optional[str] = None
 __unittest_mode: bool = False
 
 
@@ -100,7 +102,11 @@ def _pre_load_config() -> CamelCaseConfigParser:
     if not __unittest_mode:
         raise ConfigException(
             "Accessing config values before setup is not supported")
-    return load_config(None)
+    global __config
+    if not __default_config_files:
+        raise ConfigException("No default configs set")
+    __config = conf_loader.load_defaults(__default_config_files)
+    return __config
 
 
 def logging_parser(config: CamelCaseConfigParser) -> None:
@@ -124,41 +130,47 @@ def logging_parser(config: CamelCaseConfigParser) -> None:
         pass
 
 
-def _user_cfg(config_file: str) -> Optional[str]:
+def _find_user_cfg(config_file: str) -> None:
     """
     Defines the list of places we can get configuration files from.
 
     :return: existing fully-qualified filename
     """
+    global __user_cfg
+    __user_cfg = None
+
     dotname = "." + config_file
-    found = None
 
     for check in [os.path.join(appdirs.site_config_dir(), dotname),
                   os.path.join(appdirs.user_config_dir(), dotname),
                   os.path.join(os.path.expanduser("~"), dotname)]:
         if os.path.isfile(check):
-            if found:
+            if __user_cfg:
                 raise TwoUserConfigsException(
-                    f"Two user cfg files found {check} and {found}")
+                    f"Two user cfg files found {check} and { __user_cfg}")
             else:
-                found = check
-    return found
+                __user_cfg = check
 
 
-def _install_cfg_and_error(config_file: str) -> NoConfigFoundException:
+def check_user_cfg() -> None:
     """
+    Checks for a user cfg and if not create one and errors
+
+    Expected to be called when a cfg value is missing
+
     Installs a local configuration file based on the templates and raises
     an exception.
 
-    This method is called when no user configuration file is found.
-
     It will create a file in the users home directory based on the defaults.
     Then it prints a helpful message and throws an error with the same message.
-
-    :return: Exception to be raised by caller
     """
+    if __missing_config_file is None:
+        # Creating a template and erroring is incorrect here
+        return
+
     assert __template is not None
-    home_cfg = os.path.join(os.path.expanduser("~"), f".{config_file}")
+    home_cfg = os.path.join(
+        os.path.expanduser("~"), f".{__missing_config_file}")
 
     with open(home_cfg, "w", encoding="utf-8") as dst:
         with open(__template, "r", encoding="utf-8") as src:
@@ -180,32 +192,28 @@ def _install_cfg_and_error(config_file: str) -> NoConfigFoundException:
            'SpiNNaker hardware you are running on:\n'
            '***********************************************************\n')
     print(msg)
-    return NoConfigFoundException(msg)
+    raise NoConfigFoundException(msg)
 
 
-def load_config(config_file: Optional[str]) -> CamelCaseConfigParser:
+def load_config(config_file: str) -> CamelCaseConfigParser:
     """
     Reads in all the configuration files, resetting all values.
 
     :raises ConfigException: If called before setting defaults
     :returns: A fully loaded parser object
     """
-    global __config
+    global __config, __missing_config_file
     if not __default_config_files:
         raise ConfigException("No default configs set")
+    if not __template:
+        raise ConfigException("No template set")
 
-    if config_file:
-        user_cfg = _user_cfg(config_file)
-        if not user_cfg:
-            if __template:
-                raise _install_cfg_and_error(config_file)
-            elif config_file:
-                logger.info(f"No default configs {config_file} "
-                            f"found in home directory")
-        __config = conf_loader.load_config(
-            config_file, user_cfg, __default_config_files)
-    else:
-        __config = conf_loader.load_defaults(__default_config_files)
+    _find_user_cfg(config_file)
+    if __user_cfg is None:
+        __missing_config_file = config_file
+        logger.info(f".{config_file} not found in the home directory")
+    __config = conf_loader.load_config(
+            config_file, __user_cfg, __default_config_files)
 
     logging_parser(__config)
     logger.info("config files read = {}", __config.read_files)

@@ -35,14 +35,15 @@ class TestConverter(unittest.TestCase):
         src = os.path.join(path, "mock_src")
         dest = os.path.join(path, "modified_src")
         # clear the database and create a new one
-        LogSqlLiteDatabase(True)
-        FileConverter.convert(src, dest, file_name)
+        database_path = LogSqlLiteDatabase.database_file(0)
+        LogSqlLiteDatabase(database_path, True)
+        FileConverter.convert(src, dest, file_name, 0)
         src_f = os.path.join(src, file_name)
         dest_f = os.path.join(dest, file_name)
         src_lines = sum(1 for line in open(src_f))
         modified_lines = sum(1 for line in open(dest_f))
         self.assertEqual(src_lines, modified_lines)
-        with LogSqlLiteDatabase() as sql:
+        with LogSqlLiteDatabase(database_path) as sql:
             with self.assertRaises(Exception):
                 sql.check_original("this is bad")
             sql.check_original("%08x [%3d: (w: %5u (=")
@@ -72,12 +73,13 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
+        database_path = LogSqlLiteDatabase.database_file(0)
         # clear the database and create a new one
-        LogSqlLiteDatabase(True)
+        LogSqlLiteDatabase(database_path, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "not_there.c")
+            FileConverter.convert(src, dest, "not_there.c", 0)
             assert False
         except Exception as ex1:
             self.assertIn("Unable to locate source", str(ex1))
@@ -88,12 +90,13 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
+        database_path = LogSqlLiteDatabase.database_file(0)
         # clear the database and create a new one
-        LogSqlLiteDatabase(True)
+        LogSqlLiteDatabase(database_path, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "bad_comma.c")
+            FileConverter.convert(src, dest, "bad_comma.c", 0)
             assert False
         except Exception as ex1:
             self.assertIn('Unexpected line "); at 18 in', str(ex1))
@@ -104,12 +107,13 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
+        database_paths = LogSqlLiteDatabase.database_file(0)
         # clear the database and create a new one
-        LogSqlLiteDatabase(True)
+        LogSqlLiteDatabase(database_paths, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "bad_format.c")
+            FileConverter.convert(src, dest, "bad_format.c", 0)
             assert False
         except Exception as ex1:
             assert str(ex1) == "Unexpected formatString in %!"
@@ -118,12 +122,13 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
+        database_path = LogSqlLiteDatabase.database_file(0)
         # clear the database and create a new one
-        LogSqlLiteDatabase(True)
+        LogSqlLiteDatabase(database_path, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "unclosed.c")
+            FileConverter.convert(src, dest, "unclosed.c", 0)
             assert False
         except Exception as ex1:
             self.assertIn('Unclosed log_info("test %f", -3.0f in ', str(ex1))
@@ -133,12 +138,13 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
+        database_path = LogSqlLiteDatabase.database_file(0)
         # clear the database and create a new one
-        LogSqlLiteDatabase(True)
+        LogSqlLiteDatabase(database_path, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "semi.c")
+            FileConverter.convert(src, dest, "semi.c", 0)
             assert False
         except Exception as ex1:
             self.assertIn('Semicolumn missing: log_info("test %f", -3.0f)',
@@ -150,12 +156,13 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
+        database_path = LogSqlLiteDatabase.database_file(0)
         # clear the database and create a new one
-        LogSqlLiteDatabase(True)
+        LogSqlLiteDatabase(database_path, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "open.c")
+            FileConverter.convert(src, dest, "open.c", 0)
             assert False
         except Exception as ex1:
             self.assertIn('Unclosed block comment in ', str(ex1))
@@ -166,12 +173,13 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
+        database_path = LogSqlLiteDatabase.database_file(0)
         # clear the database and create a new one
-        LogSqlLiteDatabase(True)
+        LogSqlLiteDatabase(database_path,True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "too_few.c")
+            FileConverter.convert(src, dest, "too_few.c", 0)
             assert False
         except Exception as ex1:
             self.assertIn('Too few parameters in line "test %f %i", -1.0f); ',
@@ -183,12 +191,13 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.environ["C_LOGS_DICT"] = tempfile.mktemp()
+        database_path = LogSqlLiteDatabase.database_file(0)
         # clear the database and create a new one
-        LogSqlLiteDatabase(True)
+        LogSqlLiteDatabase(database_path, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "too_many.c")
+            FileConverter.convert(src, dest, "too_many.c", 0)
             assert False
         except Exception as ex1:
             self.assertIn('Too many parameters in line "test %f", -1.0f, 2);',

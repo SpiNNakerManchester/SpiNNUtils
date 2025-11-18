@@ -16,7 +16,7 @@ import os
 import sqlite3
 import sys
 import time
-from typing import Optional, Tuple
+from typing import Optional, Mapping, Tuple
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
@@ -46,7 +46,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         "_db",
     ]
 
-    def __init__(self, new_dict: bool = False) -> None:
+    def __init__(self, database_file: str, new_dict: bool = False) -> None:
         """
         Connects to a log dict. The location of the file can be overridden
         using the ``C_LOGS_DICT`` environment variable.
@@ -57,9 +57,9 @@ class LogSqlLiteDatabase(AbstractContextManager):
         """
         # To Avoid an Attribute error on close after an exception
         self._db = None
-        database_file = self._database_file()
         if not new_dict:
-            self._check_database_file(database_file)
+            if not os.path.exists(database_file):
+                raise FileNotFoundError(database_file)
 
         try:
             self._db = sqlite3.connect(database_file)
@@ -67,36 +67,59 @@ class LogSqlLiteDatabase(AbstractContextManager):
             if new_dict:
                 self.__clear_db()
         except Exception as ex:
-            message = f"Error accessing c_logs_dict at {database_file}. "
-            if 'C_LOGS_DICT' in os.environ:
-                message += (
-                    "This came from the environment variable 'C_LOGS_DICT'. ")
-            else:
-                message += (
-                    "This is the default location. Set environment "
-                    "variable 'C_LOGS_DICT' to use somewhere else.")
-            if new_dict:
-                message += "Check this is a location with write access."
-            else:
-                message += "Please rebuild the C code."
-            raise FileNotFoundError(message) from ex
+            raise FileNotFoundError(database_file) from ex
 
-    def _database_file(self) -> str:
+    @classmethod
+    def default_database_file(cls) -> str:
+        if 'C_LOGS_DICT' in os.environ:
+            return str(os.environ['C_LOGS_DICT'])
+
+        script = sys.modules[cls.__module__].__file__
+        assert script is not None
+        directory = os.path.dirname(script)
+        return os.path.join(directory, DB_FILE_NAME)
+
+    @classmethod
+    def database_files(cls) -> Mapping[str, str]:
         """
-        Finds the database file path.
+        Finds the default database file.
 
         If environment variable C_LOGS_DICT exists that is used,
         otherwise the default path in this directory is used.
 
         :return: Absolute path to where the database file is or will be
         """
-        if 'C_LOGS_DICT' in os.environ:
-            return str(os.environ['C_LOGS_DICT'])
+        dbs = dict()
+        dbs[0] = cls.default_database_file()
+        dbs[1] = dbs[0].replace(".sqlite3", "_FEC.sqlite3")
+        dbs[2] = dbs[0].replace(".sqlite3", "_SPY.sqlite3")
+        dbs[3] = dbs[0].replace(".sqlite3", "_GFE.sqlite3")
+        return dbs
 
-        script = sys.modules[self.__module__].__file__
-        assert script is not None
-        directory = os.path.dirname(script)
-        return os.path.join(directory, DB_FILE_NAME)
+    @classmethod
+    def database_file(cls, database_id: int) -> str:
+        """
+        Gets the database path based on the id
+
+        The numbering reocmmeneded is
+        FEC 1
+        SPY 2
+        GFE 3
+        Special SpiNNakerManchester code 9 including
+            BitBrainDemo
+
+
+        :param database_id:: Databse id. 0 for default databae
+            or an int between 1 and 9 to select a specific one
+        :return: path to database with this id
+        """
+        check = database_id + 1
+        database_files = cls.database_files()
+        if database_id in database_files:
+            return database_files[database_id]
+        if 0 in database_files:
+            return database_files[0]
+        raise KeyError("No {key} database or default")
 
     def _extra_database_error_message(self) -> str:
         """

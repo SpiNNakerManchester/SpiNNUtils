@@ -38,23 +38,34 @@ LEVELS = {10: "[DEBUG]",
           40: "[ERROR]"}
 
 
-class Replacer(LogSqlLiteDatabase):
+class Replacer(object):
     """
     Performs replacements.
     """
 
-    @overrides(LogSqlLiteDatabase._database_file)
-    def _database_file(self) -> str:
-        database_file = super()._database_file()
-        if not os.path.isfile(database_file):
-            external_binaries = get_config_str_or_none(
-                "Mapping", "external_binaries")
-            if external_binaries is not None:
-                source_file = os.path.join(external_binaries, DB_FILE_NAME)
-                if os.path.exists(source_file):
+    __slots__ = [
+        # Map of a blank or single character to databases holding the loginfo
+        "_dbs",
+    ]
 
-                    shutil.copyfile(source_file, database_file)
-        return database_file
+    def __init__(self):
+        self._dbs = dict()
+        db_mapping = LogSqlLiteDatabase.database_files()
+        for key, database_file in db_mapping.items():
+            self._dbs[key] = LogSqlLiteDatabase(database_file)
+
+    def _check_default_database_file(self) -> None:
+        database_file = LogSqlLiteDatabase.default_database_file()
+        if os.path.isfile(database_file):
+            return
+
+        external_binaries = get_config_str_or_none(
+            "Mapping", "external_binaries")
+        if external_binaries is not None:
+            source_file = os.path.join(external_binaries, DB_FILE_NAME)
+            if os.path.exists(source_file):
+                shutil.copyfile(source_file, database_file)
+
 
     @overrides(LogSqlLiteDatabase._extra_database_error_message)
     def _extra_database_error_message(self) -> str:
@@ -77,6 +88,11 @@ class Replacer(LogSqlLiteDatabase):
     _FLT_FMT = struct.Struct("!f")
     _DBL_FMT = struct.Struct("!d")
 
+    def _db(self, key: int) -> LogSqlLiteDatabase:
+        if key not in self._dbs:
+            key = 0
+        return self._dbs[key]
+
     def _replace(self, short: str) -> Optional[Tuple[int, str, str, str]]:
         """
         Apply the replacements to a short message.
@@ -85,11 +101,17 @@ class Replacer(LogSqlLiteDatabase):
         :return: The expanded message.
         """
         parts = short.split(TOKEN)
-        if not parts[0].isdigit():
+        log_st = parts[0]
+        if not log_st.isdigit():
             return None
-        data = self.get_log_info(parts[0])
+
+        log_id = int(log_st)
+        database_id = log_id % 10
+        id_part = log_id // 10
+        data = self._db(database_id).get_log_info(id_part)
         if data is None:
             return None
+
         (log_level, file_name, line_num, original) = data
 
         replaced = original.encode("latin-1").decode("unicode_escape")

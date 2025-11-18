@@ -56,6 +56,7 @@ class FileConverter(object):
     """
 
     __slots__ = [
+        "_database_id",
         "_log_database",
         "_log_file_id",
         "_log",
@@ -69,7 +70,7 @@ class FileConverter(object):
     ]
 
     def __call__(self, src: str, dest: str, log_file_id: int,
-                 log_database: LogSqlLiteDatabase) -> None:
+                 log_database: LogSqlLiteDatabase, database_id: int) -> None:
         """
         Creates the file_convertor to convert one file.
 
@@ -78,6 +79,8 @@ class FileConverter(object):
         :param log_file_id: Id in the database for this file
         :param log_database:
             The database which handles the mapping of id to log messages.
+        :param database_id:: Databse id. 0 for default databae
+            or an int between 1 and 9 to select a specific one
         """
         #: Absolute path to source file
         #:
@@ -113,6 +116,7 @@ class FileConverter(object):
         #:
         #: :type: State
         self._previous_status: Optional[State] = None
+        self._database_id = database_id
 
         with open(src, encoding="utf-8") as src_f:
             with open(dest, 'w', encoding="utf-8") as dest_f:
@@ -412,10 +416,11 @@ class FileConverter(object):
 
         message_id = self._log_database.set_log_info(
             LEVELS[self._log], line_num + 1, original, self._log_file_id)
+        message_str = str(message_id * 10 + self._database_id)
         count = original.count("%") - original.count("%%") * 2
 
         if count == 0:
-            return f'"%u", {message_id});'
+            return f'"%u", {message_str});'
 
         front = '"%u'
         back = ""
@@ -444,7 +449,7 @@ class FileConverter(object):
                 back += f", {parts[i + 1]}"
                 front += match
 
-        front += f'", {message_id}'
+        front += f'", {message_str}'
         back += ");"
         return front + back
 
@@ -619,7 +624,8 @@ class FileConverter(object):
             dest_f.write(text[write_flag:])
 
     @staticmethod
-    def convert(src_dir: str, dest_dir: str, file_name: str) -> None:
+    def convert(src_dir: str, dest_dir: str, file_name: str,
+                database_id: int) -> None:
         """
         Static method to create Object and do the conversion.
 
@@ -628,6 +634,8 @@ class FileConverter(object):
         :param file_name:
             The name of the file to convert within the source directory; it
             will be made with the same name in the destination directory.
+        :param database_id:: Databse id. 0 for default databae
+            or an int between 1 and 9 to select a specific one
         """
         source = os.path.join(src_dir, file_name)
         if not os.path.exists(source):
@@ -635,7 +643,9 @@ class FileConverter(object):
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
         destination = os.path.join(dest_dir, file_name)
-        with LogSqlLiteDatabase() as log_database:
+        database_path = LogSqlLiteDatabase.database_file(database_id)
+        with LogSqlLiteDatabase(database_path) as log_database:
             directory_id = log_database.get_directory_id(src_dir, dest_dir)
             file_id = log_database.get_file_id(directory_id, file_name)
-            FileConverter()(source, destination, file_id, log_database)
+            FileConverter()(
+                source, destination, file_id, log_database, database_id)

@@ -25,7 +25,7 @@ SKIPPABLE_FILES = frozenset([
     "neural_build.mk", "Makefile.neural_build"])
 
 
-def convert(src: str, dest: str, new_dict: bool) -> None:
+def convert(src: str, dest: str, database_id: int, new_dict: bool) -> None:
     """
     Converts a whole directory including sub-directories.
 
@@ -34,25 +34,33 @@ def convert(src: str, dest: str, new_dict: bool) -> None:
     :param new_dict:
         Whether we should generate a new dictionary/DB.
         If not, we add to the existing one.
+    :param database_id:: Databse id. 0 for default databae
+        or an int between 1 and 9 to select a specific one
     """
     if new_dict:
-        LogSqlLiteDatabase(new_dict)
+        database_files = LogSqlLiteDatabase.database_files()
+        for database_file in database_files.values():
+            LogSqlLiteDatabase(database_file, new_dict)
+
+    database_file = LogSqlLiteDatabase.database_file(database_id)
 
     src_path = os.path.abspath(src)
     if not os.path.exists(src_path):
         raise FileNotFoundError(
             f"Unable to locate source directory {src_path}")
     dest_path = os.path.abspath(dest)
-    _convert_dir(src_path, dest_path)
+    _convert_dir(src_path, dest_path, database_id)
 
 
-def _convert_dir(src_path: str, dest_path: str,
+def _convert_dir(src_path: str, dest_path: str, database_id: int,
                  make_directories: Optional[bool] = False) -> None:
     """
     Converts a whole directory including sub directories.
 
     :param src_path: Full source directory
     :param dest_path: Full destination directory
+    :param database_id:: Databse id. 0 for default databae
+        or an int between 1 and 9 to select a specific one
     :param make_directories: Whether to do `mkdir()` first
     """
     if make_directories:
@@ -64,7 +72,8 @@ def _convert_dir(src_path: str, dest_path: str,
         for file_name in file_list:
             _, extension = os.path.splitext(file_name)
             if extension in ALLOWED_EXTENSIONS:
-                FileConverter.convert(src_dir, dest_dir, file_name)
+                FileConverter.convert(
+                    src_dir, dest_dir, file_name, database_id)
             elif file_name in SKIPPABLE_FILES:
                 pass
             else:
@@ -83,7 +92,12 @@ if __name__ == '__main__':
     _src = sys.argv[1]
     _dest = sys.argv[2]
     if len(sys.argv) > 3:
-        _new_dict = bool(sys.argv[3])
+        key = int(sys.argv[3])
+    else:
+        key = 0
+    if len(sys.argv) > 4:
+        _new_dict = bool(sys.argv[4])
     else:
         _new_dict = False
-    convert(_src, _dest, _new_dict)
+
+    convert(_src, _dest, key, _new_dict)

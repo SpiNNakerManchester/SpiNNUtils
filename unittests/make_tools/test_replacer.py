@@ -43,7 +43,7 @@ class TestReplacer(unittest.TestCase):
     def test_replacer(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
-            new = replacer.replace("5")
+            new = replacer.replace("50")
         assert ("[INFO] (weird,file.c: 36): this is ok" == new)
 
     def test_not_there_existing(self) -> None:
@@ -55,9 +55,9 @@ class TestReplacer(unittest.TestCase):
             Replacer()
             raise NotImplementedError("Should not work!")
         except Exception as ex:
-            assert ("Unable to locate c_logs_dict" in str(ex))
+            assert ("not_there.sqlite3" in str(ex))
 
-    def test_external_empty(self) -> None:
+    def test_single_external_empty(self) -> None:
         unittest_setup()
         with tempfile.TemporaryDirectory() as tmpdirname:
             set_config("Mapping", "external_binaries", tmpdirname)
@@ -72,7 +72,7 @@ class TestReplacer(unittest.TestCase):
     def test_tab(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
-            new = replacer.replace("11" + TOKEN + "10" + TOKEN + "20")
+            new = replacer.replace("110" + TOKEN + "10" + TOKEN + "20")
         message = "[INFO] (weird,file.c: 56): \t back off = 10, time between"\
                   " spikes 20"
         assert (message == new)
@@ -80,7 +80,7 @@ class TestReplacer(unittest.TestCase):
     def test_float(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
-        new = replacer.replace("2" + TOKEN + "0xc0400000")
+        new = replacer.replace("20" + TOKEN + "0xc0400000")
         message = "[INFO] (weird,file.c: 30): test -three -3.0"
         assert (message == new)
 
@@ -88,7 +88,7 @@ class TestReplacer(unittest.TestCase):
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace(
-            "3" + TOKEN + "40379999" + TOKEN + "9999999a")
+            "30" + TOKEN + "40379999" + TOKEN + "9999999a")
         message = "[INFO] (weird,file.c: 32): test double 23.6"
         assert (message == new)
 

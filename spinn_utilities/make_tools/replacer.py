@@ -48,7 +48,7 @@ class Replacer(object):
         "_dbs",
     ]
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._dbs = dict()
         db_mapping = LogSqlLiteDatabase.database_files()
         for key, database_file in db_mapping.items():

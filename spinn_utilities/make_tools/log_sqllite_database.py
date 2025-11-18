@@ -80,7 +80,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         return os.path.join(directory, DB_FILE_NAME)
 
     @classmethod
-    def database_files(cls) -> Mapping[str, str]:
+    def database_files(cls) -> Mapping[int, str]:
         """
         Finds the default database file.
 
@@ -289,7 +289,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
                     return row["log_id"]
         raise ValueError("unexpected no return")
 
-    def get_log_info(self, log_id: str) -> Optional[Tuple[int, str, str, str]]:
+    def get_log_info(self, log_id: int) -> Optional[Tuple[int, str, str, str]]:
         """
         Gets the data needed to replace a short log back to the original.
 

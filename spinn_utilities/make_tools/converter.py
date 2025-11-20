@@ -92,12 +92,15 @@ if __name__ == '__main__':
     _src = sys.argv[1]
     _dest = sys.argv[2]
     if len(sys.argv) > 3:
-        key = int(sys.argv[3])
+        if len(sys.argv[3]) == 1:
+            key = sys.argv[3]
+        else:
+            key = ""
+            _new_dict = bool(sys.argv[3])
     else:
-        key = 0
+        key = ""
     if len(sys.argv) > 4:
         _new_dict = bool(sys.argv[4])
     else:
         _new_dict = False
-
     convert(_src, _dest, key, _new_dict)

@@ -90,10 +90,10 @@ class LogSqlLiteDatabase(AbstractContextManager):
         :return: Absolute path to where the database file is or will be
         """
         dbs = dict()
-        dbs[0] = cls.default_database_file()
-        dbs[1] = dbs[0].replace(".sqlite3", "_FEC.sqlite3")
-        dbs[2] = dbs[0].replace(".sqlite3", "_SPY.sqlite3")
-        dbs[3] = dbs[0].replace(".sqlite3", "_GFE.sqlite3")
+        dbs[""] = cls.default_database_file()
+        dbs["F"] = dbs[""].replace(".sqlite3", "_FEC.sqlite3")
+        dbs["S"] = dbs[""].replace(".sqlite3", "_SPY.sqlite3")
+        dbs["G"] = dbs[""].replace(".sqlite3", "_GFE.sqlite3")
         return dbs
 
     @classmethod
@@ -113,13 +113,12 @@ class LogSqlLiteDatabase(AbstractContextManager):
             or an int between 1 and 9 to select a specific one
         :return: path to database with this id
         """
-        check = database_id + 1
         database_files = cls.database_files()
         if database_id in database_files:
             return database_files[database_id]
-        if 0 in database_files:
-            return database_files[0]
-        raise KeyError("No {key} database or default")
+        if "" in database_files:
+            return database_files[""]
+        raise KeyError(f"No {database_id} database or default")
 
     def _extra_database_error_message(self) -> str:
         """

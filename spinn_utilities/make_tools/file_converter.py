@@ -416,13 +416,14 @@ class FileConverter(object):
 
         message_id = self._log_database.set_log_info(
             LEVELS[self._log], line_num + 1, original, self._log_file_id)
-        message_str = str(message_id * 10 + self._database_id)
+        #message_str = str(message_id * 10 + self._database_id)
+        message_str = str(message_id)
         count = original.count("%") - original.count("%%") * 2
 
         if count == 0:
-            return f'"%u", {message_str});'
+            return f'"{self._database_id}%u", {message_str});'
 
-        front = '"%u'
+        front = f'"{self._database_id}%u'
         back = ""
         matches = [x for x in FORMAT_EXP.findall(original)
                    if not x.startswith("%%")]

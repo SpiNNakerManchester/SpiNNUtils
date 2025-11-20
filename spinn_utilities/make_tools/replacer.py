@@ -100,15 +100,20 @@ class Replacer(object):
         :param short: The short message to apply the transform to.
         :return: The expanded message.
         """
+        if not short:
+            return None
         parts = short.split(TOKEN)
         log_st = parts[0]
-        if not log_st.isdigit():
+        if log_st[0].isdigit():
+            log_id = int(log_st)
+            database_id = ""
+        elif log_st[1:].isdigit():
+            log_id = int(log_st[1:])
+            database_id = log_st[0]
+        else:
             return None
 
-        log_id = int(log_st)
-        database_id = log_id % 10
-        id_part = log_id // 10
-        data = self._db(database_id).get_log_info(id_part)
+        data = self._db(database_id).get_log_info(log_id)
         if data is None:
             return None
 

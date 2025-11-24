@@ -423,7 +423,6 @@ class FileConverter(object):
 
         message_id = self._log_database.set_log_info(
             LEVELS[self._log], line_num + 1, original, self._log_file_id)
-        #message_str = str(message_id * 10 + self._database_key)
         message_str = str(message_id)
         count = original.count("%") - original.count("%%") * 2
 

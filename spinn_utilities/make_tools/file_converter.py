@@ -643,10 +643,10 @@ class FileConverter(object):
         :param file_name:
             The name of the file to convert within the source directory; it
             will be made with the same name in the destination directory.
-        :param database_key: Databse id. None or "" for default databae
+        :param database_key: Database id. None or "" for default databae
            or a non digital char.
         :param database_path: Path to the log database.
-            Required if database_key specifed, otherwise ignored
+            Required if database_key specified, otherwise ignored
         """
         if database_key is None:
             database_key = ""

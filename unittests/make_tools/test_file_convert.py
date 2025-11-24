@@ -70,11 +70,11 @@ class TestConverter(unittest.TestCase):
     def test_not_there_exception(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_path = tempfile.mktemp()
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "not_there.c", "t", database_path)
+            with tempfile.NamedTemporaryFile() as tmp:
+                FileConverter.convert(src, dest, "not_there.c", "t", tmp.name)
             assert False
         except Exception as ex1:
             self.assertIn("Unable to locate source", str(ex1))
@@ -84,11 +84,11 @@ class TestConverter(unittest.TestCase):
     def test_split_fail(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_path = tempfile.mktemp()
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "bad_comma.c", "t", database_path)
+            with tempfile.NamedTemporaryFile() as tmp:
+                FileConverter.convert(src, dest, "bad_comma.c", "t", tmp.name)
             assert False
         except Exception as ex1:
             self.assertIn('Unexpected line "); at 18 in', str(ex1))
@@ -100,10 +100,10 @@ class TestConverter(unittest.TestCase):
         path = os.path.dirname(os.path.abspath(class_file))
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
-        database_path = tempfile.mktemp()
         try:
-            FileConverter.convert(
-                src, dest, "bad_format.c", "t", database_path)
+            with tempfile.NamedTemporaryFile() as tmp:
+                FileConverter.convert(
+                    src, dest, "bad_format.c", "t", tmp.name)
             assert False
         except Exception as ex1:
             assert str(ex1) == "Unexpected formatString in %!"
@@ -111,11 +111,11 @@ class TestConverter(unittest.TestCase):
     def test_unclosed_log(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_path = tempfile.mktemp()
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "unclosed.c", "t", database_path)
+            with tempfile.NamedTemporaryFile() as tmp:
+                FileConverter.convert(src, dest, "unclosed.c", "t", tmp.name)
             assert False
         except Exception as ex1:
             self.assertIn('Unclosed log_info("test %f", -3.0f in ', str(ex1))
@@ -124,11 +124,11 @@ class TestConverter(unittest.TestCase):
     def test_semi(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_path = tempfile.mktemp()
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "semi.c", "t", database_path)
+            with tempfile.NamedTemporaryFile() as tmp:
+                FileConverter.convert(src, dest, "semi.c", "t", tmp.name)
             assert False
         except Exception as ex1:
             self.assertIn('Semicolumn missing: log_info("test %f", -3.0f)',
@@ -139,11 +139,11 @@ class TestConverter(unittest.TestCase):
     def test_open(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_path = tempfile.mktemp()
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "open.c", "t", database_path)
+            with tempfile.NamedTemporaryFile() as tmp:
+                FileConverter.convert(src, dest, "open.c", "t", tmp.name)
             assert False
         except Exception as ex1:
             self.assertIn('Unclosed block comment in ', str(ex1))
@@ -153,11 +153,11 @@ class TestConverter(unittest.TestCase):
     def test_too_few(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_path = tempfile.mktemp()
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "too_few.c", "t", database_path)
+            with tempfile.NamedTemporaryFile() as tmp:
+                FileConverter.convert(src, dest, "too_few.c", "t", tmp.name)
             assert False
         except Exception as ex1:
             self.assertIn('Too few parameters in line "test %f %i", -1.0f); ',
@@ -168,11 +168,11 @@ class TestConverter(unittest.TestCase):
     def test_too_many(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_path = tempfile.mktemp()
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
-            FileConverter.convert(src, dest, "too_many.c", "t", database_path)
+            with tempfile.NamedTemporaryFile() as tmp:
+                FileConverter.convert(src, dest, "too_many.c", "t", tmp.name)
             assert False
         except Exception as ex1:
             self.assertIn('Too many parameters in line "test %f", -1.0f, 2);',

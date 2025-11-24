@@ -26,32 +26,32 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 class TestLogSqlLiteDatabase(unittest.TestCase):
 
     def test_keys_single_database(self) -> None:
-        database_path1 = tempfile.mktemp()
-        with LogSqlLiteDatabase(database_path1, "a") as db:
-            keys = db.get_database_keys()
-            self.assertIn("a", keys)
-        with LogSqlLiteDatabase(database_path1, "b") as db:
-            keys = db.get_database_keys()
-            self.assertIn("b", keys)
-            self.assertIn("a", keys)
-        Replacer.register_database_path(database_path1)
+        with tempfile.NamedTemporaryFile() as tmp1:
+            with LogSqlLiteDatabase(tmp1.name, "a") as db:
+                keys = db.get_database_keys()
+                self.assertIn("a", keys)
+            with LogSqlLiteDatabase(tmp1.name, "b") as db:
+                keys = db.get_database_keys()
+                self.assertIn("b", keys)
+                self.assertIn("a", keys)
+            Replacer.register_database_path(tmp1.name)
 
-        database_path2 = tempfile.mktemp()
-        with LogSqlLiteDatabase(database_path2, "c") as db:
-            keys = db.get_database_keys()
-            self.assertIn("c", keys)
-        Replacer.register_database_path(database_path2)
-        # Same database multi-ple times is fine
-        with LogSqlLiteDatabase(database_path2, "c") as db:
-            keys = db.get_database_keys()
-            self.assertIn("c", keys)
-        Replacer.register_database_path(database_path2)
+        with tempfile.NamedTemporaryFile() as tmp2:
+            with LogSqlLiteDatabase(tmp2.name, "c") as db:
+                keys = db.get_database_keys()
+                self.assertIn("c", keys)
+            Replacer.register_database_path(tmp2.name)
+            # Same database multi-ple times is fine
+            with LogSqlLiteDatabase(tmp2.name, "c") as db:
+                keys = db.get_database_keys()
+                self.assertIn("c", keys)
+            Replacer.register_database_path(tmp2.name)
 
-        database_path3 = tempfile.mktemp()
-        # Database writer does not check other databases for keys
-        with LogSqlLiteDatabase(database_path3, "c") as db:
-            keys = db.get_database_keys()
-            self.assertIn("c", keys)
-        # The replacer will go boom
-        with self.assertRaises(SpiNNUtilsException):
-            Replacer.register_database_path(database_path3)
+        with tempfile.NamedTemporaryFile() as tmp3:
+            # Database writer does not check other databases for keys
+            with LogSqlLiteDatabase(tmp3.name, "c") as db:
+                keys = db.get_database_keys()
+                self.assertIn("c", keys)
+            # The replacer will go boom
+            with self.assertRaises(SpiNNUtilsException):
+                Replacer.register_database_path(tmp3.name)

@@ -625,8 +625,10 @@ class FileConverter(object):
             dest_f.write(text[write_flag:])
 
     @staticmethod
-    def convert(src_dir: str, dest_dir: str, file_name: str,
-                database_id: int) -> None:
+    def convert(
+            src_dir: str, dest_dir: str, file_name: str,
+            database_id: Optional[str] = None,
+            database_path: Optional[str] = None) -> None:
         """
         Static method to create Object and do the conversion.
 
@@ -635,17 +637,24 @@ class FileConverter(object):
         :param file_name:
             The name of the file to convert within the source directory; it
             will be made with the same name in the destination directory.
-        :param database_id:: Databse id. 0 for default databae
-            or an int between 1 and 9 to select a specific one
+        :param database_id: Databse id. None or "" for default databae
+           or a non digital char.
+        :param database_path: Path to the log database.
+            Required if database_id specifed, otherwise ignored
         """
+        if database_id is None:
+            database_id = ""
+            database_path = LogSqlLiteDatabase.default_database_file()
+        else:
+            assert database_path is not None
+
         source = os.path.join(src_dir, file_name)
         if not os.path.exists(source):
             raise UnexpectedCException(f"Unable to locate source {source}")
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
         destination = os.path.join(dest_dir, file_name)
-        database_path = LogSqlLiteDatabase.database_file(database_id)
-        with LogSqlLiteDatabase(database_path) as log_database:
+        with LogSqlLiteDatabase(database_path, database_id) as log_database:
             directory_id = log_database.get_directory_id(src_dir, dest_dir)
             file_id = log_database.get_file_id(directory_id, file_name)
             FileConverter()(

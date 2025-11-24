@@ -16,7 +16,7 @@ import os
 import sqlite3
 import sys
 import time
-from typing import Optional, Mapping, Tuple
+from typing import Collection, Optional, Tuple
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
@@ -46,21 +46,23 @@ class LogSqlLiteDatabase(AbstractContextManager):
         "_db",
     ]
 
-    def __init__(self, database_file: str, new_dict: bool = False) -> None:
+    def __init__(self, database_file: str, key: str = None) -> None:
         """
         Connects to a log dict. The location of the file can be overridden
         using the ``C_LOGS_DICT`` environment variable.
 
-        :param new_dict: Flag to say if this is a new dict or not.
-            If True, clears and previous values.
-            If False, makes sure the dict exists.
+        :param key: Optional database key to map to this database.
+        The blank (not None) string will be used for the default database.
+           Only required if writing to a new or existing database.
         """
         # To Avoid an Attribute error on close after an exception
         self._db = None
-        if not new_dict:
-            if not os.path.exists(database_file):
+        if not os.path.exists(database_file):
+            new_dict = True
+            if key is None:
                 raise FileNotFoundError(database_file)
-
+        else:
+            new_dict = False
         try:
             self._db = sqlite3.connect(database_file)
             self.__init_db()
@@ -68,6 +70,9 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 self.__clear_db()
         except Exception as ex:
             raise FileNotFoundError(database_file) from ex
+
+        if key is not None:
+            self._set_database_key(key)
 
     @classmethod
     def default_database_file(cls) -> str:
@@ -78,55 +83,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
         assert script is not None
         directory = os.path.dirname(script)
         return os.path.join(directory, DB_FILE_NAME)
-
-    @classmethod
-    def database_files(cls) -> Mapping[int, str]:
-        """
-        Finds the default database file.
-
-        If environment variable C_LOGS_DICT exists that is used,
-        otherwise the default path in this directory is used.
-
-        :return: Absolute path to where the database file is or will be
-        """
-        dbs = dict()
-        dbs[""] = cls.default_database_file()
-        dbs["F"] = dbs[""].replace(".sqlite3", "_FEC.sqlite3")
-        dbs["S"] = dbs[""].replace(".sqlite3", "_SPY.sqlite3")
-        dbs["G"] = dbs[""].replace(".sqlite3", "_GFE.sqlite3")
-        return dbs
-
-    @classmethod
-    def database_file(cls, database_id: int) -> str:
-        """
-        Gets the database path based on the id
-
-        The numbering reocmmeneded is
-        FEC 1
-        SPY 2
-        GFE 3
-        Special SpiNNakerManchester code 9 including
-            BitBrainDemo
-
-
-        :param database_id:: Databse id. 0 for default databae
-            or an int between 1 and 9 to select a specific one
-        :return: path to database with this id
-        """
-        database_files = cls.database_files()
-        if database_id in database_files:
-            return database_files[database_id]
-        if "" in database_files:
-            return database_files[""]
-        raise KeyError(f"No {database_id} database or default")
-
-    def _extra_database_error_message(self) -> str:
-        """
-        Adds a possible extra part to the error message.
-
-        :return: A likely empty string
-        """
-        return ""
 
     def _check_database_file(self, database_file: str) -> None:
         """
@@ -175,6 +131,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         assert self._db is not None
         with self._db:
             cursor = self._db.cursor()
+            cursor.execute("DELETE FROM database_keys")
             cursor.execute("DELETE FROM log")
             cursor.execute("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='log'")
             cursor.execute("DELETE FROM file")
@@ -183,6 +140,30 @@ class LogSqlLiteDatabase(AbstractContextManager):
             cursor.execute("DELETE FROM directory")
             cursor.execute(
                 "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='directory'")
+
+    def get_database_keys(self):
+        assert self._db is not None
+        keys = set()
+        with self._db:
+            cursor = self._db.cursor()
+            # reuse the existing if it exists
+            for row in self._db.execute(
+                    """
+                    SELECT database_key
+                    FROM database_keys
+                    """):
+                keys.add(row["database_key"])
+        return keys
+
+    def _set_database_key(self, new_key: str) -> None:
+        assert self._db is not None
+        with self._db:
+            cursor = self._db.cursor()
+            cursor.execute(
+            """
+                INSERT OR IGNORE INTO database_keys( database_key)
+                VALUES(?)
+            """, (new_key, ))
 
     def get_directory_id(self, src_path: str, dest_path: str) -> int:
         """

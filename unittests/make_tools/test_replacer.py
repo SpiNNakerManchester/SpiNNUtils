@@ -29,21 +29,31 @@ Note: if weird,file.c changes you may have to manually fix the tests
 import math
 import unittest
 import os
+import sys
 import tempfile
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.config_holder import set_config
 from spinn_utilities.make_tools.replacer import Replacer
-from spinn_utilities.make_tools.file_converter import TOKEN
+from spinn_utilities.make_tools.file_converter import FileConverter, TOKEN
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestReplacer(unittest.TestCase):
 
+    def setUpClass():
+        database_path = str(os.path.join(PATH, "replacer.sqlite3"))
+        os.environ["C_LOGS_DICT"] = database_path
+        file_name = "weird,file.c"
+        src = os.path.join(PATH, "mock_src")
+        dest = os.path.join(PATH, "modified_src")
+        FileConverter.convert(src, dest, file_name)
+
+
     def test_replacer(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
-            new = replacer.replace("50")
+            new = replacer.replace("5")
         assert ("[INFO] (weird,file.c: 36): this is ok" == new)
 
     def test_not_there_existing(self) -> None:
@@ -51,8 +61,12 @@ class TestReplacer(unittest.TestCase):
         # Point C_LOGS_DICT to somewhere that does not exist
         os.environ["C_LOGS_DICT"] = str(
             os.path.join(PATH, "foo", "not_there.sqlite3"))
+        # Hack do not copy in code
+        Replacer._dbs.clear()
+        Replacer._paths.clear()
         try:
-            Replacer()
+            replacer = Replacer()
+            replacer.replace("5")
             raise NotImplementedError("Should not work!")
         except Exception as ex:
             assert ("not_there.sqlite3" in str(ex))
@@ -63,8 +77,12 @@ class TestReplacer(unittest.TestCase):
             set_config("Mapping", "external_binaries", tmpdirname)
             os.environ["C_LOGS_DICT"] = str(
                 os.path.join(tmpdirname, "missing.sqlite3"))
+            # Hack do not copy in code
+            Replacer._dbs.clear()
+            Replacer._paths.clear()
             try:
-                Replacer()
+                replacer = Replacer()
+                replacer.replace("5")
                 raise ValueError("Should not get here")
             except FileNotFoundError as ex:
                 self.assertIn(tmpdirname, str(ex))
@@ -72,7 +90,7 @@ class TestReplacer(unittest.TestCase):
     def test_tab(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
-            new = replacer.replace("110" + TOKEN + "10" + TOKEN + "20")
+            new = replacer.replace("11" + TOKEN + "10" + TOKEN + "20")
         message = "[INFO] (weird,file.c: 56): \t back off = 10, time between"\
                   " spikes 20"
         assert (message == new)
@@ -80,7 +98,7 @@ class TestReplacer(unittest.TestCase):
     def test_float(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
-        new = replacer.replace("20" + TOKEN + "0xc0400000")
+        new = replacer.replace("2" + TOKEN + "0xc0400000")
         message = "[INFO] (weird,file.c: 30): test -three -3.0"
         assert (message == new)
 
@@ -88,16 +106,16 @@ class TestReplacer(unittest.TestCase):
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace(
-            "30" + TOKEN + "40379999" + TOKEN + "9999999a")
+            "3" + TOKEN + "40379999" + TOKEN + "9999999a")
         message = "[INFO] (weird,file.c: 32): test double 23.6"
         assert (message == new)
 
     def test_bad(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
-        new = replacer.replace("1007" + TOKEN + "10")
+        new = replacer.replace("1007" + TOKEN + "1")
         # An exception so just output the input
-        message = "1007" + TOKEN + "10"
+        message = "1007" + TOKEN + "1"
         assert (message == new)
 
     def near_equals(self, a: float, b: float) -> bool:

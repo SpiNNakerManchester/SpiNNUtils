@@ -25,55 +25,47 @@ SKIPPABLE_FILES = frozenset([
     "neural_build.mk", "Makefile.neural_build"])
 
 
-def convert(src: str, dest: str, database_id: int, new_dict: bool) -> None:
+def convert(src: str, dest: str, database_id: Optional[str] = None,
+            database_path: Optional[str] = None) -> None:
     """
     Converts a whole directory including sub-directories.
 
     :param src: Full source directory
     :param dest: Full destination directory
-    :param new_dict:
-        Whether we should generate a new dictionary/DB.
-        If not, we add to the existing one.
-    :param database_id:: Databse id. 0 for default databae
-        or an int between 1 and 9 to select a specific one
+    :param database_id: Databse id. None or "" for default databae
+        or a non digital char.
+    :param database_path: Path to the log database.
+        Required if database_id specifed, otherwise ignored
     """
-    if new_dict:
-        database_files = LogSqlLiteDatabase.database_files()
-        for database_file in database_files.values():
-            LogSqlLiteDatabase(database_file, new_dict)
-
-    database_file = LogSqlLiteDatabase.database_file(database_id)
-
     src_path = os.path.abspath(src)
     if not os.path.exists(src_path):
         raise FileNotFoundError(
             f"Unable to locate source directory {src_path}")
     dest_path = os.path.abspath(dest)
-    _convert_dir(src_path, dest_path, database_id)
+    _convert_dir(src_path, dest_path, database_id, database_path)
 
 
 def _convert_dir(src_path: str, dest_path: str, database_id: int,
-                 make_directories: Optional[bool] = False) -> None:
+                 database_path: str) -> None:
     """
     Converts a whole directory including sub directories.
 
     :param src_path: Full source directory
     :param dest_path: Full destination directory
-    :param database_id:: Databse id. 0 for default databae
-        or an int between 1 and 9 to select a specific one
-    :param make_directories: Whether to do `mkdir()` first
+    :param database_id: Databse id. None or "" for default databae
+        or a non digital char.
+    :param database_path: Path to the log database.
+        Required if database_id specifed, otherwise ignored
     """
-    if make_directories:
-        _mkdir(dest_path)
     for src_dir, _, file_list in os.walk(src_path):
         dest_dir = os.path.join(dest_path, os.path.relpath(src_dir, src_path))
-        if make_directories:
-            _mkdir(dest_dir)
+        #if make_directories:
+        #    _mkdir(dest_dir)
         for file_name in file_list:
             _, extension = os.path.splitext(file_name)
             if extension in ALLOWED_EXTENSIONS:
                 FileConverter.convert(
-                    src_dir, dest_dir, file_name, database_id)
+                    src_dir, dest_dir, file_name, database_id, database_path)
             elif file_name in SKIPPABLE_FILES:
                 pass
             else:
@@ -89,18 +81,11 @@ def _mkdir(destination: str) -> None:
 
 
 if __name__ == '__main__':
-    _src = sys.argv[1]
-    _dest = sys.argv[2]
-    if len(sys.argv) > 3:
-        if len(sys.argv[3]) == 1:
-            key = sys.argv[3]
-        else:
-            key = ""
-            _new_dict = bool(sys.argv[3])
+    src = sys.argv[1]
+    dest = sys.argv[2]
+    if len(sys.argv) < 5:
+        convert(src, dest)
     else:
-        key = ""
-    if len(sys.argv) > 4:
-        _new_dict = bool(sys.argv[4])
-    else:
-        _new_dict = False
-    convert(_src, _dest, key, _new_dict)
+        database_id = sys.argv[3]
+        database_path = sys.argv[4]
+        convert(src, dest, database_id, database_path)

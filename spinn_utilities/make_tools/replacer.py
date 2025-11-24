@@ -18,13 +18,13 @@ import shutil
 import struct
 import sys
 from types import TracebackType
-from typing import Optional, Type, Tuple
+from typing import Dict, Optional, Type, Tuple
 
 from typing_extensions import Literal, Self
 
-from spinn_utilities.overrides import overrides
 from spinn_utilities.config_holder import get_config_str_or_none
 from spinn_utilities.log import FormatAdapter
+from spinn_utilities.exceptions import SpiNNUtilsException
 
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
@@ -43,16 +43,11 @@ class Replacer(object):
     Performs replacements.
     """
 
-    __slots__ = [
-        # Map of a blank or single character to databases holding the loginfo
-        "_dbs",
-    ]
+    __slots__ = []
 
-    def __init__(self) -> None:
-        self._dbs = dict()
-        db_mapping = LogSqlLiteDatabase.database_files()
-        for key, database_file in db_mapping.items():
-            self._dbs[key] = LogSqlLiteDatabase(database_file)
+    # global mapping of
+    _dbs: Dict[str, LogSqlLiteDatabase] = dict()
+    _paths: Dict[str, str] = dict()
 
     def _check_default_database_file(self) -> None:
         database_file = LogSqlLiteDatabase.default_database_file()
@@ -66,17 +61,6 @@ class Replacer(object):
             if os.path.exists(source_file):
                 shutil.copyfile(source_file, database_file)
 
-
-    @overrides(LogSqlLiteDatabase._extra_database_error_message)
-    def _extra_database_error_message(self) -> str:
-        extra__binaries = get_config_str_or_none(
-            "Mapping", "external_binaries")
-        if extra__binaries is None:
-            return ""
-        else:
-            return (f"The cfg {extra__binaries=} "
-                    f"also does not contain a {DB_FILE_NAME}. ")
-
     def __enter__(self) -> Self:
         return self
 
@@ -88,10 +72,34 @@ class Replacer(object):
     _FLT_FMT = struct.Struct("!f")
     _DBL_FMT = struct.Struct("!d")
 
-    def _db(self, key: int) -> LogSqlLiteDatabase:
-        if key not in self._dbs:
-            key = 0
+    def _db(self, key: str) -> LogSqlLiteDatabase:
+        if key in self._dbs:
+            return self._dbs[key]
+
+        key = ""
+        if "" not in self._dbs:
+            self._dbs[""] = LogSqlLiteDatabase(
+                LogSqlLiteDatabase.default_database_file())
         return self._dbs[key]
+
+    @classmethod
+    def register_database_path(cls, database_path):
+        db = LogSqlLiteDatabase(database_path)
+        keys = db.get_database_keys()
+        for key in keys:
+            if key in cls._dbs:
+                if cls._paths[key] != database_path:
+                    raise SpiNNUtilsException(
+                        f"Both {database_path} and "
+                        f"{cls._dbs[key]} use the key {key}")
+            cls._paths[key] = database_path
+            cls._dbs[key] = LogSqlLiteDatabase(database_path)
+
+    @classmethod
+    def register_database_dir(cls, database_dir):
+        database_path = os.path.join(database_dir, DB_FILE_NAME)
+        if os.path.exists(database_path):
+            cls.register_database_path(database_path)
 
     def _replace(self, short: str) -> Optional[Tuple[int, str, str, str]]:
         """

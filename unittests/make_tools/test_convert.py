@@ -30,28 +30,30 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         os.chdir(path)
-        os.environ["C_LOGS_DICT"] = str(os.path.join(path,
-                                                     "convert_1.sqlite3"))
-        database_path = LogSqlLiteDatabase.database_file(0)
-        # Clear the database
-        LogSqlLiteDatabase(database_path, True)
+        database_path = str(os.path.join(path, "convert_1.sqlite3"))
+        os.environ["C_LOGS_DICT"] = database_path
+        if os.path.exists(database_path):
+            os.remove(database_path)
         src = "mock_src"
         dest = "modified_src"
         formats = os.path.join(src, "formats.c")
         # make sure the first formats is there
         shutil.copyfile("formats.c1", formats)
-        convert(src, dest, 0, True)
-        with LogSqlLiteDatabase(database_path) as sql:
+        convert(src, dest)
+        with LogSqlLiteDatabase(
+                LogSqlLiteDatabase.default_database_file()) as sql:
             single = sql.get_max_log_id()
             assert single is not None
         # Unchanged file a second time should give same ids
-        convert(src, dest, 0,False)
-        with LogSqlLiteDatabase(database_path) as sql:
+        convert(src, dest)
+        with LogSqlLiteDatabase(
+                LogSqlLiteDatabase.default_database_file()) as sql:
             self.assertEqual(single, sql.get_max_log_id())
         # Now use the second formats which as one extra log and moves 1 down
         shutil.copyfile("formats.c2", formats)
-        convert(src, dest, 0,False)
-        with LogSqlLiteDatabase(database_path) as sql:
+        convert(src, dest)
+        with LogSqlLiteDatabase(
+                LogSqlLiteDatabase.default_database_file()) as sql:
             # Need two more ids for the new log and then changed line number
             self.assertEqual(single + 2, sql.get_max_log_id())
 
@@ -66,6 +68,6 @@ class TestConverter(unittest.TestCase):
         e1 = os.path.join(dest, "delta", "empty1.c")
         shutil.rmtree(os.path.join(dir_path, "alpha"), ignore_errors=True)
         self.assertFalse(os.path.exists(e1))
-        convert(src, dest, 0,True)
+        convert(src, dest)
         self.assertTrue(os.path.exists(e1))
-        convert(src, dest, 0,True)
+        convert(src, dest)

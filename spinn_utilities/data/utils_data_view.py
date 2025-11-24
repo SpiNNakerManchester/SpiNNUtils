@@ -667,6 +667,8 @@ class UtilsDataView(object):
         :param search_path: absolute search path for binaries
         """
         cls.__data._executable_finder.add_path(search_path)
+        from spinn_utilities.make_tools.replacer import Replacer
+        Replacer.register_database_dir(search_path)
 
     @classmethod
     def get_executable_path(cls, executable_name: str) -> str:

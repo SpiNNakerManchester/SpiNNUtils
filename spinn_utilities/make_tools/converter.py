@@ -45,8 +45,8 @@ def convert(src: str, dest: str, database_key: Optional[str] = None,
     _convert_dir(src_path, dest_path, database_key, database_path)
 
 
-def _convert_dir(src_path: str, dest_path: str, database_key: int,
-                 database_path: str) -> None:
+def _convert_dir(src_path: str, dest_path: str, database_key: Optional[str],
+                 database_path: Optional[str]) -> None:
     """
     Converts a whole directory including sub directories.
 

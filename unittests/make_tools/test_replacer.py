@@ -29,7 +29,6 @@ Note: if weird,file.c changes you may have to manually fix the tests
 import math
 import unittest
 import os
-import sys
 import tempfile
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.config_holder import set_config
@@ -41,14 +40,14 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 class TestReplacer(unittest.TestCase):
 
-    def setUpClass() -> None:
+    @classmethod
+    def setUpClass(cls) -> None:
         database_path = str(os.path.join(PATH, "replacer.sqlite3"))
         os.environ["C_LOGS_DICT"] = database_path
         file_name = "weird,file.c"
         src = os.path.join(PATH, "mock_src")
         dest = os.path.join(PATH, "modified_src")
         FileConverter.convert(src, dest, file_name)
-
 
     def test_replacer(self) -> None:
         os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))

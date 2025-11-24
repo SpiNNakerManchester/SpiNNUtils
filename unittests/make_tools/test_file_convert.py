@@ -102,7 +102,8 @@ class TestConverter(unittest.TestCase):
         dest = os.path.join(path, "modified_src")
         database_path = tempfile.mktemp()
         try:
-            FileConverter.convert(src, dest, "bad_format.c", "t", database_path)
+            FileConverter.convert(
+                src, dest, "bad_format.c", "t", database_path)
             assert False
         except Exception as ex1:
             assert str(ex1) == "Unexpected formatString in %!"

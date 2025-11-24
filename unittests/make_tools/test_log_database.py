@@ -55,5 +55,3 @@ class TestLogSqlLiteDatabase(unittest.TestCase):
         # The replacer will go boom
         with self.assertRaises(SpiNNUtilsException):
             Replacer.register_database_path(database_path3)
-
-

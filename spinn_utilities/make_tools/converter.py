@@ -16,7 +16,6 @@ import os
 import sys
 from typing import Optional
 from .file_converter import FileConverter
-from .log_sqllite_database import LogSqlLiteDatabase
 
 ALLOWED_EXTENSIONS = frozenset([".c", ".cpp", ".h"])
 SKIPPABLE_FILES = frozenset([
@@ -59,8 +58,6 @@ def _convert_dir(src_path: str, dest_path: str, database_key: Optional[str],
     """
     for src_dir, _, file_list in os.walk(src_path):
         dest_dir = os.path.join(dest_path, os.path.relpath(src_dir, src_path))
-        #if make_directories:
-        #    _mkdir(dest_dir)
         for file_name in file_list:
             _, extension = os.path.splitext(file_name)
             if extension in ALLOWED_EXTENSIONS:

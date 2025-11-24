@@ -128,8 +128,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
         assert self._db is not None
         keys = set()
         with self._db:
-            cursor = self._db.cursor()
-            # reuse the existing if it exists
             for row in self._db.execute(
                     """
                     SELECT database_key
@@ -143,10 +141,10 @@ class LogSqlLiteDatabase(AbstractContextManager):
         with self._db:
             cursor = self._db.cursor()
             cursor.execute(
-            """
+                """
                 INSERT OR IGNORE INTO database_keys( database_key)
                 VALUES(?)
-            """, (new_key, ))
+                """, (new_key, ))
 
     def get_directory_id(self, src_path: str, dest_path: str) -> int:
         """

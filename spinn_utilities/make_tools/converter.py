@@ -25,37 +25,37 @@ SKIPPABLE_FILES = frozenset([
     "neural_build.mk", "Makefile.neural_build"])
 
 
-def convert(src: str, dest: str, database_id: Optional[str] = None,
+def convert(src: str, dest: str, database_key: Optional[str] = None,
             database_path: Optional[str] = None) -> None:
     """
     Converts a whole directory including sub-directories.
 
     :param src: Full source directory
     :param dest: Full destination directory
-    :param database_id: Databse id. None or "" for default databae
-        or a non digital char.
+    :param database_key: Key to the specific database to use.
+        None or "" for default databae or a non digital char.
     :param database_path: Path to the log database.
-        Required if database_id specifed, otherwise ignored
+        Required if database_key specifed, otherwise ignored
     """
     src_path = os.path.abspath(src)
     if not os.path.exists(src_path):
         raise FileNotFoundError(
             f"Unable to locate source directory {src_path}")
     dest_path = os.path.abspath(dest)
-    _convert_dir(src_path, dest_path, database_id, database_path)
+    _convert_dir(src_path, dest_path, database_key, database_path)
 
 
-def _convert_dir(src_path: str, dest_path: str, database_id: int,
+def _convert_dir(src_path: str, dest_path: str, database_key: int,
                  database_path: str) -> None:
     """
     Converts a whole directory including sub directories.
 
     :param src_path: Full source directory
     :param dest_path: Full destination directory
-    :param database_id: Databse id. None or "" for default databae
-        or a non digital char.
     :param database_path: Path to the log database.
-        Required if database_id specifed, otherwise ignored
+        Required if database_key specifed, otherwise ignored
+    :param database_path: Path to the log database.
+        Required if database_key specifed, otherwise ignored
     """
     for src_dir, _, file_list in os.walk(src_path):
         dest_dir = os.path.join(dest_path, os.path.relpath(src_dir, src_path))
@@ -65,7 +65,7 @@ def _convert_dir(src_path: str, dest_path: str, database_id: int,
             _, extension = os.path.splitext(file_name)
             if extension in ALLOWED_EXTENSIONS:
                 FileConverter.convert(
-                    src_dir, dest_dir, file_name, database_id, database_path)
+                    src_dir, dest_dir, file_name, database_key, database_path)
             elif file_name in SKIPPABLE_FILES:
                 pass
             else:
@@ -86,6 +86,6 @@ if __name__ == '__main__':
     if len(sys.argv) < 5:
         convert(src, dest)
     else:
-        database_id = sys.argv[3]
+        database_key = sys.argv[3]
         database_path = sys.argv[4]
-        convert(src, dest, database_id, database_path)
+        convert(src, dest, database_key, database_path)

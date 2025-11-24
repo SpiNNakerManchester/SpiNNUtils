@@ -56,7 +56,7 @@ class FileConverter(object):
     """
 
     __slots__ = [
-        "_database_id",
+        "_database_key",
         "_log_database",
         "_log_file_id",
         "_log",
@@ -70,7 +70,7 @@ class FileConverter(object):
     ]
 
     def __call__(self, src: str, dest: str, log_file_id: int,
-                 log_database: LogSqlLiteDatabase, database_id: int) -> None:
+                 log_database: LogSqlLiteDatabase, database_key: str) -> None:
         """
         Creates the file_convertor to convert one file.
 
@@ -79,8 +79,8 @@ class FileConverter(object):
         :param log_file_id: Id in the database for this file
         :param log_database:
             The database which handles the mapping of id to log messages.
-        :param database_id:: Databse id. 0 for default databae
-            or an int between 1 and 9 to select a specific one
+        :param database_key: Database key. Blank (typical default database)
+            or a non digital char.
         """
         #: Absolute path to source file
         #:
@@ -112,11 +112,18 @@ class FileConverter(object):
         #: Any other stuff found before the log method but on same line
         self._log_start: int = -9999999
         # variable created when a comment found
+
         #: The previous state
         #:
         #: :type: State
         self._previous_status: Optional[State] = None
-        self._database_id = database_id
+
+        # key to the databse
+        self._database_key = database_key
+        if len(database_key) > 1:
+            raise ValueError(f"{database_key=} Only single character allowed")
+        if database_key.isdigit():
+            raise ValueError(f"{database_key=} is digital")
 
         with open(src, encoding="utf-8") as src_f:
             with open(dest, 'w', encoding="utf-8") as dest_f:
@@ -416,14 +423,14 @@ class FileConverter(object):
 
         message_id = self._log_database.set_log_info(
             LEVELS[self._log], line_num + 1, original, self._log_file_id)
-        #message_str = str(message_id * 10 + self._database_id)
+        #message_str = str(message_id * 10 + self._database_key)
         message_str = str(message_id)
         count = original.count("%") - original.count("%%") * 2
 
         if count == 0:
-            return f'"{self._database_id}%u", {message_str});'
+            return f'"{self._database_key}%u", {message_str});'
 
-        front = f'"{self._database_id}%u'
+        front = f'"{self._database_key}%u'
         back = ""
         matches = [x for x in FORMAT_EXP.findall(original)
                    if not x.startswith("%%")]
@@ -637,10 +644,10 @@ class FileConverter(object):
         :param file_name:
             The name of the file to convert within the source directory; it
             will be made with the same name in the destination directory.
-        :param database_id: Databse id. None or "" for default databae
+        :param database_key: Databse id. None or "" for default databae
            or a non digital char.
         :param database_path: Path to the log database.
-            Required if database_id specifed, otherwise ignored
+            Required if database_key specifed, otherwise ignored
         """
         if database_id is None:
             database_id = ""

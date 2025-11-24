@@ -41,7 +41,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 class TestReplacer(unittest.TestCase):
 
-    def setUpClass():
+    def setUpClass() -> None:
         database_path = str(os.path.join(PATH, "replacer.sqlite3"))
         os.environ["C_LOGS_DICT"] = database_path
         file_name = "weird,file.c"

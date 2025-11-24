@@ -83,7 +83,18 @@ class Replacer(object):
         return self._dbs[key]
 
     @classmethod
-    def register_database_path(cls, database_path):
+    def register_database_path(cls, database_path: str) -> None:
+        """
+        Adds a database to use to lookup log message.
+
+        The database will be registered using its database keys
+
+        Registering the same path multiple time is fine
+
+        :param database_path: Path to an existing database
+        :raises SpiNNUtilsException: If a second path/ database is
+            regsitered that uses the same key(s)
+        """
         db = LogSqlLiteDatabase(database_path)
         keys = db.get_database_keys()
         for key in keys:
@@ -96,7 +107,17 @@ class Replacer(object):
             cls._dbs[key] = LogSqlLiteDatabase(database_path)
 
     @classmethod
-    def register_database_dir(cls, database_dir):
+    def register_database_dir(cls, database_dir: str) -> None:
+        """
+        Adds a directory that may contain a logs.sqlite3
+
+        If the database exists it will registered using its database keys
+
+        Registering the same database multiple time sis fine but registering
+        two that use the same key(s) will not.
+
+        :param database_dir: Full path to the directory
+        """
         database_path = os.path.join(database_dir, DB_FILE_NAME)
         if os.path.exists(database_path):
             cls.register_database_path(database_path)

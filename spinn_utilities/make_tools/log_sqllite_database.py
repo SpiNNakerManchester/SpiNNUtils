@@ -16,7 +16,7 @@ import os
 import sqlite3
 import sys
 import time
-from typing import Collection, Optional, Tuple
+from typing import Optional, Set, Tuple
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
@@ -46,7 +46,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         "_db",
     ]
 
-    def __init__(self, database_file: str, key: str = None) -> None:
+    def __init__(self, database_file: str, key: Optional[str] = None) -> None:
         """
         Connects to a log dict. The location of the file can be overridden
         using the ``C_LOGS_DICT`` environment variable.
@@ -83,23 +83,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
         assert script is not None
         directory = os.path.dirname(script)
         return os.path.join(directory, DB_FILE_NAME)
-
-    def _check_database_file(self, database_file: str) -> None:
-        """
-        Checks the database file exists:
-
-        :param database_file: Absolute path to the database file
-        :raises FileNotFoundErrorL If the file does not exists
-        """
-        if os.path.exists(database_file):
-            return
-        message = f"Unable to locate c_logs_dict at {database_file}. "
-        if 'C_LOGS_DICT' in os.environ:
-            message += (
-                "This came from the environment variable 'C_LOGS_DICT'. ")
-        message += self._extra_database_error_message()
-        message += "Please rebuild the C code."
-        raise FileNotFoundError(message)
 
     def __del__(self) -> None:
         self.close()
@@ -141,7 +124,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
             cursor.execute(
                 "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='directory'")
 
-    def get_database_keys(self):
+    def get_database_keys(self) -> Set[str]:
         assert self._db is not None
         keys = set()
         with self._db:

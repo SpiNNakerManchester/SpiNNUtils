@@ -71,8 +71,6 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         database_path = tempfile.mktemp()
-        # clear the database and create a new one
-        LogSqlLiteDatabase(database_path, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
@@ -113,8 +111,6 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         database_path = tempfile.mktemp()
-        # clear the database and create a new one
-        LogSqlLiteDatabase(database_path, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
@@ -128,8 +124,6 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         database_path = tempfile.mktemp()
-        # clear the database and create a new one
-        LogSqlLiteDatabase(database_path, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
@@ -145,8 +139,6 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         database_path = tempfile.mktemp()
-        # clear the database and create a new one
-        LogSqlLiteDatabase(database_path, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
@@ -161,8 +153,6 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         database_path = tempfile.mktemp()
-        # clear the database and create a new one
-        LogSqlLiteDatabase(database_path,True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:
@@ -178,8 +168,6 @@ class TestConverter(unittest.TestCase):
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
         database_path = tempfile.mktemp()
-        # clear the database and create a new one
-        LogSqlLiteDatabase(database_path, True)
         src = os.path.join(path, "mistakes")
         dest = os.path.join(path, "modified_src")
         try:

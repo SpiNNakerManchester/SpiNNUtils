@@ -634,7 +634,7 @@ class FileConverter(object):
     @staticmethod
     def convert(
             src_dir: str, dest_dir: str, file_name: str,
-            database_id: Optional[str] = None,
+            database_key: Optional[str] = None,
             database_path: Optional[str] = None) -> None:
         """
         Static method to create Object and do the conversion.
@@ -649,8 +649,8 @@ class FileConverter(object):
         :param database_path: Path to the log database.
             Required if database_key specifed, otherwise ignored
         """
-        if database_id is None:
-            database_id = ""
+        if database_key is None:
+            database_key = ""
             database_path = LogSqlLiteDatabase.default_database_file()
         else:
             assert database_path is not None
@@ -661,8 +661,8 @@ class FileConverter(object):
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
         destination = os.path.join(dest_dir, file_name)
-        with LogSqlLiteDatabase(database_path, database_id) as log_database:
+        with LogSqlLiteDatabase(database_path, database_key) as log_database:
             directory_id = log_database.get_directory_id(src_dir, dest_dir)
             file_id = log_database.get_file_id(directory_id, file_name)
             FileConverter()(
-                source, destination, file_id, log_database, database_id)
+                source, destination, file_id, log_database, database_key)

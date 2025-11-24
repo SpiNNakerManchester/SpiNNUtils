@@ -135,14 +135,14 @@ class Replacer(object):
         log_st = parts[0]
         if log_st[0].isdigit():
             log_id = int(log_st)
-            database_id = ""
+            database_key = ""
         elif log_st[1:].isdigit():
             log_id = int(log_st[1:])
-            database_id = log_st[0]
+            database_key = log_st[0]
         else:
             return None
 
-        data = self._db(database_id).get_log_info(log_id)
+        data = self._db(database_key).get_log_info(log_id)
         if data is None:
             return None
 

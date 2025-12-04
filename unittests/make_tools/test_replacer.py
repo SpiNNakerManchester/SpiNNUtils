@@ -28,13 +28,15 @@ Note: if weird,file.c changes you may have to manually fix the tests
 
 import math
 import os
-import unittest
+import pytest
 import tempfile
 from testfixtures import LogCapture
+import unittest
 from unittest import mock
 
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.data import UtilsDataView
+from spinn_utilities.make_tools import FileConverter
 from spinn_utilities.make_tools.file_converter import TOKEN
 from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 from spinn_utilities.make_tools.replacer import Replacer
@@ -45,6 +47,17 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 class TestReplacer(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        database_file = str(os.path.join(PATH, "replacer.sqlite3"))
+        log_database = LogSqlLiteDatabase(database_file, read_only=False)
+        file_convertor = FileConverter(log_database, "")
+        file_name = "weird,file.c"
+        src = os.path.join(PATH, "mock_src")
+        dest = os.path.join(PATH, "modified_src")
+        file_convertor.convert(src, dest, file_name)
+
+    @pytest.mark.xdist_group(name="mock_src")
     def test_replacer(self) -> None:
         unittest_setup()
         UtilsDataView._register_log_database(
@@ -57,7 +70,7 @@ class TestReplacer(unittest.TestCase):
                      {"C_LOGS_DICT": "not_there.sqlite3"} )
     def test_c_log_dict_bad(self) -> None:
         unittest_setup()
-        # If wrong dview will log an exception and return None
+        # If wrong view will log an exception and return None
         with LogCapture() as lc:
             path = UtilsDataView.get_log_database_path("")
             log_checker.assert_logs_error_contains(lc.records, "C_LOGS_DICT")
@@ -82,6 +95,7 @@ class TestReplacer(unittest.TestCase):
             UtilsDataView.register_binary_search_path(tmpdirname)
         # Unable to test replacer as standard default may or may not exist
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_tab(self) -> None:
         unittest_setup()
         UtilsDataView._register_log_database(
@@ -92,6 +106,7 @@ class TestReplacer(unittest.TestCase):
                   " spikes 20"
         assert (message == new)
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_float(self) -> None:
         unittest_setup()
         UtilsDataView._register_log_database(
@@ -101,6 +116,7 @@ class TestReplacer(unittest.TestCase):
         message = "[INFO] (weird,file.c: 30): test -three -3.0"
         assert (message == new)
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_double(self) -> None:
         unittest_setup()
         UtilsDataView._register_log_database(
@@ -111,6 +127,7 @@ class TestReplacer(unittest.TestCase):
         message = "[INFO] (weird,file.c: 32): test double 23.6"
         assert (message == new)
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_bad(self) -> None:
         unittest_setup()
         UtilsDataView._register_log_database(
@@ -128,6 +145,7 @@ class TestReplacer(unittest.TestCase):
         ratio = diff / a
         return abs(ratio) < 0.0000001
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_hex_to_float(self) -> None:
         """
         Test the converter against hex values returned from Spinnaker
@@ -159,6 +177,7 @@ class TestReplacer(unittest.TestCase):
             assert self.near_equals(
                 -3, replacer._hex_to_float("0xc0400000"))
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_hexes_to_double(self) -> None:
         """
         Test the converter against hexes values returned from Spinnaker
@@ -185,3 +204,19 @@ class TestReplacer(unittest.TestCase):
             assert self.near_equals(
                 0.0000000004,
                 replacer._hexes_to_double("3dfb7cdf", "d9d7bdbb"))
+
+    def test_replacer_char(self) -> None:
+        unittest_setup()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            database_file = os.path.join(tmpdir, "logs.sqlite3")
+            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            file_convertor = FileConverter(log_database, "A")
+            file_name = "weird,file.c"
+            src = os.path.join(PATH, "mock_src")
+            dest = os.path.join(PATH, "modified_src")
+            file_convertor.convert(src, dest, file_name)
+
+            UtilsDataView._register_log_database(database_file)
+            with Replacer() as replacer:
+                new = replacer.replace("A5")
+            self.assertEqual("[INFO] (weird,file.c: 36): this is ok", new)

@@ -81,12 +81,19 @@ class Replacer(object):
         :return: The expanded message.
         """
         parts = short.split(TOKEN)
-        if not parts[0].isdigit():
+        log_st = parts[0]
+        if log_st[0].isdigit():
+            log_id = int(log_st)
+            database_key = ""
+        elif log_st[1:].isdigit():
+            log_id = int(log_st[1:])
+            database_key = log_st[0]
+        else:
             return None
-        db = self._db("")
+        db = self._db(database_key)
         if db is None:
             return None
-        data = self._db("").get_log_info(parts[0])
+        data = db.get_log_info(log_id)
         if data is None:
             return None
         (log_level, file_name, line_num, original) = data

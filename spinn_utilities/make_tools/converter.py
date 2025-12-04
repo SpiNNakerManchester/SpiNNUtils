@@ -80,14 +80,14 @@ def _mkdir(destination: str) -> None:
 
 
 if __name__ == '__main__':
-    src = sys.argv[1]
-    dest = sys.argv[2]
+    _src = sys.argv[1]
+    _dest = sys.argv[2]
     if len(sys.argv) > 3:
-        database_file = sys.argv[3]
+        _database_file = sys.argv[3]
     else:
-        database_file = LogSqlLiteDatabase.default_database_file()
+        _database_file = LogSqlLiteDatabase.default_database_file()
     if len(sys.argv) > 4:
-        database_key = sys.argv[4]
+        _database_key = sys.argv[4]
     else:
-        database_key = ""
-    convert(src, dest, database_file, database_key)
+        _database_key = ""
+    convert(_src, _dest, _database_file, _database_key)

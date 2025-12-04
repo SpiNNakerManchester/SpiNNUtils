@@ -55,7 +55,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         param database_file: Full path to the database.
            (use default_database_file to get the default location)
         param read_only: By default, the database is read-only,
-            in which case the databse must exist.
+            in which case the database must exist.
 
         """
         # To Avoid an Attribute error on close after an exception
@@ -72,7 +72,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         self.__init_db(run_ddl)
 
     @classmethod
-    def default_database_file(self) -> str:
+    def default_database_file(cls) -> str:
         """
         Finds the database file path.
 
@@ -84,7 +84,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         if 'C_LOGS_DICT' in os.environ:
             return str(os.environ['C_LOGS_DICT'])
 
-        script = sys.modules[self.__module__].__file__
+        script = sys.modules[cls.__module__].__file__
         assert script is not None
         directory = os.path.dirname(script)
         return os.path.join(directory, DB_FILE_NAME)
@@ -131,19 +131,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
             with open(_DDL_FILE, encoding="utf-8") as f:
                 sql = f.read()
             self._db.executescript(sql)
-
-    def __clear_db(self) -> None:
-        assert self._db is not None
-        with self._db:
-            cursor = self._db.cursor()
-            cursor.execute("DELETE FROM log")
-            cursor.execute("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='log'")
-            cursor.execute("DELETE FROM file")
-            cursor.execute(
-                "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='file'")
-            cursor.execute("DELETE FROM directory")
-            cursor.execute(
-                "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='directory'")
 
     def get_directory_id(self, src_path: str, dest_path: str) -> int:
         """
@@ -309,6 +296,13 @@ class LogSqlLiteDatabase(AbstractContextManager):
         raise ValueError("unexpected no return")
 
     def get_database_keys(self) -> Set[str]:
+        """
+        Gets the keys that are registered for this database.
+
+        For an old database with no key registered it will return ""
+
+        :returns: a set of keys covered by the database
+        """
         assert self._db is not None
         keys = set()
         with self._db:
@@ -320,7 +314,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
                         """):
                     keys.add(row["database_key"])
             except sqlite3.OperationalError as ex:
-                # Support old dabases that have np keys table
+                # Support old databases that have no keys table
                 if "database_keys" not in str(ex):
                     raise
         if len(keys) == 0:
@@ -328,6 +322,13 @@ class LogSqlLiteDatabase(AbstractContextManager):
         return keys
 
     def set_database_key(self, new_key: str) -> None:
+        """
+        Sets/ adds a new database key to the database.
+
+        A database may have more than 1 key
+
+        :param new_key: An empty or single char key
+        """
         assert self._db is not None
         with self._db:
             cursor = self._db.cursor()

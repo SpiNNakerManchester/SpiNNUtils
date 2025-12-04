@@ -744,6 +744,15 @@ class UtilsDataView(object):
 
     @classmethod
     def get_log_database_path(cls, database_key: str) -> Optional[str]:
+        """
+        Gets the database path ofr this Database key
+
+        For the default "" key it will look for and iv=f available register
+            the default
+
+        :param database_key:
+        :return: A path to the database if registered
+        """
         if database_key not in cls.__data._log_database_paths:
             if database_key == "":
                 database_file = LogSqlLiteDatabase.default_database_file()

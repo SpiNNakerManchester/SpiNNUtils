@@ -29,30 +29,30 @@ from spinn_utilities.testing import log_checker
 
 def test_configs_None() -> None:
     unittest_setup()
-    set_config("Mapping", "Foo", "None")
-    set_config("Mapping", "Bar", "none")
-    assert get_config_str_or_none("Mapping", "Foo") is None
+    set_config("Logging", "Foo", "None")
+    set_config("Logging", "Bar", "none")
+    assert get_config_str_or_none("Logging", "Foo") is None
     try:
-        assert get_config_str("Mapping", "Foo") is None
+        assert get_config_str("Logging", "Foo") is None
         raise SpiNNUtilsException("Expected ConfigException")
     except ConfigException:
         pass
-    assert get_config_str_or_none("Mapping", "bar") is None
-    assert get_config_int_or_none("Mapping", "Foo") is None
+    assert get_config_str_or_none("Logging", "bar") is None
+    assert get_config_int_or_none("Logging", "Foo") is None
     try:
-        get_config_int("Mapping", "Foo")
+        get_config_int("Logging", "Foo")
         raise SpiNNUtilsException("Expected ConfigException")
     except ConfigException:
         pass
-    assert get_config_float_or_none("Mapping", "Foo") is None
+    assert get_config_float_or_none("Logging", "Foo") is None
     try:
-        assert get_config_float("Mapping", "Foo") is None
+        assert get_config_float("Logging", "Foo") is None
         raise SpiNNUtilsException("Expected ConfigException")
     except ConfigException:
         pass
-    assert get_config_bool_or_none("Mapping", "Foo") is None
+    assert get_config_bool_or_none("Logging", "Foo") is None
     try:
-        assert get_config_bool("Mapping", "Foo") is None
+        assert get_config_bool("Logging", "Foo") is None
         raise SpiNNUtilsException("Expected ConfigException")
     except ConfigException:
         pass

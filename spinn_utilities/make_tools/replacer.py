@@ -50,7 +50,7 @@ class Replacer(object):
     ]
 
     def __init__(self) -> None:
-        self._dbs: Dict["", LogSqlLiteDatabase] = dict()
+        self._dbs: Dict[str, LogSqlLiteDatabase] = dict()
 
     def __enter__(self) -> Self:
         return self

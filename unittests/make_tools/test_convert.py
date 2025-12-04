@@ -55,7 +55,7 @@ class TestConverter(unittest.TestCase):
             self.assertEqual(single + 2, sql.get_max_log_id())
 
     def test_double_level(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             database_file = os.path.join(tmp, "logs.sqlite3")
             dir_path = os.path.dirname(os.path.realpath(__file__))
             src = os.path.join(dir_path, "foo", "bar")

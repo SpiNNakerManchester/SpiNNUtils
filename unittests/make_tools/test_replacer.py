@@ -90,7 +90,8 @@ class TestReplacer(unittest.TestCase):
 
     def test_external_empty(self) -> None:
         unittest_setup()
-        with tempfile.TemporaryDirectory() as tmpdirname:
+        with tempfile.TemporaryDirectory(
+                ignore_cleanup_errors=True) as tmpdirname:
             # Should just be ignored
             UtilsDataView.register_binary_search_path(tmpdirname)
         # Unable to test replacer as standard default may or may not exist
@@ -207,7 +208,7 @@ class TestReplacer(unittest.TestCase):
 
     def test_replacer_char(self) -> None:
         unittest_setup()
-        with tempfile.TemporaryDirectory() as tmpdir:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
             database_file = os.path.join(tmpdir, "logs.sqlite3")
             log_database = LogSqlLiteDatabase(database_file, read_only=False)
             file_convertor = FileConverter(log_database, "A")

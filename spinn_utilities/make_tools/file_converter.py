@@ -15,7 +15,7 @@ import enum
 from io import TextIOBase
 import os
 import re
-from typing import List, Optional
+from typing import List
 from spinn_utilities.exceptions import UnexpectedCException
 from .log_sqllite_database import LogSqlLiteDatabase
 

@@ -67,7 +67,7 @@ class TestReplacer(unittest.TestCase):
         assert ("[INFO] (weird,file.c: 36): this is ok" == new)
 
     @mock.patch.dict(os.environ,
-                     {"C_LOGS_DICT": "not_there.sqlite3"} )
+                     {"C_LOGS_DICT": "not_there.sqlite3"})
     def test_c_log_dict_bad(self) -> None:
         unittest_setup()
         # If wrong view will log an exception and return None

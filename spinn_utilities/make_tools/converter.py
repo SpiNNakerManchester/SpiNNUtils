@@ -24,7 +24,8 @@ SKIPPABLE_FILES = frozenset([
     "neural_build.mk", "Makefile.neural_build"])
 
 
-def convert(src: str, dest: str, database_file: str, database_key: str) -> None:
+def convert(src: str, dest: str, database_file: str,
+            database_key: str) -> None:
     """
     Converts a whole directory including sub-directories.
 

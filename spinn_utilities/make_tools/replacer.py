@@ -13,8 +13,6 @@
 # limitations under the License.
 
 import logging
-import os
-import shutil
 import struct
 import sys
 from types import TracebackType
@@ -23,13 +21,11 @@ from typing import Dict, Optional, Type, Tuple
 from typing_extensions import Literal, Self
 
 from spinn_utilities.data import UtilsDataView
-from spinn_utilities.overrides import overrides
-from spinn_utilities.config_holder import get_config_str_or_none
 from spinn_utilities.log import FormatAdapter
 
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
-from .log_sqllite_database import DB_FILE_NAME, LogSqlLiteDatabase
+from .log_sqllite_database import LogSqlLiteDatabase
 
 logger = FormatAdapter(logging.getLogger(__name__))
 

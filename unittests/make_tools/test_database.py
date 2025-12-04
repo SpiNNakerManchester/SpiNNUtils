@@ -14,13 +14,10 @@
 
 import os
 import pytest
-import shutil
 import sys
-import tempfile
 import unittest
 from unittest import mock
 
-from spinn_utilities.make_tools.converter import convert
 from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -38,7 +35,7 @@ class TestDatabase(unittest.TestCase):
         with LogSqlLiteDatabase(database_path) as sql:
             self.assertSetEqual(set([""]), sql.get_database_keys())
 
-    @mock.patch.dict(os.environ,{"C_LOGS_DICT": "somepath"})
+    @mock.patch.dict(os.environ, {"C_LOGS_DICT": "somepath"})
     def test_default_path_environ(self) -> None:
         default = LogSqlLiteDatabase.default_database_file()
         self.assertEqual(default, "somepath")

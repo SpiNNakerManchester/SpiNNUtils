@@ -745,9 +745,9 @@ class UtilsDataView(object):
     @classmethod
     def get_log_database_path(cls, database_key: str) -> Optional[str]:
         """
-        Gets the database path ofr this Database key
+        Gets the database path for this Database key
 
-        For the default "" key it will look for and iv=f available register
+        For the default "" key it will look for and if available register
             the default
 
         :param database_key:

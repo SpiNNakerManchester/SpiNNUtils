@@ -13,10 +13,11 @@
 # limitations under the License.
 
 import os
+import pathlib
 import sqlite3
 import sys
 import time
-from typing import Optional, Tuple
+from typing import Optional, Set, Tuple
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
@@ -46,42 +47,32 @@ class LogSqlLiteDatabase(AbstractContextManager):
         "_db",
     ]
 
-    def __init__(self, new_dict: bool = False) -> None:
+    def __init__(self, database_path: str, read_only: bool = True) -> None:
         """
         Connects to a log dict. The location of the file can be overridden
         using the ``C_LOGS_DICT`` environment variable.
 
-        :param new_dict: Flag to say if this is a new dict or not.
-            If True, clears and previous values.
-            If False, makes sure the dict exists.
+        param database_file: Full path to the database.
+           (use default_database_file to get the default location)
+        param read_only: By default, the database is read-only,
+            in which case the databse must exist.
+
         """
         # To Avoid an Attribute error on close after an exception
         self._db = None
-        database_file = self._database_file()
-        if not new_dict:
-            self._check_database_file(database_file)
+        if read_only:
+            self._check_database_file(database_path)
+            db_uri = pathlib.Path(os.path.abspath(database_path)).as_uri()
+            # https://stackoverflow.com/a/21794758/301832
+            self._db = sqlite3.connect(f"{db_uri}?mode=ro", uri=True)
+            run_ddl = False
+        else:
+            run_ddl = not os.path.exists(database_path)
+            self._db = sqlite3.connect(database_path)
+        self.__init_db(run_ddl)
 
-        try:
-            self._db = sqlite3.connect(database_file)
-            self.__init_db()
-            if new_dict:
-                self.__clear_db()
-        except Exception as ex:
-            message = f"Error accessing c_logs_dict at {database_file}. "
-            if 'C_LOGS_DICT' in os.environ:
-                message += (
-                    "This came from the environment variable 'C_LOGS_DICT'. ")
-            else:
-                message += (
-                    "This is the default location. Set environment "
-                    "variable 'C_LOGS_DICT' to use somewhere else.")
-            if new_dict:
-                message += "Check this is a location with write access."
-            else:
-                message += "Please rebuild the C code."
-            raise FileNotFoundError(message) from ex
-
-    def _database_file(self) -> str:
+    @classmethod
+    def default_database_file(self) -> str:
         """
         Finds the database file path.
 
@@ -98,14 +89,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
         directory = os.path.dirname(script)
         return os.path.join(directory, DB_FILE_NAME)
 
-    def _extra_database_error_message(self) -> str:
-        """
-        Adds a possible extra part to the error message.
-
-        :return: A likely empty string
-        """
-        return ""
-
     def _check_database_file(self, database_file: str) -> None:
         """
         Checks the database file exists:
@@ -119,7 +102,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
         if 'C_LOGS_DICT' in os.environ:
             message += (
                 "This came from the environment variable 'C_LOGS_DICT'. ")
-        message += self._extra_database_error_message()
         message += "Please rebuild the C code."
         raise FileNotFoundError(message)
 
@@ -137,7 +119,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
             print(ex)
         self._db = None
 
-    def __init_db(self) -> None:
+    def __init_db(self, run_ddl: bool) -> None:
         """
         Set up the database if required.
         """
@@ -145,9 +127,10 @@ class LogSqlLiteDatabase(AbstractContextManager):
         self._db.row_factory = sqlite3.Row
         # Don't use memoryview / buffer as hard to deal with difference
         self._db.text_factory = str
-        with open(_DDL_FILE, encoding="utf-8") as f:
-            sql = f.read()
-        self._db.executescript(sql)
+        if run_ddl:
+            with open(_DDL_FILE, encoding="utf-8") as f:
+                sql = f.read()
+            self._db.executescript(sql)
 
     def __clear_db(self) -> None:
         assert self._db is not None
@@ -324,3 +307,32 @@ class LogSqlLiteDatabase(AbstractContextManager):
                      """):
                 return row["max_id"]
         raise ValueError("unexpected no return")
+
+    def get_database_keys(self) -> Set[str]:
+        assert self._db is not None
+        keys = set()
+        with self._db:
+            try:
+                for row in self._db.execute(
+                        """
+                        SELECT database_key
+                        FROM database_keys
+                        """):
+                    keys.add(row["database_key"])
+            except sqlite3.OperationalError as ex:
+                # Support old dabases that have np keys table
+                if "database_keys" not in str(ex):
+                    raise
+        if len(keys) == 0:
+            keys.add("")
+        return keys
+
+    def _set_database_key(self, new_key: str) -> None:
+        assert self._db is not None
+        with self._db:
+            cursor = self._db.cursor()
+            cursor.execute(
+                """
+                INSERT OR IGNORE INTO database_keys( database_key)
+                VALUES(?)
+                """, (new_key,))

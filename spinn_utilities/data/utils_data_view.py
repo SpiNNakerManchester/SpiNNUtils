@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+import logging
 import os
 from tempfile import TemporaryDirectory
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from unittest import SkipTest
 from spinn_utilities.exceptions import (
@@ -22,9 +23,13 @@ from spinn_utilities.exceptions import (
     SimulatorNotSetupException, SimulatorRunningException,
     SimulatorShutdownException, UnexpectedStateChange)
 from spinn_utilities.executable_finder import ExecutableFinder
+from spinn_utilities.log import FormatAdapter
+from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus
+
+logger = FormatAdapter(logging.getLogger(__name__))
 # pylint: disable=protected-access
 
 
@@ -48,6 +53,7 @@ class _UtilsDataModel(object):
     __slots__ = [
         "_data_status",
         "_executable_finder",
+        "_log_database_paths",
         "_report_dir_path",
         "_requires_data_generation",
         "_requires_mapping",
@@ -63,6 +69,7 @@ class _UtilsDataModel(object):
     def __init__(self) -> None:
         self._data_status: DataStatus = DataStatus.NOT_SETUP
         self._executable_finder: ExecutableFinder = ExecutableFinder()
+        self._log_database_paths: Dict[str, str] = {}
         self._reset_status: ResetStatus = ResetStatus.NOT_SETUP
         self._run_status: RunStatus = RunStatus.NOT_SETUP
 
@@ -667,6 +674,9 @@ class UtilsDataView(object):
         :param search_path: absolute search path for binaries
         """
         cls.__data._executable_finder.add_path(search_path)
+        log_path = LogSqlLiteDatabase.default_database_file()
+        if os.path.exists(log_path):
+            cls._register_log_database(log_path)
 
     @classmethod
     def get_executable_path(cls, executable_name: str) -> str:
@@ -704,6 +714,53 @@ class UtilsDataView(object):
         """
         return cls.__data._executable_finder.get_executable_paths(
             executable_names)
+
+    @classmethod
+    def _register_log_database(cls, log_path: str) -> None:
+        """
+        Register a database keeping track of its keys and path
+
+        Intended only to be called by register_binary_search_path and tests
+
+        :param log_path:
+        """
+        db = LogSqlLiteDatabase(log_path)
+        keys = db.get_database_keys()
+        for key in keys:
+            if key in cls.__data._log_database_paths:
+                if log_path != cls.__data._log_database_paths[key]:
+                    if key == "":
+                        raise SpiNNUtilsException(
+                            f"Both databases {log_path} and "
+                            f"{cls.__data._log_database_paths[key]} "
+                            f"want to be the default")
+                    else:
+                        raise SpiNNUtilsException(
+                            f"Both databases {log_path} and "
+                            f"{cls.__data._log_database_paths[key]} "
+                            f"have the database_key {key}")
+            else:
+                cls.__data._log_database_paths[key] = log_path
+
+    @classmethod
+    def get_log_database_path(cls, database_key: str) -> Optional[str]:
+        if database_key not in cls.__data._log_database_paths:
+            if database_key == "":
+                database_file = LogSqlLiteDatabase.default_database_file()
+                if os.path.exists(database_file):
+                    # Check it is valid and map any database_keys
+                    cls._register_log_database(database_file)
+                    # map as the default even if it also does other keys
+                    cls.__data._log_database_paths[""] = (database_file)
+                else:
+                    if 'C_LOGS_DICT' in os.environ:
+                        logger.exception(
+                            f"{os.environ['C_LOGS_DICT']=} does not exist")
+                    else:
+                        logger.warning("Default logs database not found")
+                    cls.__data._log_database_paths[""] = None
+            return None
+        return cls.__data._log_database_paths[database_key]
 
     @classmethod
     def get_requires_data_generation(cls) -> bool:

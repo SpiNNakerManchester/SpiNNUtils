@@ -27,13 +27,18 @@ Note: if weird,file.c changes you may have to manually fix the tests
 """
 
 import math
-import unittest
 import os
+import unittest
 import tempfile
+from testfixtures import LogCapture
+from unittest import mock
+
 from spinn_utilities.config_setup import unittest_setup
-from spinn_utilities.config_holder import set_config
-from spinn_utilities.make_tools.replacer import Replacer
+from spinn_utilities.data import UtilsDataView
 from spinn_utilities.make_tools.file_converter import TOKEN
+from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
+from spinn_utilities.make_tools.replacer import Replacer
+from spinn_utilities.testing import log_checker
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -41,36 +46,46 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 class TestReplacer(unittest.TestCase):
 
     def test_replacer(self) -> None:
-        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
+        unittest_setup()
+        UtilsDataView._register_log_database(
+            os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             new = replacer.replace("5")
         assert ("[INFO] (weird,file.c: 36): this is ok" == new)
 
-    def test_not_there_existing(self) -> None:
+    @mock.patch.dict(os.environ,
+                     {"C_LOGS_DICT": "not_there.sqlite3"} )
+    def test_c_log_dict_bad(self) -> None:
         unittest_setup()
-        # Point C_LOGS_DICT to somewhere that does not exist
-        os.environ["C_LOGS_DICT"] = str(
-            os.path.join(PATH, "foo", "not_there.sqlite3"))
+        # If wrong dview will log an exception and return None
+        with LogCapture() as lc:
+            path = UtilsDataView.get_log_database_path("")
+            log_checker.assert_logs_error_contains(lc.records, "C_LOGS_DICT")
+        self.assertIsNone(path)
+
+        # Should never happen but if it does there is a good error message
         try:
-            Replacer()
+            LogSqlLiteDatabase(os.environ["C_LOGS_DICT"])
             raise NotImplementedError("Should not work!")
         except Exception as ex:
             assert ("Unable to locate c_logs_dict" in str(ex))
 
+        # As C_LOGS_DICT exist the standard default not used
+        with Replacer() as replacer:
+            new = replacer.replace("5")
+        self.assertEqual("5", new)
+
     def test_external_empty(self) -> None:
         unittest_setup()
         with tempfile.TemporaryDirectory() as tmpdirname:
-            set_config("Mapping", "external_binaries", tmpdirname)
-            os.environ["C_LOGS_DICT"] = str(
-                os.path.join(tmpdirname, "missing.sqlite3"))
-            try:
-                Replacer()
-                raise ValueError("Should not get here")
-            except FileNotFoundError as ex:
-                self.assertIn(tmpdirname, str(ex))
+            # Should just be ignored
+            UtilsDataView.register_binary_search_path(tmpdirname)
+        # Unable to test replacer as standard default may or may not exist
 
     def test_tab(self) -> None:
-        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
+        unittest_setup()
+        UtilsDataView._register_log_database(
+            os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             new = replacer.replace("11" + TOKEN + "10" + TOKEN + "20")
         message = "[INFO] (weird,file.c: 56): \t back off = 10, time between"\
@@ -78,14 +93,18 @@ class TestReplacer(unittest.TestCase):
         assert (message == new)
 
     def test_float(self) -> None:
-        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
+        unittest_setup()
+        UtilsDataView._register_log_database(
+            os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace("2" + TOKEN + "0xc0400000")
         message = "[INFO] (weird,file.c: 30): test -three -3.0"
         assert (message == new)
 
     def test_double(self) -> None:
-        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
+        unittest_setup()
+        UtilsDataView._register_log_database(
+            os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace(
             "3" + TOKEN + "40379999" + TOKEN + "9999999a")
@@ -93,7 +112,9 @@ class TestReplacer(unittest.TestCase):
         assert (message == new)
 
     def test_bad(self) -> None:
-        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
+        unittest_setup()
+        UtilsDataView._register_log_database(
+            os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace("1007" + TOKEN + "10")
         # An exception so just output the input
@@ -112,7 +133,9 @@ class TestReplacer(unittest.TestCase):
         Test the converter against hex values returned from Spinnaker
 
         """
-        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
+        unittest_setup()
+        UtilsDataView._register_log_database(
+            os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             assert self.near_equals(
                 -345443332234.13432143, replacer._hex_to_float("d2a0dc0e"))
@@ -141,7 +164,9 @@ class TestReplacer(unittest.TestCase):
         Test the converter against hexes values returned from Spinnaker
 
         """
-        os.environ["C_LOGS_DICT"] = str(os.path.join(PATH, "replacer.sqlite3"))
+        unittest_setup()
+        UtilsDataView._register_log_database(
+            os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             assert self.near_equals(
                 0, replacer._hexes_to_double("0", "0"))

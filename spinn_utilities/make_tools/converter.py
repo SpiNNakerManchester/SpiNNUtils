@@ -14,6 +14,7 @@
 
 import os
 import sys
+from spinn_utilities.exceptions import SpiNNUtilsException
 from .file_converter import FileConverter
 from .log_sqllite_database import LogSqlLiteDatabase
 
@@ -82,12 +83,12 @@ def _mkdir(destination: str) -> None:
 if __name__ == '__main__':
     _src = sys.argv[1]
     _dest = sys.argv[2]
-    if len(sys.argv) > 3:
-        _database_file = sys.argv[3]
-    else:
-        _database_file = LogSqlLiteDatabase.default_database_file()
+    # Ignore requests with three parameters
+    # Likely the key was blank so just use the default database
     if len(sys.argv) > 4:
-        _database_key = sys.argv[4]
+        _database_key = sys.argv[3]
+        _database_file = sys.argv[4]
     else:
         _database_key = ""
+        _database_file = sys.argv[4]
     convert(_src, _dest, _database_file, _database_key)

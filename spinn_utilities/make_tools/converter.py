@@ -14,7 +14,6 @@
 
 import os
 import sys
-from spinn_utilities.exceptions import SpiNNUtilsException
 from .file_converter import FileConverter
 from .log_sqllite_database import LogSqlLiteDatabase
 

@@ -49,7 +49,7 @@ class Replacer(object):
         "_dbs",
     ]
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._dbs: Dict["", LogSqlLiteDatabase] = dict()
 
     def __enter__(self) -> Self:
@@ -83,10 +83,10 @@ class Replacer(object):
         parts = short.split(TOKEN)
         log_st = parts[0]
         if log_st[0].isdigit():
-            log_id = int(log_st)
+            log_id = log_st
             database_key = ""
         elif log_st[1:].isdigit():
-            log_id = int(log_st[1:])
+            log_id = log_st[1:]
             database_key = log_st[0]
         else:
             return None

@@ -69,7 +69,7 @@ class _UtilsDataModel(object):
     def __init__(self) -> None:
         self._data_status: DataStatus = DataStatus.NOT_SETUP
         self._executable_finder: ExecutableFinder = ExecutableFinder()
-        self._log_database_paths: Dict[str, str] = {}
+        self._log_database_paths: Dict[str, Optional[str]] = {}
         self._reset_status: ResetStatus = ResetStatus.NOT_SETUP
         self._run_status: RunStatus = RunStatus.NOT_SETUP
 

@@ -14,7 +14,6 @@
 
 import os
 import sys
-from typing import Optional
 from .file_converter import FileConverter
 from .log_sqllite_database import LogSqlLiteDatabase
 
@@ -25,46 +24,46 @@ SKIPPABLE_FILES = frozenset([
     "neural_build.mk", "Makefile.neural_build"])
 
 
-def convert(src: str, dest: str, new_dict: bool) -> None:
+def convert(src: str, dest: str, database_file: str, database_key: str) -> None:
     """
     Converts a whole directory including sub-directories.
 
     :param src: Full source directory
     :param dest: Full destination directory
-    :param new_dict:
-        Whether we should generate a new dictionary/DB.
-        If not, we add to the existing one.
+    :param database_file: Full path to database file
+    :param database_key: database key for this conversion
     """
-    if new_dict:
-        LogSqlLiteDatabase(new_dict)
+    if len(database_key) > 1:
+        raise ValueError(f"{database_key=} Only single character allowed")
+    if database_key.isdigit():
+        raise ValueError(f"{database_key=} is digital")
+
+    log_database = LogSqlLiteDatabase(database_file, read_only=False)
 
     src_path = os.path.abspath(src)
     if not os.path.exists(src_path):
         raise FileNotFoundError(
             f"Unable to locate source directory {src_path}")
     dest_path = os.path.abspath(dest)
-    _convert_dir(src_path, dest_path)
+    file_converter = FileConverter(log_database, database_key)
+    _convert_dir(src_path, dest_path, file_converter)
 
 
 def _convert_dir(src_path: str, dest_path: str,
-                 make_directories: Optional[bool] = False) -> None:
+                 file_converter: FileConverter) -> None:
     """
     Converts a whole directory including sub directories.
 
     :param src_path: Full source directory
     :param dest_path: Full destination directory
-    :param make_directories: Whether to do `mkdir()` first
+    :param file_converter:
     """
-    if make_directories:
-        _mkdir(dest_path)
     for src_dir, _, file_list in os.walk(src_path):
         dest_dir = os.path.join(dest_path, os.path.relpath(src_dir, src_path))
-        if make_directories:
-            _mkdir(dest_dir)
         for file_name in file_list:
             _, extension = os.path.splitext(file_name)
             if extension in ALLOWED_EXTENSIONS:
-                FileConverter.convert(src_dir, dest_dir, file_name)
+                file_converter.convert(src_dir, dest_dir, file_name)
             elif file_name in SKIPPABLE_FILES:
                 pass
             else:
@@ -80,10 +79,14 @@ def _mkdir(destination: str) -> None:
 
 
 if __name__ == '__main__':
-    _src = sys.argv[1]
-    _dest = sys.argv[2]
+    src = sys.argv[1]
+    dest = sys.argv[2]
     if len(sys.argv) > 3:
-        _new_dict = bool(sys.argv[3])
+        database_file = sys.argv[3]
     else:
-        _new_dict = False
-    convert(_src, _dest, _new_dict)
+        database_file = LogSqlLiteDatabase.default_database_file()
+    if len(sys.argv) > 4:
+        database_key = sys.argv[4]
+    else:
+        database_key = ""
+    convert(src, dest, database_file, database_key)

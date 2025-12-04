@@ -29,42 +29,40 @@ class TestConverter(unittest.TestCase):
     def test_convert(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
+        database_file = str(os.path.join(path, "convert_1.sqlite3"))
         os.chdir(path)
-        os.environ["C_LOGS_DICT"] = str(os.path.join(path,
-                                                     "convert_1.sqlite3"))
         # Clear the database
-        LogSqlLiteDatabase(True)
+        if os.path.exists(database_file):
+            os.remove(database_file)
         src = "mock_src"
         dest = "modified_src"
         formats = os.path.join(src, "formats.c")
         # make sure the first formats is there
         shutil.copyfile("formats.c1", formats)
-        convert(src, dest, True)
-        with LogSqlLiteDatabase() as sql:
+        convert(src, dest, database_file, "")
+        with LogSqlLiteDatabase(database_file) as sql:
             single = sql.get_max_log_id()
             assert single is not None
         # Unchanged file a second time should give same ids
-        convert(src, dest, False)
-        with LogSqlLiteDatabase() as sql:
+        convert(src, dest, database_file, "")
+        with LogSqlLiteDatabase(database_file) as sql:
             self.assertEqual(single, sql.get_max_log_id())
         # Now use the second formats which as one extra log and moves 1 down
         shutil.copyfile("formats.c2", formats)
-        convert(src, dest, False)
-        with LogSqlLiteDatabase() as sql:
+        convert(src, dest, database_file, "")
+        with LogSqlLiteDatabase(database_file) as sql:
             # Need two more ids for the new log and then changed line number
             self.assertEqual(single + 2, sql.get_max_log_id())
 
     def test_double_level(self) -> None:
-        class_file = str(sys.modules[self.__module__].__file__)
-        path = os.path.dirname(os.path.abspath(class_file))
-        os.chdir(path)
-        os.environ["C_LOGS_DICT"] = tempfile.mktemp()
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        src = os.path.join(dir_path, "foo", "bar")
-        dest = os.path.join(dir_path, "alpha", "beta")
-        e1 = os.path.join(dest, "delta", "empty1.c")
-        shutil.rmtree(os.path.join(dir_path, "alpha"), ignore_errors=True)
-        self.assertFalse(os.path.exists(e1))
-        convert(src, dest, True)
-        self.assertTrue(os.path.exists(e1))
-        convert(src, dest, True)
+        with tempfile.TemporaryDirectory() as tmp:
+            database_file = os.path.join(tmp, "logs.sqlite3")
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            src = os.path.join(dir_path, "foo", "bar")
+            dest = os.path.join(dir_path, "alpha", "beta")
+            e1 = os.path.join(dest, "delta", "empty1.c")
+            shutil.rmtree(os.path.join(dir_path, "alpha"), ignore_errors=True)
+            self.assertFalse(os.path.exists(e1))
+            convert(src, dest, database_file, "T")
+            self.assertTrue(os.path.exists(e1))
+            convert(src, dest, database_file, "T")

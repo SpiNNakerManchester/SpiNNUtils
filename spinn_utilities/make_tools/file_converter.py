@@ -56,6 +56,7 @@ class FileConverter(object):
     """
 
     __slots__ = [
+        "_database_key",
         "_log_database",
         "_log_file_id",
         "_log",
@@ -68,59 +69,69 @@ class FileConverter(object):
         "_too_many_lines"
     ]
 
-    def __call__(self, src: str, dest: str, log_file_id: int,
-                 log_database: LogSqlLiteDatabase) -> None:
+    def __init__(self, log_database: LogSqlLiteDatabase, database_key: str):
         """
-        Creates the file_convertor to convert one file.
 
-        :param src: Absolute path to source file
-        :param dest: Absolute path to destination file
-        :param log_file_id: Id in the database for this file
-        :param log_database:
-            The database which handles the mapping of id to log messages.
+        :param log_database: Database to use
+        :param database_key: Key for this conversion
         """
-        #: Absolute path to source file
-        #:
-        #: :type: str
-        self._src = src
-        #: Database which handles the mapping of id to log messages
-        #:
-        #: :type: .log_sqllite_database.LogSqlLiteDatabase
         self._log_database = log_database
-        #: Id in the database for this file
-        #:
-        #: :type: int
-        self._log_file_id = log_file_id
-        #: Current status of state machine
-        #:
-        #: :type: State
-        self._status: Optional[State] = None
-        #: Number of extra lines written to modified not yet recovered
-        #: Extra lines are caused by the header and possibly log comment
-        #: Extra lines are recovered by omitting blank lines
-        self._too_many_lines: int = -9999999
+        # key to the databse
+        self._database_key = database_key
+        self._log_database.set_database_key(database_key)
+        if len(database_key) > 1:
+            raise ValueError(f"{database_key=} Only single character allowed")
+        if database_key.isdigit():
+            raise ValueError(f"{database_key=} is digital")
+
+        # fill slots with temp values to avoid Optional
+
+        # Variables created in each convert
+        self._src = "Not yet defined!"
+        self._log_file_id = -9999999
+        self._status = State.NORMAL_CODE
+        self._previous_status = State.NORMAL_CODE
+        self._too_many_lines = 2
+
         #: Variables created each time a log method found
         #: original c log method found
-        self._log: str = "Not yet defined!"
+        self._log = "Not yet defined!"
         #: Log methods found so far
-        self._log_full: str = "Not yet defined!"
+        self._log_full = "Not yet defined!"
         #: Number of c lines the log method takes
-        self._log_lines: int = -9999999
+        self._log_lines = -9999999
         #: Any other stuff found before the log method but on same line
-        self._log_start: int = -9999999
-        # variable created when a comment found
-        #: The previous state
-        #:
-        #: :type: State
-        self._previous_status: Optional[State] = None
+        self._log_start = -9999999
 
-        with open(src, encoding="utf-8") as src_f:
-            with open(dest, 'w', encoding="utf-8") as dest_f:
+    def convert(self, src_dir: str, dest_dir: str, file_name: str) -> None:
+        """
+        Converts the c file changing the log messages
+
+        :param src_dir: Source directory
+        :param dest_dir: Destination directory
+        :param file_name:
+            The name of the file to convert within the source directory; it
+            will be made with the same name in the destination directory.
+        """
+        self._src = os.path.join(src_dir, file_name)
+        if not os.path.exists(self._src):
+            raise UnexpectedCException(f"Unable to locate source {self._src}")
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+        destination = os.path.join(dest_dir, file_name)
+        directory_id = self._log_database.get_directory_id(src_dir, dest_dir)
+        self._log_file_id = self._log_database.get_file_id(
+            directory_id, file_name)
+
+        self._status = State.NORMAL_CODE
+        self._previous_status = State.NORMAL_CODE
+        self._too_many_lines = 2
+
+        with open(self._src, encoding="utf-8") as src_f:
+            with open(destination, 'w', encoding="utf-8") as dest_f:
                 dest_f.write(
                     f"// DO NOT EDIT! THIS FILE WAS GENERATED FROM "
-                    f"{os.path.relpath(src, dest)}\n\n")
-                self._too_many_lines = 2
-                self._status = State.NORMAL_CODE
+                    f"{os.path.relpath(self._src, destination)}\n\n")
                 for line_num, text in enumerate(src_f):
                     if self._too_many_lines > 0:
                         # Try to recover the lines added by do not edit
@@ -617,25 +628,3 @@ class FileConverter(object):
             self._log_lines += 1
         else:
             dest_f.write(text[write_flag:])
-
-    @staticmethod
-    def convert(src_dir: str, dest_dir: str, file_name: str) -> None:
-        """
-        Static method to create Object and do the conversion.
-
-        :param src_dir: Source directory
-        :param dest_dir: Destination directory
-        :param file_name:
-            The name of the file to convert within the source directory; it
-            will be made with the same name in the destination directory.
-        """
-        source = os.path.join(src_dir, file_name)
-        if not os.path.exists(source):
-            raise UnexpectedCException(f"Unable to locate source {source}")
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-        destination = os.path.join(dest_dir, file_name)
-        with LogSqlLiteDatabase() as log_database:
-            directory_id = log_database.get_directory_id(src_dir, dest_dir)
-            file_id = log_database.get_file_id(directory_id, file_name)
-            FileConverter()(source, destination, file_id, log_database)

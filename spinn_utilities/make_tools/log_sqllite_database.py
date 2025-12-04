@@ -327,7 +327,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
             keys.add("")
         return keys
 
-    def _set_database_key(self, new_key: str) -> None:
+    def set_database_key(self, new_key: str) -> None:
         assert self._db is not None
         with self._db:
             cursor = self._db.cursor()

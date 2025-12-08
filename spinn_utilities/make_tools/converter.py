@@ -34,7 +34,7 @@ def convert(src: str, dest: str, database_file: str,
     :param database_file: Full path to database file
     :param database_key: database key for this conversion
     """
-    if len(database_key) > 1:
+    if len(database_key) == 1:
         raise ValueError(f"{database_key=} Only single character allowed")
     if database_key.isdigit():
         raise ValueError(f"{database_key=} is digital")
@@ -82,12 +82,14 @@ def _mkdir(destination: str) -> None:
 if __name__ == '__main__':
     _src = sys.argv[1]
     _dest = sys.argv[2]
-    # Ignore requests with three parameters
-    # Likely the key was blank so just use the default database
     if len(sys.argv) > 4:
         _database_key = sys.argv[3]
         _database_file = sys.argv[4]
+        convert(_src, _dest, _database_file, _database_key)
     else:
-        _database_key = ""
-        _database_file = sys.argv[4]
-    convert(_src, _dest, _database_file, _database_key)
+        raise ValueError(
+            "Convert requires 4 parameters. The source directory, "
+            "the destination directory, a single character database key and "
+            "the path to write the logs.sqlite3 database to. "
+            "Database keys must be unique. "
+            "To avoid clashes with system builds use a lower case letter")

@@ -22,7 +22,6 @@ from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
 _SECONDS_TO_MICRO_SECONDS_CONVERSION = 1000
-DB_FILE_NAME = "logs.sqlite3"
 
 
 def _timestamp() -> int:
@@ -70,24 +69,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
             run_ddl = not os.path.exists(database_path)
             self._db = sqlite3.connect(database_path)
         self.__init_db(run_ddl)
-
-    @classmethod
-    def default_database_file(cls) -> str:
-        """
-        Finds the database file path.
-
-        If environment variable C_LOGS_DICT exists that is used,
-        otherwise the default path in this directory is used.
-
-        :return: Absolute path to where the database file is or will be
-        """
-        if 'C_LOGS_DICT' in os.environ:
-            return str(os.environ['C_LOGS_DICT'])
-
-        script = sys.modules[cls.__module__].__file__
-        assert script is not None
-        directory = os.path.dirname(script)
-        return os.path.join(directory, DB_FILE_NAME)
 
     def _check_database_file(self, database_file: str) -> None:
         """

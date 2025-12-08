@@ -32,7 +32,6 @@ import pytest
 import tempfile
 from testfixtures import LogCapture
 import unittest
-from unittest import mock
 
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.data import UtilsDataView
@@ -66,27 +65,20 @@ class TestReplacer(unittest.TestCase):
             new = replacer.replace("5")
         assert ("[INFO] (weird,file.c: 36): this is ok" == new)
 
-    @mock.patch.dict(os.environ,
-                     {"C_LOGS_DICT": "not_there.sqlite3"})
     def test_c_log_dict_bad(self) -> None:
         unittest_setup()
-        # If wrong view will log an exception and return None
-        with LogCapture() as lc:
-            path = UtilsDataView.get_log_database_path("")
-            log_checker.assert_logs_error_contains(lc.records, "C_LOGS_DICT")
-        self.assertIsNone(path)
-
         # Should never happen but if it does there is a good error message
         try:
-            LogSqlLiteDatabase(os.environ["C_LOGS_DICT"])
+            LogSqlLiteDatabase("not_there")
             raise NotImplementedError("Should not work!")
         except Exception as ex:
             assert ("Unable to locate c_logs_dict" in str(ex))
 
-        # As C_LOGS_DICT exist the standard default not used
         with Replacer() as replacer:
             new = replacer.replace("5")
-        self.assertEqual("5", new)
+            self.assertEqual("5", new)
+            new = replacer.replace("C5")
+            self.assertEqual("C5", new)
 
     def test_external_empty(self) -> None:
         unittest_setup()
@@ -94,7 +86,11 @@ class TestReplacer(unittest.TestCase):
                 ignore_cleanup_errors=True) as tmpdirname:
             # Should just be ignored
             UtilsDataView.register_binary_search_path(tmpdirname)
-        # Unable to test replacer as standard default may or may not exist
+        with Replacer() as replacer:
+            new = replacer.replace("5")
+            self.assertEqual("5", new)
+            new = replacer.replace("C5")
+            self.assertEqual("C5", new)
 
     @pytest.mark.xdist_group(name="mock_src")
     def test_tab(self) -> None:

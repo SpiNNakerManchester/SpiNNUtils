@@ -674,9 +674,6 @@ class UtilsDataView(object):
         :param search_path: absolute search path for binaries
         """
         cls.__data._executable_finder.add_path(search_path)
-        log_path = LogSqlLiteDatabase.default_database_file()
-        if os.path.exists(log_path):
-            cls._register_log_database(log_path)
 
     @classmethod
     def get_executable_path(cls, executable_name: str) -> str:
@@ -754,21 +751,8 @@ class UtilsDataView(object):
         :return: A path to the database if registered
         """
         if database_key not in cls.__data._log_database_paths:
-            if database_key == "":
-                database_file = LogSqlLiteDatabase.default_database_file()
-                if os.path.exists(database_file):
-                    # Check it is valid and map any database_keys
-                    cls._register_log_database(database_file)
-                    # map as the default even if it also does other keys
-                    cls.__data._log_database_paths[""] = (database_file)
-                else:
-                    if 'C_LOGS_DICT' in os.environ:
-                        logger.exception(
-                            f"{os.environ['C_LOGS_DICT']=} does not exist")
-                    else:
-                        logger.warning("Default logs database not found")
-                    cls.__data._log_database_paths[""] = None
-            return None
+            logger.error(f"No logs database found for {database_key=}")
+            cls.__data._log_database_paths[database_key] = None
         return cls.__data._log_database_paths[database_key]
 
     @classmethod

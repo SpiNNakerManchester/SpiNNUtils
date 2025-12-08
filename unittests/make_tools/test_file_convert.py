@@ -74,128 +74,138 @@ class TestConverter(unittest.TestCase):
     def test_not_there_exception(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_file = tempfile.mktemp()
-        log_database = LogSqlLiteDatabase(database_file, read_only=False)
-        file_converter = FileConverter(log_database, database_key="")
-        src = os.path.join(path, "mistakes")
-        dest = os.path.join(path, "modified_src")
-        try:
-            file_converter.convert(src, dest, "not_there.c")
-            assert False
-        except Exception as ex1:
-            self.assertIn("Unable to locate source", str(ex1))
-            self.assertIn("mistakes", str(ex1))
-            self.assertIn("not_there.c", str(ex1))
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
+            database_file = os.path.join(tmpdir, "logs.sqlite3")
+            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            file_converter = FileConverter(log_database, database_key="")
+            src = os.path.join(path, "mistakes")
+            dest = os.path.join(path, "modified_src")
+            try:
+                file_converter.convert(src, dest, "not_there.c")
+                assert False
+            except Exception as ex1:
+                self.assertIn("Unable to locate source", str(ex1))
+                self.assertIn("mistakes", str(ex1))
+                self.assertIn("not_there.c", str(ex1))
 
     def test_split_fail(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_file = tempfile.mktemp()
-        log_database = LogSqlLiteDatabase(database_file, read_only=False)
-        file_converter = FileConverter(log_database, database_key="")
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
+            database_file = os.path.join(tmpdir, "logs.sqlite3")
+            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            file_converter = FileConverter(log_database, database_key="")
 
-        src = os.path.join(path, "mistakes")
-        dest = os.path.join(path, "modified_src")
-        try:
-            file_converter.convert(src, dest, "bad_comma.c")
-            assert False
-        except Exception as ex1:
-            self.assertIn('Unexpected line "); at 18 in', str(ex1))
-            self.assertIn("mistakes", str(ex1))
-            self.assertIn("bad_comma.c", str(ex1))
+            src = os.path.join(path, "mistakes")
+            dest = os.path.join(path, "modified_src")
+            try:
+                file_converter.convert(src, dest, "bad_comma.c")
+                assert False
+            except Exception as ex1:
+                self.assertIn('Unexpected line "); at 18 in', str(ex1))
+                self.assertIn("mistakes", str(ex1))
+                self.assertIn("bad_comma.c", str(ex1))
 
     def test_format_fail(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_file = tempfile.mktemp()
-        log_database = LogSqlLiteDatabase(database_file, read_only=False)
-        file_converter = FileConverter(log_database, database_key="")
-        src = os.path.join(path, "mistakes")
-        dest = os.path.join(path, "modified_src")
-        try:
-            file_converter.convert(src, dest, "bad_format.c")
-            assert False
-        except Exception as ex1:
-            assert str(ex1) == "Unexpected formatString in %!"
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
+            database_file = os.path.join(tmpdir, "logs.sqlite3")
+            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            file_converter = FileConverter(log_database, database_key="")
+            src = os.path.join(path, "mistakes")
+            dest = os.path.join(path, "modified_src")
+            try:
+                file_converter.convert(src, dest, "bad_format.c")
+                assert False
+            except Exception as ex1:
+                assert str(ex1) == "Unexpected formatString in %!"
 
     def test_unclosed_log(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_file = tempfile.mktemp()
-        log_database = LogSqlLiteDatabase(database_file, read_only=False)
-        file_converter = FileConverter(log_database, database_key="")
-        src = os.path.join(path, "mistakes")
-        dest = os.path.join(path, "modified_src")
-        try:
-            file_converter.convert(src, dest, "unclosed.c")
-            assert False
-        except Exception as ex1:
-            self.assertIn('Unclosed log_info("test %f", -3.0f in ', str(ex1))
-            self.assertIn("mistakes/unclosed.c", str(ex1).replace('\\', '/'))
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
+            database_file = os.path.join(tmpdir, "logs.sqlite3")
+            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            file_converter = FileConverter(log_database, database_key="")
+            src = os.path.join(path, "mistakes")
+            dest = os.path.join(path, "modified_src")
+            try:
+                file_converter.convert(src, dest, "unclosed.c")
+                assert False
+            except Exception as ex1:
+                self.assertIn('Unclosed log_info("test %f", -3.0f in ', str(ex1))
+                self.assertIn("mistakes/unclosed.c", str(ex1).replace('\\', '/'))
 
     def test_semi(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_file = tempfile.mktemp()
-        log_database = LogSqlLiteDatabase(database_file, read_only=False)
-        file_converter = FileConverter(log_database, database_key="")
-        src = os.path.join(path, "mistakes")
-        dest = os.path.join(path, "modified_src")
-        try:
-            file_converter.convert(src, dest, "semi.c")
-            assert False
-        except Exception as ex1:
-            self.assertIn('Semicolumn missing: log_info("test %f", -3.0f)',
-                          str(ex1))
-            self.assertIn("semi.c", str(ex1))
-            self.assertIn("mistakes", str(ex1))
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
+            database_file = os.path.join(tmpdir, "logs.sqlite3")
+            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            file_converter = FileConverter(log_database, database_key="")
+            src = os.path.join(path, "mistakes")
+            dest = os.path.join(path, "modified_src")
+            try:
+                file_converter.convert(src, dest, "semi.c")
+                assert False
+            except Exception as ex1:
+                self.assertIn('Semicolumn missing: log_info("test %f", -3.0f)',
+                              str(ex1))
+                self.assertIn("semi.c", str(ex1))
+                self.assertIn("mistakes", str(ex1))
 
     def test_open(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_file = tempfile.mktemp()
-        log_database = LogSqlLiteDatabase(database_file, read_only=False)
-        file_converter = FileConverter(log_database, database_key="")
-        src = os.path.join(path, "mistakes")
-        dest = os.path.join(path, "modified_src")
-        try:
-            file_converter.convert(src, dest, "open.c")
-            assert False
-        except Exception as ex1:
-            self.assertIn('Unclosed block comment in ', str(ex1))
-            self.assertIn("open.c", str(ex1))
-            self.assertIn("mistakes", str(ex1))
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
+            database_file = os.path.join(tmpdir, "logs.sqlite3")
+            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            file_converter = FileConverter(log_database, database_key="")
+            src = os.path.join(path, "mistakes")
+            dest = os.path.join(path, "modified_src")
+            try:
+                file_converter.convert(src, dest, "open.c")
+                assert False
+            except Exception as ex1:
+                self.assertIn('Unclosed block comment in ', str(ex1))
+                self.assertIn("open.c", str(ex1))
+                self.assertIn("mistakes", str(ex1))
 
     def test_too_few(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_file = tempfile.mktemp()
-        log_database = LogSqlLiteDatabase(database_file, read_only=False)
-        file_converter = FileConverter(log_database, database_key="")
-        src = os.path.join(path, "mistakes")
-        dest = os.path.join(path, "modified_src")
-        try:
-            file_converter.convert(src, dest, "too_few.c")
-            assert False
-        except Exception as ex1:
-            self.assertIn('Too few parameters in line "test %f %i", -1.0f); ',
-                          str(ex1))
-            self.assertIn("mistakes", str(ex1))
-            self.assertIn("too_few.c", str(ex1))
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
+            database_file = os.path.join(tmpdir, "logs.sqlite3")
+            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            file_converter = FileConverter(log_database, database_key="")
+            src = os.path.join(path, "mistakes")
+            dest = os.path.join(path, "modified_src")
+            try:
+                file_converter.convert(src, dest, "too_few.c")
+                assert False
+            except Exception as ex1:
+                self.assertIn(
+                    'Too few parameters in line "test %f %i", -1.0f); ',
+                    str(ex1))
+                self.assertIn("mistakes", str(ex1))
+                self.assertIn("too_few.c", str(ex1))
 
     def test_too_many(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_file = tempfile.mktemp()
-        log_database = LogSqlLiteDatabase(database_file, read_only=False)
-        file_converter = FileConverter(log_database, database_key="")
-        src = os.path.join(path, "mistakes")
-        dest = os.path.join(path, "modified_src")
-        try:
-            file_converter.convert(src, dest, "too_many.c")
-            assert False
-        except Exception as ex1:
-            self.assertIn('Too many parameters in line "test %f", -1.0f, 2);',
-                          str(ex1))
-            self.assertIn("mistakes", str(ex1))
-            self.assertIn("too_many.c", str(ex1))
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
+            database_file = os.path.join(tmpdir, "logs.sqlite3")
+            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            file_converter = FileConverter(log_database, database_key="")
+            src = os.path.join(path, "mistakes")
+            dest = os.path.join(path, "modified_src")
+            try:
+                file_converter.convert(src, dest, "too_many.c")
+                assert False
+            except Exception as ex1:
+                self.assertIn(
+                    'Too many parameters in line "test %f", -1.0f, 2);',
+                    str(ex1))
+                self.assertIn("mistakes", str(ex1))
+                self.assertIn("too_many.c", str(ex1))

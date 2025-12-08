@@ -56,13 +56,12 @@ class TestConverter(unittest.TestCase):
 
     def test_double_level(self) -> None:
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
-            database_file = os.path.join(tmp, "logs.sqlite3")
             dir_path = os.path.dirname(os.path.realpath(__file__))
             src = os.path.join(dir_path, "foo", "bar")
             dest = os.path.join(dir_path, "alpha", "beta")
             e1 = os.path.join(dest, "delta", "empty1.c")
             shutil.rmtree(os.path.join(dir_path, "alpha"), ignore_errors=True)
             self.assertFalse(os.path.exists(e1))
-            convert(src, dest, database_file, "T")
+            convert(src, dest, tmp, "T")
             self.assertTrue(os.path.exists(e1))
-            convert(src, dest, database_file, "T")
+            convert(src, dest, tmp, "T")

@@ -31,14 +31,17 @@ def convert(src: str, dest: str, database_file: str,
 
     :param src: Full source directory
     :param dest: Full destination directory
-    :param database_file: Full path to database file
+    :param database_file:
+        Full path to database file. Can be a file or directory
     :param database_key: database key for this conversion
     """
-    if len(database_key) == 1:
+    if len(database_key) != 1:
         raise ValueError(f"{database_key=} Only single character allowed")
     if database_key.isdigit():
         raise ValueError(f"{database_key=} is digital")
 
+    if os.path.isdir(database_file):
+        database_file = os.path.join(database_file, "logs.sqlite3")
     log_database = LogSqlLiteDatabase(database_file, read_only=False)
 
     src_path = os.path.abspath(src)
@@ -83,8 +86,8 @@ if __name__ == '__main__':
     _src = sys.argv[1]
     _dest = sys.argv[2]
     if len(sys.argv) > 4:
-        _database_key = sys.argv[3]
-        _database_file = sys.argv[4]
+        _database_file = sys.argv[3]
+        _database_key = sys.argv[4]
         convert(_src, _dest, _database_file, _database_key)
     else:
         raise ValueError(

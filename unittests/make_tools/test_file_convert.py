@@ -134,8 +134,10 @@ class TestConverter(unittest.TestCase):
                 file_converter.convert(src, dest, "unclosed.c")
                 assert False
             except Exception as ex1:
-                self.assertIn('Unclosed log_info("test %f", -3.0f in ', str(ex1))
-                self.assertIn("mistakes/unclosed.c", str(ex1).replace('\\', '/'))
+                self.assertIn('Unclosed log_info("test %f", -3.0f in ',
+                              str(ex1))
+                self.assertIn("mistakes/unclosed.c",
+                              str(ex1).replace('\\', '/'))
 
     def test_semi(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)

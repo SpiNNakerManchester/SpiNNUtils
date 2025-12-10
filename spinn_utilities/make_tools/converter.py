@@ -15,7 +15,7 @@
 import os
 import sys
 from .file_converter import FileConverter
-from .log_sqllite_database import LogSqlLiteDatabase
+from .log_sqllite_database import DB_FILE_NAME, LogSqlLiteDatabase
 
 ALLOWED_EXTENSIONS = frozenset([".c", ".cpp", ".h"])
 SKIPPABLE_FILES = frozenset([
@@ -42,7 +42,7 @@ def convert(src: str, dest: str, database_file: str,
 
     if os.path.isdir(database_file):
         database_file = os.path.join(
-            database_file, LogSqlLiteDatabase.DB_FILE_NAME)
+            database_file, DB_FILE_NAME)
     log_database = LogSqlLiteDatabase(database_file, read_only=False)
 
     src_path = os.path.abspath(src)

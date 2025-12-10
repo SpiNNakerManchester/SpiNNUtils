@@ -1130,7 +1130,7 @@ class TestUtilsData(unittest.TestCase):
         assert error_file.startswith(reports)
 
     # Good tested by test_replacer
-    def test_log_database_path_bad(self):
+    def test_log_database_path_bad(self) -> None:
         with LogCapture() as lc:
             path = UtilsDataView.get_log_database_path("£")
             self.assertIsNone(path)

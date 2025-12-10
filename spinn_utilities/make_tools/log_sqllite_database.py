@@ -24,6 +24,7 @@ _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
 _SECONDS_TO_MICRO_SECONDS_CONVERSION = 1000
 DB_FILE_NAME = "logs.sqlite3"
 
+
 def _timestamp() -> int:
     return int(time.time() * _SECONDS_TO_MICRO_SECONDS_CONVERSION)
 

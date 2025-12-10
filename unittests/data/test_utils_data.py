@@ -31,6 +31,7 @@ from spinn_utilities.exceptions import (
     UnexpectedStateChange)
 from spinn_utilities.testing import log_checker
 
+
 class TestUtilsData(unittest.TestCase):
 
     def setUp(self) -> None:

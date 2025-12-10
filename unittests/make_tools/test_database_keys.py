@@ -24,6 +24,7 @@ from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 class TestDatabaseKeys(unittest.TestCase):
 
     def test_check_all(self) -> None:
+        unittest_setup()
         class_file = str(sys.modules[self.__module__].__file__)
         this_path = os.path.dirname(os.path.abspath(class_file))
         test_path = os.path.dirname(this_path)

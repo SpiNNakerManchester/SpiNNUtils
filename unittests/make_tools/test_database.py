@@ -16,7 +16,6 @@ import os
 import pytest
 import sys
 import unittest
-from unittest import mock
 
 from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 

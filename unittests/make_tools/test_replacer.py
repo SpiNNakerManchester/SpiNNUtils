@@ -30,7 +30,6 @@ import math
 import os
 import pytest
 import tempfile
-from testfixtures import LogCapture
 import unittest
 
 from spinn_utilities.config_setup import unittest_setup
@@ -39,7 +38,6 @@ from spinn_utilities.make_tools import FileConverter
 from spinn_utilities.make_tools.file_converter import TOKEN
 from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 from spinn_utilities.make_tools.replacer import Replacer
-from spinn_utilities.testing import log_checker
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 

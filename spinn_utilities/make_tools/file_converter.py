@@ -426,9 +426,10 @@ class FileConverter(object):
         count = original.count("%") - original.count("%%") * 2
 
         if count == 0:
+            # for no extra to put in this works better
             return f'"{self._database_key}%u", {message_id});'
 
-        front = f'"{self._database_key}%u'
+        front = f'"{self._database_key}{message_id}'
         back = ""
         matches = [x for x in FORMAT_EXP.findall(original)
                    if not x.startswith("%%")]
@@ -455,7 +456,7 @@ class FileConverter(object):
                 back += f", {parts[i + 1]}"
                 front += match
 
-        front += f'", {message_id}'
+        front += '"'
         back += ");"
         return front + back
 

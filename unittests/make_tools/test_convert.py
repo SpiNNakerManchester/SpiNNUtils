@@ -39,17 +39,17 @@ class TestConverter(unittest.TestCase):
         formats = os.path.join(src, "formats.c")
         # make sure the first formats is there
         shutil.copyfile("formats.c1", formats)
-        convert(src, dest, database_file, "")
+        convert(src, dest, database_file, "Z")
         with LogSqlLiteDatabase(database_file) as sql:
             single = sql.get_max_log_id()
             assert single is not None
         # Unchanged file a second time should give same ids
-        convert(src, dest, database_file, "")
+        convert(src, dest, database_file, "Z")
         with LogSqlLiteDatabase(database_file) as sql:
             self.assertEqual(single, sql.get_max_log_id())
         # Now use the second formats which as one extra log and moves 1 down
         shutil.copyfile("formats.c2", formats)
-        convert(src, dest, database_file, "")
+        convert(src, dest, database_file, "Z")
         with LogSqlLiteDatabase(database_file) as sql:
             # Need two more ids for the new log and then changed line number
             self.assertEqual(single + 2, sql.get_max_log_id())
@@ -62,6 +62,6 @@ class TestConverter(unittest.TestCase):
             e1 = os.path.join(dest, "delta", "empty1.c")
             shutil.rmtree(os.path.join(dir_path, "alpha"), ignore_errors=True)
             self.assertFalse(os.path.exists(e1))
-            convert(src, dest, tmp, "T")
+            convert(src, dest, tmp, "X")
             self.assertTrue(os.path.exists(e1))
-            convert(src, dest, tmp, "T")
+            convert(src, dest, tmp, "Y")

@@ -674,6 +674,13 @@ class UtilsDataView(object):
         :param search_path: absolute search path for binaries
         """
         cls.__data._executable_finder.add_path(search_path)
+        log_path = os.path.join(search_path, "logs.sqlite3")
+        if os.path.exists(log_path):
+            cls._register_log_database(log_path)
+        # Check for an older build
+        log_path = LogSqlLiteDatabase.default_database_file()
+        if os.path.exists(log_path):
+            cls._register_log_database(log_path)
 
     @classmethod
     def get_executable_path(cls, executable_name: str) -> str:

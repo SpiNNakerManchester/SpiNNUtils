@@ -41,7 +41,8 @@ def convert(src: str, dest: str, database_file: str,
         raise ValueError(f"{database_key=} is digital")
 
     if os.path.isdir(database_file):
-        database_file = os.path.join(database_file, "logs.sqlite3")
+        database_file = os.path.join(
+            database_file, LogSqlLiteDatabase.DB_FILE_NAME)
     log_database = LogSqlLiteDatabase(database_file, read_only=False)
 
     src_path = os.path.abspath(src)

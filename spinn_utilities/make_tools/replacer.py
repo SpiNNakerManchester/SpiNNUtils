@@ -78,6 +78,8 @@ class Replacer(object):
         """
         parts = short.split(TOKEN)
         log_st = parts[0]
+        if len(log_st) == 0:
+            return None
         if log_st[0].isdigit():
             log_id = log_st
             database_key = ""

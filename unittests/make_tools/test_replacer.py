@@ -215,3 +215,9 @@ class TestReplacer(unittest.TestCase):
             with Replacer() as replacer:
                 new = replacer.replace("A5")
             self.assertEqual("[INFO] (weird,file.c: 36): this is ok", new)
+
+    def test_blank(self) -> None:
+        unittest_setup()
+        replacer = Replacer()
+        new = replacer.replace("")
+        self.assertEqual("", new)

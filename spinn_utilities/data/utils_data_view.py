@@ -674,13 +674,13 @@ class UtilsDataView(object):
         :param search_path: absolute search path for binaries
         """
         cls.__data._executable_finder.add_path(search_path)
-        log_path = os.path.join(search_path, "logs.sqlite3")
-        if os.path.exists(log_path):
-            cls._register_log_database(log_path)
+        database_map = LogSqlLiteDatabase.find_databases(search_path)
+        for database_key, log_path in database_map.items():
+            cls._register_log_database(database_key, log_path)
         # Check for an older build
         log_path = LogSqlLiteDatabase.default_database_file()
         if os.path.exists(log_path):
-            cls._register_log_database(log_path)
+            cls._register_log_database("", log_path)
 
     @classmethod
     def get_executable_path(cls, executable_name: str) -> str:
@@ -720,31 +720,28 @@ class UtilsDataView(object):
             executable_names)
 
     @classmethod
-    def _register_log_database(cls, log_path: str) -> None:
+    def _register_log_database(cls, database_key, log_path: str) -> None:
         """
-        Register a database keeping track of its keys and path
+        Register a database keeping track of its key and path
 
         Intended only to be called by register_binary_search_path and tests
 
         :param log_path:
         """
-        db = LogSqlLiteDatabase(log_path)
-        keys = db.get_database_keys()
-        for key in keys:
-            if key in cls.__data._log_database_paths:
-                if log_path != cls.__data._log_database_paths[key]:
-                    if key == "":
-                        raise SpiNNUtilsException(
-                            f"Both databases {log_path} and "
-                            f"{cls.__data._log_database_paths[key]} "
-                            f"want to be the default")
-                    else:
-                        raise SpiNNUtilsException(
-                            f"Both databases {log_path} and "
-                            f"{cls.__data._log_database_paths[key]} "
-                            f"have the database_key {key}")
-            else:
-                cls.__data._log_database_paths[key] = log_path
+        if database_key in cls.__data._log_database_paths:
+            if log_path != cls.__data._log_database_paths[database_key]:
+                if database_key == "":
+                    raise SpiNNUtilsException(
+                        f"Both databases {log_path} and "
+                        f"{cls.__data._log_database_paths[database_key]} "
+                        f"want to be the deprecated database")
+                else:
+                    raise SpiNNUtilsException(
+                        f"Both databases {log_path} and "
+                        f"{cls.__data._log_database_paths[database_key]} "
+                        f"have the database_key {database_key}")
+        else:
+            cls.__data._log_database_paths[database_key] = log_path
 
     @classmethod
     def get_log_database_path(cls, database_key: str) -> Optional[str]:

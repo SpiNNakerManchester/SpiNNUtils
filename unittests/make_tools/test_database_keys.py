@@ -23,7 +23,19 @@ from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 
 class TestDatabaseKeys(unittest.TestCase):
 
+    def test_key_from_filename(self) -> None:
+        database_path = "/foo/bar/logsG.sqlite3"
+        key = LogSqlLiteDatabase.key_from_filename(database_path)
+        self.assertEqual("G", key)
+        database_file = LogSqlLiteDatabase.filename_by_key("/foo/bar", "G")
+        self.assertEqual(database_path, database_file)
+
     def test_check_all(self) -> None:
+        """
+        This test is maily intended to be run after automatic_make
+
+        It will check all parallel repositories use unque database keys
+        """
         unittest_setup()
         class_file = str(sys.modules[self.__module__].__file__)
         this_path = os.path.dirname(os.path.abspath(class_file))
@@ -32,11 +44,14 @@ class TestDatabaseKeys(unittest.TestCase):
         all_path = os.path.dirname(utils_path)
 
         for root, _dirs, files in os.walk(all_path):
-            if "logs.sqlite3" in files:
+            aplx_found = False
+            for file in files:
+                if file.endswith(".aplx"):
+                    aplx_found = True
+            if aplx_found:
                 UtilsDataView.register_binary_search_path(root)
-                logs_path = os.path.join(root, "logs.sqlite3")
-                with LogSqlLiteDatabase(logs_path, read_only=False) as db:
-                    print(db.get_database_keys(), logs_path)
-                    # Add this line to corrupt all databases
-                    # run all make cleans again and it should disappear
-                    # db.set_database_key("£")
+                print(root)
+        # Hack for test do not copy
+        database_map = UtilsDataView._UtilsDataView__data._log_database_paths
+        for database_key, database_path in database_map.items():
+            print(database_key, database_path)

@@ -15,7 +15,7 @@
 import os
 import sys
 from .file_converter import FileConverter
-from .log_sqllite_database import DB_FILE_NAME, LogSqlLiteDatabase
+from .log_sqllite_database import LogSqlLiteDatabase
 
 ALLOWED_EXTENSIONS = frozenset([".c", ".cpp", ".h"])
 SKIPPABLE_FILES = frozenset([
@@ -24,25 +24,21 @@ SKIPPABLE_FILES = frozenset([
     "neural_build.mk", "Makefile.neural_build"])
 
 
-def convert(src: str, dest: str, database_file: str,
-            database_key: str) -> None:
+def convert(src: str, dest: str, database_dir: str,
+            database_key: str) -> str:
     """
     Converts a whole directory including sub-directories.
 
     :param src: Full source directory
     :param dest: Full destination directory
-    :param database_file:
-        Full path to database file. Can be a file or directory
+    :param database_dir:
+        Full path to directory to place database file in.
     :param database_key: database key for this conversion
+    :return: Full path to the logs database
+    :raises ValueError:
     """
-    if len(database_key) != 1:
-        raise ValueError(f"{database_key=} Only single character allowed")
-    if database_key.isdigit():
-        raise ValueError(f"{database_key=} is digital")
-
-    if os.path.isdir(database_file):
-        database_file = os.path.join(
-            database_file, DB_FILE_NAME)
+    database_file =LogSqlLiteDatabase.filename_by_key(
+        database_dir, database_key)
     log_database = LogSqlLiteDatabase(database_file, read_only=False)
 
     src_path = os.path.abspath(src)
@@ -52,6 +48,7 @@ def convert(src: str, dest: str, database_file: str,
     dest_path = os.path.abspath(dest)
     file_converter = FileConverter(log_database, database_key)
     _convert_dir(src_path, dest_path, file_converter)
+    return database_file
 
 
 def _convert_dir(src_path: str, dest_path: str,

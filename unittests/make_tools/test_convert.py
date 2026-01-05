@@ -29,27 +29,30 @@ class TestConverter(unittest.TestCase):
     def test_convert(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
-        database_file = str(os.path.join(path, "convert_1.sqlite3"))
+        old_database_file = str(os.path.join(path, "logsZ.sqlite3"))
         os.chdir(path)
         # Clear the database
-        if os.path.exists(database_file):
-            os.remove(database_file)
+        if os.path.exists(old_database_file):
+            os.remove(old_database_file)
         src = "mock_src"
         dest = "modified_src"
         formats = os.path.join(src, "formats.c")
         # make sure the first formats is there
         shutil.copyfile("formats.c1", formats)
-        convert(src, dest, database_file, "Z")
+        database_file = convert(src, dest, path, "Z")
+        self.assertEqual(database_file, old_database_file)
         with LogSqlLiteDatabase(database_file) as sql:
             single = sql.get_max_log_id()
             assert single is not None
         # Unchanged file a second time should give same ids
-        convert(src, dest, database_file, "Z")
+        database_file2 = convert(src, dest, path, "Z")
+        self.assertEqual(database_file, database_file2)
         with LogSqlLiteDatabase(database_file) as sql:
             self.assertEqual(single, sql.get_max_log_id())
         # Now use the second formats which as one extra log and moves 1 down
         shutil.copyfile("formats.c2", formats)
-        convert(src, dest, database_file, "Z")
+        database_file2 = convert(src, dest, path, "Z")
+        self.assertEqual(database_file, database_file2)
         with LogSqlLiteDatabase(database_file) as sql:
             # Need two more ids for the new log and then changed line number
             self.assertEqual(single + 2, sql.get_max_log_id())

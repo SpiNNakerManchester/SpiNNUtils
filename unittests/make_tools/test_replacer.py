@@ -34,7 +34,7 @@ import unittest
 
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.data import UtilsDataView
-from spinn_utilities.make_tools import FileConverter
+from spinn_utilities.make_tools.converter import convert
 from spinn_utilities.make_tools.file_converter import TOKEN
 from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 from spinn_utilities.make_tools.replacer import Replacer
@@ -46,21 +46,17 @@ class TestReplacer(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        database_file = str(os.path.join(PATH, "replacer.sqlite3"))
-        log_database = LogSqlLiteDatabase(database_file, read_only=False)
-        file_convertor = FileConverter(log_database, "")
-        file_name = "weird,file.c"
         src = os.path.join(PATH, "mock_src")
         dest = os.path.join(PATH, "modified_src")
-        file_convertor.convert(src, dest, file_name)
+        convert(src, dest, PATH, "Z")
 
     @pytest.mark.xdist_group(name="mock_src")
     def test_replacer(self) -> None:
         unittest_setup()
         UtilsDataView._register_log_database(
-            os.path.join(PATH, "replacer.sqlite3"))
+            "Z", os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
-            new = replacer.replace("5")
+            new = replacer.replace("Z5")
         assert ("[INFO] (weird,file.c: 36): this is ok" == new)
 
     def test_c_log_dict_bad(self) -> None:
@@ -94,9 +90,9 @@ class TestReplacer(unittest.TestCase):
     def test_tab(self) -> None:
         unittest_setup()
         UtilsDataView._register_log_database(
-            os.path.join(PATH, "replacer.sqlite3"))
+            "Z", os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
-            new = replacer.replace("11" + TOKEN + "10" + TOKEN + "20")
+            new = replacer.replace("Z11" + TOKEN + "10" + TOKEN + "20")
         message = "[INFO] (weird,file.c: 56): \t back off = 10, time between"\
                   " spikes 20"
         assert (message == new)
@@ -105,9 +101,9 @@ class TestReplacer(unittest.TestCase):
     def test_float(self) -> None:
         unittest_setup()
         UtilsDataView._register_log_database(
-            os.path.join(PATH, "replacer.sqlite3"))
+            "Z", os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
-        new = replacer.replace("2" + TOKEN + "0xc0400000")
+        new = replacer.replace("Z2" + TOKEN + "0xc0400000")
         message = "[INFO] (weird,file.c: 30): test -three -3.0"
         assert (message == new)
 
@@ -115,10 +111,10 @@ class TestReplacer(unittest.TestCase):
     def test_double(self) -> None:
         unittest_setup()
         UtilsDataView._register_log_database(
-            os.path.join(PATH, "replacer.sqlite3"))
+            "Z", os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
         new = replacer.replace(
-            "3" + TOKEN + "40379999" + TOKEN + "9999999a")
+            "Z3" + TOKEN + "40379999" + TOKEN + "9999999a")
         message = "[INFO] (weird,file.c: 32): test double 23.6"
         assert (message == new)
 
@@ -126,11 +122,11 @@ class TestReplacer(unittest.TestCase):
     def test_bad(self) -> None:
         unittest_setup()
         UtilsDataView._register_log_database(
-            os.path.join(PATH, "replacer.sqlite3"))
+            "Z", os.path.join(PATH, "replacer.sqlite3"))
         replacer = Replacer()
-        new = replacer.replace("1007" + TOKEN + "10")
+        new = replacer.replace("Z1007" + TOKEN + "10")
         # An exception so just output the input
-        message = "1007" + TOKEN + "10"
+        message = "Z1007" + TOKEN + "10"
         assert (message == new)
 
     def near_equals(self, a: float, b: float) -> bool:
@@ -148,7 +144,7 @@ class TestReplacer(unittest.TestCase):
         """
         unittest_setup()
         UtilsDataView._register_log_database(
-            os.path.join(PATH, "replacer.sqlite3"))
+            "Z", os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             assert self.near_equals(
                 -345443332234.13432143, replacer._hex_to_float("d2a0dc0e"))
@@ -180,7 +176,7 @@ class TestReplacer(unittest.TestCase):
         """
         unittest_setup()
         UtilsDataView._register_log_database(
-            os.path.join(PATH, "replacer.sqlite3"))
+            "Z", os.path.join(PATH, "replacer.sqlite3"))
         with Replacer() as replacer:
             assert self.near_equals(
                 0, replacer._hexes_to_double("0", "0"))
@@ -199,22 +195,6 @@ class TestReplacer(unittest.TestCase):
             assert self.near_equals(
                 0.0000000004,
                 replacer._hexes_to_double("3dfb7cdf", "d9d7bdbb"))
-
-    def test_replacer_char(self) -> None:
-        unittest_setup()
-        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
-            database_file = os.path.join(tmpdir, "logs.sqlite3")
-            log_database = LogSqlLiteDatabase(database_file, read_only=False)
-            file_convertor = FileConverter(log_database, "A")
-            file_name = "weird,file.c"
-            src = os.path.join(PATH, "mock_src")
-            dest = os.path.join(PATH, "modified_src")
-            file_convertor.convert(src, dest, file_name)
-
-            UtilsDataView._register_log_database(database_file)
-            with Replacer() as replacer:
-                new = replacer.replace("A5")
-            self.assertEqual("[INFO] (weird,file.c: 36): this is ok", new)
 
     def test_blank(self) -> None:
         unittest_setup()

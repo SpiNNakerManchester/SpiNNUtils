@@ -17,7 +17,7 @@ import pathlib
 import sqlite3
 import sys
 import time
-from typing import Optional, Set, Tuple
+from typing import Dict, Optional, Set, Tuple
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
@@ -339,3 +339,63 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 INSERT OR IGNORE INTO database_keys( database_key)
                 VALUES(?)
                 """, (new_key,))
+
+    @classmethod
+    def filename_by_key(cls, database_dir, database_key: str) -> str:
+        """
+        Builds the file name which includes the key
+
+        :param database_dir:
+            Full path to directory to place database file in.
+        :param database_key: key for the database
+        :return: filename including the key
+        :raises ValueError: If the key is not a single none digital character
+        """
+        if len(database_key) != 1:
+            raise ValueError(f"{database_key=} Only single character allowed")
+        if database_key.isdigit():
+            raise ValueError(f"{database_key=} is digital")
+
+        return os.path.join(database_dir, f"logs{database_key}.sqlite3")
+
+    @classmethod
+    def key_from_filename(cls, filepath: str) -> str:
+        """
+        Gets the key from the excepted filename pattern logs{key}.sqlite3
+
+        :param filepath: full path or filename in the pattern logs{key}.sqlite3
+        :return: database key
+        """
+        try:
+            database_key = filepath[-9]
+        except IndexError:
+            msg = (f"Unexpected Database {filepath}. "
+                   "It should be logs{key}.sqlite3")
+            raise ValueError(msg)
+        check = cls.filename_by_key(os.path.dirname(filepath), database_key)
+        if check != filepath:
+            msg = (f"Unexpected Database {filepath}. "
+                   "Only logs{key}.sqlite3 expected")
+            raise ValueError(msg)
+        return database_key
+
+    @classmethod
+    def find_databases(cls, database_dir):
+        """
+        Given a directory finds the databases and keys in it.
+
+        :param database_dir:
+            Full path to directory which may have logs databases) in it.
+        :return: Map of database_keys to full database paths.
+        """
+        logfiles: Dict[str, str] = dict()
+        for file in os.listdir(database_dir):
+            if file.endswith(".sqlite3"):
+                filepath = os.path.join(database_dir, file)
+                try:
+                    logfiles[cls.key_from_filename(filepath)] = filepath
+                except ValueError:
+                    msg = (f"Unexpected Database {filepath}. "
+                           "It should be logs{key}.sqlite3")
+                    raise ValueError(msg)
+        return logfiles

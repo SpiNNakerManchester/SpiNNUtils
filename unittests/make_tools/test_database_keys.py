@@ -52,7 +52,8 @@ class TestDatabaseKeys(unittest.TestCase):
                 UtilsDataView.register_binary_search_path(root)
                 print(root)
         # Hack for test do not copy
-        # type: ignore[attr-defined]
-        database_map = UtilsDataView._UtilsDataView__data._log_database_paths
+        database_map = (
+            UtilsDataView._UtilsDataView__data.  # type: ignore[attr-defined]
+            _log_database_paths)
         for database_key, database_path in database_map.items():
             print(database_key, database_path)

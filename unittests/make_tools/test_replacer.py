@@ -39,11 +39,10 @@ from spinn_utilities.make_tools.file_converter import TOKEN
 from spinn_utilities.make_tools.replacer import Replacer
 
 PATH = os.path.dirname(os.path.abspath(__file__))
+logs_database = "TO BE SET"
 
 
 class TestReplacer(unittest.TestCase):
-
-    logs_database = "TO BE SET"
 
     @classmethod
     def setUpClass(cls) -> None:

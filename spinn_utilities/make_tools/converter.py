@@ -37,7 +37,7 @@ def convert(src: str, dest: str, database_dir: str,
     :return: Full path to the logs database
     :raises ValueError:
     """
-    database_file =LogSqlLiteDatabase.filename_by_key(
+    database_file = LogSqlLiteDatabase.filename_by_key(
         database_dir, database_key)
     log_database = LogSqlLiteDatabase(database_file)
 

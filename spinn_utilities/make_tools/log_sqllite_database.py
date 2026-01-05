@@ -13,11 +13,10 @@
 # limitations under the License.
 
 import os
-import pathlib
 import sqlite3
 import sys
 import time
-from typing import Dict, Optional, Set, Tuple
+from typing import Dict, Optional, Tuple
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
@@ -56,6 +55,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
            (use default_database_file to get the default location)
         """
         # To Avoid an Attribute error on close after an exception
+        self._db: Optional[sqlite3.Connection] = None
         self._db = sqlite3.connect(database_path)
         self.__init_db()
 
@@ -302,7 +302,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 """, (new_key,))
 
     @classmethod
-    def filename_by_key(cls, database_dir, database_key: str) -> str:
+    def filename_by_key(cls, database_dir: str, database_key: str) -> str:
         """
         Builds the file name which includes the key
 
@@ -341,7 +341,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         return database_key
 
     @classmethod
-    def find_databases(cls, database_dir):
+    def find_databases(cls, database_dir: str) -> Dict[str, str]:
         """
         Given a directory finds the databases and keys in it.
 

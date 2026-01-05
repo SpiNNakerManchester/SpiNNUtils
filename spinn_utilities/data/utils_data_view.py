@@ -720,13 +720,14 @@ class UtilsDataView(object):
             executable_names)
 
     @classmethod
-    def _register_log_database(cls, database_key, log_path: str) -> None:
+    def _register_log_database(cls, database_key: str, log_path: str) -> None:
         """
         Register a database keeping track of its key and path
 
         Intended only to be called by register_binary_search_path and tests
 
-        :param log_path:
+        :param database_key: The key of the database
+        :param log_path: The path to the log database
         """
         if database_key in cls.__data._log_database_paths:
             if log_path != cls.__data._log_database_paths[database_key]:

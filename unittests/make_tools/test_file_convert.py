@@ -33,7 +33,7 @@ class TestConverter(unittest.TestCase):
         if os.path.exists(database_file):
             os.remove(database_file)
 
-        log_database = LogSqlLiteDatabase(database_file, read_only=False)
+        log_database = LogSqlLiteDatabase(database_file)
         file_converter = FileConverter(log_database, database_key="")
 
         file_name = "weird,file.c"
@@ -76,7 +76,7 @@ class TestConverter(unittest.TestCase):
         path = os.path.dirname(os.path.abspath(class_file))
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
             database_file = os.path.join(tmpdir, "logs.sqlite3")
-            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            log_database = LogSqlLiteDatabase(database_file)
             file_converter = FileConverter(log_database, database_key="")
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
@@ -93,7 +93,7 @@ class TestConverter(unittest.TestCase):
         path = os.path.dirname(os.path.abspath(class_file))
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
             database_file = os.path.join(tmpdir, "logs.sqlite3")
-            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            log_database = LogSqlLiteDatabase(database_file)
             file_converter = FileConverter(log_database, database_key="")
 
             src = os.path.join(path, "mistakes")
@@ -111,7 +111,7 @@ class TestConverter(unittest.TestCase):
         path = os.path.dirname(os.path.abspath(class_file))
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
             database_file = os.path.join(tmpdir, "logs.sqlite3")
-            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            log_database = LogSqlLiteDatabase(database_file)
             file_converter = FileConverter(log_database, database_key="")
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
@@ -126,7 +126,7 @@ class TestConverter(unittest.TestCase):
         path = os.path.dirname(os.path.abspath(class_file))
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
             database_file = os.path.join(tmpdir, "logs.sqlite3")
-            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            log_database = LogSqlLiteDatabase(database_file)
             file_converter = FileConverter(log_database, database_key="")
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
@@ -144,7 +144,7 @@ class TestConverter(unittest.TestCase):
         path = os.path.dirname(os.path.abspath(class_file))
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
             database_file = os.path.join(tmpdir, "logs.sqlite3")
-            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            log_database = LogSqlLiteDatabase(database_file)
             file_converter = FileConverter(log_database, database_key="")
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
@@ -162,7 +162,7 @@ class TestConverter(unittest.TestCase):
         path = os.path.dirname(os.path.abspath(class_file))
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
             database_file = os.path.join(tmpdir, "logs.sqlite3")
-            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            log_database = LogSqlLiteDatabase(database_file)
             file_converter = FileConverter(log_database, database_key="")
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
@@ -179,7 +179,7 @@ class TestConverter(unittest.TestCase):
         path = os.path.dirname(os.path.abspath(class_file))
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
             database_file = os.path.join(tmpdir, "logs.sqlite3")
-            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            log_database = LogSqlLiteDatabase(database_file)
             file_converter = FileConverter(log_database, database_key="")
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
@@ -198,7 +198,7 @@ class TestConverter(unittest.TestCase):
         path = os.path.dirname(os.path.abspath(class_file))
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
             database_file = os.path.join(tmpdir, "logs.sqlite3")
-            log_database = LogSqlLiteDatabase(database_file, read_only=False)
+            log_database = LogSqlLiteDatabase(database_file)
             file_converter = FileConverter(log_database, database_key="")
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")

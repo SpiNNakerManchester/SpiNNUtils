@@ -284,32 +284,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 return row["max_id"]
         raise ValueError("unexpected no return")
 
-    def get_database_keys(self) -> Set[str]:
-        """
-        Gets the keys that are registered for this database.
-
-        For an old database with no key registered it will return ""
-
-        :returns: a set of keys covered by the database
-        """
-        assert self._db is not None
-        keys = set()
-        with self._db:
-            try:
-                for row in self._db.execute(
-                        """
-                        SELECT database_key
-                        FROM database_keys
-                        """):
-                    keys.add(row["database_key"])
-            except sqlite3.OperationalError as ex:
-                # Support old databases that have no keys table
-                if "database_keys" not in str(ex):
-                    raise
-        if len(keys) == 0:
-            keys.add("")
-        return keys
-
     def set_database_key(self, new_key: str) -> None:
         """
         Sets/ adds a new database key to the database.

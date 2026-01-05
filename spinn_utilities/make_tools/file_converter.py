@@ -78,7 +78,6 @@ class FileConverter(object):
         self._log_database = log_database
         # key to the database
         self._database_key = database_key
-        self._log_database.set_database_key(database_key)
         if len(database_key) > 1:
             raise ValueError(f"{database_key=} Only single character allowed")
         if database_key.isdigit():

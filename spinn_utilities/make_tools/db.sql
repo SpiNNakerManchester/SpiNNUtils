@@ -44,11 +44,6 @@ CREATE TABLE IF NOT EXISTS directory(
 	);
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
--- A table holding data on the database mapping keys supported
-CREATE TABLE IF NOT EXISTS database_keys(
-    database_key STRING PRIMARY KEY);
-
--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Glue the bits together to show the information that people think is here
 CREATE VIEW IF NOT EXISTS replacer_view AS
     SELECT log_id, log_level, file_name, line_num , original, last_build

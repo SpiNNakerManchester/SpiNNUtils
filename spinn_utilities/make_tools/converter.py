@@ -39,7 +39,7 @@ def convert(src: str, dest: str, database_dir: str,
     """
     database_file =LogSqlLiteDatabase.filename_by_key(
         database_dir, database_key)
-    log_database = LogSqlLiteDatabase(database_file, read_only=False)
+    log_database = LogSqlLiteDatabase(database_file)
 
     src_path = os.path.abspath(src)
     if not os.path.exists(src_path):

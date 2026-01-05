@@ -47,29 +47,17 @@ class LogSqlLiteDatabase(AbstractContextManager):
         "_db",
     ]
 
-    def __init__(self, database_path: str, read_only: bool = True) -> None:
+    def __init__(self, database_path: str) -> None:
         """
         Connects to a log dict. The location of the file can be overridden
         using the ``C_LOGS_DICT`` environment variable.
 
         param database_file: Full path to the database.
            (use default_database_file to get the default location)
-        param read_only: By default, the database is read-only,
-            in which case the database must exist.
-
         """
         # To Avoid an Attribute error on close after an exception
-        self._db = None
-        if read_only:
-            self._check_database_file(database_path)
-            db_uri = pathlib.Path(os.path.abspath(database_path)).as_uri()
-            # https://stackoverflow.com/a/21794758/301832
-            self._db = sqlite3.connect(f"{db_uri}?mode=ro", uri=True)
-            run_ddl = False
-        else:
-            run_ddl = not os.path.exists(database_path)
-            self._db = sqlite3.connect(database_path)
-        self.__init_db(run_ddl)
+        self._db = sqlite3.connect(database_path)
+        self.__init_db()
 
     @classmethod
     def default_database_file(cls) -> str:
@@ -121,7 +109,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
             print(ex)
         self._db = None
 
-    def __init_db(self, run_ddl: bool) -> None:
+    def __init_db(self) -> None:
         """
         Set up the database if required.
         """
@@ -129,10 +117,9 @@ class LogSqlLiteDatabase(AbstractContextManager):
         self._db.row_factory = sqlite3.Row
         # Don't use memoryview / buffer as hard to deal with difference
         self._db.text_factory = str
-        if run_ddl:
-            with open(_DDL_FILE, encoding="utf-8") as f:
-                sql = f.read()
-            self._db.executescript(sql)
+        with open(_DDL_FILE, encoding="utf-8") as f:
+            sql = f.read()
+        self._db.executescript(sql)
 
     def get_directory_id(self, src_path: str, dest_path: str) -> int:
         """

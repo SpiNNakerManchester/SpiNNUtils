@@ -114,6 +114,7 @@ class FileConverter(object):
             will be made with the same name in the destination directory.
         """
         self._src = os.path.join(src_dir, file_name)
+        print("new", self._src)
         if not os.path.exists(self._src):
             raise UnexpectedCException(f"Unable to locate source {self._src}")
         if not os.path.exists(dest_dir):

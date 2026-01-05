@@ -52,7 +52,7 @@ class TestReplacer(unittest.TestCase):
     @pytest.mark.xdist_group(name="mock_src")
     def test_replacer(self) -> None:
         unittest_setup()
-        UtilsDataView._register_log_database("Z", self.logs_database)
+        UtilsDataView._register_log_database("Z", TestReplacer.logs_database)
         with Replacer() as replacer:
             new = replacer.replace("Z5")
         assert ("[INFO] (weird,file.c: 36): this is ok" == new)
@@ -72,7 +72,7 @@ class TestReplacer(unittest.TestCase):
     @pytest.mark.xdist_group(name="mock_src")
     def test_tab(self) -> None:
         unittest_setup()
-        UtilsDataView._register_log_database("Z", self.logs_database)
+        UtilsDataView._register_log_database("Z", TestReplacer.logs_database)
         with Replacer() as replacer:
             new = replacer.replace("Z11" + TOKEN + "10" + TOKEN + "20")
         message = "[INFO] (weird,file.c: 56): \t back off = 10, time between"\
@@ -82,7 +82,7 @@ class TestReplacer(unittest.TestCase):
     @pytest.mark.xdist_group(name="mock_src")
     def test_float(self) -> None:
         unittest_setup()
-        UtilsDataView._register_log_database("Z", self.logs_database)
+        UtilsDataView._register_log_database("Z", TestReplacer.logs_database)
         replacer = Replacer()
         new = replacer.replace("Z2" + TOKEN + "0xc0400000")
         message = "[INFO] (weird,file.c: 30): test -three -3.0"
@@ -91,7 +91,7 @@ class TestReplacer(unittest.TestCase):
     @pytest.mark.xdist_group(name="mock_src")
     def test_double(self) -> None:
         unittest_setup()
-        UtilsDataView._register_log_database("Z", self.logs_database)
+        UtilsDataView._register_log_database("Z", TestReplacer.logs_database)
         replacer = Replacer()
         new = replacer.replace(
             "Z3" + TOKEN + "40379999" + TOKEN + "9999999a")
@@ -101,7 +101,7 @@ class TestReplacer(unittest.TestCase):
     @pytest.mark.xdist_group(name="mock_src")
     def test_bad(self) -> None:
         unittest_setup()
-        UtilsDataView._register_log_database("Z", self.logs_database)
+        UtilsDataView._register_log_database("Z", TestReplacer.logs_database)
         replacer = Replacer()
         new = replacer.replace("Z1007" + TOKEN + "10")
         # An exception so just output the input
@@ -122,7 +122,7 @@ class TestReplacer(unittest.TestCase):
 
         """
         unittest_setup()
-        UtilsDataView._register_log_database("Z", self.logs_database)
+        UtilsDataView._register_log_database("Z", TestReplacer.logs_database)
         with Replacer() as replacer:
             assert self.near_equals(
                 -345443332234.13432143, replacer._hex_to_float("d2a0dc0e"))
@@ -153,7 +153,7 @@ class TestReplacer(unittest.TestCase):
 
         """
         unittest_setup()
-        UtilsDataView._register_log_database("Z", self.logs_database)
+        UtilsDataView._register_log_database("Z", TestReplacer.logs_database)
         with Replacer() as replacer:
             assert self.near_equals(
                 0, replacer._hexes_to_double("0", "0"))

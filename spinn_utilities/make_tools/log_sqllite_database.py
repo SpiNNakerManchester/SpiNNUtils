@@ -324,7 +324,8 @@ class LogSqlLiteDatabase(AbstractContextManager):
         """
         Gets the key from the excepted filename pattern logs{key}.sqlite3
 
-        :param file_path: full path or filename in the pattern logs{key}.sqlite3
+        :param file_path:
+            full path or filename in the pattern logs{key}.sqlite3
         :return: database key
         """
         try:

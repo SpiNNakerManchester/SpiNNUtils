@@ -756,7 +756,11 @@ class UtilsDataView(object):
         :return: A path to the database if registered
         """
         if database_key not in cls.__data._log_database_paths:
-            logger.error(f"No logs database found for {database_key=}")
+            # die on github actions
+            if 'RUNNER_ENVIRONMENT' in os.environ:
+                raise ValueError(f"No logs database found for {database_key=}")
+            else:
+                logger.error(f"No logs database found for {database_key=}")
             cls.__data._log_database_paths[database_key] = None
         return cls.__data._log_database_paths[database_key]
 

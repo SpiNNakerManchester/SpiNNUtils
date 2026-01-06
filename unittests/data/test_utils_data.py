@@ -1133,7 +1133,13 @@ class TestUtilsData(unittest.TestCase):
     # Good tested by test_replacer
     def test_log_database_path_bad(self) -> None:
         with LogCapture() as lc:
-            path = UtilsDataView.get_log_database_path("£")
+            try:
+                path = UtilsDataView.get_log_database_path("£")
+            except ValueError:
+                if 'RUNNER_ENVIRONMENT' in os.environ:
+                    return
+            if 'RUNNER_ENVIRONMENT' in os.environ:
+                raise ValueError("Should not have worked")
             self.assertIsNone(path)
             log_checker.assert_logs_error_contains(
                 lc.records, "No logs database found for database_key='£'")

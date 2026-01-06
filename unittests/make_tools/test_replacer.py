@@ -65,11 +65,18 @@ class TestReplacer(unittest.TestCase):
                 ignore_cleanup_errors=True) as tmpdirname:
             # Should just be ignored
             UtilsDataView.register_binary_search_path(tmpdirname)
-        with Replacer() as replacer:
-            new = replacer.replace("5")
-            self.assertEqual("5", new)
-            new = replacer.replace("C5")
-            self.assertEqual("C5", new)
+        try:
+            with Replacer() as replacer:
+                new = replacer.replace("5")
+                self.assertEqual("5", new)
+                new = replacer.replace("C5")
+                self.assertEqual("C5", new)
+        except ValueError:
+            if 'RUNNER_ENVIRONMENT' in os.environ:
+                return
+        if 'RUNNER_ENVIRONMENT' in os.environ:
+            raise ValueError("Should not have worked")
+
 
     @pytest.mark.xdist_group(name="mock_src")
     def test_tab(self) -> None:

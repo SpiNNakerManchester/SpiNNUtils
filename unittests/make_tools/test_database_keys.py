@@ -31,6 +31,12 @@ class TestDatabaseKeys(unittest.TestCase):
         database_file = LogSqlLiteDatabase.filename_by_key(directory, "G")
         self.assertEqual(database_path, database_file)
 
+    def test_bad(self) -> None:
+        with self.assertRaises(ValueError):
+            LogSqlLiteDatabase.key_from_filename("short")
+        with self.assertRaises(ValueError):
+            LogSqlLiteDatabase.key_from_filename("logs.sqlite3")
+
     def test_check_all(self) -> None:
         """
         This test is maily intended to be run after automatic_make

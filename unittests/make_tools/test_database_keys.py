@@ -24,10 +24,11 @@ from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 class TestDatabaseKeys(unittest.TestCase):
 
     def test_key_from_filename(self) -> None:
-        database_path = "/foo/bar/logsG.sqlite3"
+        directory = os.path.join("foo","bar")
+        database_path = os.path.join(directory, "logsG.sqlite3")
         key = LogSqlLiteDatabase.key_from_filename(database_path)
         self.assertEqual("G", key)
-        database_file = LogSqlLiteDatabase.filename_by_key("/foo/bar", "G")
+        database_file = LogSqlLiteDatabase.filename_by_key(directory, "G")
         self.assertEqual(database_path, database_file)
 
     def test_check_all(self) -> None:

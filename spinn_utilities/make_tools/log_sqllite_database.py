@@ -320,22 +320,22 @@ class LogSqlLiteDatabase(AbstractContextManager):
         return os.path.join(database_dir, f"logs{database_key}.sqlite3")
 
     @classmethod
-    def key_from_filename(cls, filepath: str) -> str:
+    def key_from_filename(cls, file_path: str) -> str:
         """
         Gets the key from the excepted filename pattern logs{key}.sqlite3
 
-        :param filepath: full path or filename in the pattern logs{key}.sqlite3
+        :param file_path: full path or filename in the pattern logs{key}.sqlite3
         :return: database key
         """
         try:
-            database_key = filepath[-9]
-        except IndexError:
-            msg = (f"Unexpected Database {filepath}. "
+            database_key = file_path[-9]
+        except IndexError as exc:
+            msg = (f"Unexpected Database {file_path}. "
                    "It should be logs{key}.sqlite3")
-            raise ValueError(msg)
-        check = cls.filename_by_key(os.path.dirname(filepath), database_key)
-        if check != filepath:
-            msg = (f"Unexpected Database {filepath}. "
+            raise ValueError(msg) from exc
+        check = cls.filename_by_key(os.path.dirname(file_path), database_key)
+        if check != file_path:
+            msg = (f"Unexpected Database {file_path}. "
                    "Only logs{key}.sqlite3 expected")
             raise ValueError(msg)
         return database_key
@@ -353,10 +353,5 @@ class LogSqlLiteDatabase(AbstractContextManager):
         for file in os.listdir(database_dir):
             if file.endswith(".sqlite3"):
                 filepath = os.path.join(database_dir, file)
-                try:
-                    logfiles[cls.key_from_filename(filepath)] = filepath
-                except ValueError:
-                    msg = (f"Unexpected Database {filepath}. "
-                           "It should be logs{key}.sqlite3")
-                    raise ValueError(msg)
+                logfiles[cls.key_from_filename(filepath)] = filepath
         return logfiles

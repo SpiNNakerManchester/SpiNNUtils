@@ -56,7 +56,7 @@ class TestReplacer(unittest.TestCase):
         unittest_setup()
         UtilsDataView._register_log_database("R", logs_database)
         with Replacer() as replacer:
-            new = replacer.replace("R5")
+            new = replacer.replace("R11")
         assert ("[INFO] (weird,file.c: 36): this is ok" == new)
 
     def test_external_empty(self) -> None:
@@ -82,7 +82,7 @@ class TestReplacer(unittest.TestCase):
         unittest_setup()
         UtilsDataView._register_log_database("R", logs_database)
         with Replacer() as replacer:
-            new = replacer.replace("R11" + TOKEN + "10" + TOKEN + "20")
+            new = replacer.replace("R17" + TOKEN + "10" + TOKEN + "20")
         message = "[INFO] (weird,file.c: 56): \t back off = 10, time between"\
                   " spikes 20"
         assert (message == new)
@@ -92,7 +92,7 @@ class TestReplacer(unittest.TestCase):
         unittest_setup()
         UtilsDataView._register_log_database("R", logs_database)
         replacer = Replacer()
-        new = replacer.replace("R2" + TOKEN + "0xc0400000")
+        new = replacer.replace("R8" + TOKEN + "0xc0400000")
         message = "[INFO] (weird,file.c: 30): test -three -3.0"
         assert (message == new)
 
@@ -102,7 +102,7 @@ class TestReplacer(unittest.TestCase):
         UtilsDataView._register_log_database("R", logs_database)
         replacer = Replacer()
         new = replacer.replace(
-            "R3" + TOKEN + "40379999" + TOKEN + "9999999a")
+            "R9" + TOKEN + "40379999" + TOKEN + "9999999a")
         message = "[INFO] (weird,file.c: 32): test double 23.6"
         assert (message == new)
 
@@ -130,7 +130,6 @@ class TestReplacer(unittest.TestCase):
 
         """
         unittest_setup()
-        UtilsDataView._register_log_database("R", logs_database)
         with Replacer() as replacer:
             assert self.near_equals(
                 -345443332234.13432143, replacer._hex_to_float("d2a0dc0e"))

@@ -60,8 +60,10 @@ def _convert_dir(src_path: str, dest_path: str,
     :param dest_path: Full destination directory
     :param file_converter:
     """
-    for src_dir, _, file_list in os.walk(src_path):
+    for src_dir, dirs, file_list in os.walk(src_path):
+        dirs.sort()
         dest_dir = os.path.join(dest_path, os.path.relpath(src_dir, src_path))
+        file_list.sort()
         for file_name in file_list:
             _, extension = os.path.splitext(file_name)
             if extension in ALLOWED_EXTENSIONS:

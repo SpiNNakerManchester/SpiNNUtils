@@ -77,7 +77,6 @@ class TestReplacer(unittest.TestCase):
         if 'RUNNER_ENVIRONMENT' in os.environ:
             raise ValueError("Should not have worked")
 
-
     @pytest.mark.xdist_group(name="mock_src")
     def test_tab(self) -> None:
         unittest_setup()

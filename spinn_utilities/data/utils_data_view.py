@@ -681,6 +681,16 @@ class UtilsDataView(object):
         log_path = LogSqlLiteDatabase.deprecated_database_file()
         if os.path.exists(log_path):
             cls._register_log_database("", log_path)
+        elif len(database_map) == 0:
+            aplx_found = False
+            for file in os.listdir(search_path):
+                if file.endswith(".aplx"):
+                    aplx_found = True
+                    break
+            if not aplx_found:
+                return
+            raise ValueError(f"{search_path} has no logs database. "
+                             f"Found {os.listdir(search_path)}")
 
     @classmethod
     def get_executable_path(cls, executable_name: str) -> str:

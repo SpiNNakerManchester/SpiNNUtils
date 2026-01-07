@@ -50,7 +50,13 @@ class TestDatabaseKeys(unittest.TestCase):
         utils_path = os.path.dirname(test_path)
         all_path = os.path.dirname(utils_path)
 
+        # exclude dirs that may have an aplx but not logs database
+        excludes = set(["spinnaker_tools", "JavaSpiNNaker",
+                        "SpiNNakerManchester.github.io"])
         for root, _dirs, files in os.walk(all_path):
+            for exclude in excludes:
+                if exclude in _dirs:
+                    _dirs.remove(exclude)
             aplx_found = False
             for file in files:
                 if file.endswith(".aplx"):

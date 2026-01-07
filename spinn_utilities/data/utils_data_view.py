@@ -678,7 +678,7 @@ class UtilsDataView(object):
         for database_key, log_path in database_map.items():
             cls._register_log_database(database_key, log_path)
         # Check for an older build
-        log_path = LogSqlLiteDatabase.default_database_file()
+        log_path = LogSqlLiteDatabase.deprecated_database_file()
         if os.path.exists(log_path):
             cls._register_log_database("", log_path)
 

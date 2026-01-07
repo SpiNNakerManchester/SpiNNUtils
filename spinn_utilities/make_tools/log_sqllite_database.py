@@ -60,7 +60,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         self.__init_db()
 
     @classmethod
-    def default_database_file(cls) -> str:
+    def deprecated_database_file(cls) -> str:
         """
         Finds the previous database file path.
 
@@ -283,23 +283,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
                      """):
                 return row["max_id"]
         raise ValueError("unexpected no return")
-
-    def set_database_key(self, new_key: str) -> None:
-        """
-        Sets/ adds a new database key to the database.
-
-        A database may have more than 1 key
-
-        :param new_key: An empty or single char key
-        """
-        assert self._db is not None
-        with self._db:
-            cursor = self._db.cursor()
-            cursor.execute(
-                """
-                INSERT OR IGNORE INTO database_keys( database_key)
-                VALUES(?)
-                """, (new_key,))
 
     @classmethod
     def filename_by_key(cls, database_dir: str, database_key: str) -> str:

@@ -13,11 +13,8 @@
 # limitations under the License.
 
 import os
-import sys
 import unittest
 
-from spinn_utilities.config_setup import unittest_setup
-from spinn_utilities.data import UtilsDataView
 from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 
 

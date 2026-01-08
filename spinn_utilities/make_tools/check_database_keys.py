@@ -15,14 +15,14 @@
 import os
 from spinn_utilities.data import UtilsDataView
 
+
 def check_all_log_database_keys() -> None:
     """
     This check is intended to be run after automatic_make
 
     It will check all parallel repositories use unique database keys
     """
-    class_file =__file__
-    this_path = os.path.dirname(os.path.abspath(class_file))
+    this_path = os.path.dirname(os.path.abspath(__file__))
     test_path = os.path.dirname(this_path)
     utils_path = os.path.dirname(test_path)
     all_path = os.path.dirname(utils_path)

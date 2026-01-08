@@ -26,7 +26,7 @@ def check_all_log_database_keys() -> None:
     test_path = os.path.dirname(this_path)
     utils_path = os.path.dirname(test_path)
     all_path = os.path.dirname(utils_path)
-    # exclude dirs that may have an aplx but not logs database
+    # exclude directories that may have an aplx but not logs database
     excludes = set(["JavaSpiNNaker", "spinnaker_tools",
                     "SpiNNakerManchester.github.io"])
     print("Logs Sqlite Database keys and Paths")

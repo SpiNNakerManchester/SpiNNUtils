@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 import os
 from tempfile import TemporaryDirectory
-from typing import Dict, List, Optional
+from typing import Dict, Iterator, List, Optional
 
 from unittest import SkipTest
 from spinn_utilities.exceptions import (
@@ -773,6 +773,18 @@ class UtilsDataView(object):
                 logger.error(f"No logs database found for {database_key=}")
             cls.__data._log_database_paths[database_key] = None
         return cls.__data._log_database_paths[database_key]
+
+    @classmethod
+    def  get_log_database_keys_and_paths(cls) -> Iterator[str, str]:
+        """
+        Gets the logs database keys and paths
+
+        This only returns ones found in paths passed to
+        register_binary_search_path
+
+        :return: The logs database keys and paths
+        """
+        return cls.__data._log_database_paths.items()
 
     @classmethod
     def get_requires_data_generation(cls) -> bool:

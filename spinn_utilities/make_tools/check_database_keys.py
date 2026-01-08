@@ -40,11 +40,8 @@ def check_all_log_database_keys() -> None:
                 aplx_found = True
         if aplx_found:
             UtilsDataView.register_binary_search_path(root)
-    # Hack for test do not copy
-    database_map = (
-        UtilsDataView._UtilsDataView__data.  # type: ignore[attr-defined]
-        _log_database_paths)
-    for database_key, database_path in database_map.items():
+    database_map = UtilsDataView.get_log_database_keys_and_paths()
+    for database_key, database_path in database_map:
         print(database_key, database_path)
 
 

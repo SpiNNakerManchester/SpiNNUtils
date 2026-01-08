@@ -775,7 +775,7 @@ class UtilsDataView(object):
         return cls.__data._log_database_paths[database_key]
 
     @classmethod
-    def  get_log_database_keys_and_paths(cls) -> Iterable[Tuple[str, str]]:
+    def get_log_database_keys_and_paths(cls) -> Iterable[Tuple[str, str]]:
         """
         Gets the logs database keys and paths
 

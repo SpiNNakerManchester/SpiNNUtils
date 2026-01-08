@@ -93,6 +93,6 @@ if __name__ == '__main__':
         raise ValueError(
             "Convert requires 4 parameters. The source directory, "
             "the destination directory, a single character database key and "
-            "the path to write the logs.sqlite3 database to. "
+            "the path to write the logs sqlite3 database to. "
             "Database keys must be unique. "
             "To avoid clashes with system builds use a lower case letter")

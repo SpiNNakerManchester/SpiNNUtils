@@ -1,2 +1,2 @@
 *.csv
-logs.sqlite3
+logs*.sqlite3

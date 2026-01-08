@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 import os
 from tempfile import TemporaryDirectory
-from typing import Dict, Iterator, List, Optional
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from unittest import SkipTest
 from spinn_utilities.exceptions import (
@@ -69,7 +69,7 @@ class _UtilsDataModel(object):
     def __init__(self) -> None:
         self._data_status: DataStatus = DataStatus.NOT_SETUP
         self._executable_finder: ExecutableFinder = ExecutableFinder()
-        self._log_database_paths: Dict[str, Optional[str]] = {}
+        self._log_database_paths: Dict[str, str] = {}
         self._reset_status: ResetStatus = ResetStatus.NOT_SETUP
         self._run_status: RunStatus = RunStatus.NOT_SETUP
 
@@ -771,11 +771,11 @@ class UtilsDataView(object):
                 raise ValueError(f"No logs database found for {database_key=}")
             else:
                 logger.error(f"No logs database found for {database_key=}")
-            cls.__data._log_database_paths[database_key] = None
+                return None
         return cls.__data._log_database_paths[database_key]
 
     @classmethod
-    def  get_log_database_keys_and_paths(cls) -> Iterator[str, str]:
+    def  get_log_database_keys_and_paths(cls) -> Iterable[Tuple[str, str]]:
         """
         Gets the logs database keys and paths
 

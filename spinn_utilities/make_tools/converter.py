@@ -14,7 +14,6 @@
 
 import os
 import sys
-from typing import Optional
 from .file_converter import FileConverter
 from .log_sqllite_database import LogSqlLiteDatabase
 
@@ -25,46 +24,50 @@ SKIPPABLE_FILES = frozenset([
     "neural_build.mk", "Makefile.neural_build"])
 
 
-def convert(src: str, dest: str, new_dict: bool) -> None:
+def convert(src: str, dest: str, database_dir: str,
+            database_key: str) -> str:
     """
     Converts a whole directory including sub-directories.
 
     :param src: Full source directory
     :param dest: Full destination directory
-    :param new_dict:
-        Whether we should generate a new dictionary/DB.
-        If not, we add to the existing one.
+    :param database_dir:
+        Full path to directory to place database file in.
+    :param database_key: database key for this conversion
+    :return: Full path to the logs database
+    :raises ValueError:
     """
-    if new_dict:
-        LogSqlLiteDatabase(new_dict)
+    database_file = LogSqlLiteDatabase.filename_by_key(
+        database_dir, database_key)
+    log_database = LogSqlLiteDatabase(database_file)
 
     src_path = os.path.abspath(src)
     if not os.path.exists(src_path):
         raise FileNotFoundError(
             f"Unable to locate source directory {src_path}")
     dest_path = os.path.abspath(dest)
-    _convert_dir(src_path, dest_path)
+    file_converter = FileConverter(log_database, database_key)
+    _convert_dir(src_path, dest_path, file_converter)
+    return database_file
 
 
 def _convert_dir(src_path: str, dest_path: str,
-                 make_directories: Optional[bool] = False) -> None:
+                 file_converter: FileConverter) -> None:
     """
     Converts a whole directory including sub directories.
 
     :param src_path: Full source directory
     :param dest_path: Full destination directory
-    :param make_directories: Whether to do `mkdir()` first
+    :param file_converter:
     """
-    if make_directories:
-        _mkdir(dest_path)
-    for src_dir, _, file_list in os.walk(src_path):
+    for src_dir, dirs, file_list in os.walk(src_path):
+        dirs.sort()
         dest_dir = os.path.join(dest_path, os.path.relpath(src_dir, src_path))
-        if make_directories:
-            _mkdir(dest_dir)
+        file_list.sort()
         for file_name in file_list:
             _, extension = os.path.splitext(file_name)
             if extension in ALLOWED_EXTENSIONS:
-                FileConverter.convert(src_dir, dest_dir, file_name)
+                file_converter.convert(src_dir, dest_dir, file_name)
             elif file_name in SKIPPABLE_FILES:
                 pass
             else:
@@ -82,8 +85,14 @@ def _mkdir(destination: str) -> None:
 if __name__ == '__main__':
     _src = sys.argv[1]
     _dest = sys.argv[2]
-    if len(sys.argv) > 3:
-        _new_dict = bool(sys.argv[3])
+    if len(sys.argv) > 4:
+        _database_file = sys.argv[3]
+        _database_key = sys.argv[4]
+        convert(_src, _dest, _database_file, _database_key)
     else:
-        _new_dict = False
-    convert(_src, _dest, _new_dict)
+        raise ValueError(
+            "Convert requires 4 parameters. The source directory, "
+            "the destination directory, a single character database key and "
+            "the path to write the logs sqlite3 database to. "
+            "Database keys must be unique. "
+            "To avoid clashes with system builds use a lower case letter")

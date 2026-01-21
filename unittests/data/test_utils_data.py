@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import os
+from testfixtures import LogCapture
 import unittest
+
 from spinn_utilities.data import UtilsDataView
 from spinn_utilities.data.reset_status import ResetStatus
 from spinn_utilities.data.run_status import RunStatus
@@ -27,6 +29,7 @@ from spinn_utilities.exceptions import (
     SimulatorNotRunException, SimulatorNotSetupException,
     SimulatorRunningException, SimulatorShutdownException,
     UnexpectedStateChange)
+from spinn_utilities.testing import log_checker
 
 
 class TestUtilsData(unittest.TestCase):
@@ -1126,3 +1129,22 @@ class TestUtilsData(unittest.TestCase):
         self.assertTrue(os.path.exists(reports))
         error_file = UtilsDataView.get_error_file()
         assert error_file.startswith(reports)
+
+    # Good tested by test_replacer
+    def test_log_database_path_bad(self) -> None:
+        with LogCapture() as lc:
+            try:
+                path = UtilsDataView.get_log_database_path("£")
+            except ValueError:
+                if 'RUNNER_ENVIRONMENT' in os.environ:
+                    return
+            if 'RUNNER_ENVIRONMENT' in os.environ:
+                raise ValueError("Should not have worked")
+            self.assertIsNone(path)
+            log_checker.assert_logs_error_contains(
+                lc.records, "No logs database found for database_key='£'")
+            path = UtilsDataView.get_log_database_path("£")
+            self.assertIsNone(path)
+            log_checker.assert_logs_contains_once(
+                "ERROR", lc.records,
+                "No logs database found for database_key='£'")

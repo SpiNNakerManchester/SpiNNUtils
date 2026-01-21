@@ -1,7 +1,4 @@
-test_ranges.txt
 /modified_src/
-/log.ranges
 alpha
-logs.sqlite3
-convert_1.sqlite3
+logs*.sqlite3
 convert_2.sqlite3

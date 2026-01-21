@@ -16,7 +16,7 @@ import os
 import sqlite3
 import sys
 import time
-from typing import Optional, Tuple
+from typing import Dict, Optional, Tuple
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")
@@ -46,65 +46,38 @@ class LogSqlLiteDatabase(AbstractContextManager):
         "_db",
     ]
 
-    def __init__(self, new_dict: bool = False) -> None:
+    def __init__(self, database_path: str) -> None:
         """
         Connects to a log dict. The location of the file can be overridden
         using the ``C_LOGS_DICT`` environment variable.
 
-        :param new_dict: Flag to say if this is a new dict or not.
-            If True, clears and previous values.
-            If False, makes sure the dict exists.
+        param database_file: Full path to the database.
+           (use default_database_file to get the default location)
         """
         # To Avoid an Attribute error on close after an exception
-        self._db = None
-        database_file = self._database_file()
-        if not new_dict:
-            self._check_database_file(database_file)
+        self._db: Optional[sqlite3.Connection] = None
+        self._db = sqlite3.connect(database_path)
+        self.__init_db()
 
-        try:
-            self._db = sqlite3.connect(database_file)
-            self.__init_db()
-            if new_dict:
-                self.__clear_db()
-        except Exception as ex:
-            message = f"Error accessing c_logs_dict at {database_file}. "
-            if 'C_LOGS_DICT' in os.environ:
-                message += (
-                    "This came from the environment variable 'C_LOGS_DICT'. ")
-            else:
-                message += (
-                    "This is the default location. Set environment "
-                    "variable 'C_LOGS_DICT' to use somewhere else.")
-            if new_dict:
-                message += "Check this is a location with write access."
-            else:
-                message += "Please rebuild the C code."
-            raise FileNotFoundError(message) from ex
-
-    def _database_file(self) -> str:
+    @classmethod
+    def deprecated_database_file(cls) -> str:
         """
-        Finds the database file path.
+        Finds the previous database file path.
 
         If environment variable C_LOGS_DICT exists that is used,
         otherwise the default path in this directory is used.
+
+        This is deprecated as any new make will no longer use this file
 
         :return: Absolute path to where the database file is or will be
         """
         if 'C_LOGS_DICT' in os.environ:
             return str(os.environ['C_LOGS_DICT'])
 
-        script = sys.modules[self.__module__].__file__
+        script = sys.modules[cls.__module__].__file__
         assert script is not None
         directory = os.path.dirname(script)
         return os.path.join(directory, DB_FILE_NAME)
-
-    def _extra_database_error_message(self) -> str:
-        """
-        Adds a possible extra part to the error message.
-
-        :return: A likely empty string
-        """
-        return ""
 
     def _check_database_file(self, database_file: str) -> None:
         """
@@ -119,7 +92,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
         if 'C_LOGS_DICT' in os.environ:
             message += (
                 "This came from the environment variable 'C_LOGS_DICT'. ")
-        message += self._extra_database_error_message()
         message += "Please rebuild the C code."
         raise FileNotFoundError(message)
 
@@ -148,19 +120,6 @@ class LogSqlLiteDatabase(AbstractContextManager):
         with open(_DDL_FILE, encoding="utf-8") as f:
             sql = f.read()
         self._db.executescript(sql)
-
-    def __clear_db(self) -> None:
-        assert self._db is not None
-        with self._db:
-            cursor = self._db.cursor()
-            cursor.execute("DELETE FROM log")
-            cursor.execute("UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='log'")
-            cursor.execute("DELETE FROM file")
-            cursor.execute(
-                "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='file'")
-            cursor.execute("DELETE FROM directory")
-            cursor.execute(
-                "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='directory'")
 
     def get_directory_id(self, src_path: str, dest_path: str) -> int:
         """
@@ -324,3 +283,59 @@ class LogSqlLiteDatabase(AbstractContextManager):
                      """):
                 return row["max_id"]
         raise ValueError("unexpected no return")
+
+    @classmethod
+    def filename_by_key(cls, database_dir: str, database_key: str) -> str:
+        """
+        Builds the file name which includes the key
+
+        :param database_dir:
+            Full path to directory to place database file in.
+        :param database_key: key for the database
+        :return: filename including the key
+        :raises ValueError: If the key is not a single none digital character
+        """
+        if len(database_key) != 1:
+            raise ValueError(f"{database_key=} Only single character allowed")
+        if database_key.isdigit():
+            raise ValueError(f"{database_key=} is digital")
+
+        return os.path.join(database_dir, f"logs{database_key}.sqlite3")
+
+    @classmethod
+    def key_from_filename(cls, file_path: str) -> str:
+        """
+        Gets the key from the excepted filename pattern logs{key}.sqlite3
+
+        :param file_path:
+            full path or filename in the pattern logs{key}.sqlite3
+        :return: database key
+        """
+        try:
+            database_key = file_path[-9]
+        except IndexError as exc:
+            msg = (f"Unexpected Database {file_path}. "
+                   "It should be logs{key}.sqlite3")
+            raise ValueError(msg) from exc
+        check = cls.filename_by_key(os.path.dirname(file_path), database_key)
+        if check != file_path:
+            msg = (f"Unexpected Database {file_path}. "
+                   "Only logs{key}.sqlite3 expected")
+            raise ValueError(msg)
+        return database_key
+
+    @classmethod
+    def find_databases(cls, database_dir: str) -> Dict[str, str]:
+        """
+        Given a directory finds the databases and keys in it.
+
+        :param database_dir:
+            Full path to directory which may have logs databases) in it.
+        :return: Map of database_keys to full database paths.
+        """
+        logfiles: Dict[str, str] = dict()
+        for file in os.listdir(database_dir):
+            if file.endswith(".sqlite3"):
+                filepath = os.path.join(database_dir, file)
+                logfiles[cls.key_from_filename(filepath)] = filepath
+        return logfiles

@@ -13,22 +13,19 @@
 # limitations under the License.
 
 import logging
-import os
-import shutil
 import struct
 import sys
 from types import TracebackType
-from typing import Optional, Type, Tuple
+from typing import Dict, Optional, Type, Tuple
 
 from typing_extensions import Literal, Self
 
-from spinn_utilities.overrides import overrides
-from spinn_utilities.config_holder import get_config_str_or_none
+from spinn_utilities.data import UtilsDataView
 from spinn_utilities.log import FormatAdapter
 
 from .file_converter import FORMAT_EXP
 from .file_converter import TOKEN
-from .log_sqllite_database import DB_FILE_NAME, LogSqlLiteDatabase
+from .log_sqllite_database import LogSqlLiteDatabase
 
 logger = FormatAdapter(logging.getLogger(__name__))
 
@@ -38,33 +35,18 @@ LEVELS = {10: "[DEBUG]",
           40: "[ERROR]"}
 
 
-class Replacer(LogSqlLiteDatabase):
+class Replacer(object):
     """
     Performs replacements.
     """
 
-    @overrides(LogSqlLiteDatabase._database_file)
-    def _database_file(self) -> str:
-        database_file = super()._database_file()
-        if not os.path.isfile(database_file):
-            external_binaries = get_config_str_or_none(
-                "Mapping", "external_binaries")
-            if external_binaries is not None:
-                source_file = os.path.join(external_binaries, DB_FILE_NAME)
-                if os.path.exists(source_file):
+    __slots__ = [
+        # the database holding the data to store
+        "_dbs",
+    ]
 
-                    shutil.copyfile(source_file, database_file)
-        return database_file
-
-    @overrides(LogSqlLiteDatabase._extra_database_error_message)
-    def _extra_database_error_message(self) -> str:
-        extra__binaries = get_config_str_or_none(
-            "Mapping", "external_binaries")
-        if extra__binaries is None:
-            return ""
-        else:
-            return (f"The cfg {extra__binaries=} "
-                    f"also does not contain a {DB_FILE_NAME}. ")
+    def __init__(self) -> None:
+        self._dbs: Dict[str, LogSqlLiteDatabase] = dict()
 
     def __enter__(self) -> Self:
         return self
@@ -77,6 +59,16 @@ class Replacer(LogSqlLiteDatabase):
     _FLT_FMT = struct.Struct("!f")
     _DBL_FMT = struct.Struct("!d")
 
+    def _db(self, database_key: str) -> Optional[LogSqlLiteDatabase]:
+        if database_key in self._dbs:
+            return self._dbs[database_key]
+        database_file = UtilsDataView.get_log_database_path(database_key)
+        if database_file is None:
+            return None
+        db = LogSqlLiteDatabase(database_file)
+        self._dbs[database_key] = db
+        return db
+
     def _replace(self, short: str) -> Optional[Tuple[int, str, str, str]]:
         """
         Apply the replacements to a short message.
@@ -85,9 +77,21 @@ class Replacer(LogSqlLiteDatabase):
         :return: The expanded message.
         """
         parts = short.split(TOKEN)
-        if not parts[0].isdigit():
+        log_st = parts[0]
+        if len(log_st) == 0:
             return None
-        data = self.get_log_info(parts[0])
+        if log_st[0].isdigit():
+            log_id = log_st
+            database_key = ""
+        elif log_st[1:].isdigit():
+            log_id = log_st[1:]
+            database_key = log_st[0]
+        else:
+            return None
+        db = self._db(database_key)
+        if db is None:
+            return None
+        data = db.get_log_info(log_id)
         if data is None:
             return None
         (log_level, file_name, line_num, original) = data

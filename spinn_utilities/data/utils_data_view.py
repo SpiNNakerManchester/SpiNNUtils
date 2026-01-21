@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+import logging
 import os
 from tempfile import TemporaryDirectory
-from typing import List, Optional
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from unittest import SkipTest
 from spinn_utilities.exceptions import (
@@ -22,9 +23,13 @@ from spinn_utilities.exceptions import (
     SimulatorNotSetupException, SimulatorRunningException,
     SimulatorShutdownException, UnexpectedStateChange)
 from spinn_utilities.executable_finder import ExecutableFinder
+from spinn_utilities.log import FormatAdapter
+from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus
+
+logger = FormatAdapter(logging.getLogger(__name__))
 # pylint: disable=protected-access
 
 
@@ -48,6 +53,7 @@ class _UtilsDataModel(object):
     __slots__ = [
         "_data_status",
         "_executable_finder",
+        "_log_database_paths",
         "_report_dir_path",
         "_requires_data_generation",
         "_requires_mapping",
@@ -63,6 +69,7 @@ class _UtilsDataModel(object):
     def __init__(self) -> None:
         self._data_status: DataStatus = DataStatus.NOT_SETUP
         self._executable_finder: ExecutableFinder = ExecutableFinder()
+        self._log_database_paths: Dict[str, str] = {}
         self._reset_status: ResetStatus = ResetStatus.NOT_SETUP
         self._run_status: RunStatus = RunStatus.NOT_SETUP
 
@@ -667,6 +674,23 @@ class UtilsDataView(object):
         :param search_path: absolute search path for binaries
         """
         cls.__data._executable_finder.add_path(search_path)
+        database_map = LogSqlLiteDatabase.find_databases(search_path)
+        for database_key, log_path in database_map.items():
+            cls._register_log_database(database_key, log_path)
+        # Check for an older build
+        log_path = LogSqlLiteDatabase.deprecated_database_file()
+        if os.path.exists(log_path):
+            cls._register_log_database("", log_path)
+        elif len(database_map) == 0:
+            aplx_found = False
+            for file in os.listdir(search_path):
+                if file.endswith(".aplx"):
+                    aplx_found = True
+                    break
+            if not aplx_found:
+                return
+            raise ValueError(f"{search_path} has no logs database. "
+                             f"Found {os.listdir(search_path)}")
 
     @classmethod
     def get_executable_path(cls, executable_name: str) -> str:
@@ -704,6 +728,63 @@ class UtilsDataView(object):
         """
         return cls.__data._executable_finder.get_executable_paths(
             executable_names)
+
+    @classmethod
+    def _register_log_database(cls, database_key: str, log_path: str) -> None:
+        """
+        Register a database keeping track of its key and path
+
+        Intended only to be called by register_binary_search_path and tests
+
+        :param database_key: The key of the database
+        :param log_path: The path to the log database
+        """
+        if database_key in cls.__data._log_database_paths:
+            if log_path != cls.__data._log_database_paths[database_key]:
+                if database_key == "":
+                    raise SpiNNUtilsException(
+                        f"Both databases {log_path} and "
+                        f"{cls.__data._log_database_paths[database_key]} "
+                        f"want to be the deprecated database")
+                else:
+                    raise SpiNNUtilsException(
+                        f"Both databases {log_path} and "
+                        f"{cls.__data._log_database_paths[database_key]} "
+                        f"have the database_key {database_key}")
+        else:
+            cls.__data._log_database_paths[database_key] = log_path
+
+    @classmethod
+    def get_log_database_path(cls, database_key: str) -> Optional[str]:
+        """
+        Gets the database path for this Database key
+
+        For the default "" key it will look for and if available register
+            the default
+
+        :param database_key:
+        :return: A path to the database if registered
+        """
+        if database_key not in cls.__data._log_database_paths:
+            # die on github actions
+            if 'RUNNER_ENVIRONMENT' in os.environ:
+                raise ValueError(f"No logs database found for {database_key=}")
+            else:
+                logger.error(f"No logs database found for {database_key=}")
+                return None
+        return cls.__data._log_database_paths[database_key]
+
+    @classmethod
+    def get_log_database_keys_and_paths(cls) -> Iterable[Tuple[str, str]]:
+        """
+        Gets the logs database keys and paths
+
+        This only returns ones found in paths passed to
+        register_binary_search_path
+
+        :return: The logs database keys and paths
+        """
+        return cls.__data._log_database_paths.items()
 
     @classmethod
     def get_requires_data_generation(cls) -> bool:

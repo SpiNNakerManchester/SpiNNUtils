@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections import defaultdict
 import logging
 import os
 from typing import List, Optional
+
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.ordered_set import OrderedSet
 
@@ -90,7 +92,7 @@ class ExecutableFinder(object):
 
             # If this filename exists, return it
             if os.path.isfile(potential_filename):
-                if self._binary_log:
+                if self._binary_log and "unittests" not in potential_filename:
                     with open(self._binary_log, "a", encoding="utf-8") \
                             as log_file:
                         log_file.write(potential_filename)
@@ -125,6 +127,44 @@ class ExecutableFinder(object):
                 pass
         return results
 
+    def print_files_by_directory(self, files: List[str]) -> None:
+        """
+        Prints the files sorted by directory
+
+        :param files: List of full paths to the files
+        """
+        if len(files) == 0:
+            return
+
+        if len(files) == 1:
+            print(files[0])
+            return
+
+        files.sort()
+
+        # Find a shared parent to remove
+        directory = os.path.dirname(files[0])
+        parent = os.path.dirname(directory)
+
+        # Find the path part common to all
+        c_pref = os.path.commonprefix(files)
+        while len(c_pref) > 0 and c_pref[len(c_pref) - 1] != os.sep:
+            c_pref = c_pref[:-1]
+
+        # cut either the common part or the parent plus the file divider
+        cut = min(len(c_pref), len(parent)+1)
+
+        # group files by directory
+        files_by_dir = defaultdict(list)
+        for binary in files:
+            directory, file = os.path.split(binary[cut:])
+            files_by_dir[directory].append(file)
+
+        for directory in files_by_dir:
+            print(directory)
+            for file in files_by_dir[directory]:
+                print(f"\t{file}")
+
     def check_logs(self) -> None:
         """
         Compares the aplx files used against the ones available for use
@@ -147,7 +187,7 @@ class ExecutableFinder(object):
                     if file_name.endswith(".aplx"):
                         in_folders.add(os.path.join(folder, file_name))
             except FileNotFoundError:
-                logger.error(f"Directory {folder} not found")
+                logger.info(f"Directory {folder} not found")
 
         used_binaries = set()
         if self._binary_log:
@@ -158,13 +198,10 @@ class ExecutableFinder(object):
         missing = in_folders - used_binaries
         print(f"{len(used_binaries)} binaries asked for. "
               f"{len(missing)} binaries never asked for.")
-        if len(missing) > 0:
-            print("Binaries asked for are:")
-            for binary in (used_binaries):
-                print(binary)
-            print("Binaries never asked for are:")
-            for binary in (missing):
-                print(binary)
+        print("Used binaries:")
+        self.print_files_by_directory(list(used_binaries))
+        print("Binaries not tested:")
+        self.print_files_by_directory(list(missing))
 
     def clear_logs(self) -> None:
         """

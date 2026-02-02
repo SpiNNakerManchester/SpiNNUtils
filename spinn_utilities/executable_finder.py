@@ -157,12 +157,12 @@ class ExecutableFinder(object):
         # group files by directory
         files_by_dir = defaultdict(list)
         for binary in files:
-            dir, file = os.path.split(binary[cut:])
-            files_by_dir[dir].append(file)
+            directory, file = os.path.split(binary[cut:])
+            files_by_dir[directory].append(file)
 
-        for dir in files_by_dir:
-            print(dir)
-            for file in files_by_dir[dir]:
+        for directory in files_by_dir:
+            print(directory)
+            for file in files_by_dir[directory]:
                 print(f"\t{file}")
 
     def check_logs(self) -> None:

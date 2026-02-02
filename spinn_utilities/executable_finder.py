@@ -142,7 +142,7 @@ class ExecutableFinder(object):
         while len(c_pref) > 0 and c_pref[len(c_pref) - 1] != os.sep:
             c_pref = c_pref[:-1]
 
-        # cut either the common part or the parent dir plus the file divider
+        # cut either the common part or the parent plus the file divider
         cut = min(len(c_pref), len(parent)+1)
 
         # group files by directory

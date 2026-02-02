@@ -128,7 +128,16 @@ class ExecutableFinder(object):
         return results
 
     def print_files_by_directory(self, files: List[str]) -> None:
+        """
+        Prints the files sorted by directory
+
+        :param files: List of full paths to the files
+        """
         if len(files) == 0:
+            return
+
+        if len(files) == 1:
+            print(files[0])
             return
 
         files.sort()

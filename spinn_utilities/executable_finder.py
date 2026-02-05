@@ -83,7 +83,7 @@ class ExecutableFinder(object):
         Unlike get_executable_path(s) does not log the path as used.
 
         :param executable_name: The name of the executable to find
-        :return: True if found. Ie get_executable_path would return work
+        :return: True if found. Then get_executable_path will work
         """
         # Loop through search paths
         for path in self._binary_search_paths:

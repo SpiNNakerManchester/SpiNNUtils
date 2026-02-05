@@ -700,7 +700,7 @@ class UtilsDataView(object):
         Unlike get_executable_path(s) does not log the path as used.
 
         :param executable_name: The name of the executable to find
-        :return: True if found. Ie get_executable_path would return work
+        :return: True if found. Then get_executable_path will work
         """
         return cls.__data._executable_finder.check_executable_path(
             executable_name)

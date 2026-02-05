@@ -76,6 +76,25 @@ class ExecutableFinder(object):
         """
         return " : ".join(self._binary_search_paths)
 
+    def check_executable_path(self, executable_name: str) -> bool:
+        """
+        Checks for an executable within the set of folders.
+
+        Unlike get_executable_path(s) does not log the path as used.
+
+        :param executable_name: The name of the executable to find
+        :return: True if found. Then get_executable_path will work
+        """
+        # Loop through search paths
+        for path in self._binary_search_paths:
+            # Rebuild filename
+            potential_filename = os.path.join(path, executable_name)
+
+            # If this filename exists, return it
+            if os.path.isfile(potential_filename):
+                return True
+        return False
+
     def get_executable_path(self, executable_name: str) -> str:
         """
         Finds an executable within the set of folders. The set of folders

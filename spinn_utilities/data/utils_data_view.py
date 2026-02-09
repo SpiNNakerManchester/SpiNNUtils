@@ -693,6 +693,19 @@ class UtilsDataView(object):
                              f"Found {os.listdir(search_path)}")
 
     @classmethod
+    def check_executable_path(cls, executable_name: str) -> bool:
+        """
+        Checks for an executable within the set of folders.
+
+        Unlike get_executable_path(s) does not log the path as used.
+
+        :param executable_name: The name of the executable to find
+        :return: True if found. Then get_executable_path will work
+        """
+        return cls.__data._executable_finder.check_executable_path(
+            executable_name)
+
+    @classmethod
     def get_executable_path(cls, executable_name: str) -> str:
         """
         Finds an executable within the set of folders. The set of folders

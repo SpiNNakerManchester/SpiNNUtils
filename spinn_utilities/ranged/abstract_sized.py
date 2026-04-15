@@ -20,7 +20,10 @@ from typing import Any, Optional, Sequence, SupportsInt, Tuple, Union
 from typing_extensions import TypeAlias, TypeGuard
 import numpy
 
-logger = logging.getLogger(__file__)
+from spinn_utilities.log import FormatAdapter
+
+
+logger = FormatAdapter(logging.getLogger(__name__))
 
 #: Type of integers for selectors
 _Integer: TypeAlias = Union[int, numpy.integer, SupportsInt]

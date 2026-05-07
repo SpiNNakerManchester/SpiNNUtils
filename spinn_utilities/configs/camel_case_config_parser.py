@@ -15,7 +15,7 @@ import os
 
 from collections.abc import Iterable
 import configparser
-from typing import List, Optional, TYPE_CHECKING, Union
+from typing import List, Optional, Union
 
 
 NONES = ("none", )
@@ -23,12 +23,8 @@ TRUES = ('y', 'yes', 't', 'true', 'on', '1')
 FALSES = ('n', 'no', 'f', 'false', 'off', '0')
 
 # Type support
-if TYPE_CHECKING:
-    _Path = Union[Union[str, bytes, os.PathLike],
-                  Iterable[Union[str, bytes, os.PathLike]]]
-else:
-    # Python 3.8 does not support above typing
-    _Path = str
+_Path = Union[Union[str, bytes, os.PathLike],
+              Iterable[Union[str, bytes, os.PathLike]]]
 
 
 def optionxform(optionstr: str) -> str:
@@ -65,8 +61,9 @@ class TypedConfigParser(configparser.RawConfigParser):
         """
         return optionstr
 
-    def read(self, filenames: _Path,
-             encoding: Optional[str] = None) -> List[str]:
+    #  typing in super class heavily overloaded and hard to replicate
+    def read(self, filenames,  # type: ignore[no-untyped-def]
+             encoding: Optional[str] = None):
         """
         Read and parse a filename or a list of filenames.
 

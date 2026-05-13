@@ -14,7 +14,7 @@
 
 from spinn_utilities.log import FormatAdapter
 
-_already_issued = set()
+_already_issued: set[str] = set()
 
 
 def warn_once(logger: FormatAdapter, msg: str) -> None:

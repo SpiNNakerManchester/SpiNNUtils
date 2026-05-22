@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import importlib
+import os
 
 from spinn_utilities.helpful_functions import (is_singleton, gcd, lcm)
 
@@ -59,5 +60,6 @@ def test_lcm() -> None:
 
 
 def test_version() -> None:
-    version = importlib.metadata.version("SpiNNUtilities")
-    assert version == "1!7.4.2"
+    if os.getenv("GITHUB_ACTIONS"):
+        version = importlib.metadata.version("SpiNNUtilities")
+        assert version == "wrong"

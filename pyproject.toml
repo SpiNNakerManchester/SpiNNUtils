@@ -16,8 +16,8 @@
 # based on https://gitlab.com/spinnaker2/SpiNNUtils2/-/blob/main/pyproject.toml
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61", "wheel"]
+build-backend = "se
 
 [project]
 name = "SpiNNUtilities"

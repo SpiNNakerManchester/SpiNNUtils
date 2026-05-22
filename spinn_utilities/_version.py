@@ -17,3 +17,6 @@ __version_month__ = "TBD"
 __version_year__ = "TBD"
 __version_day__ = "TBD"
 __version_name__ = ""
+
+# name = "SpiNNUtilities2"
+# version = "2!0.1.1b"

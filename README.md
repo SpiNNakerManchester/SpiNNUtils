@@ -2,6 +2,10 @@
 [![Python Actions](https://github.com/SpiNNakerManchester/SpiNNUtils/actions/workflows/python_actions.yml/badge.svg?branch=master)](https://github.com/SpiNNakerManchester/SpiNNUtils/actions/workflows/python_actions.yml)
 [![Documentation Status](https://readthedocs.org/projects/spinnutils/badge/?version=latest)](https://spinnutils.readthedocs.io/en/latest)
 
+Spinnaker2
+==========
+The dedicated spinnaker2 code can be found at: https://gitlab.com/spinnaker2/SpiNNUtils2
+
 SpiNNUtils
 ==========
 This provides basic utility functions and classes to other parts of SpiNNaker's

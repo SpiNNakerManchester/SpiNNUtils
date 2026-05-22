@@ -19,4 +19,3 @@ __version_month__ = "TBD"
 __version_year__ = "TBD"
 __version_day__ = "TBD"
 __version_name__ = ""
-

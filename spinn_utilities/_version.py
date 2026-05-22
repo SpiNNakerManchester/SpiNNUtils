@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = "1!7.4.2"
+import importlib
+
+__version__ = importlib.metadata.version("SpiNNUtilities")
 __version_month__ = "TBD"
 __version_year__ = "TBD"
 __version_day__ = "TBD"
 __version_name__ = ""
 
-# name = "SpiNNUtilities2"
-# version = "2!0.1.1b"

@@ -21,6 +21,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "SpiNNUtilities"
+version = "1!7.4.2"
 description = "Utility classes and functions for SpiNNaker projects"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { text = "Apache-2.0" }
@@ -82,9 +83,6 @@ include = ["spinn_utilities", "spinn_utilities.*"]
     "db.sql",
     "py.typed"
 ]
-
-[tool.setuptools.dynamic]
-version = { attr = "spinn_utilities._version.__version__" }
 
 [[tool.mypy.overrides]]
 module = ["testfixtures","httpretty"]

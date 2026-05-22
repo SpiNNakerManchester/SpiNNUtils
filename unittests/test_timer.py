@@ -37,3 +37,9 @@ def test_advanced_use() -> None:
         sleep(0.1)
     assert t.measured_interval is not None
     assert t.measured_interval.total_seconds() >= 0.095
+
+import importlib
+
+def test_version():
+    version = importlib.metadata.version("SpiNNUtilities")
+    assert version == "foo"

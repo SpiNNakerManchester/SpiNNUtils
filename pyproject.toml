@@ -82,6 +82,7 @@ include = ["spinn_utilities", "spinn_utilities.*"]
 "*" = [
     "spinn_utilities.cfg",
     "db.sql",
+    "notes.md",
     "py.typed"
 ]
 

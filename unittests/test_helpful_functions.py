@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import importlib
+
 from spinn_utilities.helpful_functions import (is_singleton, gcd, lcm)
 
 
@@ -54,3 +56,8 @@ def test_lcm() -> None:
     assert lcm(b) == 3000
     c = [34]
     assert lcm(c) == 34
+
+
+def test_version() -> None:
+    version = importlib.metadata.version("SpiNNUtilities")
+    assert version == "1!7.4.2"

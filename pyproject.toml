@@ -33,6 +33,7 @@ requires-python = ">=3.10, <4"
 dependencies = [
     "appdirs",
     "docstring_parser",
+    "importlib-metadata",
     "numpy",
     "pyyaml",
     "requests",

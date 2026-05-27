@@ -518,11 +518,16 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
-            d_operation: Callable[[Any, float], float] = lambda x, y: x + y
-            return DualList(
-                left=self, right=other, operation=d_operation)
+
+            def d_operation(x: Any, y: float) -> float:
+                return x + y
+
+            return DualList(left=self, right=other, operation=d_operation)
         if is_number(other):
-            s_operation: Callable[[Any], float] = lambda x: x + other
+
+            def s_operation(x: any) -> float:
+                return x + other
+
             return SingleList(a_list=self, operation=s_operation)
         raise TypeError("__add__ operation only supported for other "
                         "RangedLists and numerical Values")
@@ -540,11 +545,16 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
-            d_operation: Callable[[Any, float], float] = lambda x, y: x - y
-            return DualList(
-                left=self, right=other, operation=d_operation)
+
+            def d_operation(x: Any, y: float) -> float:
+                return x - y
+
+            return DualList(left=self, right=other, operation=d_operation)
         if is_number(other):
-            s_operation: Callable[[Any], float] = lambda x: x - other
+
+            def s_operation(x: Any) -> float:
+                return x - other
+
             return SingleList(a_list=self, operation=s_operation)
         raise TypeError("__sub__ operation only supported for other "
                         "RangedLists and numerical Values")
@@ -562,11 +572,16 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
-            d_operation: Callable[[Any, float], float] = lambda x, y: x * y
-            return DualList(
-                left=self, right=other, operation=d_operation)
+
+            def d_operation(x: Any, y: float) -> float:
+                return x * y
+
+            return DualList(left=self, right=other, operation=d_operation)
         if is_number(other):
-            s_operation: Callable[[Any], float] = lambda x: x * other
+
+            def s_operation(x: Any) -> float:
+                return x * other
+
             return SingleList(a_list=self, operation=s_operation)
         raise TypeError("__mul__ operation only supported for other "
                         "RangedLists and numerical Values")
@@ -585,13 +600,18 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
-            d_operation: Callable[[Any, float], float] = lambda x, y: x / y
-            return DualList(
-                left=self, right=other, operation=d_operation)
+
+            def d_operation(x: Any, y: float) -> float:
+                return x / y
+
+            return DualList(left=self, right=other, operation=d_operation)
         if is_number(other):
             if _is_zero(other):
                 raise ZeroDivisionError()
-            s_operation: Callable[[Any], float] = lambda x: x / other
+
+            def s_operation(x: Any) -> float:
+                return x / other
+
             return SingleList(a_list=self, operation=s_operation)
         raise TypeError("__truediv__ operation only supported for other "
                         "RangedLists and numerical Values")
@@ -607,19 +627,25 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         :raises TypeError:
         """
         if isinstance(other, AbstractList):
-            d_operation: Callable[[Any, float], int] = lambda x, y: int(x // y)
-            return DualList(
-                left=self, right=other, operation=d_operation)
+
+            def d_operation(x: Any, y: float) -> int:
+                return int(x // y)
+
+            return DualList(left=self, right=other, operation=d_operation)
         if is_number(other):
             if _is_zero(other):
                 raise ZeroDivisionError()
-            s_operation: Callable[[Any], int] = lambda x: int(x / other)
-            return SingleList(a_list=self, operation=s_operation)
-        raise TypeError("__floordiv__ operation only supported for other "
-                        "RangedLists and numerical Values")
 
-    def apply_operation(
-            self, operation: Callable[[T], U]) -> AbstractList[U]:
+            def s_operation(x: Any) -> int:
+                return int(x / other)
+
+            return SingleList(a_list=self, operation=s_operation)
+        raise TypeError(
+            "__floordiv__ operation only supported for other "
+            "RangedLists and numerical Values"
+        )
+
+    def apply_operation(self, operation: Callable[[T], U]) -> AbstractList[U]:
         """
         Applies a function on the list to create a new one.
         The values of the new list are created on the fly so any changes

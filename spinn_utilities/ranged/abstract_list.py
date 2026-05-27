@@ -525,7 +525,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
             return DualList(left=self, right=other, operation=d_operation)
         if is_number(other):
 
-            def s_operation(x: any) -> float:
+            def s_operation(x: Any) -> float:
                 return x + other
 
             return SingleList(a_list=self, operation=s_operation)

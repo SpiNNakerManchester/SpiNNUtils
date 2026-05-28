@@ -87,4 +87,4 @@ include = ["spinn_utilities", "spinn_utilities.*"]
 
 [[tool.mypy.overrides]]
 module = ["testfixtures","httpretty"]
-ignore_missing_imports = true
+ignore_missing_imports = truenewline at end

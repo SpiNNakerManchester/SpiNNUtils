@@ -4,7 +4,7 @@
 *.pyc
 /.cache
 __pycache__
-/SpiNNUtilities.egg-info/
+/SpiNNUtilities2.egg-info/
 /dist/
 /.coverage
 /.pytest_cache
@@ -13,3 +13,4 @@ __pycache__
 .DS_Store
 .idea/
 /.mypy_cache/
+/build

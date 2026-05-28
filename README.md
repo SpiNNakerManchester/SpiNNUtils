@@ -68,6 +68,10 @@ optional arguments:
   --zenodo_access_token ZENODO_ACCESS_TOKEN  Access token for Zenodo
 ```
 
+Spinnaker2
+==========
+The dedicated spinnaker2 code can be found at: https://gitlab.com/spinnaker2/SpiNNUtils2
+
 Documentation
 =============
 [SpiNNUtils python documentation](http://spinnutils.readthedocs.io/en/latest)

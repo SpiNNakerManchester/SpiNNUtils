@@ -40,10 +40,10 @@ class TestConverter(unittest.TestCase):
         file_name = "weird,file.c"
         src = os.path.join(path, "mock_src")
         dest = os.path.join(path, "modified_src")
-        Path(src).touch()
-        file_converter.convert(src, dest, file_name)
         src_f = os.path.join(src, file_name)
         dest_f = os.path.join(dest, file_name)
+        Path(src_f).touch()
+        file_converter.convert(src, dest, file_name)
         src_lines = sum(1 for line in open(src_f))
         modified_lines = sum(1 for line in open(dest_f))
         self.assertEqual(src_lines, modified_lines)
@@ -101,6 +101,7 @@ class TestConverter(unittest.TestCase):
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
             try:
+                Path(src, "bad_comma.c").touch()
                 file_converter.convert(src, dest, "bad_comma.c")
                 assert False
             except Exception as ex1:
@@ -118,6 +119,7 @@ class TestConverter(unittest.TestCase):
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
             try:
+                Path(src, "bad_format.c").touch()
                 file_converter.convert(src, dest, "bad_format.c")
                 assert False
             except Exception as ex1:
@@ -133,6 +135,7 @@ class TestConverter(unittest.TestCase):
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
             try:
+                Path(src, "unclosed.c").touch()
                 file_converter.convert(src, dest, "unclosed.c")
                 assert False
             except Exception as ex1:
@@ -151,6 +154,7 @@ class TestConverter(unittest.TestCase):
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
             try:
+                Path(src, "semi.c").touch()
                 file_converter.convert(src, dest, "semi.c")
                 assert False
             except Exception as ex1:
@@ -169,6 +173,7 @@ class TestConverter(unittest.TestCase):
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
             try:
+                Path(src, "open.c").touch()
                 file_converter.convert(src, dest, "open.c")
                 assert False
             except Exception as ex1:
@@ -186,6 +191,7 @@ class TestConverter(unittest.TestCase):
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
             try:
+                Path(src, "too_few.c").touch()
                 file_converter.convert(src, dest, "too_few.c")
                 assert False
             except Exception as ex1:
@@ -205,6 +211,7 @@ class TestConverter(unittest.TestCase):
             src = os.path.join(path, "mistakes")
             dest = os.path.join(path, "modified_src")
             try:
+                Path(src, "too_many.c").touch()
                 file_converter.convert(src, dest, "too_many.c")
                 assert False
             except Exception as ex1:

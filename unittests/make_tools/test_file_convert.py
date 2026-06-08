@@ -14,6 +14,7 @@
 
 import os
 import pytest
+from pathlib import Path
 import sys
 import tempfile
 import unittest
@@ -39,6 +40,7 @@ class TestConverter(unittest.TestCase):
         file_name = "weird,file.c"
         src = os.path.join(path, "mock_src")
         dest = os.path.join(path, "modified_src")
+        Path(src).touch()
         file_converter.convert(src, dest, file_name)
         src_f = os.path.join(src, file_name)
         dest_f = os.path.join(dest, file_name)

@@ -118,6 +118,10 @@ class FileConverter(object):
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
         destination = os.path.join(dest_dir, file_name)
+        if os.path.exists(destination):
+            if os.path.getmtime(destination) > os.path.getmtime(self._src):
+                # Destination is newer than source so skip
+                return
         directory_id = self._log_database.get_directory_id(src_dir, dest_dir)
         self._log_file_id = self._log_database.get_file_id(
             directory_id, file_name)

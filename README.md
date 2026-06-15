@@ -7,7 +7,6 @@ SpiNNUtils
 This provides basic utility functions and classes to other parts of SpiNNaker's
 tooling. Nothing in here knows anything about SpiNNaker functionality.
 
-
 `spinn_utilities.abstract_base`
 -------------------------------
 Provides a simplified (and faster) version of the standard Python Abstract
@@ -67,6 +66,10 @@ optional arguments:
   --previous_doi PREVIOUS_DOI                The DOI this is a newer version of
   --zenodo_access_token ZENODO_ACCESS_TOKEN  Access token for Zenodo
 ```
+
+Spinnaker2
+==========
+The dedicated spinnaker2 code can be found at: https://gitlab.com/spinnaker2/SpiNNUtils2
 
 Documentation
 =============

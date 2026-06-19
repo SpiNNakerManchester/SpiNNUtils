@@ -24,6 +24,7 @@ from spinn_utilities.exceptions import (
     SimulatorShutdownException, UnexpectedStateChange)
 from spinn_utilities.executable_finder import ExecutableFinder
 from spinn_utilities.log import FormatAdapter
+from spinn_utilities import logger_utils
 from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 from .data_status import DataStatus
 from .reset_status import ResetStatus
@@ -783,7 +784,8 @@ class UtilsDataView(object):
             if 'RUNNER_ENVIRONMENT' in os.environ:
                 raise ValueError(f"No logs database found for {database_key=}")
             else:
-                logger.error(f"No logs database found for {database_key=}")
+                logger_utils.error_once(
+                    logger, f"No logs database found for {database_key=}")
                 return None
         return cls.__data._log_database_paths[database_key]
 

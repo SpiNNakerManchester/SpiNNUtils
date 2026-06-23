@@ -92,7 +92,7 @@ def _read_a_config(
             _check_config(machine_spec_file, default_configs, strict)
             configuration.read(machine_spec_file)
             configuration.remove_option("Machine", "machine_spec_file")
-        else:
+        elif not machine_spec_file.lower() == "none":
             raise UnexpectedConfigException(f"{machine_spec_file=} not found")
 
 

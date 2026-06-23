@@ -5,6 +5,7 @@
 /.cache
 __pycache__
 /SpiNNUtilities2.egg-info/
+/SpiNNUtilities.egg-info/
 /dist/
 /.coverage
 /.pytest_cache

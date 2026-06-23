@@ -29,6 +29,7 @@ Note: if weird,file.c changes you may have to manually fix the tests
 import math
 import os
 import pytest
+import shutil
 import tempfile
 import unittest
 
@@ -49,6 +50,8 @@ class TestReplacer(unittest.TestCase):
         global logs_database
         src = os.path.join(PATH, "mock_src")
         dest = os.path.join(PATH, "modified_src")
+        if os.path.exists(dest):
+            shutil.rmtree(dest)
         logs_database = convert(src, dest, PATH, "R")
 
     @pytest.mark.xdist_group(name="mock_src")

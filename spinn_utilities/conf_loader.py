@@ -88,9 +88,12 @@ def _read_a_config(
     configuration.read(cfg_file)
     if configuration.has_option("Machine", "machine_spec_file"):
         machine_spec_file = configuration.get("Machine", "machine_spec_file")
-        _check_config(machine_spec_file, default_configs, strict)
-        configuration.read(machine_spec_file)
-        configuration.remove_option("Machine", "machine_spec_file")
+        if os.path.isfile(machine_spec_file):
+            _check_config(machine_spec_file, default_configs, strict)
+            configuration.read(machine_spec_file)
+            configuration.remove_option("Machine", "machine_spec_file")
+        elif not machine_spec_file.lower() == "none":
+            raise UnexpectedConfigException(f"{machine_spec_file=} not found")
 
 
 def _config_locations(filename: str) -> List[str]:

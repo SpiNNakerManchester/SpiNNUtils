@@ -15,6 +15,8 @@
 # limitations under the License.
 
 # This bash assumes that other repositories are installed in parallel
+# Runs based on the lowest python version supported.
+# Can be run by any python that or higher
 
 if [ "$#" -eq  "0" ]
   then

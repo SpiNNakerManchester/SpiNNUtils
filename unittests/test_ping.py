@@ -21,9 +21,9 @@ skip_ping_tests = pytest.mark.skipif(
 
 
 @skip_ping_tests
-def test_spalloc() -> None:
+def test_bbc() -> None:
     # Should be able to reach Spalloc...
-    assert Ping.host_is_reachable("spinnaker.cs.man.ac.uk")
+    assert Ping.host_is_reachable("bbc.co.uk")
 
 
 @skip_ping_tests

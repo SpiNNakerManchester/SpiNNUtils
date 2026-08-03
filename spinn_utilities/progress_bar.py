@@ -12,20 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections.abc import Sized
 import logging
 import math
 import os
 import sys
+from collections.abc import Sized
 from types import TracebackType
 from typing import Iterable, Optional, Type, TypeVar, Union
 
 from typing_extensions import Literal, Self
 
+from spinn_utilities import logger_utils
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.overrides import overrides
-from spinn_utilities import logger_utils
-
 
 logger = FormatAdapter(logging.getLogger(__name__))
 #: :meta private:

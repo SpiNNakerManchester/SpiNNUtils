@@ -12,20 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+
 import atexit
 import datetime
-import os.path
 import logging
+import os.path
 import time
 from typing import Optional
+
 from typing_extensions import Self
 
 from spinn_utilities.config_holder import get_config_str
 from spinn_utilities.exceptions import (
-    IllegalWriterException, InvalidDirectory, SimulatorNotRunException,
-    UnexpectedStateChange)
+    IllegalWriterException,
+    InvalidDirectory,
+    SimulatorNotRunException,
+    UnexpectedStateChange,
+)
 from spinn_utilities.executable_finder import ExecutableFinder
 from spinn_utilities.log import FormatAdapter
+
 from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus

@@ -16,15 +16,14 @@ import logging
 import struct
 import sys
 from types import TracebackType
-from typing import Dict, Optional, Type, Tuple
+from typing import Dict, Optional, Tuple, Type
 
 from typing_extensions import Literal, Self
 
 from spinn_utilities.data import UtilsDataView
 from spinn_utilities.log import FormatAdapter
 
-from .file_converter import FORMAT_EXP
-from .file_converter import TOKEN
+from .file_converter import FORMAT_EXP, TOKEN
 from .log_sqllite_database import LogSqlLiteDatabase
 
 logger = FormatAdapter(logging.getLogger(__name__))

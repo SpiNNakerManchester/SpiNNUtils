@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from functools import reduce
 import logging
 import math
+from functools import reduce
 from typing import Any, Collection, Union, overload
-from typing_extensions import TypeGuard
-from spinn_utilities.log import FormatAdapter
 
+from typing_extensions import TypeGuard
+
+from spinn_utilities.log import FormatAdapter
 
 logger = FormatAdapter(logging.getLogger(__name__))
 FINISHED_FILENAME = "finished"

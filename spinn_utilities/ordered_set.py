@@ -14,8 +14,7 @@
 
 from collections import OrderedDict
 from collections.abc import MutableSet
-from typing import (
-    Any, Dict, Iterable, Iterator, Optional, Generic, TypeVar)
+from typing import Any, Dict, Generic, Iterable, Iterator, Optional, TypeVar
 
 #: :meta private:
 T = TypeVar("T")

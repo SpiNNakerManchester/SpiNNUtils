@@ -12,25 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import configparser
 import logging
 import os
-import pytest
 import random
-import configparser
 from types import ModuleType
 from typing import Iterator
 
-import unittests  # CRITICAL: *THIS* package!
+import pytest
 from testfixtures import LogCapture
 
 import spinn_utilities.conf_loader as conf_loader
 import spinn_utilities.config_holder as config_holder
+import unittests  # CRITICAL: *THIS* package!
 from spinn_utilities.configs import (
-    NoConfigFoundException, UnexpectedConfigException)
+    NoConfigFoundException,
+    UnexpectedConfigException,
+)
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.testing import log_checker
-
 
 CFGFILE = "configloader.cfg"
 CFGPATH = os.path.join(os.path.dirname(unittests.__file__), CFGFILE)

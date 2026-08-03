@@ -11,23 +11,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from configparser import NoOptionError
 import logging
 import os
+from configparser import NoOptionError
 from typing import List, Optional, Tuple
 
 import appdirs
 
 import spinn_utilities.conf_loader as conf_loader
-from spinn_utilities.data import UtilsDataView
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.configs.no_config_found_exception import (
-    NoConfigFoundException)
+    NoConfigFoundException,
+)
 from spinn_utilities.configs.two_user_configs_exception import (
-    TwoUserConfigsException)
+    TwoUserConfigsException,
+)
+from spinn_utilities.data import UtilsDataView
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import (
-    FormatAdapter, ConfiguredFilter, ConfiguredFormatter)
+    ConfiguredFilter,
+    ConfiguredFormatter,
+    FormatAdapter,
+)
 
 logger = FormatAdapter(logging.getLogger(__file__))
 

@@ -12,16 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from testfixtures import LogCapture
 import os
 from tempfile import TemporaryDirectory
 
-from spinn_utilities.config_setup import unittest_setup
+from testfixtures import LogCapture
+
 from spinn_utilities.config_holder import (
-    get_config_bool, get_config_bool_or_none, get_config_float,
-    get_config_float_or_none, get_config_int, get_config_int_or_none,
-    get_report_path, get_timestamp_path,
-    get_config_str, get_config_str_or_none,  set_config)
+    get_config_bool,
+    get_config_bool_or_none,
+    get_config_float,
+    get_config_float_or_none,
+    get_config_int,
+    get_config_int_or_none,
+    get_config_str,
+    get_config_str_or_none,
+    get_report_path,
+    get_timestamp_path,
+    set_config,
+)
+from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.data import UtilsDataView
 from spinn_utilities.exceptions import ConfigException, SpiNNUtilsException
 from spinn_utilities.testing import log_checker

@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import enum
-from io import TextIOBase
 import os
 import re
+from io import TextIOBase
 from typing import List
+
 from spinn_utilities.exceptions import UnexpectedCException
+
 from .log_sqllite_database import LogSqlLiteDatabase
 
 TOKEN = chr(30)  # Record Separator

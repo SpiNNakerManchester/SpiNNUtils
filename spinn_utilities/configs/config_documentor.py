@@ -12,16 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import defaultdict
 import os
 import re
 import sys
+from collections import defaultdict
 from typing import Dict, List, Set, TextIO
 
-from spinn_utilities.config_holder import (
-    get_default_cfgs)
-from spinn_utilities.configs.camel_case_config_parser import (
-    TypedConfigParser)
+from spinn_utilities.config_holder import get_default_cfgs
+from spinn_utilities.configs.camel_case_config_parser import TypedConfigParser
 
 
 def _make_name(option: str) -> str:

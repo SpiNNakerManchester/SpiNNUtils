@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pytest
+
 from spinn_utilities.ranged import RangeDictionary
 
 defaults = {"a": "alpha", "b": "bravo"}

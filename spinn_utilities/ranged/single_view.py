@@ -12,12 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+
 from typing import (
-    Dict, Generic, Iterator, Optional, Sequence, Tuple, overload,
-    TYPE_CHECKING, Union)
+    TYPE_CHECKING,
+    Dict,
+    Generic,
+    Iterator,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+    overload,
+)
+
 from spinn_utilities.overrides import overrides
-from .abstract_dict import AbstractDict, T, _StrSeq, _Keys
+
+from .abstract_dict import AbstractDict, T, _Keys, _StrSeq
 from .abstract_view import AbstractView
+
 if TYPE_CHECKING:
     from .range_dictionary import RangeDictionary
 

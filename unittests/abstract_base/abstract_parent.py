@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .abstract_has_label import AbstractHasLabel
 from .abstract_has_constraints import AbstractHasConstraints
+from .abstract_has_label import AbstractHasLabel
 
 
 class AbstractParent(AbstractHasLabel, AbstractHasConstraints):

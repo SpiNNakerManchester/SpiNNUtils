@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import defaultdict
 import os
+from collections import defaultdict
 from typing import Collection, Dict, List, Set
 
 from spinn_utilities.config_holder import get_default_cfgs
 from spinn_utilities.configs.camel_case_config_parser import (
-    CamelCaseConfigParser, TypedConfigParser)
+    CamelCaseConfigParser,
+    TypedConfigParser,
+)
 from spinn_utilities.exceptions import ConfigException
 
 

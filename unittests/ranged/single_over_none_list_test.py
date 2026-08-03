@@ -13,7 +13,9 @@
 # limitations under the License.
 
 from typing import Callable
+
 import numpy
+
 from spinn_utilities.ranged import RangedList, SingleList
 
 

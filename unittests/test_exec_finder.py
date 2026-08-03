@@ -14,7 +14,9 @@
 
 import os
 from typing import Any
+
 import pytest
+
 from spinn_utilities.executable_finder import ExecutableFinder
 
 

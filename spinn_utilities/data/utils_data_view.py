@@ -12,20 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+
 import logging
 import os
 from tempfile import TemporaryDirectory
 from typing import Dict, Iterable, List, Optional, Tuple
-
 from unittest import SkipTest
+
+from spinn_utilities import logger_utils
 from spinn_utilities.exceptions import (
+    SimulatorNotSetupException,
+    SimulatorRunningException,
+    SimulatorShutdownException,
     SpiNNUtilsException,
-    SimulatorNotSetupException, SimulatorRunningException,
-    SimulatorShutdownException, UnexpectedStateChange)
+    UnexpectedStateChange,
+)
 from spinn_utilities.executable_finder import ExecutableFinder
 from spinn_utilities.log import FormatAdapter
-from spinn_utilities import logger_utils
 from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
+
 from .data_status import DataStatus
 from .reset_status import ResetStatus
 from .run_status import RunStatus

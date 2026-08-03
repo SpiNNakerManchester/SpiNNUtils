@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pytest
+
 from spinn_utilities.ordered_set import OrderedSet
 
 

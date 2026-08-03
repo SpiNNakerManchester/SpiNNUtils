@@ -14,7 +14,9 @@
 
 from types import TracebackType
 from typing import Optional, Type
+
 from typing_extensions import Literal, Self
+
 from .abstract_base import AbstractBase, abstractmethod
 
 

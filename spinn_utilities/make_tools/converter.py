@@ -14,6 +14,7 @@
 
 import os
 import sys
+
 from .file_converter import FileConverter
 from .log_sqllite_database import LogSqlLiteDatabase
 

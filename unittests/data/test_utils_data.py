@@ -13,22 +13,27 @@
 # limitations under the License.
 
 import os
-from testfixtures import LogCapture
 import unittest
 
+from testfixtures import LogCapture
+
+from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.data import UtilsDataView
+from spinn_utilities.data.data_status import DataStatus
 from spinn_utilities.data.reset_status import ResetStatus
 from spinn_utilities.data.run_status import RunStatus
-from spinn_utilities.data.utils_data_writer import UtilsDataWriter
 from spinn_utilities.data.utils_data_view import _UtilsDataModel
-from spinn_utilities.data.data_status import DataStatus
-from spinn_utilities.config_setup import unittest_setup
+from spinn_utilities.data.utils_data_writer import UtilsDataWriter
 from spinn_utilities.exceptions import (
-    IllegalWriterException, InvalidDirectory,
+    IllegalWriterException,
+    InvalidDirectory,
     NotSetupException,
-    SimulatorNotRunException, SimulatorNotSetupException,
-    SimulatorRunningException, SimulatorShutdownException,
-    UnexpectedStateChange)
+    SimulatorNotRunException,
+    SimulatorNotSetupException,
+    SimulatorRunningException,
+    SimulatorShutdownException,
+    UnexpectedStateChange,
+)
 from spinn_utilities.testing import log_checker
 
 

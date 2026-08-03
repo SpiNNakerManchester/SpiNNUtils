@@ -13,8 +13,12 @@
 # limitations under the License.
 
 from typing import Any, Optional
+
 from spinn_utilities.config_holder import (
-    get_config_int, get_config_int_or_none, get_config_str)
+    get_config_int,
+    get_config_int_or_none,
+    get_config_str,
+)
 
 
 class SocketAddress(object):

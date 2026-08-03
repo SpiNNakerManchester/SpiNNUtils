@@ -13,7 +13,9 @@
 # limitations under the License.
 
 from spinn_utilities.find_max_success import (
-    find_max_success, search_for_max_success)
+    find_max_success,
+    search_for_max_success,
+)
 
 
 def test_0() -> None:

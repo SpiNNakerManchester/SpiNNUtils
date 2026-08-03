@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pytest
+
 from spinn_utilities.ranged import RangeDictionary
 from spinn_utilities.ranged.single_view import _SingleView
 from spinn_utilities.ranged.slice_view import _SliceView

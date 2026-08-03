@@ -13,14 +13,16 @@
 # limitations under the License.
 
 import os
-import pytest
-from pathlib import Path
 import sys
 import tempfile
 import unittest
+from pathlib import Path
+
+import pytest
 
 from spinn_utilities.make_tools.file_converter import FileConverter
 from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
+
 ranged_file = "local_ranges.txt"
 
 

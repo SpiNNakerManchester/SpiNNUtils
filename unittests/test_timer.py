@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from time import sleep
+
 from spinn_utilities.timer import Timer
 
 

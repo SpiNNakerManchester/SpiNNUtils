@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
 import numpy
-from spinn_utilities.ranged import MultipleValuesException
-from spinn_utilities.ranged import RangedList
+import pytest
+
+from spinn_utilities.ranged import MultipleValuesException, RangedList
 
 
 def test_simple() -> None:

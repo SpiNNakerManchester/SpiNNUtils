@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import math
+
 import pytest
+
 from spinn_utilities.safe_eval import SafeEval
 
 

@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
 from typing import Any, List
+
+import pytest
+
 from spinn_utilities.abstract_base import abstractmethod
 from spinn_utilities.overrides import overrides
 

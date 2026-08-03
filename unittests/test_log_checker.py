@@ -13,9 +13,11 @@
 # limitations under the License.
 
 import logging
+
 import pytest
-from spinn_utilities.log import FormatAdapter
 from testfixtures import LogCapture
+
+from spinn_utilities.log import FormatAdapter
 from spinn_utilities.testing import log_checker
 
 logger = FormatAdapter(logging.getLogger(__name__))

@@ -17,6 +17,7 @@ Types for coordinates.
 """
 
 from typing import Final, Tuple
+
 from typing_extensions import TypeAlias
 
 #: The type of X,Y pairs.

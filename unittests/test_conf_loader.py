@@ -24,7 +24,6 @@ from testfixtures import LogCapture
 
 import spinn_utilities.conf_loader as conf_loader
 import spinn_utilities.config_holder as config_holder
-import unittests  # CRITICAL: *THIS* package!
 from spinn_utilities.configs import (
     NoConfigFoundException,
     UnexpectedConfigException,
@@ -32,6 +31,8 @@ from spinn_utilities.configs import (
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.testing import log_checker
+
+import unittests  # CRITICAL: *THIS* package!
 
 CFGFILE = "configloader.cfg"
 CFGPATH = os.path.join(os.path.dirname(unittests.__file__), CFGFILE)

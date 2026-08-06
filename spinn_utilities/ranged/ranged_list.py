@@ -12,15 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+
 from collections.abc import Sized
 from typing import (
-    Any, Callable, Generic, List, Iterable, Iterator, Optional, Sequence,
-    Tuple, Union, cast, final)
+    Any,
+    Callable,
+    Generic,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+    cast,
+    final,
+)
+
 from typing_extensions import TypeAlias, TypeGuard
-from spinn_utilities.overrides import overrides
+
 from spinn_utilities.helpful_functions import is_singleton
+from spinn_utilities.overrides import overrides
+
+from .abstract_list import AbstractList, IdsType, T, _eq
 from .abstract_sized import Selector
-from .abstract_list import AbstractList, T, _eq, IdsType
 from .multiple_values_exception import MultipleValuesException
 
 #: The type of a range descriptor

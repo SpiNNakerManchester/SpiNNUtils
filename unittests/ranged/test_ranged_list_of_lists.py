@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import unittest
+
 from spinn_utilities.ranged.ranged_list_of_lists import RangedListOfList
 
 

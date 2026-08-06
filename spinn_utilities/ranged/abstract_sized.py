@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections.abc import Sized
 import itertools
 import logging
 import sys
+from collections.abc import Sized
 from typing import Any, Optional, Sequence, SupportsInt, Tuple, Union
-from typing_extensions import TypeAlias, TypeGuard
+
 import numpy
+from typing_extensions import TypeAlias, TypeGuard
 
 from spinn_utilities.log import FormatAdapter
-
 
 logger = FormatAdapter(logging.getLogger(__name__))
 

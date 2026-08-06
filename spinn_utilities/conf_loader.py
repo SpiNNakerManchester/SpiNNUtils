@@ -22,7 +22,9 @@ from typing_extensions import TypeAlias
 
 from spinn_utilities import log
 from spinn_utilities.configs import (
-    CamelCaseConfigParser, UnexpectedConfigException)
+    CamelCaseConfigParser,
+    UnexpectedConfigException,
+)
 
 logger = log.FormatAdapter(logging.getLogger(__name__))
 _SectionParser: TypeAlias = Callable[[CamelCaseConfigParser], None]

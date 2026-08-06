@@ -17,6 +17,7 @@ import sqlite3
 import sys
 import time
 from typing import Dict, Optional, Tuple
+
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
 _DDL_FILE = os.path.join(os.path.dirname(__file__), "db.sql")

@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import pytest
-from spinn_utilities.config_setup import unittest_setup
+
 from spinn_utilities.config_holder import set_config
+from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.socket_address import SocketAddress
 
 

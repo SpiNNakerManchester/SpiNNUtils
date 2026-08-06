@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from .citation_aggregator import CitationAggregator, generate_aggregate
 from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
-from .citation_aggregator import (
-    CitationAggregator, generate_aggregate)
 
 __all__ = [
     "CitationAggregator", "CitationUpdaterAndDoiGenerator",

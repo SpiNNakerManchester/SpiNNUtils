@@ -14,6 +14,7 @@
 from datetime import timedelta
 from time import perf_counter_ns
 from typing import Any, Optional, Tuple
+
 from typing_extensions import Literal
 
 # conversion factor

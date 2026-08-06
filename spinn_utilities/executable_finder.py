@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import defaultdict
 import logging
 import os
+from collections import defaultdict
 from typing import List, Optional
 
 from spinn_utilities.log import FormatAdapter

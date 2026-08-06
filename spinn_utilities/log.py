@@ -14,14 +14,24 @@
 
 import atexit
 import configparser
-from datetime import datetime
 import logging
 import re
 import sys
-from typing import (Any, Collection, Dict, KeysView, List, Mapping, Optional,
-                    Tuple)
+from datetime import datetime
 from inspect import getfullargspec
+from typing import (
+    Any,
+    Collection,
+    Dict,
+    KeysView,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+)
+
 from spinn_utilities.configs import CamelCaseConfigParser
+
 from .log_store import LogStore
 from .overrides import overrides
 

@@ -14,7 +14,8 @@
 """
 A trimmed down version of standard Python Abstract Base classes.
 """
-from typing import Any, Dict, Type, TypeVar, Tuple
+from typing import Any, Dict, Tuple, Type, TypeVar
+
 #: :meta private:
 T = TypeVar("T")
 

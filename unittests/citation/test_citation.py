@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from spinn_utilities.citation.citation_aggregator import generate_aggregate
-import tempfile
 import os
-import yaml
+import tempfile
+
 import httpretty
+import yaml
+
+from spinn_utilities.citation.citation_aggregator import generate_aggregate
 from spinn_utilities.citation.citation_updater_and_doi_generator import (
-    _Zenodo as Zenodo)
+    _Zenodo as Zenodo,
+)
 
 
 def test_generate_aggregate() -> None:

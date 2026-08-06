@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-from spinn_utilities.ranged import RangedList, DualList
 import numpy
+import pytest
+
+from spinn_utilities.ranged import DualList, RangedList
 
 
 def test_simple() -> None:

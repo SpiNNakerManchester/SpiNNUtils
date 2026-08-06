@@ -15,7 +15,7 @@
 import ast
 import os
 import sys
-from typing import cast, Set
+from typing import Set, cast
 
 import docstring_parser
 

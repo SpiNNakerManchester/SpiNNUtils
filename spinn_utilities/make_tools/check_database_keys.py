@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+
 from spinn_utilities.data import UtilsDataView
 
 

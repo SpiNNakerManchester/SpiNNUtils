@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import yaml
 import io
-import requests
-import zipfile
-import unicodedata
 import os
+import unicodedata
+import zipfile
 from time import strptime
-from typing import Any, cast, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
+
+import requests
+import yaml
 
 from spinn_utilities.typing.json import JsonObject
 

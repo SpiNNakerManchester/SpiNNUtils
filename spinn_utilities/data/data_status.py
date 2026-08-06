@@ -13,10 +13,15 @@
 # limitations under the License.
 
 from enum import Enum
-from typing import Type, Tuple
+from typing import Tuple, Type
+
 from spinn_utilities.exceptions import (
-    DataNotMocked, DataNotYetAvialable, NotSetupException, ShutdownException,
-    SpiNNUtilsException)
+    DataNotMocked,
+    DataNotYetAvialable,
+    NotSetupException,
+    ShutdownException,
+    SpiNNUtilsException,
+)
 
 
 class DataStatus(Enum):

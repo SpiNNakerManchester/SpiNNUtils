@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+
 import pytest
+
 from spinn_utilities.ping import Ping
 
 skip_ping_tests = pytest.mark.skipif(

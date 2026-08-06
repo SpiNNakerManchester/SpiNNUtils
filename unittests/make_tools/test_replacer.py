@@ -28,10 +28,11 @@ Note: if weird,file.c changes you may have to manually fix the tests
 
 import math
 import os
-import pytest
 import shutil
 import tempfile
 import unittest
+
+import pytest
 
 from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.data import UtilsDataView

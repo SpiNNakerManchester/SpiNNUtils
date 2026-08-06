@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pytest
+
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.require_subclass import require_subclass
 

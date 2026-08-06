@@ -17,6 +17,7 @@ Types for JSON.
 """
 
 from typing import Dict, List, Union
+
 from typing_extensions import TypeAlias
 
 #: The type of JSON values.

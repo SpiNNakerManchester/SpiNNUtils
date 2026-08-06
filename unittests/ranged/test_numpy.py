@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from spinn_utilities.ranged.ranged_list import RangedList
 import numpy
 import pytest
+
+from spinn_utilities.ranged.ranged_list import RangedList
 
 
 @pytest.mark.parametrize(

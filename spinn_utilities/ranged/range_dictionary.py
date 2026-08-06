@@ -12,18 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+
 from typing import (
-    Dict, Generator, Iterable, Iterator, Optional, Sequence, Tuple, Union,
-    Generic, overload, TYPE_CHECKING)
+    TYPE_CHECKING,
+    Dict,
+    Generator,
+    Generic,
+    Iterable,
+    Iterator,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+    overload,
+)
+
 from typing_extensions import TypeAlias
+
 from spinn_utilities.overrides import overrides
+
 from .abstract_dict import AbstractDict, T, _StrSeq
-from .abstract_sized import AbstractSized
 from .abstract_list import IdsType
+from .abstract_sized import AbstractSized
 from .ids_view import _IdsView
 from .ranged_list import RangedList
 from .single_view import _SingleView
 from .slice_view import _SliceView
+
 if TYPE_CHECKING:
     from .abstract_view import AbstractView
 

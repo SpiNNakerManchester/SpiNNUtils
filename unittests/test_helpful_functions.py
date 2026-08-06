@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from spinn_utilities.helpful_functions import (is_singleton, gcd, lcm)
+from spinn_utilities.helpful_functions import gcd, is_singleton, lcm
 
 
 def test_is_singleton() -> None:

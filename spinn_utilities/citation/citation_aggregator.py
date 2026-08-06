@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import yaml
-import io
-import importlib
 import argparse
+import importlib
+import io
+import os
+import sys
 from types import ModuleType
 from typing import Any, Dict, List, Optional, Set, Union
-import sys
+
+import yaml
+
 from .citation_updater_and_doi_generator import CitationUpdaterAndDoiGenerator
 
 ENCODING = "utf-8"

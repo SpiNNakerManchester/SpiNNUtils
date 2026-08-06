@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Callable, Tuple
+
 import pytest
 from testfixtures import LogCapture
-from typing import Callable, Tuple
-from spinn_utilities.config_setup import unittest_setup
-from spinn_utilities.progress_bar import (
-    ProgressBar, DummyProgressBar)
-from spinn_utilities.testing import log_checker
+
 from spinn_utilities import logger_utils
+from spinn_utilities.config_setup import unittest_setup
+from spinn_utilities.progress_bar import DummyProgressBar, ProgressBar
+from spinn_utilities.testing import log_checker
 
 
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])

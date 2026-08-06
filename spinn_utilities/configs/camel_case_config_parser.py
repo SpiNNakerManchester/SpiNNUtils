@@ -11,12 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
-
-from collections.abc import Iterable
 import configparser
+import os
+from collections.abc import Iterable
 from typing import List, Optional, Union
-
 
 NONES = ("none", )
 TRUES = ('y', 'yes', 't', 'true', 'on', '1')

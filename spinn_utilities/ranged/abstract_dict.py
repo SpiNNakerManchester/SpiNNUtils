@@ -12,11 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import (
-    Dict, FrozenSet, Iterable, Iterator, MutableSequence, Optional, Sequence,
-    Set, Tuple, Union,
-    Generic, TypeVar, overload)
+    Dict,
+    FrozenSet,
+    Generic,
+    Iterable,
+    Iterator,
+    MutableSequence,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    TypeVar,
+    Union,
+    overload,
+)
+
 from typing_extensions import TypeAlias
+
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
+
 #: :meta private:
 T = TypeVar("T")
 # Can't be Iterable[str] or Sequence[str] because that includes str itself

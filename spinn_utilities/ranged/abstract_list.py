@@ -12,17 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+
 from numbers import Number
 from typing import (
-    Any, Callable, Generic, Iterator, Optional, Sequence, Tuple,
-    TypeVar, Union, cast)
+    Any,
+    Callable,
+    Generic,
+    Iterator,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
+
 import numpy
 from numpy.typing import NDArray
 from typing_extensions import Self, TypeAlias, TypeGuard
+
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides
+
 from .abstract_sized import AbstractSized, Selector
 from .multiple_values_exception import MultipleValuesException
+
 #: :meta private:
 R = TypeVar("R")
 #: :meta private:

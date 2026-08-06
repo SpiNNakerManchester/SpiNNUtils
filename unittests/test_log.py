@@ -12,14 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
 import logging
+from datetime import datetime
 from typing import Any, List, Optional, Tuple
 
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.log import (
-    _BraceMessage, ConfiguredFilter, ConfiguredFormatter, FormatAdapter,
-    LogLevelTooHighException)
+    ConfiguredFilter,
+    ConfiguredFormatter,
+    FormatAdapter,
+    LogLevelTooHighException,
+    _BraceMessage,
+)
 from spinn_utilities.log_store import LogStore
 from spinn_utilities.overrides import overrides
 

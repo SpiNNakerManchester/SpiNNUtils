@@ -13,12 +13,15 @@
 # limitations under the License.
 
 from collections.abc import Sized
-from typing import (
-    Callable, Generic, List, Optional, Sequence, TypeVar, Union)
+from typing import Callable, Generic, List, Optional, Sequence, TypeVar, Union
+
 from typing_extensions import TypeAlias
+
 from spinn_utilities.helpful_functions import is_singleton
 from spinn_utilities.overrides import overrides
+
 from .ranged_list import RangedList
+
 #: :meta private:
 T = TypeVar("T")
 # ranged_list._ValueType but specialised for how we use it here

@@ -17,9 +17,9 @@ import sys
 import unittest
 
 import spinn_utilities
+from spinn_utilities.config_setup import unittest_setup
 from spinn_utilities.configs.config_checker import ConfigChecker
 from spinn_utilities.configs.config_documentor import ConfigDocumentor
-from spinn_utilities.config_setup import unittest_setup
 
 
 class TestCfgChecker(unittest.TestCase):

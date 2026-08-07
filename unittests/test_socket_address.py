@@ -43,7 +43,7 @@ def test_correct_usage() -> None:
     assert str(sa1) == "SocketAddress('a', 2, 3)"
 
     # Test that we can use them as dictionary keys like a tuple
-    d = dict()
+    d = {}
     d[sa1] = 123
     d[sa2] = 234
     d[sa3] = 345

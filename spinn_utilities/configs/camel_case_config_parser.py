@@ -47,7 +47,7 @@ class TypedConfigParser(configparser.RawConfigParser):
 
     def __init__(self) -> None:
         super().__init__()
-        self._read_files: List[str] = list()
+        self._read_files: List[str] = []
 
     def optionxform(self, optionstr: str) -> str:
         """

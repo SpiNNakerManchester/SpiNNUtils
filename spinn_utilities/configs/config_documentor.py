@@ -111,7 +111,7 @@ class _ConfigGroup(object):
         """
         self._docs: str = ""  # Must be changed later
         self.title = option
-        self._cfg: Dict[str, str] = dict()
+        self._cfg: Dict[str, str] = {}
         self._cfg[option] = value
 
     def paths(self) -> List[str]:
@@ -207,8 +207,8 @@ class ConfigDocumentor(object):
 
     def __init__(self) -> None:
         self._sections: Dict[str, Dict[str, _ConfigGroup]] = defaultdict(dict)
-        self._docs: Dict[str, str] = dict()
-        self._names: Dict[str, str] = dict()
+        self._docs: Dict[str, str] = {}
+        self._names: Dict[str, str] = {}
         config1 = TypedConfigParser()
         config1.read(get_default_cfgs())
         for section in config1:
@@ -383,7 +383,7 @@ class ConfigDocumentor(object):
         Writes in markdown format a list of links from paths to cfg options.
         """
         f.write('# <a name="report_files"></a> Report Files\n')
-        p_map = dict()
+        p_map = {}
         for section in self._sections:
             for group in self._sections[section].values():
                 for path in group.paths():

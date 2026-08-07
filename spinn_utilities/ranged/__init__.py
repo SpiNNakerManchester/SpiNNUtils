@@ -28,6 +28,14 @@ from .ranged_list import RangedList
 from .ranged_list_of_lists import RangedListOfList
 
 __all__ = [
-    "AbstractDict", "AbstractList", "DualList", "SingleList", "AbstractSized",
-    "AbstractView", "MultipleValuesException", "RangeDictionary",
-    "RangedList", "RangedListOfList"]
+    "AbstractDict",
+    "AbstractList",
+    "AbstractSized",
+    "AbstractView",
+    "DualList",
+    "MultipleValuesException",
+    "RangeDictionary",
+    "RangedList",
+    "RangedListOfList",
+    "SingleList",
+]

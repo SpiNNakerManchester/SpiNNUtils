@@ -77,7 +77,7 @@ class CitationAggregator(object):
         with open(top_citation_file_path, encoding=ENCODING) as stream:
             top_citation_file: Dict[str, Any] = yaml.safe_load(
                 stream)
-        top_citation_file[REFERENCES_YAML_POINTER] = list()
+        top_citation_file[REFERENCES_YAML_POINTER] = []
 
         # get the dependency list
         requirements_file_path = os.path.join(
@@ -141,7 +141,7 @@ class CitationAggregator(object):
         :param aggregated_citation_file: path to the PYPI map file
         :return: map between PYPI names and import names
         """
-        pypi_to_import_map: Dict[str, str] = dict()
+        pypi_to_import_map: Dict[str, str] = {}
         with open(aggregated_citation_file, encoding=ENCODING) as f:
             for line in f:
                 [pypi, import_command] = line.split(":")
@@ -214,7 +214,7 @@ class CitationAggregator(object):
                     self._read_and_process_reference_entry(
                         os.path.join(software_path,
                                      possible_extra_citation_file))
-                reference_entry[REFERENCES_YAML_POINTER] = list()
+                reference_entry[REFERENCES_YAML_POINTER] = []
                 reference_entry[REFERENCES_YAML_POINTER].append(
                     dependency_reference_entry)
                 modules_seen_so_far.add(
@@ -309,7 +309,7 @@ class CitationAggregator(object):
             the module currently trying to find the version of
         :return: reference entry for this python module
         """
-        reference_entry: Dict[str, Any] = dict()
+        reference_entry: Dict[str, Any] = {}
         reference_entry[REFERENCES_TYPE_TYPE] = REFERENCES_SOFTWARE_TYPE
         reference_entry[REFERENCES_TITLE_TYPE] = module_name
         if imported_module is None:
@@ -346,7 +346,7 @@ class CitationAggregator(object):
             path to a `CITATION.cff` file
         :return: reference entry for the higher level `CITATION.cff`
         """
-        reference_entry = dict()
+        reference_entry = {}
 
         with open(dependency_citation_file_path, 'r', encoding="utf-8") \
                 as stream:

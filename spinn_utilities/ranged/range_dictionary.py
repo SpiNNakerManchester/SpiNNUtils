@@ -73,7 +73,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         :param defaults: Default dictionary where all keys must be str
         """
         super().__init__(size)
-        self._value_lists: Dict[str, RangedList[T]] = dict()
+        self._value_lists: Dict[str, RangedList[T]] = {}
         if defaults is not None:
             for key, value in defaults.items():
                 self._value_lists[key] = self.list_factory(
@@ -413,8 +413,8 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
     def _merge_ranges(
             self, range_iters: Dict[str, Iterator[Tuple[int, int, T]]]
             ) -> Iterator[Tuple[int, int, Dict[str, T]]]:
-        current: Dict[str, T] = dict()
-        ranges: Dict[str, Tuple[int, int, T]] = dict()
+        current: Dict[str, T] = {}
+        ranges: Dict[str, Tuple[int, int, T]] = {}
         start = 0
         stop = self._size
         keys = range_iters.keys()
@@ -425,7 +425,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
             stop = min(ranges[key][1], stop)
         yield (start, stop, current)
         while stop < self._size:
-            current = dict()
+            current = {}
             start = self._size
             next_stop = self._size
             for key in keys:

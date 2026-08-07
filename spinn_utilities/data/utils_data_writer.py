@@ -131,7 +131,7 @@ class UtilsDataWriter(UtilsDataView):
         # run numbers start at 1 and when not running this is the next one
         self.__data._run_number = 1
         self.__data._run_status = RunStatus.NOT_SETUP
-        self.__data._log_database_paths = dict()
+        self.__data._log_database_paths = {}
 
     def _setup(self) -> None:
         """

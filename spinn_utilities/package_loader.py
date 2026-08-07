@@ -78,7 +78,7 @@ def load_modules(
     if exclusions is None:
         exclusions = []
     modules = all_modules(directory, prefix, remove_pyc_files)
-    errors = list()
+    errors = []
     for module in modules:
         if module in exclusions:
             print("SKIPPING " + module)

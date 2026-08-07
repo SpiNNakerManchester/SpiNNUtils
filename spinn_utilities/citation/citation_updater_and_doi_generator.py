@@ -209,7 +209,7 @@ class CitationUpdaterAndDoiGenerator(object):
         :return: the DOI id, and deposit id
         """
         # create link to previous version (if applicable)
-        related = list()
+        related = []
         related.append({
             ZENODO_RELATION_FIELD: ZENODO_NEWER_VERSION_OF,
             IDENTIFIER: previous_doi})

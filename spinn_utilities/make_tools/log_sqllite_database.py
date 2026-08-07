@@ -334,7 +334,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
             Full path to directory which may have logs databases) in it.
         :return: Map of database_keys to full database paths.
         """
-        logfiles: Dict[str, str] = dict()
+        logfiles: Dict[str, str] = {}
         for file in os.listdir(database_dir):
             if file.endswith(".sqlite3"):
                 filepath = os.path.join(database_dir, file)

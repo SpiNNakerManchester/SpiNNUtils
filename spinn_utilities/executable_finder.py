@@ -138,7 +138,7 @@ class ExecutableFinder(object):
             The full path of the discovered executable, or ``None`` if no
             executable was found in the set of folders
         """
-        results = list()
+        results = []
         for name in executable_names.split(","):
             try:
                 results.append(self.get_executable_path(name))

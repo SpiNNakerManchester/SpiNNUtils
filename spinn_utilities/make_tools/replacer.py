@@ -45,7 +45,7 @@ class Replacer(object):
     ]
 
     def __init__(self) -> None:
-        self._dbs: Dict[str, LogSqlLiteDatabase] = dict()
+        self._dbs: Dict[str, LogSqlLiteDatabase] = {}
 
     def __enter__(self) -> Self:
         return self

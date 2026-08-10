@@ -29,9 +29,10 @@ class ExecutableFinder(object):
     and allows for binaries to be discovered within this path.
     """
     __slots__ = [
-        "_binary_search_paths",
         "_binary_log",
-        "_paths_log"]
+        "_binary_search_paths",
+        "_paths_log",
+    ]
 
     def __init__(self) -> None:
         # not using UtilsDataView due to circular import

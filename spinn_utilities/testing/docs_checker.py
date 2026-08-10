@@ -37,11 +37,17 @@ class DocsChecker(object):
     """
 
     __slots__ = [
-        "__check_init", "__check_short", "__check_params",
-        "__check_properties", "__check_returns",
+        "__check_init",
+        "__check_params",
+        "__check_properties",
+        "__check_returns",
+        "__check_short",
         "__check_types_in_docs",
-        "__error_level", "__file_path", "__file_errors",
-        "__functions_errors"]
+        "__error_level",
+        "__file_errors",
+        "__file_path",
+        "__functions_errors",
+    ]
 
     def __init__(
             self, *, check_init: bool = True, check_short: bool = True,

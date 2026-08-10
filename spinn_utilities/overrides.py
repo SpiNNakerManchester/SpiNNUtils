@@ -28,10 +28,10 @@ class overrides(object):
     overridden is specified, making maintenance easier.
     """
     __slots__ = [
-        # The method in the superclass that this method overrides
-        "_superclass_method",
         # True if the doc string is to be extended, False to set if not set
         "_extend_doc",
+        # The method in the superclass that this method overrides
+        "_superclass_method",
     ]
 
     def __init__(

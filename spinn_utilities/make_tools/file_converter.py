@@ -59,9 +59,9 @@ class FileConverter(object):
 
     __slots__ = [
         "_database_key",
+        "_log",
         "_log_database",
         "_log_file_id",
-        "_log",
         "_log_full",
         "_log_lines",
         "_log_start",

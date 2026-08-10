@@ -43,12 +43,12 @@ class Timer(object):
     """
 
     __slots__ = [
+        # The time in the measured section
+        "_measured_section_interval",
 
         # The start time when the timer was set off
         "_start_time",
 
-        # The time in the measured section
-        "_measured_section_interval"
     ]
 
     def __init__(self) -> None:

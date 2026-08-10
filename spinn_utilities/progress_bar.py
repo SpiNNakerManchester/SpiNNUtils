@@ -42,9 +42,15 @@ class ProgressBar(object):
         "This may be a sign that something else has gone wrong!")
 
     __slots__ = (
-        "_number_of_things", "_currently_completed", "_destination",
-        "_chars_per_thing", "_chars_done", "_string",
-        "_step_character", "_end_character", "_in_bad_terminal",
+        "_chars_done",
+        "_chars_per_thing",
+        "_currently_completed",
+        "_destination",
+        "_end_character",
+        "_in_bad_terminal",
+        "_number_of_things",
+        "_step_character",
+        "_string",
     )
 
     def __init__(self, total_number_of_things_to_do: Union[int, Sized],

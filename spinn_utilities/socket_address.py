@@ -26,10 +26,11 @@ class SocketAddress(object):
     Data holder for a socket interface for notification protocol.
     """
     __slots__ = [
+        "__hash",
         "_listen_port",
         "_notify_host_name",
         "_notify_port_no",
-        "__hash"]
+    ]
 
     def __init__(self, notify_host_name: Optional[str] = None,
                  notify_port_no: Optional[int] = None,

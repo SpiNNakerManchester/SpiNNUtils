@@ -23,7 +23,7 @@ def Abc(x: int) -> int:
     return x+1
 
 
-class Support(object):
+class Support:
     def __init__(self) -> None:
         self._c = 0
 

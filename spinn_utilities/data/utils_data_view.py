@@ -16,7 +16,7 @@ from __future__ import annotations
 import logging
 import os
 from tempfile import TemporaryDirectory
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Iterable, Optional
 from unittest import SkipTest
 
 from spinn_utilities import logger_utils
@@ -39,7 +39,7 @@ logger = FormatAdapter(logging.getLogger(__name__))
 # pylint: disable=protected-access
 
 
-class _UtilsDataModel(object):
+class _UtilsDataModel:
     """
     Singleton data model.
 
@@ -75,7 +75,7 @@ class _UtilsDataModel(object):
     def __init__(self) -> None:
         self._data_status: DataStatus = DataStatus.NOT_SETUP
         self._executable_finder: ExecutableFinder = ExecutableFinder()
-        self._log_database_paths: Dict[str, str] = {}
+        self._log_database_paths: dict[str, str] = {}
         self._reset_status: ResetStatus = ResetStatus.NOT_SETUP
         self._run_status: RunStatus = RunStatus.NOT_SETUP
 
@@ -116,7 +116,7 @@ class _UtilsDataModel(object):
         # Holder for any future values
 
 
-class UtilsDataView(object):
+class UtilsDataView:
     """
     A read only view of the data available at each level.
 
@@ -727,7 +727,7 @@ class UtilsDataView(object):
             executable_name)
 
     @classmethod
-    def get_executable_paths(cls, executable_names: str) -> List[str]:
+    def get_executable_paths(cls, executable_names: str) -> list[str]:
         """
         Finds each executables within the set of folders.
 
@@ -795,7 +795,7 @@ class UtilsDataView(object):
         return cls.__data._log_database_paths[database_key]
 
     @classmethod
-    def get_log_database_keys_and_paths(cls) -> Iterable[Tuple[str, str]]:
+    def get_log_database_keys_and_paths(cls) -> Iterable[tuple[str, str]]:
         """
         Gets the logs database keys and paths
 

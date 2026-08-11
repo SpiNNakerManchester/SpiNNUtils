@@ -13,7 +13,7 @@
 # limitations under the License.
 from datetime import timedelta
 from time import perf_counter_ns
-from typing import Any, Optional, Tuple
+from typing import Any, Optional
 
 from typing_extensions import Literal
 
@@ -21,7 +21,7 @@ from typing_extensions import Literal
 _NANO_TO_MICRO = 1000.0
 
 
-class Timer(object):
+class Timer:
     """
     A timer used for performance measurements.
 
@@ -76,7 +76,7 @@ class Timer(object):
         self.start_timing()
         return self
 
-    def __exit__(self, *_args: Tuple[Any, ...]) -> Literal[False]:
+    def __exit__(self, *_args: tuple[Any, ...]) -> Literal[False]:
         self._measured_section_interval = self.take_sample()
         return False
 

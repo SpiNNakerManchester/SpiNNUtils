@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any, Callable, Dict, Type
+from typing import Any, Callable
 
 
 class _RequiresSubclassTypeError(TypeError):
@@ -24,7 +24,7 @@ class _RequiresSubclassTypeError(TypeError):
     """
 
 
-def require_subclass(required_class: Type) -> Callable[[Type], Type]:
+def require_subclass(required_class: type) -> Callable[[type], type]:
     """
     Decorator that arranges for subclasses of the decorated class to
     require that they are also subclasses of the given class.
@@ -55,13 +55,13 @@ def require_subclass(required_class: Type) -> Callable[[Type], Type]:
     # without it, some very weird interactions with meta classes happen and I
     # really don't want to debug that stuff.
 
-    def decorate(target_class: Type) -> Type:
+    def decorate(target_class: type) -> type:
         # pylint: disable=unused-variable
         __class__ = target_class  # @ReservedAssignment # noqa: F841
 
         def __init_subclass__(
-                cls: Type, allow_derivation: bool = False,
-                **kwargs: Dict[str, Any]) -> None:
+                cls: type, allow_derivation: bool = False,
+                **kwargs: dict[str, Any]) -> None:
             if not issubclass(cls, required_class) and not allow_derivation:
                 raise _RequiresSubclassTypeError(
                     f"{cls.__name__} must be a subclass "

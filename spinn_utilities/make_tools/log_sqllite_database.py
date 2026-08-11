@@ -16,7 +16,7 @@ import os
 import sqlite3
 import sys
 import time
-from typing import Dict, Optional, Tuple
+from typing import Optional
 
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
@@ -226,7 +226,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
                     return row["log_id"]
         raise ValueError("unexpected no return")
 
-    def get_log_info(self, log_id: str) -> Optional[Tuple[int, str, str, str]]:
+    def get_log_info(self, log_id: str) -> Optional[tuple[int, str, str, str]]:
         """
         Gets the data needed to replace a short log back to the original.
 
@@ -326,7 +326,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         return database_key
 
     @classmethod
-    def find_databases(cls, database_dir: str) -> Dict[str, str]:
+    def find_databases(cls, database_dir: str) -> dict[str, str]:
         """
         Given a directory finds the databases and keys in it.
 
@@ -334,7 +334,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
             Full path to directory which may have logs databases) in it.
         :return: Map of database_keys to full database paths.
         """
-        logfiles: Dict[str, str] = {}
+        logfiles: dict[str, str] = {}
         for file in os.listdir(database_dir):
             if file.endswith(".sqlite3"):
                 filepath = os.path.join(database_dir, file)

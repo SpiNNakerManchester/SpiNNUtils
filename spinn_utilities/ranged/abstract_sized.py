@@ -16,7 +16,7 @@ import itertools
 import logging
 import sys
 from collections.abc import Sized
-from typing import Any, Optional, Sequence, SupportsInt, Tuple, Union
+from typing import Any, Optional, Sequence, SupportsInt, Union
 
 import numpy
 from typing_extensions import TypeAlias, TypeGuard
@@ -44,7 +44,7 @@ def _is_iterable_selector(selector: Selector) -> TypeGuard[
     return iterator is not None
 
 
-class AbstractSized(object):
+class AbstractSized:
     """
     Base class for slice and ID checking against size.
     Subclasses of this support the `len()` built-in.
@@ -86,7 +86,7 @@ class AbstractSized(object):
 
     def _check_slice_in_range(
             self, slice_start: Optional[int],
-            slice_stop: Optional[int]) -> Tuple[int, int]:
+            slice_stop: Optional[int]) -> tuple[int, int]:
         # Fix types
         if slice_start is None:
             slice_start = 0

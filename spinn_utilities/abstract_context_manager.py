@@ -13,14 +13,14 @@
 # limitations under the License.
 
 from types import TracebackType
-from typing import Optional, Type
+from typing import Optional
 
 from typing_extensions import Literal, Self
 
 from .abstract_base import AbstractBase, abstractmethod
 
 
-class AbstractContextManager(object, metaclass=AbstractBase):
+class AbstractContextManager(metaclass=AbstractBase):
     """
     Closeable class that supports being used as a simple context manager.
     """
@@ -36,7 +36,7 @@ class AbstractContextManager(object, metaclass=AbstractBase):
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type: Optional[Type], exc_val: Exception,
+    def __exit__(self, exc_type: Optional[type], exc_val: Exception,
                  exc_tb: TracebackType) -> Literal[False]:
         self.close()
         return False

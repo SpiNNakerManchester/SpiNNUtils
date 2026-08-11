@@ -18,7 +18,7 @@ import io
 import os
 import sys
 from types import ModuleType
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Optional, Union
 
 import yaml
 
@@ -47,10 +47,10 @@ CITATION_DOI_TYPE = 'identifier'
 
 # pylint: skip-file
 
-_SEEN_TYPE = Set[Union[ModuleType, str, None]]
+_SEEN_TYPE = set[Union[ModuleType, str, None]]
 
 
-class CitationAggregator(object):
+class CitationAggregator:
     """
     Helper class for building a citation file which references all
     dependencies.
@@ -75,7 +75,7 @@ class CitationAggregator(object):
         modules_seen_so_far: _SEEN_TYPE = set()
         modules_seen_so_far.add("")
         with open(top_citation_file_path, encoding=ENCODING) as stream:
-            top_citation_file: Dict[str, Any] = yaml.safe_load(
+            top_citation_file: dict[str, Any] = yaml.safe_load(
                 stream)
         top_citation_file[REFERENCES_YAML_POINTER] = []
 
@@ -134,14 +134,14 @@ class CitationAggregator(object):
                       allow_unicode=True)
 
     @staticmethod
-    def _read_pypi_import_map(aggregated_citation_file: str) -> Dict[str, str]:
+    def _read_pypi_import_map(aggregated_citation_file: str) -> dict[str, str]:
         """
         Read the PYPI to import name map.
 
         :param aggregated_citation_file: path to the PYPI map file
         :return: map between PYPI names and import names
         """
-        pypi_to_import_map: Dict[str, str] = {}
+        pypi_to_import_map: dict[str, str] = {}
         with open(aggregated_citation_file, encoding=ENCODING) as f:
             for line in f:
                 [pypi, import_command] = line.split(":")
@@ -149,7 +149,7 @@ class CitationAggregator(object):
         return pypi_to_import_map
 
     def _handle_c_dependency(
-            self, top_citation_file:  Dict[str, Any], module: str,
+            self, top_citation_file:  dict[str, Any], module: str,
             modules_seen_so_far: _SEEN_TYPE) -> None:
         """
         Handle a C code dependency.
@@ -197,7 +197,7 @@ class CitationAggregator(object):
         return None
 
     def _search_for_other_c_references(
-            self, reference_entry:  Dict[str, Any], software_path: str,
+            self, reference_entry:  dict[str, Any], software_path: str,
             modules_seen_so_far: _SEEN_TYPE) -> None:
         """
         Go through the top level path and tries to locate other CFF
@@ -221,7 +221,7 @@ class CitationAggregator(object):
                     possible_extra_citation_file.split(".")[0])
 
     def _handle_python_dependency(
-            self, top_citation_file: Dict[str, Any],
+            self, top_citation_file: dict[str, Any],
             imported_module: ModuleType, modules_seen_so_far: _SEEN_TYPE,
             module_name: str) -> None:
         """
@@ -263,7 +263,7 @@ class CitationAggregator(object):
             self, citation_level_dir: str,
             imported_module: Optional[ModuleType],
             modules_seen_so_far: _SEEN_TYPE,
-            module_name: str) -> Dict[str, Any]:
+            module_name: str) -> dict[str, Any]:
         """
         Take a module level and tries to locate and process a citation file.
 
@@ -300,7 +300,7 @@ class CitationAggregator(object):
     @staticmethod
     def _try_to_find_version(
             imported_module: Optional[ModuleType],
-            module_name: str) -> Dict[str, Any]:
+            module_name: str) -> dict[str, Any]:
         """
         Try to locate a version file or version data to auto-generate
         minimal citation data.
@@ -309,7 +309,7 @@ class CitationAggregator(object):
             the module currently trying to find the version of
         :return: reference entry for this python module
         """
-        reference_entry: Dict[str, Any] = {}
+        reference_entry: dict[str, Any] = {}
         reference_entry[REFERENCES_TYPE_TYPE] = REFERENCES_SOFTWARE_TYPE
         reference_entry[REFERENCES_TITLE_TYPE] = module_name
         if imported_module is None:
@@ -337,7 +337,7 @@ class CitationAggregator(object):
 
     @staticmethod
     def _read_and_process_reference_entry(
-            dependency_citation_file_path: str) -> Dict[str, Any]:
+            dependency_citation_file_path: str) -> dict[str, Any]:
         """
         Read a ``CITATION.cff`` and makes it a reference for a higher
         level citation file.
@@ -370,7 +370,7 @@ class CitationAggregator(object):
         return reference_entry
 
 
-def generate_aggregate(arguments: Optional[List[str]] = None) -> None:
+def generate_aggregate(arguments: Optional[list[str]] = None) -> None:
     """
     Command-line tool to generate a single ``citation.cff`` from others.
 

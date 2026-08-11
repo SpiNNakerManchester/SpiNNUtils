@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any, List
+from typing import Any
 
 import pytest
 
@@ -23,12 +23,12 @@ WRONG_ARGS = "Method has {} arguments but super class method has 4 arguments"
 BAD_DEFS = "Default arguments don't match super class method"
 
 
-class Base(object):
-    def foo(self, x: int, y: int, z: int) -> List[int]:
+class Base:
+    def foo(self, x: int, y: int, z: int) -> list[int]:
         """this is the doc"""
         return [x, y, z]
 
-    def foodef(self, x: Any, y: int, z: Any = True) -> List[Any]:
+    def foodef(self, x: Any, y: int, z: Any = True) -> list[Any]:
         """this is the doc"""
         return [x, y, z]
 
@@ -54,7 +54,7 @@ class Base(object):
 def test_basic_use() -> None:
     class Sub(Base):
         @overrides(Base.foo)
-        def foo(self, x: int, y: int, z: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int) -> list[int]:
             return super().foo(z, y, x)
     assert Sub().foo(1, 2, 3) == [3, 2, 1]
 
@@ -62,7 +62,7 @@ def test_basic_use() -> None:
 def test_doc_no_sub_extend() -> None:
     class Sub(Base):
         @overrides(Base.foo, extend_doc=True)
-        def foo(self, x: int, y: int, z: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int) -> list[int]:
             return [z, y, x]
     assert Sub.foo.__doc__ == "this is the doc"
 
@@ -70,7 +70,7 @@ def test_doc_no_sub_extend() -> None:
 def test_doc_no_sub_no_extend() -> None:
     class Sub(Base):
         @overrides(Base.foo, extend_doc=False)
-        def foo(self, x: int, y: int, z: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int) -> list[int]:
             return [z, y, x]
     assert Sub.foo.__doc__ == "this is the doc"
 
@@ -78,7 +78,7 @@ def test_doc_no_sub_no_extend() -> None:
 def test_doc_sub_no_extend() -> None:
     class Sub(Base):
         @overrides(Base.foo, extend_doc=False)
-        def foo(self, x: int, y: int, z: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int) -> list[int]:
             """(abc)"""
             return [z, y, x]
     assert Sub.foo.__doc__ == "(abc)"
@@ -87,7 +87,7 @@ def test_doc_sub_no_extend() -> None:
 def test_doc_sub_extend() -> None:
     class Sub(Base):
         @overrides(Base.foo, extend_doc=True)
-        def foo(self, x: int, y: int, z: int) -> List[int]:
+        def foo(self, x: int, y: int, z: int) -> list[int]:
             """(abc)"""
             return [z, y, x]
     assert Sub.foo.__doc__ == "this is the doc(abc)"
@@ -97,7 +97,7 @@ def test_changes_params_defaults() -> None:
     class Sub(Base):
         @overrides(Base.foodef)
         def foodef(self, x: Any, y: Any,   # type: ignore[override]
-                   z: Any = False) -> List[Any]:
+                   z: Any = False) -> list[Any]:
             return [z, y, x]
     assert Sub().foodef(1, 2) == [False, 2, 1]
 
@@ -105,7 +105,7 @@ def test_changes_params_defaults() -> None:
 def test_defaults_super_param_expected() -> None:
     class Sub(Base):
         @overrides(Base.foodef)
-        def foodef(self, x: Any, y: Any = 1, z: Any = 2) -> List[Any]:
+        def foodef(self, x: Any, y: Any = 1, z: Any = 2) -> list[Any]:
             return [z, y, x]
     assert Sub().foodef(7) == [2, 1, 7]
 
@@ -143,12 +143,12 @@ def test_property_overrides() -> None:
 
 
 def test_sister_overides() -> None:
-    class ParentOne(object):
+    class ParentOne:
         @abstractmethod
         def foo(self) -> int:
             raise NotImplementedError
 
-    class ParentTwo(object):
+    class ParentTwo:
         @overrides(ParentOne.foo)
         @abstractmethod
         def foo(self) -> int:
@@ -168,12 +168,12 @@ def test_sister_overides() -> None:
 
 
 def test_sister_different1() -> None:
-    class ParentOne(object):
+    class ParentOne:
         @abstractmethod
         def foo(self) -> int:
             raise NotImplementedError
 
-    class ParentTwo(object):
+    class ParentTwo:
         @abstractmethod
         def foo(self, check: int) -> int:
             raise NotImplementedError
@@ -192,12 +192,12 @@ def test_sister_different1() -> None:
 
 
 def test_sister_different2() -> None:
-    class ParentOne(object):
+    class ParentOne:
         @abstractmethod
         def foo(self) -> int:
             raise NotImplementedError
 
-    class ParentTwo(object):
+    class ParentTwo:
         @abstractmethod
         def foo(self, check: int) -> int:
             raise NotImplementedError

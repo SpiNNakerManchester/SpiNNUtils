@@ -16,7 +16,7 @@ import logging
 import struct
 import sys
 from types import TracebackType
-from typing import Dict, Optional, Tuple, Type
+from typing import Optional
 
 from typing_extensions import Literal, Self
 
@@ -34,7 +34,7 @@ LEVELS = {10: "[DEBUG]",
           40: "[ERROR]"}
 
 
-class Replacer(object):
+class Replacer:
     """
     Performs replacements.
     """
@@ -45,12 +45,12 @@ class Replacer(object):
     ]
 
     def __init__(self) -> None:
-        self._dbs: Dict[str, LogSqlLiteDatabase] = {}
+        self._dbs: dict[str, LogSqlLiteDatabase] = {}
 
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type: Optional[Type], exc_val: Exception,
+    def __exit__(self, exc_type: Optional[type], exc_val: Exception,
                  exc_tb: TracebackType) -> Literal[False]:
         return False
 
@@ -68,7 +68,7 @@ class Replacer(object):
         self._dbs[database_key] = db
         return db
 
-    def _replace(self, short: str) -> Optional[Tuple[int, str, str, str]]:
+    def _replace(self, short: str) -> Optional[tuple[int, str, str, str]]:
         """
         Apply the replacements to a short message.
 

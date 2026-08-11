@@ -17,7 +17,7 @@ from typing import Any
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 
-class AbstractHasConstraints(object, metaclass=AbstractBase):
+class AbstractHasConstraints(metaclass=AbstractBase):
     """ Represents an object with constraints
     """
 

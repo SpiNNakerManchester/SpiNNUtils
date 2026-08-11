@@ -15,11 +15,11 @@
 import os
 import sys
 import traceback
-from typing import List, Optional, Set
+from typing import Optional
 
 
 def all_modules(directory: str, prefix: str,
-                remove_pyc_files: bool = False) -> Set[str]:
+                remove_pyc_files: bool = False) -> set[str]:
     """
     List all the python files found in this directory giving then the prefix.
 
@@ -59,7 +59,7 @@ def all_modules(directory: str, prefix: str,
 
 def load_modules(
         directory: str, prefix: str, remove_pyc_files: bool = False,
-        exclusions: Optional[List[str]] = None,
+        exclusions: Optional[list[str]] = None,
         gather_errors: bool = True) -> None:
     """
     Loads all the python files found in this directory, giving them the
@@ -105,7 +105,7 @@ def load_modules(
 
 def load_module(
         name: str, remove_pyc_files: bool = False,
-        exclusions: Optional[List[str]] = None,
+        exclusions: Optional[list[str]] = None,
         gather_errors: bool = True) -> None:
     """
     Loads this modules and all its children.

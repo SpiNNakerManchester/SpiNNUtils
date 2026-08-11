@@ -14,7 +14,7 @@
 import logging
 import os
 from configparser import NoOptionError
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import appdirs
 
@@ -39,7 +39,7 @@ logger = FormatAdapter(logging.getLogger(__file__))
 # pylint: disable=global-statement
 # Any cleaner method than global statements would add extra overhead
 __config: Optional[CamelCaseConfigParser] = None
-__default_config_files: List[str] = []
+__default_config_files: list[str] = []
 __config_file: Optional[str] = None
 __missing_config_file: Optional[str] = None
 __template: Optional[str] = None
@@ -70,7 +70,7 @@ def add_template(template: str) -> None:
         raise ConfigException("Second template")
 
 
-def get_default_cfgs() -> Tuple[str, ...]:
+def get_default_cfgs() -> tuple[str, ...]:
     """
     The default configuration files
 
@@ -266,7 +266,7 @@ def get_config_str_or_none(section: str, option: str) -> Optional[str]:
 
 
 def get_config_str_list(
-        section: str, option: str, token: str = ",") -> List[str]:
+        section: str, option: str, token: str = ",") -> list[str]:
     """
     Get the string value of a configuration option split into a list.
 
@@ -356,7 +356,7 @@ def get_config_bool(section: str, option: str) -> bool:
 
 
 def get_config_bool_or_none(section: str, option: str,
-                            special_nones: Optional[List[str]] = None
+                            special_nones: Optional[list[str]] = None
                             ) -> Optional[bool]:
     """
     Get the Boolean value of a configuration option.
@@ -390,7 +390,7 @@ def set_config(section: str, option: str, value: Optional[str]) -> None:
         __config.set(section, option, value)
 
 
-def config_sections() -> List[str]:
+def config_sections() -> list[str]:
     """
     :returns: A list of section names
     """
@@ -423,7 +423,7 @@ def has_config_option(section: str, option: str) -> bool:
         return __config.has_option(section, option)
 
 
-def config_options(section: str) -> List[str]:
+def config_options(section: str) -> list[str]:
     """
     :param section: What section to list options for.
     :returns: a list of option names for the given section name.

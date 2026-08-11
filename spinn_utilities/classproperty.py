@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any, Callable, Optional, Type
+from typing import Any, Callable, Optional
 
 
-class _ClassPropertyDescriptor(object):
+class _ClassPropertyDescriptor:
     """
     A class to handle the management of class properties.
     """
@@ -27,7 +27,7 @@ class _ClassPropertyDescriptor(object):
         self.method = method
 
     def __get__(
-            self, obj: Optional[Any], klass: Optional[Type] = None) -> Any:
+            self, obj: Optional[Any], klass: Optional[type] = None) -> Any:
         if klass is None:
             klass = type(obj)
         return self.method.__get__(obj, klass)()

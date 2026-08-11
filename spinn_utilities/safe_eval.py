@@ -13,10 +13,10 @@
 # limitations under the License.
 
 from types import ModuleType
-from typing import Any, Callable, Dict, Union
+from typing import Any, Callable, Union
 
 
-class SafeEval(object):
+class SafeEval:
     """
     This provides expression evaluation capabilities while allowing the
     set of symbols exposed to the expression to be strictly controlled.
@@ -62,7 +62,7 @@ class SafeEval(object):
             symbols (e.g., constants in numpy) do not have names that we can
             otherwise look up easily.
         """
-        env: Dict[Any, Any] = {}
+        env: dict[Any, Any] = {}
         for item in args:
             env[item.__name__] = item
         env.update(kwargs)

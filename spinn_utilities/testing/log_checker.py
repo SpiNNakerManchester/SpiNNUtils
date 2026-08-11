@@ -13,13 +13,12 @@
 # limitations under the License.
 
 from logging import LogRecord
-from typing import List
 
 _WRITE_LOGS_TO_STDOUT = True
 
 
 def _assert_logs_contains(
-        level: str, log_records: List[LogRecord], submessage: str) -> None:
+        level: str, log_records: list[LogRecord], submessage: str) -> None:
     for record in log_records:
         if record.levelname == level and submessage in record.getMessage():
             return
@@ -30,7 +29,7 @@ def _assert_logs_contains(
 
 
 def _assert_logs_not_contains(
-        level: str, log_records: List[LogRecord], submessage: str) -> None:
+        level: str, log_records: list[LogRecord], submessage: str) -> None:
     for record in log_records:
         if _WRITE_LOGS_TO_STDOUT:  # pragma: no cover
             print(record)
@@ -40,7 +39,7 @@ def _assert_logs_not_contains(
 
 
 def assert_logs_contains_once(
-        level: str, log_records: List[LogRecord], message: str) -> None:
+        level: str, log_records: list[LogRecord], message: str) -> None:
     """
     Checks if the log records contain exactly one record at the given
     level with the given sub-message.
@@ -72,7 +71,7 @@ def assert_logs_contains_once(
 
 
 def assert_logs_error_contains(
-        log_records: List[LogRecord], submessage: str) -> None:
+        log_records: list[LogRecord], submessage: str) -> None:
     """
     Checks it the log records contain an ERROR log with this sub-message
 
@@ -88,7 +87,7 @@ def assert_logs_error_contains(
 
 
 def assert_logs_warning_contains(
-        log_records: List[LogRecord], submessage: str) -> None:
+        log_records: list[LogRecord], submessage: str) -> None:
     """
     Checks it the log records contain an WARNING log with this sub-message
 
@@ -104,7 +103,7 @@ def assert_logs_warning_contains(
 
 
 def assert_logs_info_contains(
-        log_records: List[LogRecord], sub_message: str) -> None:
+        log_records: list[LogRecord], sub_message: str) -> None:
     """
     Checks it the log records contain an INFO log with this sub-message
 
@@ -120,7 +119,7 @@ def assert_logs_info_contains(
 
 
 def assert_logs_error_not_contains(
-        log_records: List[LogRecord], submessage: str) -> None:
+        log_records: list[LogRecord], submessage: str) -> None:
     """
     Checks it the log records do not contain an ERROR log with this
     sub-message.
@@ -137,7 +136,7 @@ def assert_logs_error_not_contains(
 
 
 def assert_logs_info_not_contains(
-        log_records: List[LogRecord], submessage: str) -> None:
+        log_records: list[LogRecord], submessage: str) -> None:
     """
     Checks it the log records do not contain an INFO log with this
     sub-message.

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Callable, Tuple
+from typing import Callable
 
 import pytest
 from testfixtures import LogCapture
@@ -100,7 +100,7 @@ def test_iteration_style(
 @pytest.mark.parametrize("pbmagic", [False, True])
 @pytest.mark.parametrize("pbclass", [ProgressBar, DummyProgressBar])
 def test_bacon_enhancement(
-        pbmagic: bool, pbclass: Callable[[Tuple, str], ProgressBar]) -> None:
+        pbmagic: bool, pbclass: Callable[[tuple, str], ProgressBar]) -> None:
     unittest_setup()
     seq = (1, 2, 3)
     assert sum(pbclass(seq, "foo").over(seq)) == 6

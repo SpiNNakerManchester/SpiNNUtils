@@ -14,7 +14,7 @@
 
 from collections import OrderedDict
 from collections.abc import MutableSet
-from typing import Any, Dict, Generic, Iterable, Iterator, Optional, TypeVar
+from typing import Any, Generic, Iterable, Iterator, Optional, TypeVar
 
 #: :meta private:
 T = TypeVar("T")
@@ -34,7 +34,7 @@ class OrderedSet(MutableSet, Generic[T]):
         """
         # Always use OrderedDict as plain dict does not support
         # __reversed__ and key indexing
-        self._map: Dict[T, None] = OrderedDict()
+        self._map: dict[T, None] = OrderedDict()
 
         # or is overridden in mutable set; calls add on each element
         if iterable is not None:

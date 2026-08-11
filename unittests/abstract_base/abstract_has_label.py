@@ -15,7 +15,7 @@
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 
-class AbstractHasLabel(object, metaclass=AbstractBase):
+class AbstractHasLabel(metaclass=AbstractBase):
     """ Represents an item with a label
     """
 

@@ -20,10 +20,8 @@ from typing import (
     Generic,
     Iterable,
     Iterator,
-    List,
     Optional,
     Sequence,
-    Tuple,
     Union,
     cast,
     final,
@@ -39,7 +37,7 @@ from .abstract_sized import Selector
 from .multiple_values_exception import MultipleValuesException
 
 #: The type of a range descriptor
-_RangeType: TypeAlias = Tuple[int, int, T]
+_RangeType: TypeAlias = tuple[int, int, T]
 # The type of things we consider to be a list of values
 _ListType: TypeAlias = Union[Callable[[int], T], Sequence[T]]
 # The type of value arguments in several places
@@ -103,7 +101,7 @@ class RangedList(AbstractList[T], Generic[T]):
             self._default: Optional[T] = cast(Optional[T], value)
         else:
             self._default = None
-        self._ranges: Union[List[T], List[_RangeType]]
+        self._ranges: Union[list[T], list[_RangeType]]
         self._ranged_based: Optional[bool] = None
         self.set_value(value, use_list_as_value=use_list_as_value)
 
@@ -119,14 +117,14 @@ class RangedList(AbstractList[T], Generic[T]):
         return self._ranged_based or False
 
     @property
-    def __the_ranges(self) -> List[_RangeType]:
+    def __the_ranges(self) -> list[_RangeType]:
         assert self._ranged_based
-        return cast(List[_RangeType], self._ranges)
+        return cast(list[_RangeType], self._ranges)
 
     @property
-    def __the_values(self) -> List[T]:
+    def __the_values(self) -> list[T]:
         assert not self._ranged_based
-        return cast(List[T], self._ranges)
+        return cast(list[T], self._ranges)
 
     @overrides(AbstractList.get_value_by_id)
     def get_value_by_id(self, the_id: int) -> T:
@@ -330,7 +328,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     def as_list(
             self, value: _ListType, size: int,
-            ids: Optional[IdsType] = None) -> List[T]:
+            ids: Optional[IdsType] = None) -> list[T]:
         """
         Converts (if required) the value into a list of a given size.
         An exception is raised if value cannot be given size elements.
@@ -570,7 +568,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     __setitem__ = set_value_by_selector
 
-    def get_ranges(self) -> List[_RangeType]:
+    def get_ranges(self) -> list[_RangeType]:
         """
         Returns a copy of the list of ranges.
 

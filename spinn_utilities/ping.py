@@ -15,16 +15,15 @@
 import platform
 import subprocess
 import time
-from typing import Set
 
 
-class Ping(object):
+class Ping:
     """
     Platform-independent ping support.
     """
 
     #: The unreachable host cache.
-    unreachable: Set[str] = set()
+    unreachable: set[str] = set()
 
     @staticmethod
     def ping(ip_address: str) -> int:

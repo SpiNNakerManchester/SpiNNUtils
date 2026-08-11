@@ -15,7 +15,7 @@
 
 import logging
 import os
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 import appdirs
 from typing_extensions import TypeAlias
@@ -98,7 +98,7 @@ def _read_a_config(
             raise UnexpectedConfigException(f"{machine_spec_file=} not found")
 
 
-def _config_locations(filename: str) -> List[str]:
+def _config_locations(filename: str) -> list[str]:
     """
     Defines the list of places we can get configuration files from.
 
@@ -118,7 +118,7 @@ def _config_locations(filename: str) -> List[str]:
             user_home_cfg_file]
 
 
-def load_defaults(defaults: List[str]) -> CamelCaseConfigParser:
+def load_defaults(defaults: list[str]) -> CamelCaseConfigParser:
     """
     Load the default configuration.
 
@@ -132,7 +132,7 @@ def load_defaults(defaults: List[str]) -> CamelCaseConfigParser:
 
 
 def load_config(local_name: Optional[str], user_cfg: Optional[str],
-                defaults: List[str]) -> CamelCaseConfigParser:
+                defaults: list[str]) -> CamelCaseConfigParser:
     """
     Load the configuration.
 

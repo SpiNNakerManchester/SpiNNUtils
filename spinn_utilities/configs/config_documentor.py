@@ -16,7 +16,7 @@ import os
 import re
 import sys
 from collections import defaultdict
-from typing import Dict, List, Set, TextIO
+from typing import TextIO
 
 from spinn_utilities.config_holder import get_default_cfgs
 from spinn_utilities.configs.camel_case_config_parser import TypedConfigParser
@@ -99,7 +99,7 @@ def _md_write_doc(f: TextIO, raw: str) -> None:
     f.write("\n\n")
 
 
-class _ConfigGroup(object):
+class _ConfigGroup:
     """
     Hold the values for one cfg key plus its docs and any grouped ones.
     """
@@ -111,10 +111,10 @@ class _ConfigGroup(object):
         """
         self._docs: str = ""  # Must be changed later
         self.title = option
-        self._cfg: Dict[str, str] = {}
+        self._cfg: dict[str, str] = {}
         self._cfg[option] = value
 
-    def paths(self) -> List[str]:
+    def paths(self) -> list[str]:
         """
         Gets a list of the cfg settings in the group that point to a path.
 
@@ -197,7 +197,7 @@ class _ConfigGroup(object):
         _md_write_doc(f, self._docs)
 
 
-class ConfigDocumentor(object):
+class ConfigDocumentor:
     """
     This class will document all the default configs.
 
@@ -206,9 +206,9 @@ class ConfigDocumentor(object):
     """
 
     def __init__(self) -> None:
-        self._sections: Dict[str, Dict[str, _ConfigGroup]] = defaultdict(dict)
-        self._docs: Dict[str, str] = {}
-        self._names: Dict[str, str] = {}
+        self._sections: dict[str, dict[str, _ConfigGroup]] = defaultdict(dict)
+        self._docs: dict[str, str] = {}
+        self._names: dict[str, str] = {}
         config1 = TypedConfigParser()
         config1.read(get_default_cfgs())
         for section in config1:
@@ -299,7 +299,7 @@ class ConfigDocumentor(object):
 
         Expects all  sections and not grouped options to generate unique links.
         """
-        names: Set[str] = set()
+        names: set[str] = set()
         for section in self._sections:
             if section in names:
                 raise ValueError(f"{section=} has a duplicate name")

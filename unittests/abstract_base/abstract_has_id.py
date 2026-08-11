@@ -15,7 +15,7 @@
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 
 
-class AbstractHasId(object, metaclass=AbstractBase):
+class AbstractHasId(metaclass=AbstractBase):
     """ Represents an item with a label
     """
 

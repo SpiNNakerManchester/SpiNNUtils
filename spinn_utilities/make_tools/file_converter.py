@@ -15,7 +15,6 @@ import enum
 import os
 import re
 from io import TextIOBase
-from typing import List
 
 from spinn_utilities.exceptions import UnexpectedCException
 
@@ -52,7 +51,7 @@ class State(enum.Enum):
     IN_LOG_CLOSE_BRACKET = 3
 
 
-class FileConverter(object):
+class FileConverter:
     """
     Converts a file. See :py:meth:`convert`.
     """
@@ -357,7 +356,7 @@ class FileConverter(object):
         """
         return (text.count('(') - text.count(')'))
 
-    def _split_by_comma_plus(self, main: str, line_num: int) -> List[str]:
+    def _split_by_comma_plus(self, main: str, line_num: int) -> list[str]:
         """
         Split line by comma and partially parse.
 

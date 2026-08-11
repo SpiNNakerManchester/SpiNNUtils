@@ -17,7 +17,7 @@ import os
 import unicodedata
 import zipfile
 from time import strptime
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Optional, Union, cast
 
 import requests
 import yaml
@@ -73,7 +73,7 @@ class _ZenodoException(Exception):
         self.expected = expected
 
 
-class _Zenodo(object):
+class _Zenodo:
     """
     Manages low level access to Zenodo.
     """
@@ -108,7 +108,7 @@ class _Zenodo(object):
             return None
 
     def get_verify(
-            self, related: List[Dict[str, str]]) -> Optional[JsonObject]:
+            self, related: list[dict[str, str]]) -> Optional[JsonObject]:
         r = requests.get(
             self._DEPOSIT_GET_URL, timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
@@ -120,7 +120,7 @@ class _Zenodo(object):
         return self._json(r)
 
     def post_create(
-            self, related: List[Dict[str, str]]) -> Optional[JsonObject]:
+            self, related: list[dict[str, str]]) -> Optional[JsonObject]:
         r = requests.post(
             self._DEPOSIT_GET_URL, timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
@@ -132,8 +132,8 @@ class _Zenodo(object):
         return self._json(r)
 
     def post_upload(
-            self, deposit_id: str, data: Dict[str, Any],
-            files: Dict[str, io.BufferedReader]) -> Optional[JsonObject]:
+            self, deposit_id: str, data: dict[str, Any],
+            files: dict[str, io.BufferedReader]) -> Optional[JsonObject]:
         r = requests.post(
             self._DEPOSIT_PUT_URL.format(deposit_id), timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token},
@@ -154,7 +154,7 @@ class _Zenodo(object):
         return self._json(r)
 
 
-class CitationUpdaterAndDoiGenerator(object):
+class CitationUpdaterAndDoiGenerator:
     def __init__(self) -> None:
         self.__zenodo: Optional[_Zenodo] = None
 
@@ -201,7 +201,7 @@ class CitationUpdaterAndDoiGenerator(object):
                 deposit_id, publish_doi, doi_title,
                 yaml_file[CITATION_FILE_DESCRIPTION], yaml_file, module_path)
 
-    def _request_doi(self, previous_doi: str) -> Tuple[bytes, Any]:
+    def _request_doi(self, previous_doi: str) -> tuple[bytes, Any]:
         """
         Go to Zenodo and requests a DOI.
 
@@ -223,7 +223,7 @@ class CitationUpdaterAndDoiGenerator(object):
         assert request_data is not None
 
         # get DOI and deposit id
-        metadata = cast(Dict[str, Dict[str, str]],
+        metadata = cast(dict[str, dict[str, str]],
                         request_data[ZENODO_METADATA])
         doi_id = unicodedata.normalize(
             'NFKD',
@@ -235,7 +235,7 @@ class CitationUpdaterAndDoiGenerator(object):
 
     def _finish_doi(
             self, deposit_id: str, publish_doi: bool, title: str,
-            doi_description: str, yaml_file: Dict[str, Any],
+            doi_description: str, yaml_file: dict[str, Any],
             module_path: str) -> None:
         """
         Finishes the DOI on Zenodo.
@@ -283,7 +283,7 @@ class CitationUpdaterAndDoiGenerator(object):
         return 'module.zip'
 
     @staticmethod
-    def _zip_walker(module_path: str, avoids: List[str],
+    def _zip_walker(module_path: str, avoids: list[str],
                     module_zip_file: zipfile.ZipFile) -> None:
         """
         Traverse the module and its sub-directories and only adds to the
@@ -306,7 +306,7 @@ class CitationUpdaterAndDoiGenerator(object):
 
     @staticmethod
     def _fill_in_data(doi_title: str, doi_description: str,
-                      yaml_file: Dict[str, Any]) -> Dict[str, Any]:
+                      yaml_file: dict[str, Any]) -> dict[str, Any]:
         """
         Add in data to the Zenodo metadata.
 
@@ -316,7 +316,7 @@ class CitationUpdaterAndDoiGenerator(object):
         :return: dict containing Zenodo metadata
         """
         # add basic meta data
-        metadata: Dict[str, Any] = {
+        metadata: dict[str, Any] = {
             ZENODO_METADATA_TITLE: doi_title,
             ZENODO_METATDATA_DESC: doi_description,
             ZENODO_METADATA_CREATORS: []

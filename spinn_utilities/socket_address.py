@@ -21,7 +21,7 @@ from spinn_utilities.config_holder import (
 )
 
 
-class SocketAddress(object):
+class SocketAddress:
     """
     Data holder for a socket interface for notification protocol.
     """

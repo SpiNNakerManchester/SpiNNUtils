@@ -20,7 +20,7 @@ Method = TypeVar("Method", bound=Callable[..., Any])
 
 
 #  pylint: disable=invalid-name
-class overrides(object):
+class overrides:
     """
     A decorator for indicating that a method overrides another method in
     a superclass.  This checks that the method does actually exist,

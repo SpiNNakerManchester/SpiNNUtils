@@ -15,7 +15,7 @@
 import ast
 import os
 import sys
-from typing import Set, cast
+from typing import cast
 
 import docstring_parser
 
@@ -24,7 +24,7 @@ ERROR_OTHER = ERROR_NONE + 1
 ERROR_FILE = ERROR_OTHER + 1
 
 
-class DocsChecker(object):
+class DocsChecker:
     """
     A utility class to check the docs strings for our rules.
 
@@ -268,7 +268,7 @@ class DocsChecker(object):
         return False
 
     def _check_params_correct(
-            self, param_names: Set[str],
+            self, param_names: set[str],
             docstring: docstring_parser.common.Docstring) -> str:
         """
         Checks that all params listed are used and not typed
@@ -283,7 +283,7 @@ class DocsChecker(object):
         return error
 
     def _check_params_all_or_none(
-            self, param_names: Set[str],
+            self, param_names: set[str],
             docstring: docstring_parser.common.Docstring) -> str:
         """
         Checks that either no or all params are listed
@@ -320,7 +320,7 @@ class DocsChecker(object):
 
         return error
 
-    def get_param_names(self, node: ast.FunctionDef) -> Set[str]:
+    def get_param_names(self, node: ast.FunctionDef) -> set[str]:
         """
         Gets the names of the parameters found in the abstract syntax tree.
 
@@ -328,7 +328,7 @@ class DocsChecker(object):
 
         :returns: Names of all parameter including normal and kwargs ones
         """
-        param_names: Set[str] = set()
+        param_names: set[str] = set()
         for arg in node.args.args:
             param_names.add(arg.arg)
         for arg in node.args.kwonlyargs:

@@ -15,12 +15,10 @@ from __future__ import annotations
 
 from typing import (
     TYPE_CHECKING,
-    Dict,
     Generic,
     Iterator,
     Optional,
     Sequence,
-    Tuple,
     Union,
     overload,
 )
@@ -58,11 +56,11 @@ class _SliceView(AbstractView[T], Generic[T]):
         ...
 
     @overload
-    def get_value(self, key: Optional[_StrSeq]) -> Dict[str, T]:
+    def get_value(self, key: Optional[_StrSeq]) -> dict[str, T]:
         ...
 
     @overrides(AbstractDict.get_value)
-    def get_value(self, key: _Keys) -> Union[T, Dict[str, T]]:
+    def get_value(self, key: _Keys) -> Union[T, dict[str, T]]:
         if isinstance(key, str):
             return self._range_dict.get_list(key).get_single_value_by_slice(
                 slice_start=self._start, slice_stop=self._stop)
@@ -96,12 +94,12 @@ class _SliceView(AbstractView[T], Generic[T]):
     @overload
     def iter_all_values(
             self, key: Optional[_StrSeq] = None,
-            update_safe: bool = False) -> Iterator[Dict[str, T]]:
+            update_safe: bool = False) -> Iterator[dict[str, T]]:
         ...
 
     @overrides(AbstractDict.iter_all_values)
     def iter_all_values(self, key: _Keys = None, update_safe: bool = False
-                        ) -> Union[Iterator[T], Iterator[Dict[str, T]]]:
+                        ) -> Union[Iterator[T], Iterator[dict[str, T]]]:
         if isinstance(key, str):
             if update_safe:
                 return self.update_safe_iter_all_values(key)
@@ -119,17 +117,17 @@ class _SliceView(AbstractView[T], Generic[T]):
             use_list_as_value=use_list_as_value)
 
     @overload
-    def iter_ranges(self, key: str) -> Iterator[Tuple[int, int, T]]:
+    def iter_ranges(self, key: str) -> Iterator[tuple[int, int, T]]:
         ...
 
     @overload
     def iter_ranges(self, key: Optional[_StrSeq] = None) -> Iterator[
-            Tuple[int, int, Dict[str, T]]]:
+            tuple[int, int, dict[str, T]]]:
         ...
 
     @overrides(AbstractDict.iter_ranges)
     def iter_ranges(self, key: _Keys = None
-                    ) -> Union[Iterator[Tuple[int, int, T]],
-                               Iterator[Tuple[int, int, Dict[str, T]]]]:
+                    ) -> Union[Iterator[tuple[int, int, T]],
+                               Iterator[tuple[int, int, dict[str, T]]]]:
         return self._range_dict.iter_ranges_by_slice(
             key=key, slice_start=self._start, slice_stop=self._stop)

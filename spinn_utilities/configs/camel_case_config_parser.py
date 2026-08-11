@@ -14,7 +14,7 @@
 import configparser
 import os
 from collections.abc import Iterable
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 NONES = ("none", )
 TRUES = ('y', 'yes', 't', 'true', 'on', '1')
@@ -47,7 +47,7 @@ class TypedConfigParser(configparser.RawConfigParser):
 
     def __init__(self) -> None:
         super().__init__()
-        self._read_files: List[str] = []
+        self._read_files: list[str] = []
 
     def optionxform(self, optionstr: str) -> str:
         """
@@ -72,7 +72,7 @@ class TypedConfigParser(configparser.RawConfigParser):
         return new_files
 
     @property
-    def read_files(self) -> List[str]:
+    def read_files(self) -> list[str]:
         """
         The configuration files that have been actually read.
         """
@@ -92,7 +92,7 @@ class TypedConfigParser(configparser.RawConfigParser):
         return value
 
     def get_str_list(
-            self, section: str, option: str, token: str = ",") -> List[str]:
+            self, section: str, option: str, token: str = ",") -> list[str]:
         """
         Get the string value of an option split into a list.
 
@@ -136,7 +136,7 @@ class TypedConfigParser(configparser.RawConfigParser):
         return float(value)
 
     def get_bool(self, section: str, option: str,
-                 special_nones: Optional[List[str]]) -> Optional[bool]:
+                 special_nones: Optional[list[str]]) -> Optional[bool]:
         """
         Get the Boolean value of an option.
 

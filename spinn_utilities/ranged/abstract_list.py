@@ -21,7 +21,6 @@ from typing import (
     Iterator,
     Optional,
     Sequence,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -168,7 +167,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         # This is not elegant code but as the ranges could be created on the
         # fly the best way.
-        only_range: Optional[Tuple[int, int, T]] = None
+        only_range: Optional[tuple[int, int, T]] = None
         for this_range in self.iter_ranges():
             if only_range is not None:
                 # If we can get another range, there must be more than one
@@ -428,7 +427,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         raise ValueError(f"{x} is not in list")
 
     @abstractmethod
-    def iter_ranges(self) -> Iterator[Tuple[int, int, T]]:
+    def iter_ranges(self) -> Iterator[tuple[int, int, T]]:
         """
         Fast but *not* update-safe iterator of the ranges.
 
@@ -436,7 +435,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         raise NotImplementedError
 
-    def iter_ranges_by_id(self, the_id: int) -> Iterator[Tuple[int, int, T]]:
+    def iter_ranges_by_id(self, the_id: int) -> Iterator[tuple[int, int, T]]:
         """
         Iterator of the range for this ID.
 
@@ -458,7 +457,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
     @abstractmethod
     def iter_ranges_by_slice(
             self, slice_start: int, slice_stop: int) -> Iterator[
-                Tuple[int, int, T]]:
+                tuple[int, int, T]]:
         """
         Fast but *not* update-safe iterator of the ranges covered by this
         slice.
@@ -472,7 +471,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         raise NotImplementedError
 
     def iter_ranges_by_ids(self, ids: IdsType) -> Iterator[
-            Tuple[int, int, T]]:
+            tuple[int, int, T]]:
         """
         Fast but *not* update-safe iterator of the ranges covered by these IDs.
 
@@ -715,7 +714,7 @@ class SingleList(AbstractList[R], Generic[T, R],
         return self._operation(self._a_list.get_single_value_by_ids(ids))
 
     @overrides(AbstractList.iter_ranges)
-    def iter_ranges(self) -> Iterator[Tuple[int, int, R]]:
+    def iter_ranges(self) -> Iterator[tuple[int, int, R]]:
         for (start, stop, value) in self._a_list.iter_ranges():
             yield (start, stop, self._operation(value))
 
@@ -729,7 +728,7 @@ class SingleList(AbstractList[R], Generic[T, R],
     @overrides(AbstractList.iter_ranges_by_slice)
     def iter_ranges_by_slice(
             self, slice_start: int, slice_stop: int
-            ) -> Iterator[Tuple[int, int, R]]:
+            ) -> Iterator[tuple[int, int, R]]:
         for (start, stop, value) in \
                 self._a_list.iter_ranges_by_slice(slice_start, slice_stop):
             yield (start, stop, self._operation(value))
@@ -835,7 +834,7 @@ class DualList(AbstractList[R], Generic[T, U, R],
                         return
 
     @overrides(AbstractList.iter_ranges)
-    def iter_ranges(self) -> Iterator[Tuple[int, int, R]]:
+    def iter_ranges(self) -> Iterator[tuple[int, int, R]]:
         left_iter = self._left.iter_ranges()
         right_iter = self._right.iter_ranges()
         return self._merge_ranges(left_iter, right_iter)
@@ -843,14 +842,14 @@ class DualList(AbstractList[R], Generic[T, U, R],
     @overrides(AbstractList.iter_ranges_by_slice)
     def iter_ranges_by_slice(
             self, slice_start: int, slice_stop: int) -> Iterator[
-                Tuple[int, int, R]]:
+                tuple[int, int, R]]:
         left_iter = self._left.iter_ranges_by_slice(slice_start, slice_stop)
         right_iter = self._right.iter_ranges_by_slice(slice_start, slice_stop)
         return self._merge_ranges(left_iter, right_iter)
 
-    def _merge_ranges(self, left_iter: Iterator[Tuple[int, int, T]],
-                      right_iter: Iterator[Tuple[int, int, U]]
-                      ) -> Iterator[Tuple[int, int, R]]:
+    def _merge_ranges(self, left_iter: Iterator[tuple[int, int, T]],
+                      right_iter: Iterator[tuple[int, int, U]]
+                      ) -> Iterator[tuple[int, int, R]]:
         (left_start, left_stop, left_value) = next(left_iter)
         (right_start, right_stop, right_value) = next(right_iter)
         try:

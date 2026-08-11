@@ -13,12 +13,12 @@
 # limitations under the License.
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from .abstract_base import abstractmethod
 
 
-class LogStore(object):
+class LogStore:
     """
     API supported by classes that can store logs for later retrieval.
     """
@@ -37,7 +37,7 @@ class LogStore(object):
 
     @abstractmethod
     def retreive_log_messages(
-            self, min_level: int = 0) -> List[str]:
+            self, min_level: int = 0) -> list[str]:
         """
         Retrieves all log messages at or above the `min_level`.
 

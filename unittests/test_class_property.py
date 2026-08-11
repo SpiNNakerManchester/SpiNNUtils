@@ -15,7 +15,7 @@
 from spinn_utilities.classproperty import classproperty
 
 
-class ClassWithClassProperty(object):
+class ClassWithClassProperty:
 
     _my_property = "Test"
     getter_called = False

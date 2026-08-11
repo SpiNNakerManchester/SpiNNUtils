@@ -14,7 +14,7 @@
 
 import logging
 from datetime import datetime
-from typing import Any, List, Optional, Tuple
+from typing import Any, Optional
 
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.log import (
@@ -56,7 +56,7 @@ class MockLog(logging.Logger):
 class MockLogStore(LogStore):
 
     def __init__(self) -> None:
-        self.data: List[Tuple[int, str]] = []
+        self.data: list[tuple[int, str]] = []
 
     @overrides(LogStore.store_log)
     def store_log(self, level: int, message: str,
@@ -67,7 +67,7 @@ class MockLogStore(LogStore):
 
     @overrides(LogStore.retreive_log_messages)
     def retreive_log_messages(
-            self, min_level: int = 0) -> List[str]:
+            self, min_level: int = 0) -> list[str]:
         result = []
         for (level, message) in self.data:
             if level >= min_level:
@@ -214,13 +214,13 @@ def test_bad_log_store() -> None:
         pass
 
 
-class DoKeyError(object):
+class DoKeyError:
 
     def __str__(self) -> str:
         raise KeyError("Boom!")
 
 
-class DoIndexError(object):
+class DoIndexError:
 
     def __str__(self) -> str:
         raise IndexError("Boom!")

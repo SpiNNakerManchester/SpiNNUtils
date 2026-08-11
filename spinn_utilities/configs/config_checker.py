@@ -14,7 +14,7 @@
 
 import os
 from collections import defaultdict
-from typing import Collection, Dict, List, Set
+from typing import Collection
 
 from spinn_utilities.config_holder import get_default_cfgs
 from spinn_utilities.configs.camel_case_config_parser import (
@@ -24,7 +24,7 @@ from spinn_utilities.configs.camel_case_config_parser import (
 from spinn_utilities.exceptions import ConfigException
 
 
-class ConfigChecker(object):
+class ConfigChecker:
     """
     Checks the py and cfg files after the defaults have been set,
     """
@@ -47,8 +47,8 @@ class ConfigChecker(object):
             self._configs.read(default_cfg)
         self._directories = directories
         self._file_path = ""
-        self._lines: List[str] = []
-        self._used_cfgs: Dict[str, Set[str]] = defaultdict(set)
+        self._lines: list[str] = []
+        self._used_cfgs: dict[str, set[str]] = defaultdict(set)
 
     def check(self, local_defaults: bool = True) -> None:
         """
@@ -150,7 +150,7 @@ class ConfigChecker(object):
                     parts = self._get_parts(line, index, "get_config")
                     self._check_lines(parts)
 
-    def _get_parts(self, line: str, index: int, start: str) -> List[str]:
+    def _get_parts(self, line: str, index: int, start: str) -> list[str]:
         while ")" not in line:
             index += 1
             line += self._lines[index]
@@ -158,7 +158,7 @@ class ConfigChecker(object):
                      line.find(")")].split(",")
         return parts
 
-    def _check_lines(self, parts: List[str]) -> None:
+    def _check_lines(self, parts: list[str]) -> None:
         section = parts[0].strip().replace("'", "").replace('"', '')
         for i in range(1, len(parts)):
             option = parts[i].strip()
@@ -178,7 +178,7 @@ class ConfigChecker(object):
 
             self._used_cfgs[section].add(option)
 
-    def _check_get_report_path(self, parts: List[str]) -> None:
+    def _check_get_report_path(self, parts: list[str]) -> None:
         section = "Reports"
         option = "No Option found"
         for part in parts:

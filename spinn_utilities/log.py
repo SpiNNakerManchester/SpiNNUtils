@@ -22,12 +22,9 @@ from inspect import getfullargspec
 from typing import (
     Any,
     Collection,
-    Dict,
     KeysView,
-    List,
     Mapping,
     Optional,
-    Tuple,
 )
 
 from spinn_utilities.configs import CamelCaseConfigParser
@@ -44,7 +41,7 @@ _LEVELS = {
 }
 
 
-class ConfiguredFilter(object):
+class ConfiguredFilter:
     """
     Allow a parent logger to filter a child logger.
     """
@@ -95,7 +92,7 @@ class ConfiguredFormatter(logging.Formatter):
 
     @staticmethod
     def construct_logging_parents(
-            config: configparser.RawConfigParser) -> Dict[str, int]:
+            config: configparser.RawConfigParser) -> dict[str, int]:
         """
         Create a dictionary of module names and logging levels.
 
@@ -104,7 +101,7 @@ class ConfiguredFormatter(logging.Formatter):
         :returns: A dictionary of module names and logging levels.
         """
         # Construct the dictionary
-        _levels: Dict[str, int] = {}
+        _levels: dict[str, int] = {}
 
         if not config.has_section("Logging"):
             return _levels
@@ -138,7 +135,7 @@ class ConfiguredFormatter(logging.Formatter):
 
     @staticmethod
     def level_of_deepest_parent(
-            parents: Dict[str, int], child: str) -> Optional[int]:
+            parents: dict[str, int], child: str) -> Optional[int]:
         """
         :returns:
            The logging level of the greediest match between child and parent.
@@ -152,7 +149,7 @@ class ConfiguredFormatter(logging.Formatter):
         return parents[parent]
 
 
-class _BraceMessage(object):
+class _BraceMessage:
     """
     A message that converts a Python format string to a string.
     """
@@ -164,7 +161,7 @@ class _BraceMessage(object):
     ]
 
     def __init__(self, message: object,
-                 args: Collection, kwargs: Dict[str, object]) -> None:
+                 args: Collection, kwargs: dict[str, object]) -> None:
         """
         :param message: The log message before formatting
         :param args: Any simple arguments to pass to the formatter
@@ -216,7 +213,7 @@ class FormatAdapter(logging.LoggerAdapter):
     """
     __kill_level = logging.CRITICAL + 1
     __repeat_at_end = logging.WARNING
-    __not_stored_messages: List[Tuple[datetime, int, str]] = []
+    __not_stored_messages: list[tuple[datetime, int, str]] = []
     __log_store: Optional[LogStore] = None
 
     @classmethod
@@ -299,7 +296,7 @@ class FormatAdapter(logging.LoggerAdapter):
             self.do_log(level, message, (), **log_kwargs)
 
     @overrides(logging.LoggerAdapter.process, extend_doc=False)
-    def process(self, msg: object, kwargs: Any) -> Tuple[object, dict]:
+    def process(self, msg: object, kwargs: Any) -> tuple[object, dict]:
         """
         Process the logging message and keyword arguments passed in to a
         logging call to insert contextual information. You can either
@@ -349,7 +346,7 @@ class FormatAdapter(logging.LoggerAdapter):
 
     @classmethod
     def _pop_not_stored_messages(
-            cls, min_level: int = 0) -> List[Tuple[datetime, int, str]]:
+            cls, min_level: int = 0) -> list[tuple[datetime, int, str]]:
         """
         Returns the log of messages to print on exit and
         *clears that log*.
@@ -357,7 +354,7 @@ class FormatAdapter(logging.LoggerAdapter):
         .. note::
             Should only be called externally from test code!
         """
-        result: List[Tuple[datetime, int, str]] = []
+        result: list[tuple[datetime, int, str]] = []
         for timestamp, level, message in cls.__not_stored_messages:
             if level >= min_level:
                 result.append((timestamp, level, message))

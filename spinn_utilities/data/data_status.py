@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from enum import Enum
-from typing import Tuple, Type
 
 from spinn_utilities.exceptions import (
     DataNotMocked,
@@ -39,12 +38,12 @@ class DataStatus(Enum):
     #: The system has been shut down.
     SHUTDOWN = (3, ShutdownException)
 
-    def __new__(cls, *args: Tuple[int, SpiNNUtilsException]) -> 'DataStatus':
+    def __new__(cls, *args: tuple[int, SpiNNUtilsException]) -> 'DataStatus':
         obj = object.__new__(cls)
         obj._value_ = args[0]
         return obj
 
-    def __init__(self, value: int, exception: Type[SpiNNUtilsException]):
+    def __init__(self, value: int, exception: type[SpiNNUtilsException]):
         """
         :param value: An int ID
         :param exception: The Exception to raise for any missing values

@@ -18,20 +18,20 @@ from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.require_subclass import require_subclass
 
 
-class Base(object):
+class Base:
     @property
     def bar(self) -> int:
         return 123
 
 
 @require_subclass(Base)
-class Ifc(object, metaclass=AbstractBase):
+class Ifc(metaclass=AbstractBase):
     @abstractmethod
     def foo(self) -> None:
         pass
 
 
-class NotFromBase(object):
+class NotFromBase:
     def __init__(self) -> None:
         self.bar = 234
 
@@ -47,7 +47,7 @@ class DerivedIfc(Ifc, allow_derivation=True):
 
 
 @require_subclass(Base)
-class Ifc2(object, metaclass=AbstractBase):
+class Ifc2(metaclass=AbstractBase):
     @property
     @abstractmethod
     def bar(self) -> int:

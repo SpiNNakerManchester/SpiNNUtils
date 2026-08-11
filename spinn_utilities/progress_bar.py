@@ -18,7 +18,7 @@ import os
 import sys
 from collections.abc import Sized
 from types import TracebackType
-from typing import Iterable, Optional, Type, TypeVar, Union
+from typing import Iterable, Optional, TypeVar, Union
 
 from typing_extensions import Literal, Self
 
@@ -31,7 +31,7 @@ logger = FormatAdapter(logging.getLogger(__name__))
 T = TypeVar("T")
 
 
-class ProgressBar(object):
+class ProgressBar:
     """
     Progress bar for telling the user where a task is up to.
     """
@@ -197,7 +197,7 @@ class ProgressBar(object):
         """
         return self
 
-    def __exit__(self, exc_type: Optional[Type], exc_val: Exception,
+    def __exit__(self, exc_type: Optional[type], exc_val: Exception,
                  exc_tb: TracebackType) -> Literal[False]:
         self.end()
         return False

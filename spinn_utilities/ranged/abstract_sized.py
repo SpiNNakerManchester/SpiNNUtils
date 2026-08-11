@@ -58,7 +58,7 @@ class AbstractSized(object):
         :param size: Fixed length of the list.
         """
         # Strictly doesn't need to be int, but really should be!
-        self._size = max(int(round(size)), 0)
+        self._size = max(round(size), 0)
 
     def __len__(self) -> int:
         """

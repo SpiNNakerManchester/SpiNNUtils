@@ -156,8 +156,8 @@ class ProgressBar(object):
         self._check_differences()
 
     def _check_differences(self) -> None:
-        expected_chars_done = int(math.floor(
-            self._currently_completed * self._chars_per_thing))
+        expected_chars_done = math.floor(
+            self._currently_completed * self._chars_per_thing)
         if self._currently_completed == self._number_of_things:
             expected_chars_done = ProgressBar.MAX_LENGTH_IN_CHARS
         self._print_progress(expected_chars_done)

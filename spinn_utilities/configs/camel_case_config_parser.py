@@ -14,15 +14,13 @@
 import configparser
 import os
 from collections.abc import Iterable
-from typing import Union
 
 NONES = ("none", )
 TRUES = ('y', 'yes', 't', 'true', 'on', '1')
 FALSES = ('n', 'no', 'f', 'false', 'off', '0')
 
 # Type support
-_Path = Union[str | bytes | os.PathLike,
-              Iterable[str | bytes | os.PathLike]]
+_Path = str | bytes | os.PathLike | Iterable[str | bytes | os.PathLike]
 
 
 def optionxform(optionstr: str) -> str:

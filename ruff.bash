@@ -25,9 +25,8 @@ if [ "$#" -eq  "0" ]
 else
   python3 -m venv ../SupportScripts/venv/ruff_runner
   source ../SupportScripts/venv/ruff_runner/bin/activate
-  pip3 install --upgrade ../SpiNNUtils[test]
-  python3 -m pip install --upgrade ruff
+  python3 -m pip install --upgrade ruff flake8
 fi
 
-ruff check spinn_utilities unittests --target-version py310 --config ../SupportScripts/actions/ruff/ruff.toml
-ruff check spinn_utilities unittests --target-version py310 --config ../SupportScripts/actions/ruff/ruff_up.toml
+#ruff check spinn_utilities unittests --target-version py310 --config ../SupportScripts/actions/ruff/ruff_ignore.toml --fix
+flake8 spinn_utilities unittests

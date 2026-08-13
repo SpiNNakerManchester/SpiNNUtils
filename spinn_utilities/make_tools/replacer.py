@@ -16,7 +16,6 @@ import logging
 import struct
 import sys
 from types import TracebackType
-from typing import Optional
 
 from typing_extensions import Literal, Self
 
@@ -50,7 +49,7 @@ class Replacer:
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Exception,
+    def __exit__(self, exc_type: type | None, exc_val: Exception,
                  exc_tb: TracebackType) -> Literal[False]:
         return False
 
@@ -58,7 +57,7 @@ class Replacer:
     _FLT_FMT = struct.Struct("!f")
     _DBL_FMT = struct.Struct("!d")
 
-    def _db(self, database_key: str) -> Optional[LogSqlLiteDatabase]:
+    def _db(self, database_key: str) -> LogSqlLiteDatabase | None:
         if database_key in self._dbs:
             return self._dbs[database_key]
         database_file = UtilsDataView.get_log_database_path(database_key)
@@ -68,7 +67,7 @@ class Replacer:
         self._dbs[database_key] = db
         return db
 
-    def _replace(self, short: str) -> Optional[tuple[int, str, str, str]]:
+    def _replace(self, short: str) -> tuple[int, str, str, str] | None:
         """
         Apply the replacements to a short message.
 

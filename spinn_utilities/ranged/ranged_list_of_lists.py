@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from collections.abc import Sized
-from typing import Callable, Generic, Optional, Sequence, TypeVar, Union
+from typing import Callable, Generic, Sequence, TypeVar
 
 from typing_extensions import TypeAlias
 
@@ -25,8 +25,8 @@ from .ranged_list import RangedList
 #: :meta private:
 T = TypeVar("T")
 # ranged_list._ValueType but specialised for how we use it here
-_ValueType: TypeAlias = Optional[Union[
-    list[T], Callable[[int], list[T]], Sequence[list[T]]]]
+_ValueType: TypeAlias = (list[T] | Callable[[int], list[T]] |
+                         Sequence[list[T]] | None)
 
 
 class RangedListOfList(RangedList[list[T]], Generic[T]):

@@ -15,7 +15,6 @@
 import logging
 import os
 from collections import defaultdict
-from typing import Optional
 
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.ordered_set import OrderedSet
@@ -44,9 +43,9 @@ class ExecutableFinder:
                     os.makedirs(global_reports)
                 except FileExistsError:
                     pass
-            self._paths_log: Optional[str] = os.path.join(
+            self._paths_log: str | None = os.path.join(
                 global_reports, "binary_paths_used.log")
-            self._binary_log: Optional[str] = os.path.join(
+            self._binary_log: str | None = os.path.join(
                 global_reports, "binary_files_used.log")
 
         else:

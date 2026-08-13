@@ -16,7 +16,7 @@ from __future__ import annotations
 import logging
 import os
 from tempfile import TemporaryDirectory
-from typing import Iterable, Optional
+from typing import Iterable
 from unittest import SkipTest
 
 from spinn_utilities import logger_utils
@@ -54,7 +54,7 @@ class _UtilsDataModel:
     What data is held where and how can change without notice.
     """
 
-    __singleton: Optional[_UtilsDataModel] = None
+    __singleton: _UtilsDataModel | None = None
 
     __slots__ = [
         "_data_status",
@@ -92,9 +92,9 @@ class _UtilsDataModel:
         Clears out all data.
         """
         self._reset_number = 0
-        self._run_number: Optional[int] = None
-        self._report_dir_path: Optional[str] = None
-        self._timestamp_dir_path: Optional[str] = None
+        self._run_number: int | None = None
+        self._report_dir_path: str | None = None
+        self._timestamp_dir_path: str | None = None
         self._hard_reset()
 
     def _hard_reset(self) -> None:
@@ -102,10 +102,10 @@ class _UtilsDataModel:
         Puts all data back into the state expected at graph changed and
         `sim.reset`.
         """
-        self._run_dir_path: Optional[str] = None
+        self._run_dir_path: str | None = None
         self._requires_data_generation = True
         self._requires_mapping = True
-        self._temporary_directory: Optional[TemporaryDirectory] = None
+        self._temporary_directory: TemporaryDirectory | None = None
         self._soft_reset()
 
     def _soft_reset(self) -> None:
@@ -774,7 +774,7 @@ class UtilsDataView:
             cls.__data._log_database_paths[database_key] = log_path
 
     @classmethod
-    def get_log_database_path(cls, database_key: str) -> Optional[str]:
+    def get_log_database_path(cls, database_key: str) -> str | None:
         """
         Gets the database path for this Database key
 
@@ -874,7 +874,7 @@ class UtilsDataView:
 
     @classmethod
     def raise_skiptest(cls, reason: str,
-                       parent: Optional[Exception] = None) -> None:
+                       parent: Exception | None = None) -> None:
         """
         Sets the status as shutdown and raises a SkipTest
 

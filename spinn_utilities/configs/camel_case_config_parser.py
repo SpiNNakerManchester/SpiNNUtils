@@ -14,15 +14,15 @@
 import configparser
 import os
 from collections.abc import Iterable
-from typing import Optional, Union
+from typing import Union
 
 NONES = ("none", )
 TRUES = ('y', 'yes', 't', 'true', 'on', '1')
 FALSES = ('n', 'no', 'f', 'false', 'off', '0')
 
 # Type support
-_Path = Union[Union[str, bytes, os.PathLike],
-              Iterable[Union[str, bytes, os.PathLike]]]
+_Path = Union[str | bytes | os.PathLike,
+              Iterable[str | bytes | os.PathLike]]
 
 
 def optionxform(optionstr: str) -> str:
@@ -61,7 +61,7 @@ class TypedConfigParser(configparser.RawConfigParser):
 
     #  typing in super class heavily overloaded and hard to replicate
     def read(self, filenames,  # type: ignore[no-untyped-def]
-             encoding: Optional[str] = None):
+             encoding: str | None = None):
         """
         Read and parse a filename or a list of filenames.
 
@@ -78,7 +78,7 @@ class TypedConfigParser(configparser.RawConfigParser):
         """
         return self._read_files
 
-    def get_str(self, section: str, option: str) -> Optional[str]:
+    def get_str(self, section: str, option: str) -> str | None:
         """
         Get the string value of an option.
 
@@ -109,7 +109,7 @@ class TypedConfigParser(configparser.RawConfigParser):
         as_list = value.split(token)
         return list(map(lambda x: x.strip(), as_list))
 
-    def get_int(self, section: str, option: str) -> Optional[int]:
+    def get_int(self, section: str, option: str) -> int | None:
         """
         Get the integer value of an option.
 
@@ -122,7 +122,7 @@ class TypedConfigParser(configparser.RawConfigParser):
             return None
         return int(value)
 
-    def get_float(self, section: str, option: str) -> Optional[float]:
+    def get_float(self, section: str, option: str) -> float | None:
         """
         Get the float value of an option.
 
@@ -136,7 +136,7 @@ class TypedConfigParser(configparser.RawConfigParser):
         return float(value)
 
     def get_bool(self, section: str, option: str,
-                 special_nones: Optional[list[str]]) -> Optional[bool]:
+                 special_nones: list[str] | None) -> bool | None:
         """
         Get the Boolean value of an option.
 

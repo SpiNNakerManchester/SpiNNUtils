@@ -17,7 +17,7 @@ import os
 import unicodedata
 import zipfile
 from time import strptime
-from typing import Any, Optional, Union, cast
+from typing import Any, cast
 
 import requests
 import yaml
@@ -101,14 +101,14 @@ class _Zenodo:
         self.__zenodo_token = token
 
     @staticmethod
-    def _json(r: requests.Response) -> Optional[JsonObject]:
+    def _json(r: requests.Response) -> JsonObject | None:
         try:
             return r.json()
         except Exception:  # pylint: disable=broad-except
             return None
 
     def get_verify(
-            self, related: list[dict[str, str]]) -> Optional[JsonObject]:
+            self, related: list[dict[str, str]]) -> JsonObject | None:
         r = requests.get(
             self._DEPOSIT_GET_URL, timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
@@ -120,7 +120,7 @@ class _Zenodo:
         return self._json(r)
 
     def post_create(
-            self, related: list[dict[str, str]]) -> Optional[JsonObject]:
+            self, related: list[dict[str, str]]) -> JsonObject | None:
         r = requests.post(
             self._DEPOSIT_GET_URL, timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token,
@@ -133,7 +133,7 @@ class _Zenodo:
 
     def post_upload(
             self, deposit_id: str, data: dict[str, Any],
-            files: dict[str, io.BufferedReader]) -> Optional[JsonObject]:
+            files: dict[str, io.BufferedReader]) -> JsonObject | None:
         r = requests.post(
             self._DEPOSIT_PUT_URL.format(deposit_id), timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token},
@@ -144,7 +144,7 @@ class _Zenodo:
                 self._VALID_STATUS_REQUEST_POST, r)
         return self._json(r)
 
-    def post_publish(self, deposit_id: str) -> Optional[JsonObject]:
+    def post_publish(self, deposit_id: str) -> JsonObject | None:
         r = requests.post(
             self._PUBLISH_URL.format(deposit_id), timeout=10,
             params={self._ACCESS_TOKEN: self.__zenodo_token})
@@ -156,7 +156,7 @@ class _Zenodo:
 
 class CitationUpdaterAndDoiGenerator:
     def __init__(self) -> None:
-        self.__zenodo: Optional[_Zenodo] = None
+        self.__zenodo: _Zenodo | None = None
 
     def update_citation_file_and_create_doi(
             self, citation_file_path: str, doi_title: str, create_doi: bool,
@@ -178,7 +178,7 @@ class CitationUpdaterAndDoiGenerator:
         self.__zenodo = _Zenodo(zenodo_access_token)
 
         # data holders
-        deposit_id: Optional[str] = None
+        deposit_id: str | None = None
 
         # read in YAML file
         with open(citation_file_path, 'r', encoding="utf-8") as stream:
@@ -338,8 +338,8 @@ class CitationUpdaterAndDoiGenerator:
 
     @staticmethod
     def convert_text_date_to_date(
-            version_month: Union[int, str], version_year: Union[int, str],
-            version_day: Union[int, str]) -> str:
+            version_month: int | str, version_year: int | str,
+            version_day: int | str) -> str:
         """
         Convert the 3 components of a date into a CFF date.
 
@@ -355,7 +355,7 @@ class CitationUpdaterAndDoiGenerator:
             version_day)
 
     @staticmethod
-    def convert_month_name_to_number(version_month: Union[int, str]) -> int:
+    def convert_month_name_to_number(version_month: int | str) -> int:
         """
         Convert a python month in text form to a number form.
 

@@ -19,10 +19,8 @@ from typing import (
     Callable,
     Generic,
     Iterator,
-    Optional,
     Sequence,
     TypeVar,
-    Union,
     cast,
 )
 
@@ -43,7 +41,7 @@ T = TypeVar("T")
 #: :meta private:
 U = TypeVar("U")
 #: :meta private:
-IdsType: TypeAlias = Union[Sequence[int], NDArray[numpy.integer]]
+IdsType: TypeAlias = Sequence[int] | NDArray[numpy.integer]
 
 
 def _eq(x: Any, y: Any) -> bool:
@@ -105,7 +103,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
     """
     __slots__ = ("_key", )
 
-    def __init__(self, size: int, key: Optional[str] = None) -> None:
+    def __init__(self, size: int, key: str | None = None) -> None:
         """
         :param size: Fixed length of the list
         :param key: The dict key this list covers.
@@ -167,7 +165,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         # This is not elegant code but as the ranges could be created on the
         # fly the best way.
-        only_range: Optional[tuple[int, int, T]] = None
+        only_range: tuple[int, int, T] | None = None
         for this_range in self.iter_ranges():
             if only_range is not None:
                 # If we can get another range, there must be more than one
@@ -226,7 +224,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         raise NotImplementedError
 
-    def __getitem__(self, selector: Selector) -> Union[Self, T, Sequence[T]]:
+    def __getitem__(self, selector: Selector) -> Self | T | Sequence[T]:
         """
         Supports the `list[x]` to return an element or slice of the list.
 
@@ -509,7 +507,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
             yield result
 
     @abstractmethod
-    def get_default(self) -> Optional[T]:
+    def get_default(self) -> T | None:
         """
         Gets the default value of the list.
         Just in case we later allow to increase the number of elements.
@@ -518,7 +516,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         raise NotImplementedError
 
-    def __add__(self, other: Union[float, AbstractList[float]]
+    def __add__(self, other: float | AbstractList[float]
                 ) -> AbstractList[float]:
         """
         Support for ``new_list = list1 + list2``.
@@ -545,7 +543,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         raise TypeError("__add__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __sub__(self, other: Union[float, AbstractList[float]]
+    def __sub__(self, other: float | AbstractList[float]
                 ) -> AbstractList[float]:
         """
         Support for ``new_list = list1 - list2``.
@@ -572,7 +570,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         raise TypeError("__sub__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __mul__(self, other: Union[float, AbstractList[float]]
+    def __mul__(self, other: float | AbstractList[float]
                 ) -> AbstractList[float]:
         """
         Support for ``new_list = list1 * list2``.
@@ -599,7 +597,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         raise TypeError("__mul__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __truediv__(self, other: Union[float, AbstractList[float]]
+    def __truediv__(self, other: float | AbstractList[float]
                     ) -> AbstractList[float]:
         """
         Support for ``new_list = list1 / list2``.
@@ -629,7 +627,7 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         raise TypeError("__truediv__ operation only supported for other "
                         "RangedLists and numerical Values")
 
-    def __floordiv__(self, other: Union[float, AbstractList[float]]
+    def __floordiv__(self, other: float | AbstractList[float]
                      ) -> AbstractList[int]:
         """
         Support for ``new_list = list1 // list2``.
@@ -682,7 +680,7 @@ class SingleList(AbstractList[R], Generic[T, R],
 
     def __init__(self, a_list: AbstractList[T],
                  operation: Callable[[T], R],
-                 key: Optional[str] = None):
+                 key: str | None = None):
         """
         :param a_list: The list to perform the operation on
         :param operation:
@@ -719,7 +717,7 @@ class SingleList(AbstractList[R], Generic[T, R],
             yield (start, stop, self._operation(value))
 
     @overrides(AbstractList.get_default)
-    def get_default(self) -> Optional[R]:
+    def get_default(self) -> R | None:
         default = self._a_list.get_default()
         if default is None:
             return None
@@ -744,7 +742,7 @@ class DualList(AbstractList[R], Generic[T, U, R],
 
     def __init__(self, left: AbstractList[T], right: AbstractList[U],
                  operation: Callable[[T, U], R],
-                 key: Optional[str] = None):
+                 key: str | None = None):
         """
         :param left: The first list to combine
         :param right: The second list to combine
@@ -868,7 +866,7 @@ class DualList(AbstractList[R], Generic[T, U, R],
             return
 
     @overrides(AbstractList.get_default)
-    def get_default(self) -> Optional[R]:
+    def get_default(self) -> R | None:
         l_default = self._left.get_default()
         if l_default is None:
             return None

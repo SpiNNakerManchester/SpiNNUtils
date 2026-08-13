@@ -16,10 +16,8 @@ from typing import (
     Iterable,
     Iterator,
     MutableSequence,
-    Optional,
     Sequence,
     TypeVar,
-    Union,
     overload,
 )
 
@@ -30,9 +28,9 @@ from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 #: :meta private:
 T = TypeVar("T")
 # Can't be Iterable[str] or Sequence[str] because that includes str itself
-_StrSeq: TypeAlias = Union[
-    MutableSequence[str], tuple[str, ...], frozenset[str], set[str]]
-_Keys: TypeAlias = Optional[Union[str, _StrSeq]]
+_StrSeq: TypeAlias = (MutableSequence[str] | tuple[str, ...] |
+                      frozenset[str] | set[str])
+_Keys: TypeAlias = str | _StrSeq | None
 
 
 class AbstractDict(Generic[T], metaclass=AbstractBase):
@@ -47,11 +45,11 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         ...
 
     @overload
-    def get_value(self, key: Optional[_StrSeq]) -> dict[str, T]:
+    def get_value(self, key: _StrSeq | None) -> dict[str, T]:
         ...
 
     @abstractmethod
-    def get_value(self, key: _Keys) -> Union[T, dict[str, T]]:
+    def get_value(self, key: _Keys) -> T | dict[str, T]:
         """
         Gets a single shared value for all IDs covered by this view.
 
@@ -120,14 +118,14 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         ...
 
     @overload
-    def iter_all_values(self, key: Optional[_StrSeq],
+    def iter_all_values(self, key: _StrSeq | None,
                         update_safe: bool = False) -> Iterator[dict[str, T]]:
         ...
 
     @abstractmethod
     def iter_all_values(
             self, key: _Keys, update_safe: bool = False
-            ) -> Union[Iterator[T], Iterator[dict[str, T]]]:
+            ) -> Iterator[T] | Iterator[dict[str, T]]:
         """
         Iterates over the value(s) for all IDs covered by this view.
         There will be one yield for each ID even if values are repeated.
@@ -159,7 +157,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         ...
 
     def get_ranges(self, key: _Keys = None) -> Sequence[tuple[
-            int, int, Union[T, dict[str, T]]]]:
+            int, int, T | dict[str, T]]]:
         """
         Lists the ranges(s) for all IDs covered by this view.
         There will be one yield for each range which may cover one or
@@ -184,14 +182,14 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         ...
 
     @overload
-    def iter_ranges(self, key: Optional[_StrSeq]) -> Iterator[tuple[
+    def iter_ranges(self, key: _StrSeq | None) -> Iterator[tuple[
             int, int, dict[str, T]]]:
         ...
 
     @abstractmethod
     def iter_ranges(self, key: _Keys = None
-                    ) -> Union[Iterator[tuple[int, int, T]],
-                               Iterator[tuple[int, int, dict[str, T]]]]:
+                    ) -> (Iterator[tuple[int, int, T]] |
+                          Iterator[tuple[int, int, dict[str, T]]]):
         """
         Iterates over the ranges(s) for all IDs covered by this view.
         There will be one yield for each range which may cover one or
@@ -213,7 +211,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         raise NotImplementedError
 
     @abstractmethod
-    def get_default(self, key: str) -> Optional[T]:
+    def get_default(self, key: str) -> T | None:
         """
         Gets the default value for a single key.
         Unless changed, the default is the original value.
@@ -303,7 +301,7 @@ class AbstractDict(Generic[T], metaclass=AbstractBase):
         for key in self.keys():
             yield self.get_value(key)
 
-    def __contains__(self, key: Union[str, int]) -> bool:
+    def __contains__(self, key: str | int) -> bool:
         """
         Checks if the key is a dictionary key or a range ID.
 

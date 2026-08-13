@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, Iterable, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Generic, Iterable, Sequence
 
 from spinn_utilities.abstract_base import abstractmethod
 from spinn_utilities.overrides import overrides
@@ -42,7 +42,7 @@ class AbstractView(
         """
         self._range_dict = range_dict
 
-    def __getitem__(self, key: Union[int, slice, Iterable[int]]
+    def __getitem__(self, key: int | slice | Iterable[int]
                     ) -> AbstractView[T]:
         """
         Support for the view[x] based the type of the key
@@ -85,7 +85,7 @@ class AbstractView(
         raise KeyError(f"Unexpected key type: {type(key)}")
 
     @overrides(AbstractDict.get_default)
-    def get_default(self, key: str) -> Optional[T]:
+    def get_default(self, key: str) -> T | None:
         return self._range_dict.get_default(key)
 
     @overrides(AbstractDict.keys)

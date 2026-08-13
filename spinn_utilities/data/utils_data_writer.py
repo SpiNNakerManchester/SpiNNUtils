@@ -18,7 +18,6 @@ import datetime
 import logging
 import os.path
 import time
-from typing import Optional
 
 from typing_extensions import Self
 
@@ -358,7 +357,7 @@ class UtilsDataWriter(UtilsDataView):
                 time.sleep(0.5)
 
     @classmethod
-    def write_errored_file(cls, message: Optional[str] = None) -> None:
+    def write_errored_file(cls, message: str | None = None) -> None:
         """
         Writes an ``errored`` file that signals code if the code has errored
 

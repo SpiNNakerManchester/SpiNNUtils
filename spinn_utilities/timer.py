@@ -13,7 +13,7 @@
 # limitations under the License.
 from datetime import timedelta
 from time import perf_counter_ns
-from typing import Any, Optional
+from typing import Any
 
 from typing_extensions import Literal
 
@@ -52,8 +52,8 @@ class Timer:
     ]
 
     def __init__(self) -> None:
-        self._start_time: Optional[int] = None
-        self._measured_section_interval: Optional[timedelta] = None
+        self._start_time: int | None = None
+        self._measured_section_interval: timedelta | None = None
 
     def start_timing(self) -> None:
         """
@@ -81,7 +81,7 @@ class Timer:
         return False
 
     @property
-    def measured_interval(self) -> Optional[timedelta]:
+    def measured_interval(self) -> timedelta | None:
         """
         Get how long elapsed during the measured section.
         """

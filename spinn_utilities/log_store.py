@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from datetime import datetime
-from typing import Optional
 
 from .abstract_base import abstractmethod
 
@@ -25,7 +24,7 @@ class LogStore:
 
     @abstractmethod
     def store_log(self, level: int, message: str,
-                  timestamp: Optional[datetime] = None) -> None:
+                  timestamp: datetime | None = None) -> None:
         """
         Writes the log message for later retrieval.
 

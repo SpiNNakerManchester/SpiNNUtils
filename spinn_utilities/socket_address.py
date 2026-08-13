@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any, Optional
+from typing import Any
 
 from spinn_utilities.config_holder import (
     get_config_int,
@@ -32,9 +32,9 @@ class SocketAddress:
         "_notify_port_no",
     ]
 
-    def __init__(self, notify_host_name: Optional[str] = None,
-                 notify_port_no: Optional[int] = None,
-                 listen_port: Optional[int] = None):
+    def __init__(self, notify_host_name: str | None = None,
+                 notify_port_no: int | None = None,
+                 listen_port: int | None = None):
         """
         :param notify_host_name:
             Host to talk to tell that the database (and application) is ready.
@@ -61,7 +61,7 @@ class SocketAddress:
         self._notify_host_name = notify_host_name
         self._notify_port_no = notify_port_no
         self._listen_port = listen_port
-        self.__hash: Optional[int] = None
+        self.__hash: int | None = None
 
     @property
     def notify_host_name(self) -> str:
@@ -78,7 +78,7 @@ class SocketAddress:
         return self._notify_port_no
 
     @property
-    def listen_port(self) -> Optional[int]:
+    def listen_port(self) -> int | None:
         """
         The port to listen to for responses.
         """

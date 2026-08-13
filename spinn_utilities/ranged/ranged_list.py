@@ -20,9 +20,7 @@ from typing import (
     Generic,
     Iterable,
     Iterator,
-    Optional,
     Sequence,
-    Union,
     cast,
     final,
 )
@@ -39,14 +37,14 @@ from .multiple_values_exception import MultipleValuesException
 #: The type of a range descriptor
 _RangeType: TypeAlias = tuple[int, int, T]
 # The type of things we consider to be a list of values
-_ListType: TypeAlias = Union[Callable[[int], T], Sequence[T]]
+_ListType: TypeAlias = Callable[[int], T] | Sequence[T]
 # The type of value arguments in several places
-_ValueType: TypeAlias = Optional[Union[T, _ListType]]
+_ValueType: TypeAlias = T | _ListType | None
 
 
 def function_iterator(
         function: Callable[[int], T], size: int,
-        ids: Optional[Iterable[int]] = None) -> Iterable[T]:
+        ids: Iterable[int] | None = None) -> Iterable[T]:
     """
     Converts a function into an iterator based on size or IDs.
     This so that the function can be used to create a list as in::
@@ -77,8 +75,8 @@ class RangedList(AbstractList[T], Generic[T]):
         "_default", "_ranged_based", "_ranges"]
 
     def __init__(
-            self, size: Optional[int] = None, value: _ValueType = None,
-            key: Optional[str] = None, use_list_as_value: bool = False
+            self, size: int | None = None, value: _ValueType = None,
+            key: str | None = None, use_list_as_value: bool = False
             ) -> None:
         """
         :param size:
@@ -98,11 +96,11 @@ class RangedList(AbstractList[T], Generic[T]):
         super().__init__(size=size, key=key)
         if not use_list_as_value and (
                 not self.is_list(value) or self.__length(value) != size):
-            self._default: Optional[T] = cast(Optional[T], value)
+            self._default: T | None = cast(T | None, value)
         else:
             self._default = None
-        self._ranges: Union[list[T], list[_RangeType]]
-        self._ranged_based: Optional[bool] = None
+        self._ranges: list[T] | list[_RangeType]
+        self._ranged_based: bool | None = None
         self.set_value(value, use_list_as_value=use_list_as_value)
 
     def __length(self, value: Any) -> int:
@@ -328,7 +326,7 @@ class RangedList(AbstractList[T], Generic[T]):
 
     def as_list(
             self, value: _ListType, size: int,
-            ids: Optional[IdsType] = None) -> list[T]:
+            ids: IdsType | None = None) -> list[T]:
         """
         Converts (if required) the value into a list of a given size.
         An exception is raised if value cannot be given size elements.
@@ -581,7 +579,7 @@ class RangedList(AbstractList[T], Generic[T]):
             return list(self.__the_ranges)
         return list(self.iter_ranges())
 
-    def set_default(self, default: Optional[T]) -> None:
+    def set_default(self, default: T | None) -> None:
         """
         Sets the default value.
 
@@ -593,7 +591,7 @@ class RangedList(AbstractList[T], Generic[T]):
         self._default = default
 
     @overrides(AbstractList.get_default, extend_doc=False)
-    def get_default(self) -> Optional[T]:
+    def get_default(self) -> T | None:
         """
         Returns the default value for this list.
 

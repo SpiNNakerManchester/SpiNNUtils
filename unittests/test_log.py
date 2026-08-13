@@ -14,7 +14,7 @@
 
 import logging
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.log import (
@@ -30,8 +30,8 @@ from spinn_utilities.overrides import overrides
 
 class MockLog(logging.Logger):
     def __init__(self) -> None:
-        self.last_level: Optional[int] = None
-        self.last_msg: Optional[str] = None
+        self.last_level: int | None = None
+        self.last_msg: str | None = None
         self.last_args: Any = None
         self.last_kwargs: Any = None
 
@@ -60,7 +60,7 @@ class MockLogStore(LogStore):
 
     @overrides(LogStore.store_log)
     def store_log(self, level: int, message: str,
-                  timestamp: Optional[datetime] = None) -> None:
+                  timestamp: datetime | None = None) -> None:
         if level == logging.CRITICAL:
             1/0
         self.data.append((level, message))

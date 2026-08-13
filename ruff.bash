@@ -28,5 +28,7 @@ else
   python3 -m pip install --upgrade ruff flake8
 fi
 
-#ruff check spinn_utilities unittests --target-version py310 --config ../SupportScripts/actions/ruff/ruff_ignore.toml --fix
+echo ruff using ruff_ignore.toml
+ruff check spinn_utilities unittests --target-version py310 --config ../SupportScripts/actions/ruff/ruff_ignore.toml --fix
+echo flake8
 flake8 spinn_utilities unittests

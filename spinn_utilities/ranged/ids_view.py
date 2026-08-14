@@ -18,9 +18,7 @@ from typing import (
     Generic,
     Iterable,
     Iterator,
-    Optional,
     Sequence,
-    Union,
     overload,
 )
 
@@ -56,11 +54,11 @@ class _IdsView(AbstractView[T], Generic[T]):
         ...
 
     @overload
-    def get_value(self, key: Optional[_StrSeq]) -> dict[str, T]:
+    def get_value(self, key: _StrSeq | None) -> dict[str, T]:
         ...
 
     @overrides(AbstractDict.get_value)
-    def get_value(self, key: _Keys) -> Union[T, dict[str, T]]:
+    def get_value(self, key: _Keys) -> T | dict[str, T]:
         if isinstance(key, str):
             return self._range_dict.get_list(key).get_single_value_by_ids(
                 self._ids)
@@ -100,14 +98,14 @@ class _IdsView(AbstractView[T], Generic[T]):
         ...
 
     @overload
-    def iter_all_values(self, key: Optional[_StrSeq],
+    def iter_all_values(self, key: _StrSeq | None,
                         update_safe: bool = False) -> Iterator[dict[str, T]]:
         ...
 
     @overrides(AbstractDict.iter_all_values)
     def iter_all_values(
             self, key: _Keys, update_safe: bool = False
-            ) -> Union[Iterator[T], Iterator[dict[str, T]]]:
+            ) -> Iterator[T] | Iterator[dict[str, T]]:
         if isinstance(key, str):
             yield from self._range_dict.iter_values_by_ids(
                 ids=self._ids, key=key, update_safe=update_safe)
@@ -120,12 +118,12 @@ class _IdsView(AbstractView[T], Generic[T]):
         ...
 
     @overload
-    def iter_ranges(self, key: Optional[_StrSeq] = None) -> Iterator[tuple[
+    def iter_ranges(self, key: _StrSeq | None = None) -> Iterator[tuple[
             int, int, dict[str, T]]]:
         ...
 
     @overrides(AbstractDict.iter_ranges)
     def iter_ranges(self, key: _Keys = None
-                    ) -> Union[Iterator[tuple[int, int, T]],
-                               Iterator[tuple[int, int, dict[str, T]]]]:
+                    ) -> (Iterator[tuple[int, int, T]] |
+                          Iterator[tuple[int, int, dict[str, T]]]):
         return self._range_dict.iter_ranges_by_ids(key=key, ids=self._ids)

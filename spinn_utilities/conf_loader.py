@@ -15,7 +15,7 @@
 
 import logging
 import os
-from typing import Callable, Optional
+from typing import Callable
 
 import appdirs
 from typing_extensions import TypeAlias
@@ -131,7 +131,7 @@ def load_defaults(defaults: list[str]) -> CamelCaseConfigParser:
     return default_configs
 
 
-def load_config(local_name: Optional[str], user_cfg: Optional[str],
+def load_config(local_name: str | None, user_cfg: str | None,
                 defaults: list[str]) -> CamelCaseConfigParser:
     """
     Load the configuration.

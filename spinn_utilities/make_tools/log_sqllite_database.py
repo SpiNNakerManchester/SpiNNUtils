@@ -16,7 +16,6 @@ import os
 import sqlite3
 import sys
 import time
-from typing import Optional
 
 from spinn_utilities.abstract_context_manager import AbstractContextManager
 
@@ -56,7 +55,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
            (use default_database_file to get the default location)
         """
         # To Avoid an Attribute error on close after an exception
-        self._db: Optional[sqlite3.Connection] = None
+        self._db: sqlite3.Connection | None = None
         self._db = sqlite3.connect(database_path)
         self.__init_db()
 
@@ -226,7 +225,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
                     return row["log_id"]
         raise ValueError("unexpected no return")
 
-    def get_log_info(self, log_id: str) -> Optional[tuple[int, str, str, str]]:
+    def get_log_info(self, log_id: str) -> tuple[int, str, str, str] | None:
         """
         Gets the data needed to replace a short log back to the original.
 
@@ -271,7 +270,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
                 if row["counts"] == 0:
                     raise ValueError(f"{original} not found in database")
 
-    def get_max_log_id(self) -> Optional[int]:
+    def get_max_log_id(self) -> int | None:
         """
         :returns: the max id of any log message, or None it there  none
         """

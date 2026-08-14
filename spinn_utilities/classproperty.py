@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 
 class _ClassPropertyDescriptor:
@@ -27,7 +27,7 @@ class _ClassPropertyDescriptor:
         self.method = method
 
     def __get__(
-            self, obj: Optional[Any], klass: Optional[type] = None) -> Any:
+            self, obj: Any | None, klass: type | None = None) -> Any:
         if klass is None:
             klass = type(obj)
         return self.method.__get__(obj, klass)()

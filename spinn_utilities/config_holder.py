@@ -14,7 +14,6 @@
 import logging
 import os
 from configparser import NoOptionError
-from typing import Optional
 
 import appdirs
 
@@ -38,12 +37,12 @@ logger = FormatAdapter(logging.getLogger(__file__))
 
 # pylint: disable=global-statement
 # Any cleaner method than global statements would add extra overhead
-__config: Optional[CamelCaseConfigParser] = None
+__config: CamelCaseConfigParser | None = None
 __default_config_files: list[str] = []
-__config_file: Optional[str] = None
-__missing_config_file: Optional[str] = None
-__template: Optional[str] = None
-__user_cfg: Optional[str] = None
+__config_file: str | None = None
+__missing_config_file: str | None = None
+__template: str | None = None
+__user_cfg: str | None = None
 __unittest_mode: bool = False
 
 
@@ -250,7 +249,7 @@ def get_config_str(section: str, option: str) -> str:
     return value
 
 
-def get_config_str_or_none(section: str, option: str) -> Optional[str]:
+def get_config_str_or_none(section: str, option: str) -> str | None:
     """
     Get the string value of a configuration option.
 
@@ -296,7 +295,7 @@ def get_config_int(section: str, option: str) -> int:
     return value
 
 
-def get_config_int_or_none(section: str, option: str) -> Optional[int]:
+def get_config_int_or_none(section: str, option: str) -> int | None:
     """
     Get the integer value of a configuration option.
 
@@ -326,7 +325,7 @@ def get_config_float(section: str, option: str) -> float:
     return value
 
 
-def get_config_float_or_none(section: str, option: str) -> Optional[float]:
+def get_config_float_or_none(section: str, option: str) -> float | None:
     """
     Get the float value of a configuration option.
 
@@ -356,8 +355,8 @@ def get_config_bool(section: str, option: str) -> bool:
 
 
 def get_config_bool_or_none(section: str, option: str,
-                            special_nones: Optional[list[str]] = None
-                            ) -> Optional[bool]:
+                            special_nones: list[str] | None = None
+                            ) -> bool | None:
     """
     Get the Boolean value of a configuration option.
 
@@ -373,7 +372,7 @@ def get_config_bool_or_none(section: str, option: str,
         return __config.get_bool(section, option, special_nones)
 
 
-def set_config(section: str, option: str, value: Optional[str]) -> None:
+def set_config(section: str, option: str, value: str | None) -> None:
     """
     Sets the value of a configuration option.
 
@@ -434,7 +433,7 @@ def config_options(section: str) -> list[str]:
 
 
 def get_report_path(
-        option: str, section: str = "Reports", n_run: Optional[int] = None,
+        option: str, section: str = "Reports", n_run: int | None = None,
         is_dir: bool = False) -> str:
     """
     Gets and fixes the path for this option

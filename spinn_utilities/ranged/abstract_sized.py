@@ -16,7 +16,7 @@ import itertools
 import logging
 import sys
 from collections.abc import Sized
-from typing import Any, Optional, Sequence, SupportsInt, Union
+from typing import Any, Sequence, SupportsInt
 
 import numpy
 from typing_extensions import TypeAlias, TypeGuard
@@ -26,16 +26,15 @@ from spinn_utilities.log import FormatAdapter
 logger = FormatAdapter(logging.getLogger(__name__))
 
 #: Type of integers for selectors
-_Integer: TypeAlias = Union[int, numpy.integer, SupportsInt]
+_Integer: TypeAlias = int | numpy.integer | SupportsInt
 #: The type of selectors; properly, SupportsInt should exclude numpy.ndarray
 #: because that's there just to handle special edge cases.
-Selector: TypeAlias = Union[
-    None, _Integer, slice, Sequence[Union[bool, numpy.bool_]],
-    Sequence[_Integer]]
+Selector: TypeAlias = (None | _Integer | slice |
+                       Sequence[bool | numpy.bool_] | Sequence[_Integer])
 
 
 def _is_iterable_selector(selector: Selector) -> TypeGuard[
-        Union[Sequence[Union[bool, numpy.bool_]], Sequence[_Integer]]]:
+        Sequence[bool | numpy.bool_] | Sequence[_Integer]]:
     # Check selector is an iterable using pythonic try
     try:
         iterator = iter(selector)  # type: ignore[arg-type]
@@ -53,7 +52,7 @@ class AbstractSized:
     __slots__ = (
         "_size", )
 
-    def __init__(self, size: Union[int, float]):
+    def __init__(self, size: int | float):
         """
         :param size: Fixed length of the list.
         """
@@ -69,14 +68,14 @@ class AbstractSized:
         return self._size
 
     @staticmethod
-    def _is_id_type(the_id: Any) -> TypeGuard[Union[int, SupportsInt]]:
+    def _is_id_type(the_id: Any) -> TypeGuard[int | SupportsInt]:
         """
         Check if the given ID has a type acceptable for IDs.
         """
         return isinstance(the_id, (int, SupportsInt)) and (
             not isinstance(the_id, (float, numpy.ndarray)))
 
-    def _check_id_in_range(self, the_id: Union[int, SupportsInt]) -> int:
+    def _check_id_in_range(self, the_id: int | SupportsInt) -> int:
         if not self._is_id_type(the_id):
             raise TypeError(f"Invalid argument type {type(the_id)}.")
         the_id = int(the_id)
@@ -85,8 +84,8 @@ class AbstractSized:
         return the_id
 
     def _check_slice_in_range(
-            self, slice_start: Optional[int],
-            slice_stop: Optional[int]) -> tuple[int, int]:
+            self, slice_start: int | None,
+            slice_stop: int | None) -> tuple[int, int]:
         # Fix types
         if slice_start is None:
             slice_start = 0

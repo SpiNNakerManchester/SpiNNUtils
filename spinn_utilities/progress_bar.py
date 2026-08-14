@@ -18,7 +18,7 @@ import os
 import sys
 from collections.abc import Sized
 from types import TracebackType
-from typing import Iterable, Optional, TypeVar, Union
+from typing import Iterable, TypeVar
 
 from typing_extensions import Literal, Self
 
@@ -53,7 +53,7 @@ class ProgressBar:
         "_string",
     )
 
-    def __init__(self, total_number_of_things_to_do: Union[int, Sized],
+    def __init__(self, total_number_of_things_to_do: int | Sized,
                  string_describing_what_being_progressed: str,
                  step_character: str = "=", end_character: str = "|"):
         """
@@ -197,7 +197,7 @@ class ProgressBar:
         """
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Exception,
+    def __exit__(self, exc_type: type | None, exc_val: Exception,
                  exc_tb: TracebackType) -> Literal[False]:
         self.end()
         return False

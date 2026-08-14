@@ -18,7 +18,7 @@ import io
 import os
 import sys
 from types import ModuleType
-from typing import Any, Optional, Union
+from typing import Any
 
 import yaml
 
@@ -47,7 +47,7 @@ CITATION_DOI_TYPE = 'identifier'
 
 # pylint: skip-file
 
-_SEEN_TYPE = set[Union[ModuleType, str, None]]
+_SEEN_TYPE = set[ModuleType | str | None]
 
 
 class CitationAggregator:
@@ -68,7 +68,7 @@ class CitationAggregator:
             file name of aggregated citation file
         """
         # get the top citation file to add references to
-        module_file: Optional[str] = module_to_start_at.__file__
+        module_file: str | None = module_to_start_at.__file__
         assert module_file is not None
         top_citation_file_path = os.path.join(os.path.dirname(os.path.dirname(
             os.path.abspath(module_file))), CITATION_FILE)
@@ -173,7 +173,7 @@ class CitationAggregator:
             print(f"Could not find C dependency {module}")
 
     @staticmethod
-    def locate_path_for_c_dependency(true_software_name: str) -> Optional[str]:
+    def locate_path_for_c_dependency(true_software_name: str) -> str | None:
         """
         Tries to find the software in the environment PATH (s)
 
@@ -261,7 +261,7 @@ class CitationAggregator:
 
     def _process_reference(
             self, citation_level_dir: str,
-            imported_module: Optional[ModuleType],
+            imported_module: ModuleType | None,
             modules_seen_so_far: _SEEN_TYPE,
             module_name: str) -> dict[str, Any]:
         """
@@ -299,7 +299,7 @@ class CitationAggregator:
 
     @staticmethod
     def _try_to_find_version(
-            imported_module: Optional[ModuleType],
+            imported_module: ModuleType | None,
             module_name: str) -> dict[str, Any]:
         """
         Try to locate a version file or version data to auto-generate
@@ -370,7 +370,7 @@ class CitationAggregator:
         return reference_entry
 
 
-def generate_aggregate(arguments: Optional[list[str]] = None) -> None:
+def generate_aggregate(arguments: list[str] | None = None) -> None:
     """
     Command-line tool to generate a single ``citation.cff`` from others.
 

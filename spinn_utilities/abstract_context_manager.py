@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from types import TracebackType
-from typing import Optional
 
 from typing_extensions import Literal, Self
 
@@ -36,7 +35,7 @@ class AbstractContextManager(metaclass=AbstractBase):
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Exception,
+    def __exit__(self, exc_type: type | None, exc_val: Exception,
                  exc_tb: TracebackType) -> Literal[False]:
         self.close()
         return False

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from types import ModuleType
-from typing import Any, Callable, Union
+from typing import Any, Callable
 
 
 class SafeEval:
@@ -45,7 +45,7 @@ class SafeEval:
     """
     __slots__ = ["_environment"]
 
-    def __init__(self, *args: Union[Callable, ModuleType],
+    def __init__(self, *args: Callable | ModuleType,
                  **kwargs: Any) -> None:
         """
         :param args:

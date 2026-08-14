@@ -24,7 +24,6 @@ from typing import (
     Collection,
     KeysView,
     Mapping,
-    Optional,
 )
 
 from spinn_utilities.configs import CamelCaseConfigParser
@@ -115,7 +114,7 @@ class ConfiguredFormatter(logging.Formatter):
         return _levels
 
     @staticmethod
-    def deepest_parent(parents: KeysView[str], child: str) -> Optional[str]:
+    def deepest_parent(parents: KeysView[str], child: str) -> str | None:
         """
         :returns: Greediest match between child and parent.
         """
@@ -135,7 +134,7 @@ class ConfiguredFormatter(logging.Formatter):
 
     @staticmethod
     def level_of_deepest_parent(
-            parents: dict[str, int], child: str) -> Optional[int]:
+            parents: dict[str, int], child: str) -> int | None:
         """
         :returns:
            The logging level of the greediest match between child and parent.
@@ -214,10 +213,10 @@ class FormatAdapter(logging.LoggerAdapter):
     __kill_level = logging.CRITICAL + 1
     __repeat_at_end = logging.WARNING
     __not_stored_messages: list[tuple[datetime, int, str]] = []
-    __log_store: Optional[LogStore] = None
+    __log_store: LogStore | None = None
 
     @classmethod
-    def set_kill_level(cls, level: Optional[int] = None) -> None:
+    def set_kill_level(cls, level: int | None = None) -> None:
         """
         Allow system to change the level at which a log is changed to an
         Exception.
@@ -234,7 +233,7 @@ class FormatAdapter(logging.LoggerAdapter):
             cls.__kill_level = level
 
     @classmethod
-    def set_log_store(cls, log_store: Optional[LogStore]) -> None:
+    def set_log_store(cls, log_store: LogStore | None) -> None:
         """
         Sets a Object to write the log messages to
 
@@ -249,7 +248,7 @@ class FormatAdapter(logging.LoggerAdapter):
 
     def __init__(
             self, logger: logging.Logger,
-            extra: Optional[Mapping[str, object]] = None) -> None:
+            extra: Mapping[str, object] | None = None) -> None:
         """
 
         :param logger: Logger being wrapped by this adapter

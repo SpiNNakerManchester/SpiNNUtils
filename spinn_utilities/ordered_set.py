@@ -14,7 +14,7 @@
 
 from collections import OrderedDict
 from collections.abc import MutableSet
-from typing import Any, Generic, Iterable, Iterator, Optional, TypeVar
+from typing import Any, Generic, Iterable, Iterator, TypeVar
 
 #: :meta private:
 T = TypeVar("T")
@@ -28,7 +28,7 @@ class OrderedSet(MutableSet, Generic[T]):
         "_map",
     )
 
-    def __init__(self, iterable: Optional[Iterable[T]] = None):
+    def __init__(self, iterable: Iterable[T] | None = None):
         """
         :param iterable: An iterable of items to add to the set.
         """

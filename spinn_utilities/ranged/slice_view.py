@@ -17,9 +17,7 @@ from typing import (
     TYPE_CHECKING,
     Generic,
     Iterator,
-    Optional,
     Sequence,
-    Union,
     overload,
 )
 
@@ -56,11 +54,11 @@ class _SliceView(AbstractView[T], Generic[T]):
         ...
 
     @overload
-    def get_value(self, key: Optional[_StrSeq]) -> dict[str, T]:
+    def get_value(self, key: _StrSeq | None) -> dict[str, T]:
         ...
 
     @overrides(AbstractDict.get_value)
-    def get_value(self, key: _Keys) -> Union[T, dict[str, T]]:
+    def get_value(self, key: _Keys) -> T | dict[str, T]:
         if isinstance(key, str):
             return self._range_dict.get_list(key).get_single_value_by_slice(
                 slice_start=self._start, slice_stop=self._stop)
@@ -93,13 +91,13 @@ class _SliceView(AbstractView[T], Generic[T]):
 
     @overload
     def iter_all_values(
-            self, key: Optional[_StrSeq] = None,
+            self, key: _StrSeq | None = None,
             update_safe: bool = False) -> Iterator[dict[str, T]]:
         ...
 
     @overrides(AbstractDict.iter_all_values)
     def iter_all_values(self, key: _Keys = None, update_safe: bool = False
-                        ) -> Union[Iterator[T], Iterator[dict[str, T]]]:
+                        ) -> Iterator[T] | Iterator[dict[str, T]]:
         if isinstance(key, str):
             if update_safe:
                 return self.update_safe_iter_all_values(key)
@@ -121,13 +119,13 @@ class _SliceView(AbstractView[T], Generic[T]):
         ...
 
     @overload
-    def iter_ranges(self, key: Optional[_StrSeq] = None) -> Iterator[
+    def iter_ranges(self, key: _StrSeq | None = None) -> Iterator[
             tuple[int, int, dict[str, T]]]:
         ...
 
     @overrides(AbstractDict.iter_ranges)
-    def iter_ranges(self, key: _Keys = None
-                    ) -> Union[Iterator[tuple[int, int, T]],
-                               Iterator[tuple[int, int, dict[str, T]]]]:
+    def iter_ranges(self, key: _Keys = None) -> (
+            Iterator[tuple[int, int, T]] |
+            Iterator[tuple[int, int, dict[str, T]]]):
         return self._range_dict.iter_ranges_by_slice(
             key=key, slice_start=self._start, slice_stop=self._stop)

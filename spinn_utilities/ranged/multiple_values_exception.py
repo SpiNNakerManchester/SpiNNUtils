@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any, Optional
+from typing import Any
 
 
 class MultipleValuesException(Exception):
@@ -20,7 +20,7 @@ class MultipleValuesException(Exception):
     Raised when there more than one value found unexpectedly.
     """
 
-    def __init__(self, key: Optional[str], value1: Any, value2: Any):
+    def __init__(self, key: str | None, value1: Any, value2: Any):
         """
         :param key: The name of the value
         :param value1: One of the values used

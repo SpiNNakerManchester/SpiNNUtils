@@ -58,6 +58,7 @@ class TestConverter(unittest.TestCase):
             # Need two more ids for the new log and then changed line number
             self.assertEqual(single + 2, sql.get_max_log_id())
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_double_level(self) -> None:
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             dir_path = os.path.dirname(os.path.realpath(__file__))

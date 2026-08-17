@@ -92,6 +92,7 @@ class TestConverter(unittest.TestCase):
                 self.assertIn("mistakes", str(ex1))
                 self.assertIn("not_there.c", str(ex1))
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_split_fail(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
@@ -111,6 +112,7 @@ class TestConverter(unittest.TestCase):
                 self.assertIn("mistakes", str(ex1))
                 self.assertIn("bad_comma.c", str(ex1))
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_format_fail(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
@@ -127,6 +129,7 @@ class TestConverter(unittest.TestCase):
             except Exception as ex1:
                 assert str(ex1) == "Unexpected formatString in %!"
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_unclosed_log(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
@@ -146,6 +149,7 @@ class TestConverter(unittest.TestCase):
                 self.assertIn("mistakes/unclosed.c",
                               str(ex1).replace('\\', '/'))
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_semi(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
@@ -165,6 +169,7 @@ class TestConverter(unittest.TestCase):
                 self.assertIn("semi.c", str(ex1))
                 self.assertIn("mistakes", str(ex1))
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_open(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
@@ -183,6 +188,7 @@ class TestConverter(unittest.TestCase):
                 self.assertIn("open.c", str(ex1))
                 self.assertIn("mistakes", str(ex1))
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_too_few(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))
@@ -203,6 +209,7 @@ class TestConverter(unittest.TestCase):
                 self.assertIn("mistakes", str(ex1))
                 self.assertIn("too_few.c", str(ex1))
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_too_many(self) -> None:
         class_file = str(sys.modules[self.__module__].__file__)
         path = os.path.dirname(os.path.abspath(class_file))

@@ -13,9 +13,7 @@
 # limitations under the License.
 from datetime import timedelta
 from time import perf_counter_ns
-from typing import Any
-
-from typing_extensions import Literal
+from typing import Any, Literal
 
 # conversion factor
 _NANO_TO_MICRO = 1000.0

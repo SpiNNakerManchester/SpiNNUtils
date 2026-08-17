@@ -16,8 +16,8 @@ import configparser
 import logging
 import os
 import random
+from collections.abc import Iterator
 from types import ModuleType
-from typing import Iterator
 
 import pytest
 from testfixtures import LogCapture

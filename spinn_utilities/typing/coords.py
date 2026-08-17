@@ -16,9 +16,7 @@
 Types for coordinates.
 """
 
-from typing import Final
-
-from typing_extensions import TypeAlias
+from typing import Final, TypeAlias
 
 #: The type of X,Y pairs.
 XY: Final['TypeAlias'] = tuple[int, int]

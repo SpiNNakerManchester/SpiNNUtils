@@ -16,9 +16,7 @@
 Types for JSON.
 """
 
-from typing import Union
-
-from typing_extensions import TypeAlias
+from typing import TypeAlias, Union
 
 #: The type of JSON values.
 JsonValue: TypeAlias = Union[int, float, str, None, "JsonObject", "JsonArray"]

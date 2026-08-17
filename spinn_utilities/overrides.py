@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections.abc import Callable
 from types import FunctionType, MethodType
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 #: :meta private:
 Method = TypeVar("Method", bound=Callable[..., Any])

@@ -15,11 +15,10 @@
 import itertools
 import logging
 import sys
-from collections.abc import Sized
-from typing import Any, Sequence, SupportsInt
+from collections.abc import Sequence, Sized
+from typing import Any, SupportsInt, TypeAlias, TypeGuard
 
 import numpy
-from typing_extensions import TypeAlias, TypeGuard
 
 from spinn_utilities.log import FormatAdapter
 

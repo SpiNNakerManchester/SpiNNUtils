@@ -13,20 +13,20 @@
 # limitations under the License.
 from __future__ import annotations
 
+from collections.abc import Callable, Iterator, Sequence
 from numbers import Number
 from typing import (
     Any,
-    Callable,
     Generic,
-    Iterator,
-    Sequence,
+    TypeAlias,
+    TypeGuard,
     TypeVar,
     cast,
 )
 
 import numpy
 from numpy.typing import NDArray
-from typing_extensions import Self, TypeAlias, TypeGuard
+from typing_extensions import Self
 
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides

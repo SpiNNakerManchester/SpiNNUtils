@@ -17,13 +17,11 @@ import configparser
 import logging
 import re
 import sys
+from collections.abc import Collection, KeysView, Mapping
 from datetime import datetime
 from inspect import getfullargspec
 from typing import (
     Any,
-    Collection,
-    KeysView,
-    Mapping,
 )
 
 from spinn_utilities.configs import CamelCaseConfigParser

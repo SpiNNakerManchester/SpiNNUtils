@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections.abc import Sized
-from typing import Callable, Generic, Sequence, TypeVar
-
-from typing_extensions import TypeAlias
+from collections.abc import Callable, Sequence, Sized
+from typing import Generic, TypeAlias, TypeVar
 
 from spinn_utilities.helpful_functions import is_singleton
 from spinn_utilities.overrides import overrides

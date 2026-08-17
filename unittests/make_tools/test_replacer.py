@@ -63,6 +63,7 @@ class TestReplacer(unittest.TestCase):
             new = replacer.replace("R11")
         assert ("[INFO] (weird,file.c: 36): this is ok" == new)
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_external_empty(self) -> None:
         unittest_setup()
         with tempfile.TemporaryDirectory(
@@ -183,6 +184,7 @@ class TestReplacer(unittest.TestCase):
                 0.0000000004,
                 replacer._hexes_to_double("3dfb7cdf", "d9d7bdbb"))
 
+    @pytest.mark.xdist_group(name="mock_src")
     def test_blank(self) -> None:
         unittest_setup()
         replacer = Replacer()

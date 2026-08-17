@@ -18,7 +18,8 @@ import datetime
 import logging
 import os.path
 import time
-from typing import Self
+
+from typing_extensions import Self
 
 from spinn_utilities.config_holder import get_config_str
 from spinn_utilities.exceptions import (

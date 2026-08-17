@@ -28,4 +28,4 @@ else
   mypy --disallow-untyped-defs spinn_utilities unittests
 fi
 
-mypy --disallow-untyped-defs spinn_utilities unittests
+mypy --disallow-untyped-defs --python-version 3.10 spinn_utilities unittests

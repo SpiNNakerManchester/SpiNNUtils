@@ -13,7 +13,9 @@
 # limitations under the License.
 
 from types import TracebackType
-from typing import Literal, Self
+from typing import Literal
+
+from typing_extensions import Self
 
 from .abstract_base import AbstractBase, abstractmethod
 

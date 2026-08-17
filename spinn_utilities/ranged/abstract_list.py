@@ -18,7 +18,6 @@ from numbers import Number
 from typing import (
     Any,
     Generic,
-    Self,
     TypeAlias,
     TypeGuard,
     TypeVar,
@@ -27,6 +26,7 @@ from typing import (
 
 import numpy
 from numpy.typing import NDArray
+from typing_extensions import Self
 
 from spinn_utilities.abstract_base import AbstractBase, abstractmethod
 from spinn_utilities.overrides import overrides

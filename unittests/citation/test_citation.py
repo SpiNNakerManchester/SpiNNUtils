@@ -34,8 +34,8 @@ def test_generate_aggregate() -> None:
     httpretty.register_uri(
         httpretty.POST, Zenodo._DEPOSIT_GET_URL,
         status=Zenodo._VALID_STATUS_REQUEST_POST,
-        body=('{{"id": "{}", "metadata": {{'
-              '"prereserve_doi": {{"doi": "12345"}}}}}}'.format(deposit_id)))
+        body=(f'{{"id": "{deposit_id}", "metadata": {{'
+              '"prereserve_doi": {"doi": "12345"}}}'))
     httpretty.register_uri(
         httpretty.POST, Zenodo._DEPOSIT_PUT_URL.format(deposit_id),
         status=Zenodo._VALID_STATUS_REQUEST_POST)

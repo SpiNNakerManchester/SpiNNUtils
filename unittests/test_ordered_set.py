@@ -90,7 +90,7 @@ def test_repr() -> None:
     o.add(56)
     o.add(34)
     o.add(90)
-    s = "{}".format(o)
+    s = f"{o}"
     assert s == "OrderedSet([12, 78, 56, 34, 90])"
 
 

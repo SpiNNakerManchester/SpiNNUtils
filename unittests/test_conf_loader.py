@@ -51,14 +51,13 @@ logger = FormatAdapter(logging.getLogger(__name__))
 
 
 def _random_name() -> str:
-    return "test_config_for_spinnutils_unittests.{}.txt".format(
-        random.randint(1, 1000000))
+    rnd = random.randint(1, 1000000)
+    return f"test_config_for_spinnutils_unittests.{rnd}.txt"
 
 
 @pytest.fixture
 def not_there() -> Iterator[str]:
-    name = "test_config_for_spinnutils_unittests.{}.txt".format(
-        random.randint(1, 1000000))
+    name = _random_name()
     place = os.path.join(os.path.expanduser("~"), f".{name}")
     if os.path.exists(place):
         # Check existing is a config from previsous test run

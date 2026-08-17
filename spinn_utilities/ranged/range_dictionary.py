@@ -13,17 +13,13 @@
 # limitations under the License.
 from __future__ import annotations
 
+from collections.abc import Generator, Iterable, Iterator, Sequence
 from typing import (
     TYPE_CHECKING,
-    Generator,
     Generic,
-    Iterable,
-    Iterator,
-    Sequence,
+    TypeAlias,
     overload,
 )
-
-from typing_extensions import TypeAlias
 
 from spinn_utilities.overrides import overrides
 

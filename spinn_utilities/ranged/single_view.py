@@ -13,11 +13,10 @@
 # limitations under the License.
 from __future__ import annotations
 
+from collections.abc import Iterator, Sequence
 from typing import (
     TYPE_CHECKING,
     Generic,
-    Iterator,
-    Sequence,
     overload,
 )
 

@@ -14,7 +14,7 @@
 
 import os
 from collections import defaultdict
-from typing import Collection
+from collections.abc import Collection
 
 from spinn_utilities.config_holder import get_default_cfgs
 from spinn_utilities.configs.camel_case_config_parser import (

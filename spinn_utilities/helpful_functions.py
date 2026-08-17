@@ -14,10 +14,9 @@
 
 import logging
 import math
+from collections.abc import Collection
 from functools import reduce
-from typing import Any, Collection, overload
-
-from typing_extensions import TypeGuard
+from typing import Any, TypeGuard, overload
 
 from spinn_utilities.log import FormatAdapter
 

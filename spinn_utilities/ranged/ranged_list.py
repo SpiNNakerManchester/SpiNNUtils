@@ -13,19 +13,15 @@
 # limitations under the License.
 from __future__ import annotations
 
-from collections.abc import Sized
+from collections.abc import Callable, Iterable, Iterator, Sequence, Sized
 from typing import (
     Any,
-    Callable,
     Generic,
-    Iterable,
-    Iterator,
-    Sequence,
+    TypeAlias,
+    TypeGuard,
     cast,
     final,
 )
-
-from typing_extensions import TypeAlias, TypeGuard
 
 from spinn_utilities.helpful_functions import is_singleton
 from spinn_utilities.overrides import overrides

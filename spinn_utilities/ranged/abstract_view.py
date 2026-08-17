@@ -13,7 +13,8 @@
 # limitations under the License.
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, Iterable, Sequence
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Generic
 
 from spinn_utilities.abstract_base import abstractmethod
 from spinn_utilities.overrides import overrides

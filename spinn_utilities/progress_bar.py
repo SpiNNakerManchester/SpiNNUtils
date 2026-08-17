@@ -16,11 +16,9 @@ import logging
 import math
 import os
 import sys
-from collections.abc import Sized
+from collections.abc import Iterable, Sized
 from types import TracebackType
-from typing import Iterable, TypeVar
-
-from typing_extensions import Literal, Self
+from typing import Literal, Self, TypeVar
 
 from spinn_utilities import logger_utils
 from spinn_utilities.log import FormatAdapter

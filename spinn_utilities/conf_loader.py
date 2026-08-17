@@ -15,10 +15,10 @@
 
 import logging
 import os
-from typing import Callable
+from collections.abc import Callable
+from typing import TypeAlias
 
 import appdirs
-from typing_extensions import TypeAlias
 
 from spinn_utilities import log
 from spinn_utilities.configs import (

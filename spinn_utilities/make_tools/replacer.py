@@ -16,8 +16,7 @@ import logging
 import struct
 import sys
 from types import TracebackType
-
-from typing_extensions import Literal, Self
+from typing import Literal, Self
 
 from spinn_utilities.data import UtilsDataView
 from spinn_utilities.log import FormatAdapter

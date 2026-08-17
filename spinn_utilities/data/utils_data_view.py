@@ -15,8 +15,8 @@ from __future__ import annotations
 
 import logging
 import os
+from collections.abc import Iterable
 from tempfile import TemporaryDirectory
-from typing import Iterable
 from unittest import SkipTest
 
 from spinn_utilities import logger_utils

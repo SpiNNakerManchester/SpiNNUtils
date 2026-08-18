@@ -26,10 +26,10 @@ def test_create_and_config(tmpdir: Any) -> None:
     ef = ExecutableFinder()
     ef.add_path(str(a))
     ef.add_path(str(b))
-    assert ef.binary_paths == "{} : {}".format(a, b)
+    assert ef.binary_paths == f"{a} : {b}"
     c = tmpdir.mkdir("c")
     ef.add_path(str(c))
-    assert ef.binary_paths == "{} : {} : {}".format(a, b, c)
+    assert ef.binary_paths == f"{a} : {b} : {c}"
 
 
 def test_find_in_no_places() -> None:
@@ -122,7 +122,7 @@ def test_find_no_duplicates(tmpdir: Any) -> None:
     b = tmpdir.mkdir("b")
     ef.add_path(str(a))
     ef.add_path(str(b))
-    assert ef.binary_paths == "{} : {}".format(a, b)
+    assert ef.binary_paths == f"{a} : {b}"
     ef.add_path(str(a))
     ef.add_path(str(a))
     ef.add_path(str(b))
@@ -131,4 +131,4 @@ def test_find_no_duplicates(tmpdir: Any) -> None:
     ef.add_path(str(a))
     ef.add_path(str(b))
     ef.add_path(str(b))
-    assert ef.binary_paths == "{} : {}".format(a, b)
+    assert ef.binary_paths == f"{a} : {b}"

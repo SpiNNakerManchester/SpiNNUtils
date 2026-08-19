@@ -20,9 +20,7 @@ import sys
 from collections.abc import Collection, KeysView, Mapping
 from datetime import datetime
 from inspect import getfullargspec
-from typing import (
-    Any,
-)
+from typing import Any, ClassVar
 
 from spinn_utilities.configs import CamelCaseConfigParser
 
@@ -208,10 +206,10 @@ class FormatAdapter(logging.LoggerAdapter):
         log.info("this message has {} inside {}", 123, 'itself')
         # --> INFO: this message has 123 inside itself
     """
-    __kill_level = logging.CRITICAL + 1
-    __repeat_at_end = logging.WARNING
-    __not_stored_messages: list[tuple[datetime, int, str]] = []
-    __log_store: LogStore | None = None
+    __kill_level: ClassVar = logging.CRITICAL + 1
+    __repeat_at_end: ClassVar = logging.WARNING
+    __not_stored_messages: ClassVar[list[tuple[datetime, int, str]]] = []
+    __log_store: ClassVar[LogStore | None] = None
 
     @classmethod
     def set_kill_level(cls, level: int | None = None) -> None:

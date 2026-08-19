@@ -15,6 +15,7 @@
 import platform
 import subprocess
 import time
+from typing import ClassVar
 
 
 class Ping:
@@ -23,7 +24,7 @@ class Ping:
     """
 
     #: The unreachable host cache.
-    unreachable: set[str] = set()
+    unreachable: ClassVar[set[str]] = set()
 
     @staticmethod
     def ping(ip_address: str) -> int:

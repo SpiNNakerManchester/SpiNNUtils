@@ -102,10 +102,7 @@ class _Zenodo:
 
     @staticmethod
     def _json(r: requests.Response) -> JsonObject | None:
-        try:
-            return r.json()
-        except Exception:  # pylint: disable=broad-except
-            return None
+        return r.json()
 
     def get_verify(
             self, related: list[dict[str, str]]) -> JsonObject | None:

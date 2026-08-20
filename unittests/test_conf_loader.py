@@ -269,7 +269,7 @@ def test_no_default() -> None:
     try:
         config_holder.load_config("irrelevant.cfg")
         raise NotImplementedError("Why am I here")
-    except Exception as ex:
+    except ConfigException as ex:
         assert "No default configs set" in str(ex)
 
 
@@ -278,10 +278,9 @@ def test_preload_not_unittest() -> None:
     config_holder.clear_cfg_files(False)
     config_holder.add_default_cfg(TYPESPATH)
     try:
-        assert "from default" == config_holder.get_config_str(
-            "sect", "a_string")
+        config_holder.get_config_str("sect", "a_string")
         raise NotImplementedError("Why am I here")
-    except Exception as ex:
+    except ConfigException as ex:
         assert ("Accessing config values before setup is not supported"
                 in str(ex))
 

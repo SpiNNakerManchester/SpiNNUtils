@@ -20,6 +20,7 @@ from pathlib import Path
 
 import pytest
 
+from spinn_utilities.exceptions import UnexpectedCException
 from spinn_utilities.make_tools.file_converter import FileConverter
 from spinn_utilities.make_tools.log_sqllite_database import LogSqlLiteDatabase
 
@@ -50,7 +51,7 @@ class TestConverter(unittest.TestCase):
         modified_lines = sum(1 for line in open(dest_f))
         self.assertEqual(src_lines, modified_lines)
         with log_database as sql:
-            with self.assertRaises(Exception):
+            with self.assertRaises(ValueError):
                 sql.check_original("this is bad")
             sql.check_original("%08x [%3d: (w: %5u (=")
             sql.check_original("test -three %f")
@@ -87,7 +88,7 @@ class TestConverter(unittest.TestCase):
             try:
                 file_converter.convert(src, dest, "not_there.c")
                 assert False
-            except Exception as ex1:
+            except UnexpectedCException as ex1:
                 self.assertIn("Unable to locate source", str(ex1))
                 self.assertIn("mistakes", str(ex1))
                 self.assertIn("not_there.c", str(ex1))
@@ -107,7 +108,7 @@ class TestConverter(unittest.TestCase):
                 Path(src, "bad_comma.c").touch()
                 file_converter.convert(src, dest, "bad_comma.c")
                 assert False
-            except Exception as ex1:
+            except UnexpectedCException as ex1:
                 self.assertIn('Unexpected line "); at 18 in', str(ex1))
                 self.assertIn("mistakes", str(ex1))
                 self.assertIn("bad_comma.c", str(ex1))
@@ -126,7 +127,7 @@ class TestConverter(unittest.TestCase):
                 Path(src, "bad_format.c").touch()
                 file_converter.convert(src, dest, "bad_format.c")
                 assert False
-            except Exception as ex1:
+            except UnexpectedCException as ex1:
                 assert str(ex1) == "Unexpected formatString in %!"
 
     @pytest.mark.xdist_group(name="mock_src")
@@ -143,7 +144,7 @@ class TestConverter(unittest.TestCase):
                 Path(src, "unclosed.c").touch()
                 file_converter.convert(src, dest, "unclosed.c")
                 assert False
-            except Exception as ex1:
+            except UnexpectedCException as ex1:
                 self.assertIn('Unclosed log_info("test %f", -3.0f in ',
                               str(ex1))
                 self.assertIn("mistakes/unclosed.c",
@@ -163,7 +164,7 @@ class TestConverter(unittest.TestCase):
                 Path(src, "semi.c").touch()
                 file_converter.convert(src, dest, "semi.c")
                 assert False
-            except Exception as ex1:
+            except UnexpectedCException as ex1:
                 self.assertIn('Semicolumn missing: log_info("test %f", -3.0f)',
                               str(ex1))
                 self.assertIn("semi.c", str(ex1))
@@ -183,7 +184,7 @@ class TestConverter(unittest.TestCase):
                 Path(src, "open.c").touch()
                 file_converter.convert(src, dest, "open.c")
                 assert False
-            except Exception as ex1:
+            except UnexpectedCException as ex1:
                 self.assertIn('Unclosed block comment in ', str(ex1))
                 self.assertIn("open.c", str(ex1))
                 self.assertIn("mistakes", str(ex1))
@@ -202,7 +203,7 @@ class TestConverter(unittest.TestCase):
                 Path(src, "too_few.c").touch()
                 file_converter.convert(src, dest, "too_few.c")
                 assert False
-            except Exception as ex1:
+            except UnexpectedCException as ex1:
                 self.assertIn(
                     'Too few parameters in line "test %f %i", -1.0f); ',
                     str(ex1))
@@ -223,7 +224,7 @@ class TestConverter(unittest.TestCase):
                 Path(src, "too_many.c").touch()
                 file_converter.convert(src, dest, "too_many.c")
                 assert False
-            except Exception as ex1:
+            except UnexpectedCException as ex1:
                 self.assertIn(
                     'Too many parameters in line "test %f", -1.0f, 2);',
                     str(ex1))

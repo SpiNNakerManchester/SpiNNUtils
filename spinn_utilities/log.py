@@ -316,7 +316,7 @@ class FormatAdapter(logging.LoggerAdapter):
             try:
                 messages = cls.__log_store.retreive_log_messages(
                     cls.__repeat_at_end)
-            except Exception:  # pylint: disable=broad-except
+            except Exception:  # NOQA
                 # No matter what we don't want an extra Exception reported here
                 pass
 

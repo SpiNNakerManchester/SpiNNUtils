@@ -105,7 +105,7 @@ class LogSqlLiteDatabase(AbstractContextManager):
         try:
             if self._db is not None:
                 self._db.close()
-        except Exception as ex:  # pylint: disable=broad-except
+        except Exception as ex:  # NOQA
             print(ex)
         self._db = None
 

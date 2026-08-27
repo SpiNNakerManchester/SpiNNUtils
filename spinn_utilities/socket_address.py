@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any
 
 from spinn_utilities.config_holder import (
     get_config_int,
@@ -84,14 +83,14 @@ class SocketAddress:
         """
         return self._listen_port
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, SocketAddress):
             return False
         return (self._notify_host_name == other.notify_host_name and
                 self._notify_port_no == other.notify_port_no and
                 self._listen_port == other.listen_port)
 
-    def __ne__(self, other: Any) -> bool:
+    def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)
 
     def __hash__(self) -> int:

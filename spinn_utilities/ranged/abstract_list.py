@@ -135,14 +135,14 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         return self._size
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, AbstractList):
             if self.range_based() and other.range_based():
                 return _eq(list(self.iter_ranges()),
                            list(other.iter_ranges()))
         return _eq(list(self), list(other))
 
-    def __ne__(self, other: Any) -> bool:
+    def __ne__(self, other: object) -> bool:
         if not isinstance(other, AbstractList):
             return True
         return not self.__eq__(other)

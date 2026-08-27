@@ -96,7 +96,9 @@ class OrderedSet(MutableSet, Generic[T]):
     def __eq__(self, other: object) -> bool:
         if isinstance(other, OrderedSet):
             return len(self) == len(other) and self._map == other._map
-        return set(self) == set(other)
+        if isinstance(other, Iterable):
+            return set(self) == set(other)
+        return False
 
     def __ne__(self, other: object) -> bool:
         """

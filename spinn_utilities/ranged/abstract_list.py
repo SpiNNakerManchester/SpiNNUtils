@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from numbers import Number
 from typing import (
     Any,
@@ -135,14 +135,16 @@ class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):
         """
         return self._size
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, AbstractList):
             if self.range_based() and other.range_based():
                 return _eq(list(self.iter_ranges()),
                            list(other.iter_ranges()))
-        return _eq(list(self), list(other))
+        if isinstance(other, Iterable):
+            return _eq(list(self), list(other))
+        return False
 
-    def __ne__(self, other: Any) -> bool:
+    def __ne__(self, other: object) -> bool:
         if not isinstance(other, AbstractList):
             return True
         return not self.__eq__(other)

@@ -93,12 +93,14 @@ class OrderedSet(MutableSet, Generic[T]):
             return f'{self.__class__.__name__}()'
         return f'{self.__class__.__name__}({list(self)})'
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, OrderedSet):
             return len(self) == len(other) and self._map == other._map
-        return set(self) == set(other)
+        if isinstance(other, Iterable):
+            return set(self) == set(other)
+        return False
 
-    def __ne__(self, other: Any) -> bool:
+    def __ne__(self, other: object) -> bool:
         """
         Comparison method for comparing ordered sets.
 

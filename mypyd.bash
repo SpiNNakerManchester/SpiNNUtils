@@ -24,8 +24,11 @@ else
   python3 -m venv ../SupportScripts/venv/mypy_runner
   source ../SupportScripts/venv/mypy_runner/bin/activate
   pip3 install --upgrade ../SpiNNUtils[test]
+  rm -r ../SpiNNUtils/build
   python3 -m pip install --upgrade mypy
-  mypy --disallow-untyped-defs spinn_utilities unittests
+  echo downgrade numpy to Avoid Type statement
+  python3 -m pip install numpy==2.4.6 # 2.2.6
 fi
 
+echo mypy
 mypy --disallow-untyped-defs --python-version 3.10 spinn_utilities unittests

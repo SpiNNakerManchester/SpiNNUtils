@@ -113,7 +113,7 @@ class CitationAggregator:
                                 top_citation_file, imported_module,
                                 modules_seen_so_far,
                                 pypi_to_import_map[module])
-                        except Exception as e:  # pragma: no cover
+                        except ModuleNotFoundError as e:  # pragma: no cover
                             print("Error handling python dependency "
                                   f"{module}: {e}")
 

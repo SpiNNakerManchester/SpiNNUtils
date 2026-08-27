@@ -64,9 +64,8 @@ def test_ordered_ness() -> None:
     o.add(90)
     assert len(o) == 5
     assert list(o) == [12, 78, 56, 34, 90]
-    result = []
-    for item in o:
-        result.append(item)
+    assert o == [12, 78, 56, 34, 90]
+    result = list(o)
     assert result == [12, 78, 56, 34, 90]
 
 

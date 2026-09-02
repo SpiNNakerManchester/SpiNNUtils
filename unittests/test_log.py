@@ -62,7 +62,7 @@ class MockLogStore(LogStore):
     def store_log(self, level: int, message: str,
                   timestamp: datetime | None = None) -> None:
         if level == logging.CRITICAL:
-            1/0
+            1/0  # NOQA
         self.data.append((level, message))
 
     @overrides(LogStore.retreive_log_messages)

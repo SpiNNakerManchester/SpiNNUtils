@@ -17,7 +17,7 @@ from configparser import NoOptionError
 
 import appdirs
 
-import spinn_utilities.conf_loader as conf_loader
+from spinn_utilities import conf_loader
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.configs.no_config_found_exception import (
     NoConfigFoundException,

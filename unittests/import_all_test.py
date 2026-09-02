@@ -14,7 +14,7 @@
 
 import os
 
-import spinn_utilities.package_loader as package_loader
+from spinn_utilities import package_loader
 
 
 def test_import_all() -> None:

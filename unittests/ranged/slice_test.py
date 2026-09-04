@@ -122,7 +122,7 @@ def test_minus_slice() -> None:
 
 
 def test_empty_slice() -> None:
-    with pytest.raises(Exception):
+    with pytest.raises(KeyError):
         rd[2: 2]
 
 

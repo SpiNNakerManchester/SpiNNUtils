@@ -131,7 +131,7 @@ def test_add_number() -> None:
     assert [6, 7, 8, 9] == list(add.iter_by_slice(2, 6))
     add = left + right
     assert [0, 2, 4, 6, 8, 10, 12, 14, 16, 18] == add
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         left + "foo"  # type: ignore[operator]
 
 
@@ -142,7 +142,7 @@ def test_sub_number() -> None:
     assert [-2, -1, 0, 1] == list(sub.iter_by_slice(2, 6))
     sub = left - right
     assert [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] == sub
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         left - "foo"  # type: ignore[operator]
 
 
@@ -153,7 +153,7 @@ def test_mult_number() -> None:
     assert [8, 12, 16, 20] == list(mult.iter_by_slice(2, 6))
     mult = left * right
     assert [0, 1, 4, 9, 16, 25, 36, 49, 64, 81] == mult
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         left * "foo"  # type: ignore[operator]
 
 
@@ -164,7 +164,7 @@ def test_div_number() -> None:
     assert [0, 1, 2, 4] == ans
     ans = left / right
     assert [0, 3, 4, 6] == ans
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         left / "foo"  # type: ignore[operator]
     with pytest.raises(ZeroDivisionError):
         left / 0
@@ -177,7 +177,7 @@ def test_floor_div_number() -> None:
     assert [0, 1, 2, 4] == ans
     ans = left // right
     assert [0, 3, 4, 6] == ans
-    with pytest.raises(Exception):
+    with pytest.raises(TypeError):
         left // "foo"  # type: ignore[operator]
     with pytest.raises(ZeroDivisionError):
         left // 0
@@ -206,7 +206,7 @@ def test_both_equals() -> None:
 def test_dif_size() -> None:
     left: RangedList = RangedList(3, 3, "three")
     right: RangedList = RangedList(2, 2, "two")
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         left + right
 
 

@@ -57,7 +57,7 @@ def test_list_of_numpy_list(
     assert ranged_list.index(10) == 7
     assert ranged_list.index(numpy.arange(10)) == 0
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         ranged_list[3] = range(5)
     ranged_list.set_value_by_id(3, range(5))
     assert numpy.array_equal(list(ranged_list[3]), numpy.arange(5))

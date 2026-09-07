@@ -105,8 +105,7 @@ class DocsChecker:
         """
         Check the documentation in this file.
         """
-        if self.__error_level > ERROR_OTHER:
-            self.__error_level = ERROR_OTHER
+        self.__error_level = min(self.__error_level, ERROR_OTHER)
         self.__file_path = file_path
         with open(file_path, "r", encoding="utf-8") as file:
             raw_tree = file.read()
@@ -122,8 +121,7 @@ class DocsChecker:
         """
         Check the documentation in this function.
         """
-        if self.__error_level > ERROR_FILE:
-            self.__error_level = ERROR_FILE
+        self.__error_level = min(self.__error_level, ERROR_FILE)
         _docs = ast.get_docstring(node)
         if _docs is None:
             # pylint does not require init to have docs
@@ -193,8 +191,7 @@ class DocsChecker:
         """
         Check the documentation in this function.
         """
-        if self.__error_level > ERROR_FILE:
-            self.__error_level = ERROR_FILE
+        self.__error_level = min(self.__error_level, ERROR_FILE)
         error = self._check_function(node)
 
         if error:
@@ -309,8 +306,7 @@ class DocsChecker:
         for key in [":param", ":return", ":raises"]:
             if key in docs:
                 key_index = docs.index(key)
-                if key_index < index:
-                    index = key_index
+                index = min(index, key_index)
         if index < sys.maxsize:
             while index > 1 and docs[index-1] in [" ", "\t"]:
                 index -= 1

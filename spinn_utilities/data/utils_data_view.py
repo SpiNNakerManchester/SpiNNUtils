@@ -79,7 +79,7 @@ class _UtilsDataModel:
         self._reset_status: ResetStatus = ResetStatus.NOT_SETUP
         self._run_status: RunStatus = RunStatus.NOT_SETUP
 
-    def __new__(cls) -> _UtilsDataModel:
+    def __new__(cls) -> _UtilsDataModel:  # NOQA: PYI034
         if cls.__singleton is not None:
             return cls.__singleton
         obj = object.__new__(cls)

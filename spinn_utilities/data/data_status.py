@@ -14,6 +14,8 @@
 
 from enum import Enum
 
+from typing_extensions import Self
+
 from spinn_utilities.exceptions import (
     DataNotMocked,
     DataNotYetAvialable,
@@ -38,7 +40,7 @@ class DataStatus(Enum):
     #: The system has been shut down.
     SHUTDOWN = (3, ShutdownException)
 
-    def __new__(cls, *args: tuple[int, SpiNNUtilsException]) -> 'DataStatus':
+    def __new__(cls, *args: tuple[int, SpiNNUtilsException]) -> Self:
         obj = object.__new__(cls)
         obj._value_ = args[0]
         return obj

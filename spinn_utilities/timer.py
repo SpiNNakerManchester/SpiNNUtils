@@ -15,6 +15,8 @@ from datetime import timedelta
 from time import perf_counter_ns
 from typing import Any, Literal
 
+from typing_extensions import Self
+
 # conversion factor
 _NANO_TO_MICRO = 1000.0
 
@@ -70,7 +72,7 @@ class Timer:
         diff = time_now - (self._start_time or 0)
         return timedelta(microseconds=diff / _NANO_TO_MICRO)
 
-    def __enter__(self) -> 'Timer':
+    def __enter__(self) -> Self:
         self.start_timing()
         return self
 

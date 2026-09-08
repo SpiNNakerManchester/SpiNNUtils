@@ -35,8 +35,8 @@ def test_set_ness() -> None:
     assert len(o) == 2
     o.add(123)
     assert len(o) == 2
-    assert o == set([123, 456])
-    assert o == set([456, 123])
+    assert o == {123, 456}
+    assert o == {456, 123}
     assert o == [123, 456]
     assert o == [456, 123]
     o.remove(123)
@@ -127,7 +127,7 @@ def test_obscure_stuff() -> None:
     o2 = OrderedSet(o)
     assert [x for x in o2] == [1, 2, 3]
     assert o == o2
-    o2 |= set([4])
+    o2 |= {4}
     assert o != o2
     assert repr(OrderedSet()) == "OrderedSet()"
 

@@ -36,7 +36,7 @@ def test_gcd() -> None:
     assert gcd(120, 40, 60) == 20
     a = [2, 3, 4]
     assert gcd(a) == 1
-    b = set([1000, 500, 1500])
+    b = {1000, 500, 1500}
     assert gcd(b) == 500
     c = [34]
     assert gcd(c) == 34
@@ -50,7 +50,7 @@ def test_lcm() -> None:
     assert lcm([]) == 1
     a = [2, 3, 4]
     assert lcm(a) == 12
-    b = set([1000, 500, 1500])
+    b = {1000, 500, 1500}
     assert lcm(b) == 3000
     c = [34]
     assert lcm(c) == 34

@@ -51,7 +51,7 @@ class AbstractSized:
     __slots__ = (
         "_size", )
 
-    def __init__(self, size: int | float):
+    def __init__(self, size: float):
         """
         :param size: Fixed length of the list.
         """

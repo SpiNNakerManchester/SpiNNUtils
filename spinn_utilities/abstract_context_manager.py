@@ -36,7 +36,8 @@ class AbstractContextManager(metaclass=AbstractBase):
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type: type | None, exc_val: Exception,
-                 exc_tb: TracebackType) -> Literal[False]:
+    def __exit__(self, exc_type: type[BaseException] | None,
+                 exc_val: BaseException | None,
+                 exc_tb: TracebackType | None) -> Literal[False]:
         self.close()
         return False

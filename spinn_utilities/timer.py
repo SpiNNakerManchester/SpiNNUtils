@@ -13,7 +13,7 @@
 # limitations under the License.
 from datetime import timedelta
 from time import perf_counter_ns
-from typing import Any, Literal
+from typing import Literal
 
 from typing_extensions import Self
 
@@ -76,7 +76,7 @@ class Timer:
         self.start_timing()
         return self
 
-    def __exit__(self, *_args: tuple[Any, ...]) -> Literal[False]:
+    def __exit__(self, *_args: object) -> Literal[False]:
         self._measured_section_interval = self.take_sample()
         return False
 

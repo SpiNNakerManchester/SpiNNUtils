@@ -179,8 +179,7 @@ def check_user_cfg() -> None:
             dst.write(src.read())
             dst.write("\n")
         dst.write("\n# Additional config options can be found in:\n")
-        for source in __default_config_files:
-            dst.write(f"# {source}\n")
+        dst.writelines(f"# {source}\n" for source in __default_config_files)
         dst.write("\n# Copy any additional settings you want to change"
                   " here including section headings\n")
 

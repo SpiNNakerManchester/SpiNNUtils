@@ -371,8 +371,7 @@ class ConfigDocumentor:
             _md_write_doc(f, self._docs[section])
         titles = list(self._sections[section])
         titles.sort()
-        for title in titles:
-            f.write(f"* [{title}](#{title})\n")
+        f.writelines(f"* [{title}](#{title})\n" for title in titles)
         f.write("\n")
         for title in titles:
             group = self._sections[section][title]
@@ -413,8 +412,9 @@ class ConfigDocumentor:
         with open(filepath, mode="w", encoding="utf-8") as f:
             self._md_header(f)
             f.write("* CFG Sections\n")
-            for section in self._sections:
-                f.write(f"  * [{section}](#{section})\n")
+            f.writelines(
+                f"  * [{section}](#{section})\n"
+                for section in self._sections)
             f.write("* [Report Files](#report_files)\n")
             f.write("* [Notes for Developers](#notes)\n")
             f.write("\n")

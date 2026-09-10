@@ -105,7 +105,7 @@ class TypedConfigParser(configparser.RawConfigParser):
         if len(value.strip()) == 0:
             return []
         as_list = value.split(token)
-        return list(map(lambda x: x.strip(), as_list))
+        return [x.strip() for x in as_list]
 
     def get_int(self, section: str, option: str) -> int | None:
         """

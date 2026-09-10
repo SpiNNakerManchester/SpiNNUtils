@@ -320,8 +320,8 @@ class FormatAdapter(logging.LoggerAdapter):
                 # No matter what we don't want an extra Exception reported here
                 pass
 
-        messages.extend(map(lambda x: x[2],
-                            cls._pop_not_stored_messages(cls.__repeat_at_end)))
+        messages.extend([x[2] for x in cls._pop_not_stored_messages(
+            cls.__repeat_at_end)])
         if messages:
             level = logging.getLevelName(cls.__repeat_at_end)
             print(f"\n!WARNING: {len(messages)} log messages were "

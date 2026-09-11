@@ -115,7 +115,7 @@ class ProgressBar:
         # Print the progress bar itself
         self._print_distance_line(first_space, second_space)
         if self._in_bad_terminal:
-            print("", file=self._destination)
+            print(file=self._destination)
             print(" ", end="", file=self._destination)
 
     def _print_distance_line(
@@ -143,7 +143,7 @@ class ProgressBar:
         if not self._in_bad_terminal:
             print(self._end_character, file=self._destination)
         else:
-            print("", file=self._destination)
+            print(file=self._destination)
 
     def _create_initial_progress_bar(self, description: str) -> None:
         if self._number_of_things == 0:

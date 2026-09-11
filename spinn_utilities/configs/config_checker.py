@@ -189,9 +189,7 @@ class ConfigChecker:
                 option = part[7:]
             elif part.startswith("section="):
                 section = part[8:]
-            elif part.startswith("is_dir="):
-                pass
-            elif part.startswith("n_run="):
+            elif part.startswith("is_dir=") or part.startswith("n_run="):
                 pass
             else:
                 if self._file_path.endswith("config_holder.py"):

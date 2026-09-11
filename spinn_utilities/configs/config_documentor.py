@@ -38,11 +38,8 @@ def _make_name(option: str) -> str:
         option = option[1:]
     if option.startswith("@"):
         raise ValueError(f"{option=} has a @")
-    elif option.startswith("draw_"):
-        option = option[5:]
-    elif option.startswith("keep_"):
-        option = option[5:]
-    elif option.startswith("path_"):
+    elif (option.startswith("draw_") or option.startswith("keep_")
+          or option.startswith("path_")):
         option = option[5:]
     elif option.startswith("tpath_"):
         option = option[6:]

@@ -67,8 +67,8 @@ class AbstractBase(type):
         abs_cls = super().__new__(mcs, name, bases, namespace, **kwargs)
 
         # Get set of abstract methods from namespace
-        abstracts = set(nm for nm, val in namespace.items()
-                        if getattr(val, "__isabstractmethod__", False))
+        abstracts = {nm for nm, val in namespace.items()
+                     if getattr(val, "__isabstractmethod__", False)}
 
         # Augment with abstract methods from superclasses
         for base in bases:

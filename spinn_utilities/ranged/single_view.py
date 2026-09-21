@@ -63,7 +63,7 @@ class _SingleView(AbstractView[T], Generic[T]):
             return {
                 k: self._range_dict.get_list(k).get_value_by_id(
                     the_id=self._id)
-                for k in self._range_dict.keys()}
+                for k in self._range_dict.keys()}  # NOQA: SIM118
         else:
             return {
                 k: self._range_dict.get_list(k).get_value_by_id(

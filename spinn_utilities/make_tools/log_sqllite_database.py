@@ -162,24 +162,22 @@ class LogSqlLiteDatabase(AbstractContextManager):
         """
         assert self._db is not None
         with self._db:
-            # Make previous one as not last
-            with self._db:
-                cursor = self._db.cursor()
-                cursor.execute(
-                    """
-                    UPDATE file SET last_build = 0
-                    WHERE directory_id = ? AND file_name = ?
-                    """, [directory_id, file_name])
-                # always create new one to distinguish new from old logs
-                cursor.execute(
-                    """
-                    INSERT INTO file(
-                        directory_id, file_name, convert_time, last_build)
-                    VALUES(?, ?, ?, 1)
-                    """, (directory_id, file_name, _timestamp()))
-                file_id = cursor.lastrowid
-                assert file_id is not None
-                return file_id
+            cursor = self._db.cursor()
+            cursor.execute(
+                """
+                UPDATE file SET last_build = 0
+                WHERE directory_id = ? AND file_name = ?
+                """, [directory_id, file_name])
+            # always create new one to distinguish new from old logs
+            cursor.execute(
+                """
+                INSERT INTO file(
+                    directory_id, file_name, convert_time, last_build)
+                VALUES(?, ?, ?, 1)
+                """, (directory_id, file_name, _timestamp()))
+            file_id = cursor.lastrowid
+            assert file_id is not None
+            return file_id
 
     def set_log_info(self, log_level: int, line_num: int,
                      original: str, file_id: int) -> int:

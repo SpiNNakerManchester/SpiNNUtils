@@ -131,22 +131,22 @@ class FileConverter:
         self._previous_status = State.NORMAL_CODE
         self._too_many_lines = 2
 
-        with open(self._src, encoding="utf-8") as src_f:
-            with open(destination, 'w', encoding="utf-8") as dest_f:
-                dest_f.write(
-                    f"// DO NOT EDIT! THIS FILE WAS GENERATED FROM "
-                    f"{os.path.relpath(self._src, destination)}\n\n")
-                for line_num, text in enumerate(src_f):
-                    if self._too_many_lines > 0:
-                        # Try to recover the lines added by do not edit
-                        check = text.strip()
-                        if len(check) == 0 or check == "*":
-                            self._too_many_lines -= 1
-                            continue
-                    previous_status = self._status
-                    if not self._process_line(dest_f, line_num, text):
-                        self._status = previous_status
-                        self._process_chars(dest_f, line_num, text)
+        with (open(self._src, encoding="utf-8") as src_f,
+              open(destination, 'w', encoding="utf-8") as dest_f):
+            dest_f.write(
+                f"// DO NOT EDIT! THIS FILE WAS GENERATED FROM "
+                f"{os.path.relpath(self._src, destination)}\n\n")
+            for line_num, text in enumerate(src_f):
+                if self._too_many_lines > 0:
+                    # Try to recover the lines added by do not edit
+                    check = text.strip()
+                    if len(check) == 0 or check == "*":
+                        self._too_many_lines -= 1
+                        continue
+                previous_status = self._status
+                if not self._process_line(dest_f, line_num, text):
+                    self._status = previous_status
+                    self._process_chars(dest_f, line_num, text)
         self._check_end_status()
 
     def _check_end_status(self) -> None:

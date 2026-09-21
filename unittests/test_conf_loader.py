@@ -194,15 +194,14 @@ def test_None_machine_spec_file(tmpdir: ModuleType, default_config: str,
     default_config += "\n[Machine]\nmachine_spec_file=None\n"
     with open(place, "w") as f:
         f.write(default_config)
-    with tmpdir.as_cwd():
-        with LogCapture() as lc:
-            config = conf_loader.load_config(
-                local_name=None, user_cfg=place, defaults=[])
-            assert config is not None
-            assert config.sections() == ["sect", "Machine"]
-            assert config.options("sect") == ["foobob"]
-            assert config.get("sect", "foobob") == "bar"
-            log_checker.assert_logs_info_not_contains(lc.records, "None")
+    with tmpdir.as_cwd(), LogCapture() as lc:
+        config = conf_loader.load_config(
+            local_name=None, user_cfg=place, defaults=[])
+        assert config is not None
+        assert config.sections() == ["sect", "Machine"]
+        assert config.options("sect") == ["foobob"]
+        assert config.get("sect", "foobob") == "bar"
+        log_checker.assert_logs_info_not_contains(lc.records, "None")
 
 
 def test_intermediate_use(tmpdir: ModuleType, default_config: str,
@@ -211,18 +210,17 @@ def test_intermediate_use(tmpdir: ModuleType, default_config: str,
     default_config += "\n[Machine]\nmachine_spec_file=" + mach_spec + "\n"
     with open(place, "w") as f:
         f.write(default_config)
-    with tmpdir.as_cwd():
-        with LogCapture() as lc:
-            config = conf_loader.load_config(
-                local_name=None, user_cfg=place, defaults=[])
-            assert config is not None
-            assert config.sections() == ["sect", "Machine"]
-            assert config.options("sect") == ["foobob"]
-            assert config.get("sect", "foobob") == "bar"
-            assert config.options("Machine") == ["machinename", "version"]
-            assert config.get("Machine", "MachineName") == "foo"
-            assert config.getint("Machine", "VeRsIoN") == 5
-            log_checker.assert_logs_info_contains(lc.records, place)
+    with tmpdir.as_cwd(), LogCapture() as lc:
+        config = conf_loader.load_config(
+            local_name=None, user_cfg=place, defaults=[])
+        assert config is not None
+        assert config.sections() == ["sect", "Machine"]
+        assert config.options("sect") == ["foobob"]
+        assert config.get("sect", "foobob") == "bar"
+        assert config.options("Machine") == ["machinename", "version"]
+        assert config.get("Machine", "MachineName") == "foo"
+        assert config.getint("Machine", "VeRsIoN") == 5
+        log_checker.assert_logs_info_contains(lc.records, place)
 
 
 def test_str_list(tmpdir: ModuleType, not_there: str) -> None:

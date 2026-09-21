@@ -584,7 +584,7 @@ class RangeDictionary(AbstractSized, AbstractDict[T], Generic[T]):
         :param other:
             Another ranged dictionary assumed created by cloning this one
         """
-        for key in other.keys():
+        for key in other.keys():  # NOQA: SIM118
             value = other[key]
             if isinstance(value, RangedList):
                 if key in self:

@@ -65,7 +65,7 @@ class _SliceView(AbstractView[T], Generic[T]):
             return {
                 k: self._range_dict.get_list(k).get_single_value_by_slice(
                     slice_start=self._start, slice_stop=self._stop)
-                for k in self._range_dict.keys()}
+                for k in self._range_dict.keys()}  # NOQA: SIM118
         else:
             return {
                 k: self._range_dict.get_list(k).get_single_value_by_slice(

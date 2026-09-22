@@ -100,5 +100,5 @@ class SocketAddress:
         return self.__hash
 
     def __repr__(self) -> str:
-        return (f"SocketAddress({repr(self._notify_host_name)}, "
+        return (f"SocketAddress({self._notify_host_name!r}, "
                 f"{self._notify_port_no}, {self._listen_port})")

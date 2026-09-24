@@ -401,10 +401,7 @@ def configs_loaded() -> bool:
     """
     :returns: True if and only if the configuration was loaded
     """
-    if __config is None:
-        return False
-    else:
-        return True
+    return __config is not None
 
 
 def has_config_option(section: str, option: str) -> bool:

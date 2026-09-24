@@ -36,7 +36,7 @@ from .reset_status import ResetStatus
 from .run_status import RunStatus
 from .utils_data_view import UtilsDataView, _UtilsDataModel
 
-logger = FormatAdapter(logging.getLogger(__file__))
+logger = FormatAdapter(logging.getLogger(__name__))
 # pylint: disable=protected-access
 
 

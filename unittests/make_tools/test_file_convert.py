@@ -47,8 +47,10 @@ class TestConverter(unittest.TestCase):
         dest_f = os.path.join(dest, file_name)
         Path(src_f).touch()
         file_converter.convert(src, dest, file_name)
-        src_lines = sum(1 for line in open(src_f))
-        modified_lines = sum(1 for line in open(dest_f))
+        with open(src_f) as f:
+            src_lines = sum(1 for line in f)
+        with open(dest_f) as f:
+            modified_lines = sum(1 for line in f)
         self.assertEqual(src_lines, modified_lines)
         with log_database as sql:
             with self.assertRaises(ValueError):

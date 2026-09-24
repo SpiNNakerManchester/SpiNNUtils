@@ -276,8 +276,8 @@ class FormatAdapter(logging.LoggerAdapter):
                     FormatAdapter.__not_stored_messages.append((
                         datetime.now(),
                         level,
-                        f"Unable to store log messages in database due to"
-                        f" {ex}"))
+                        (f"Unable to store log messages in database due to"
+                         f" {ex}")))
                     FormatAdapter.__not_stored_messages.append(
                         (datetime.now(), level, str(message)))
                     FormatAdapter.__log_store = None

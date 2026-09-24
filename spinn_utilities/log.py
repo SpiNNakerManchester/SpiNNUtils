@@ -273,11 +273,11 @@ class FormatAdapter(logging.LoggerAdapter):
                     FormatAdapter.__log_store.store_log(level, str(message))
                 except Exception as ex:
                     # Avoid an endless loop of log store errors being logged
-                    FormatAdapter.__not_stored_messages.append(
+                    FormatAdapter.__not_stored_messages.append((
                         datetime.now(),
                         level,
                         (f"Unable to store log messages in database due to"
-                         f" {ex}"))
+                         f" {ex}")))
                     FormatAdapter.__not_stored_messages.append(
                         (datetime.now(), level, str(message)))
                     FormatAdapter.__log_store = None

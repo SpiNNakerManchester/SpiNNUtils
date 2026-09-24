@@ -376,5 +376,5 @@ class CitationUpdaterAndDoiGenerator:
                             f"Value {version_month} not recognised"
                             " as a month") from original
         else:  # pragma: no cover
-            raise ValueError(
+            raise TypeError(
                 f"Value {version_month} not recognised as a month")

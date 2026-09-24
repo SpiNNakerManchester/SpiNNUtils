@@ -58,13 +58,13 @@ class overrides:
         """
         # Check and fail if this is a property
         if isinstance(method, property):
-            raise AttributeError(
+            raise AttributeError(  # NOQA: TRY004
                 f"Please ensure that the {self.__class__.__name__} decorator "
                 "is the last decorator before the method declaration")
 
         # Check that the name matches
         if (method.__name__ != self._superclass_method.__name__):
-            raise AttributeError(
+            raise AttributeError(  # NOQA: TRY004
                 f"Name mismatch: {self._superclass_method.__name__} "
                 f" !=- {method.__name__}")
 

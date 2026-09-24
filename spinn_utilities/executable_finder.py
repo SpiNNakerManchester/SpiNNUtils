@@ -19,7 +19,7 @@ from collections import defaultdict
 from spinn_utilities.log import FormatAdapter
 from spinn_utilities.ordered_set import OrderedSet
 
-logger = FormatAdapter(logging.getLogger(__file__))
+logger = FormatAdapter(logging.getLogger(__name__))
 
 
 class ExecutableFinder:

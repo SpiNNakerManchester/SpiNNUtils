@@ -33,7 +33,7 @@ from spinn_utilities.log import (
     FormatAdapter,
 )
 
-logger = FormatAdapter(logging.getLogger(__file__))
+logger = FormatAdapter(logging.getLogger(__name__))
 
 # pylint: disable=global-statement
 # Any cleaner method than global statements would add extra overhead

@@ -106,7 +106,7 @@ class ConfiguredFormatter(logging.Formatter):
                 modules = [s.strip() for s in
                            config.get('Logging', label).split(',')]
                 if '' not in modules:
-                    _levels.update(dict((m, level) for m in modules))
+                    _levels.update({(m, level) for m in modules})
         return _levels
 
     @staticmethod

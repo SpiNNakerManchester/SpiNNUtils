@@ -334,10 +334,9 @@ class DocsChecker:
         if node.args.kwarg:
             param_names.add(node.args.kwarg.arg)
 
-        if "self" in param_names:
-            param_names.remove("self")
-        if "cls" in param_names:
-            param_names.remove("cls")
+        # remove if exists
+        param_names.discard("self")
+        param_names.discard("cls")
         return param_names
 
     def check_no_errors(self) -> None:

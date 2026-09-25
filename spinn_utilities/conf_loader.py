@@ -27,7 +27,6 @@ from spinn_utilities.configs import (
 )
 
 logger = log.FormatAdapter(logging.getLogger(__name__))
-_SectionParser: TypeAlias = Callable[[CamelCaseConfigParser], None]
 
 
 def _check_config(cfg_file: str, default_configs: CamelCaseConfigParser,

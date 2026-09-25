@@ -38,8 +38,7 @@ def _make_name(option: str) -> str:
         option = option[1:]
     if option.startswith("@"):
         raise ValueError(f"{option=} has a @")
-    elif (option.startswith("draw_") or option.startswith("keep_")
-          or option.startswith("path_")):
+    elif (option.startswith(("draw_", "keep_", "path_"))):
         option = option[5:]
     elif option.startswith("tpath_"):
         option = option[6:]
@@ -234,7 +233,7 @@ class ConfigDocumentor:
             groups[option] = group
         name = _make_name(option)
         if name != option:
-            if option.startswith("path_") or option.startswith("tpath_"):
+            if option.startswith(("path_", "tpath_")):
                 return
             if name in self._names:
                 raise ValueError(f"Both {option} and {self._names[name]}"
@@ -278,7 +277,7 @@ class ConfigDocumentor:
         for groups in self._sections.values():
             remove_options = set()
             for option in groups:
-                if option.startswith("path_") or option.startswith("tpath_"):
+                if option.startswith(("path_", "tpath_")):
                     as_link = _make_name(option)
                     if as_link in self._names:
                         other_option = self._names[as_link]

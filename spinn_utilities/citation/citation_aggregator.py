@@ -187,8 +187,7 @@ class CitationAggregator:
                 last_version = None
                 cleaned_path = software_path
                 while ((cleaned_path != last_version) and (
-                        not (cleaned_path.split(os.sep)[-1] ==
-                             true_software_name))):
+                        cleaned_path.split(os.sep)[-1] != true_software_name)):
                     last_version = cleaned_path
                     cleaned_path = os.path.dirname(cleaned_path)
 

@@ -71,9 +71,11 @@ def require_subclass(required_class: type) -> Callable[[type], type]:
             try:
                 super().__init_subclass__(**kwargs)  # type: ignore[misc]
             except _RequiresSubclassTypeError:
-                super().__init_subclass__(    # type: ignore[misc] # NOQA: B010
+                super().__init_subclass__(  # type: ignore[misc]
                     allow_derivation=allow_derivation, **kwargs)
 
-        target_class.__init_subclass__ = classmethod(__init_subclass__)
+        setattr(target_class, '__init_subclass__', # NOQA: B010
+                classmethod(__init_subclass__))
         return target_class
+
     return decorate

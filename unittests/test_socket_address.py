@@ -33,7 +33,6 @@ def test_correct_usage() -> None:
     assert sa1.notify_port_no == 2
 
     # Test the equality and other basic ops
-    assert sa1 == sa1
     assert sa1 == sa2
     assert sa1 != ("a", 2, 3)
     assert sa1 != sa3

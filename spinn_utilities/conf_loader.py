@@ -15,8 +15,6 @@
 
 import logging
 import os
-from collections.abc import Callable
-from typing import TypeAlias
 
 import appdirs
 
@@ -27,7 +25,6 @@ from spinn_utilities.configs import (
 )
 
 logger = log.FormatAdapter(logging.getLogger(__name__))
-_SectionParser: TypeAlias = Callable[[CamelCaseConfigParser], None]
 
 
 def _check_config(cfg_file: str, default_configs: CamelCaseConfigParser,
@@ -94,7 +91,7 @@ def _read_a_config(
             _check_config(machine_spec_file, default_configs, strict)
             configuration.read(machine_spec_file)
             configuration.remove_option("Machine", "machine_spec_file")
-        elif not machine_spec_file.lower() == "none":
+        elif machine_spec_file.lower() != "none":
             raise UnexpectedConfigException(f"{machine_spec_file=} not found")
 
 

@@ -187,7 +187,7 @@ class CitationUpdaterAndDoiGenerator:
             yaml_file[IDENTIFIER] = doi_id
 
         # rewrite citation file with updated fields
-        with io.open(citation_file_path, 'w', encoding='utf8') as outfile:
+        with open(citation_file_path, 'w', encoding='utf8') as outfile:
             yaml.dump(yaml_file, outfile, default_flow_style=False,
                       allow_unicode=True)
 

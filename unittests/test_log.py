@@ -92,7 +92,7 @@ def test_logger_adapter() -> None:
     assert str(log.last_msg) == "Test %s"
     logger.warning("boo")
     assert str(log.last_msg) == "boo"
-    assert log.last_level == logging.WARN
+    assert log.last_level == logging.WARNING
     logger.error("foo")
     assert str(log.last_msg) == "foo"
     assert log.last_level == logging.ERROR

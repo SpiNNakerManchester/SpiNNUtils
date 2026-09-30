@@ -34,8 +34,7 @@ def _make_name(option: str) -> str:
     :return: Possibly shortened option name
     """
     # take the link marker out
-    if option.startswith("#"):
-        option = option[1:]
+    option = option.removeprefix("#")
     if option.startswith("@"):
         raise ValueError(f"{option=} has a @")
     elif (option.startswith(("draw_", "keep_", "path_"))):

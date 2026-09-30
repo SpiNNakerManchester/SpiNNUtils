@@ -14,7 +14,6 @@
 
 import argparse
 import importlib
-import io
 import os
 import sys
 from types import ModuleType
@@ -128,7 +127,7 @@ class CitationAggregator:
                             top_citation_file, module, modules_seen_so_far)
 
         # write citation file with updated fields
-        with io.open(
+        with open(
                 aggregated_citation_file, 'w', encoding=ENCODING) as outfile:
             yaml.dump(top_citation_file, outfile, default_flow_style=False,
                       allow_unicode=True)
@@ -187,8 +186,7 @@ class CitationAggregator:
                 last_version = None
                 cleaned_path = software_path
                 while ((cleaned_path != last_version) and (
-                        not (cleaned_path.split(os.sep)[-1] ==
-                             true_software_name))):
+                        cleaned_path.split(os.sep)[-1] != true_software_name)):
                     last_version = cleaned_path
                     cleaned_path = os.path.dirname(cleaned_path)
 

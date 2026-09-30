@@ -29,6 +29,7 @@ from spinn_utilities.exceptions import (
     UnexpectedStateChange,
 )
 from spinn_utilities.executable_finder import ExecutableFinder
+from spinn_utilities.local_time_zone import LOCAL
 from spinn_utilities.log import FormatAdapter
 
 from .data_status import DataStatus
@@ -340,7 +341,7 @@ class UtilsDataWriter(UtilsDataView):
 
     @classmethod
     def _get_timestamp(cls) -> str:
-        now = datetime.datetime.now()
+        now = datetime.datetime.now(LOCAL)
         return (
             f"{now.year:04}-{now.month:02}-{now.day:02}-{now.hour:02}"
             f"-{now.minute:02}-{now.second:02}-{now.microsecond:06}")

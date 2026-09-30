@@ -23,6 +23,7 @@ from inspect import getfullargspec
 from typing import Any, ClassVar
 
 from spinn_utilities.configs import CamelCaseConfigParser
+from spinn_utilities.local_time_zone import LOCAL
 
 from .log_store import LogStore
 from .overrides import overrides
@@ -274,17 +275,17 @@ class FormatAdapter(logging.LoggerAdapter):
                 except Exception as ex:
                     # Avoid an endless loop of log store errors being logged
                     FormatAdapter.__not_stored_messages.append((
-                        datetime.now(),
+                        datetime.now(LOCAL),
                         level,
                         (f"Unable to store log messages in database due to"
                          f" {ex}")))
                     FormatAdapter.__not_stored_messages.append(
-                        (datetime.now(), level, str(message)))
+                        (datetime.now(LOCAL), level, str(message)))
                     FormatAdapter.__log_store = None
                     raise
             else:
                 FormatAdapter.__not_stored_messages.append(
-                    (datetime.now(), level, str(message)))
+                    (datetime.now(LOCAL), level, str(message)))
             msg, log_kwargs = self.process(msg, kwargs)
             if "exc_info" in kwargs:
                 log_kwargs["exc_info"] = kwargs["exc_info"]

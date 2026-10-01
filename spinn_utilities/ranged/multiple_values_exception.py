@@ -20,7 +20,7 @@ class MultipleValuesException(Exception):
     Raised when there more than one value found unexpectedly.
     """
 
-    def __init__(self, key: str | None, value1: Any, value2: Any):
+    def __init__(self, key: str | None, value1: object, value2: object):
         """
         :param key: The name of the value
         :param value1: One of the values used

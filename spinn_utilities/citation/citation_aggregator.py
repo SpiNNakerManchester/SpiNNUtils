@@ -17,7 +17,6 @@ import importlib
 import os
 import sys
 from types import ModuleType
-from typing import Any
 
 import yaml
 
@@ -74,9 +73,9 @@ class CitationAggregator:
         modules_seen_so_far: _SEEN_TYPE = set()
         modules_seen_so_far.add("")
         with open(top_citation_file_path, encoding=ENCODING) as stream:
-            top_citation_file: dict[str, Any] = yaml.safe_load(
-                stream)
-        top_citation_file[REFERENCES_YAML_POINTER] = []
+            top_citation_file: dict[str, object] = yaml.safe_load(stream)
+
+        reference_list: list[dict[str, object]] = []
 
         # get the dependency list
         requirements_file_path = os.path.join(
@@ -109,7 +108,7 @@ class CitationAggregator:
                             imported_module = importlib.import_module(
                                 import_name)
                             self._handle_python_dependency(
-                                top_citation_file, imported_module,
+                                reference_list, imported_module,
                                 modules_seen_so_far,
                                 pypi_to_import_map[module])
                         except ModuleNotFoundError as e:  # pragma: no cover
@@ -124,8 +123,9 @@ class CitationAggregator:
                         continue
                     if module not in modules_seen_so_far:
                         self._handle_c_dependency(
-                            top_citation_file, module, modules_seen_so_far)
+                            reference_list, module, modules_seen_so_far)
 
+        top_citation_file[REFERENCES_YAML_POINTER] = reference_list
         # write citation file with updated fields
         with open(
                 aggregated_citation_file, 'w', encoding=ENCODING) as outfile:
@@ -148,12 +148,12 @@ class CitationAggregator:
         return pypi_to_import_map
 
     def _handle_c_dependency(
-            self, top_citation_file:  dict[str, Any], module: str,
+            self, reference_list: list[dict[str, object]], module: str,
             modules_seen_so_far: _SEEN_TYPE) -> None:
         """
         Handle a C code dependency.
 
-        :param top_citation_file: YAML file for the top citation file
+        :param reference_list: List of reference entries
         :param module: module to find
         :param modules_seen_so_far:
         """
@@ -164,8 +164,7 @@ class CitationAggregator:
                 cleaned_path, None, modules_seen_so_far, module)
 
             # append to the top citation file
-            top_citation_file[REFERENCES_YAML_POINTER].append(
-                reference_entry)
+            reference_list.append(reference_entry)
             self._search_for_other_c_references(
                 reference_entry, cleaned_path, modules_seen_so_far)
         else:
@@ -195,7 +194,7 @@ class CitationAggregator:
         return None
 
     def _search_for_other_c_references(
-            self, reference_entry:  dict[str, Any], software_path: str,
+            self, reference_entry:  dict[str, object], software_path: str,
             modules_seen_so_far: _SEEN_TYPE) -> None:
         """
         Go through the top level path and tries to locate other CFF
@@ -212,21 +211,19 @@ class CitationAggregator:
                     self._read_and_process_reference_entry(
                         os.path.join(software_path,
                                      possible_extra_citation_file))
-                reference_entry[REFERENCES_YAML_POINTER] = []
-                reference_entry[REFERENCES_YAML_POINTER].append(
-                    dependency_reference_entry)
+                reference_entry[REFERENCES_YAML_POINTER] = [
+                    dependency_reference_entry]
                 modules_seen_so_far.add(
                     possible_extra_citation_file.split(".")[0])
 
     def _handle_python_dependency(
-            self, top_citation_file: dict[str, Any],
+            self, reference_list: list[dict[str, object]],
             imported_module: ModuleType, modules_seen_so_far: _SEEN_TYPE,
             module_name: str) -> None:
         """
         Handle a python dependency.
 
-        :param top_citation_file:
-            YAML file for the top citation file
+        :param reference_list: List of reference entries
         :param imported_module: the actual imported module
         :param modules_seen_so_far:
             list of names of dependencies already processed
@@ -255,13 +252,13 @@ class CitationAggregator:
 
         if reference_entry is not None:
             # append to the top citation file
-            top_citation_file[REFERENCES_YAML_POINTER].append(reference_entry)
+            reference_list.append(reference_entry)
 
     def _process_reference(
             self, citation_level_dir: str,
             imported_module: ModuleType | None,
             modules_seen_so_far: _SEEN_TYPE,
-            module_name: str) -> dict[str, Any]:
+            module_name: str) -> dict[str, object]:
         """
         Take a module level and tries to locate and process a citation file.
 
@@ -298,7 +295,7 @@ class CitationAggregator:
     @staticmethod
     def _try_to_find_version(
             imported_module: ModuleType | None,
-            module_name: str) -> dict[str, Any]:
+            module_name: str) -> dict[str, object]:
         """
         Try to locate a version file or version data to auto-generate
         minimal citation data.
@@ -307,7 +304,7 @@ class CitationAggregator:
             the module currently trying to find the version of
         :return: reference entry for this python module
         """
-        reference_entry: dict[str, Any] = {}
+        reference_entry: dict[str, object] = {}
         reference_entry[REFERENCES_TYPE_TYPE] = REFERENCES_SOFTWARE_TYPE
         reference_entry[REFERENCES_TITLE_TYPE] = module_name
         if imported_module is None:
@@ -335,7 +332,7 @@ class CitationAggregator:
 
     @staticmethod
     def _read_and_process_reference_entry(
-            dependency_citation_file_path: str) -> dict[str, Any]:
+            dependency_citation_file_path: str) -> dict[str, object]:
         """
         Read a ``CITATION.cff`` and makes it a reference for a higher
         level citation file.
@@ -344,7 +341,7 @@ class CitationAggregator:
             path to a `CITATION.cff` file
         :return: reference entry for the higher level `CITATION.cff`
         """
-        reference_entry = {}
+        reference_entry: dict[str, object] = {}
 
         with open(dependency_citation_file_path, 'r', encoding="utf-8") \
                 as stream:

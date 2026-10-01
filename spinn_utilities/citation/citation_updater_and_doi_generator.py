@@ -17,7 +17,7 @@ import os
 import unicodedata
 import zipfile
 from time import strptime
-from typing import Any, cast
+from typing import cast
 
 import requests
 import yaml
@@ -129,7 +129,7 @@ class _Zenodo:
         return self._json(r)
 
     def post_upload(
-            self, deposit_id: str, data: dict[str, Any],
+            self, deposit_id: str, data: dict[str, object],
             files: dict[str, io.BufferedReader]) -> JsonObject | None:
         r = requests.post(
             self._DEPOSIT_PUT_URL.format(deposit_id), timeout=10,
@@ -198,7 +198,7 @@ class CitationUpdaterAndDoiGenerator:
                 deposit_id, publish_doi, doi_title,
                 yaml_file[CITATION_FILE_DESCRIPTION], yaml_file, module_path)
 
-    def _request_doi(self, previous_doi: str) -> tuple[bytes, Any]:
+    def _request_doi(self, previous_doi: str) -> tuple[bytes, str | None]:
         """
         Go to Zenodo and requests a DOI.
 
@@ -227,12 +227,14 @@ class CitationUpdaterAndDoiGenerator:
             (metadata[ZENODO_PRE_RESERVED_DOI]
              [ZENODO_DOI_VALUE])).encode('ascii', 'ignore')
         deposition_id = request_data[ZENODO_DEPOSIT_ID]
+        if deposition_id is not None:
+            assert isinstance(deposition_id, str)
 
         return doi_id, deposition_id
 
     def _finish_doi(
             self, deposit_id: str, publish_doi: bool, title: str,
-            doi_description: str, yaml_file: dict[str, Any],
+            doi_description: str, yaml_file: dict[str, object],
             module_path: str) -> None:
         """
         Finishes the DOI on Zenodo.
@@ -303,7 +305,7 @@ class CitationUpdaterAndDoiGenerator:
 
     @staticmethod
     def _fill_in_data(doi_title: str, doi_description: str,
-                      yaml_file: dict[str, Any]) -> dict[str, Any]:
+                      yaml_file: dict[str, object]) -> dict[str, object]:
         """
         Add in data to the Zenodo metadata.
 
@@ -313,14 +315,16 @@ class CitationUpdaterAndDoiGenerator:
         :return: dict containing Zenodo metadata
         """
         # add basic meta data
-        metadata: dict[str, Any] = {
+        metadata: dict[str, object] = {
             ZENODO_METADATA_TITLE: doi_title,
             ZENODO_METATDATA_DESC: doi_description,
             ZENODO_METADATA_CREATORS: []
         }
 
         # get author data from the citation file
-        for author in yaml_file[CITATION_AUTHORS_TYPE]:
+        authors = yaml_file[CITATION_AUTHORS_TYPE]
+        assert isinstance(authors, list)
+        for author in authors:
             author_data = {
                 ZENODO_AUTHOR_NAME: (
                     author[CITATION_AUTHOR_SURNAME] + ", " +
@@ -328,9 +332,13 @@ class CitationUpdaterAndDoiGenerator:
             }
             if AUTHOR_AFFILIATION in author:
                 author_data[AUTHOR_AFFILIATION] = author[AUTHOR_AFFILIATION]
+            assert isinstance(author, dict)
             if AUTHOR_ORCID in author:
                 author_data[AUTHOR_ORCID] = author[AUTHOR_ORCID]
-            metadata[ZENODO_METADATA_CREATORS].append(author_data)
+
+            creators = metadata[ZENODO_METADATA_CREATORS]
+            assert isinstance(creators, list)
+            creators.append(author_data)
         return {ZENODO_METADATA: metadata}
 
     @staticmethod

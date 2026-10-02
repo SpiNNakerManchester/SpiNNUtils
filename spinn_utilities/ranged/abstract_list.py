@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from numbers import Number
+# https://numpy.org/doc/2.1/reference/typing.html#numpy.typing.ArrayLike
 from typing import (
     Any,
     Generic,
@@ -45,13 +46,17 @@ IdsType: TypeAlias = Sequence[int] | NDArray[numpy.integer]
 
 
 def _eq(x: Any, y: Any) -> bool:
-    # Lies!
-    return numpy.array_equal(numpy.atleast_1d(cast(float, x)),
-                             numpy.atleast_1d(cast(float, y)))
+    try:
+        return numpy.array_equal(numpy.atleast_1d(x), numpy.atleast_1d(y))
+    except Exception:  # NOQA
+        return x == y
 
 
 def _is_zero(value: Any) -> bool:
-    return bool(numpy.isin(0, value))
+    try:
+        return bool(numpy.isin(0, value))
+    except Exception:  # NOQA
+        return False
 
 
 def is_number(value: T) -> TypeGuard[float]:
@@ -60,7 +65,10 @@ def is_number(value: T) -> TypeGuard[float]:
 
     :returns: True if the value is a Number
     """
-    return isinstance(value, Number)
+    try:
+        return isinstance(value, Number)
+    except Exception:  # NOQA
+        return False
 
 
 class AbstractList(AbstractSized, Generic[T], metaclass=AbstractBase):

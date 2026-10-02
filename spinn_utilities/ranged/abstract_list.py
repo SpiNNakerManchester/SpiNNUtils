@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from numbers import Number
+
 # https://numpy.org/doc/2.1/reference/typing.html#numpy.typing.ArrayLike
 from typing import (
     Any,

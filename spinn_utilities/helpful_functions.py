@@ -16,7 +16,7 @@ import logging
 import math
 from collections.abc import Collection
 from functools import reduce
-from typing import Any, TypeGuard, overload
+from typing import TypeGuard, overload
 
 from spinn_utilities.log import FormatAdapter
 
@@ -24,7 +24,7 @@ logger = FormatAdapter(logging.getLogger(__name__))
 FINISHED_FILENAME = "finished"
 
 
-def is_singleton(value: Any) -> TypeGuard[bool | int | float]:
+def is_singleton(value: object) -> TypeGuard[bool | int | float]:
     """
     Tests whether the value is a singleton.
 

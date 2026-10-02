@@ -17,10 +17,10 @@ import configparser
 import logging
 import re
 import sys
-from collections.abc import Collection, KeysView, Mapping
+from collections.abc import Collection, KeysView, Mapping, MutableMapping
 from datetime import datetime
 from inspect import getfullargspec
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from spinn_utilities.configs import CamelCaseConfigParser
 from spinn_utilities.local_time_zone import LOCAL
@@ -292,7 +292,8 @@ class FormatAdapter(logging.LoggerAdapter):
             self.do_log(level, message, (), **log_kwargs)
 
     @overrides(logging.LoggerAdapter.process, extend_doc=False)
-    def process(self, msg: object, kwargs: Any) -> tuple[object, dict]:
+    def process(self, msg: object, kwargs: MutableMapping[str, object])\
+            -> tuple[object, dict]:
         """
         Process the logging message and keyword arguments passed in to a
         logging call to insert contextual information. You can either

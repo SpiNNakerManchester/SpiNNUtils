@@ -15,7 +15,6 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator, Sequence, Sized
 from typing import (
-    Any,
     Generic,
     TypeAlias,
     TypeGuard,
@@ -99,7 +98,7 @@ class RangedList(AbstractList[T], Generic[T]):
         self._ranged_based: bool | None = None
         self.set_value(value, use_list_as_value=use_list_as_value)
 
-    def __length(self, value: Any) -> int:
+    def __length(self, value: object) -> int:
         if callable(value):
             return self._size
         if not isinstance(value, Sized):

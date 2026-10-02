@@ -14,7 +14,7 @@
 
 from collections import OrderedDict
 from collections.abc import Iterable, Iterator, MutableSet
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 #: :meta private:
 T = TypeVar("T")
@@ -71,7 +71,7 @@ class OrderedSet(MutableSet, Generic[T]):
     def __len__(self) -> int:
         return len(self._map)
 
-    def __contains__(self, key: Any) -> bool:
+    def __contains__(self, key: object) -> bool:
         return key in self._map
 
     def update(self, iterable: Iterable[T]) -> None:

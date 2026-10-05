@@ -18,14 +18,16 @@ from configparser import NoOptionError
 import appdirs
 
 from spinn_utilities import conf_loader
-from spinn_utilities.configs import CamelCaseConfigParser
+from spinn_utilities.configs.camel_case_config_parser import (
+    CamelCaseConfigParser,
+)
 from spinn_utilities.configs.no_config_found_exception import (
     NoConfigFoundException,
 )
 from spinn_utilities.configs.two_user_configs_exception import (
     TwoUserConfigsException,
 )
-from spinn_utilities.data import UtilsDataView
+from spinn_utilities.data.utils_data_view import UtilsDataView
 from spinn_utilities.exceptions import ConfigException
 from spinn_utilities.log import (
     ConfiguredFilter,

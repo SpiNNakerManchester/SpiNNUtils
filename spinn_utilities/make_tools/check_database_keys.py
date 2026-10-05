@@ -14,7 +14,7 @@
 
 import os
 
-from spinn_utilities.data import UtilsDataView
+from spinn_utilities.data.utils_data_view import UtilsDataView
 
 
 def check_all_log_database_keys() -> None:

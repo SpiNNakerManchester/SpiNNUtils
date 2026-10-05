@@ -19,8 +19,10 @@ import os
 import appdirs
 
 from spinn_utilities import log
-from spinn_utilities.configs import (
+from spinn_utilities.configs.camel_case_config_parser import (
     CamelCaseConfigParser,
+)
+from spinn_utilities.configs.unexpected_config_exception import (
     UnexpectedConfigException,
 )
 

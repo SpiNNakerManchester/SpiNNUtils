@@ -51,9 +51,10 @@ class ImportChecker:
 
     def _check_dir_import(self) -> None:
         # Note the parent of each node
+        parents = {}
         for node in ast.walk(self.__ast_tree):
             for child in ast.iter_child_nodes(node):
-                child.parent = node
+                parents[child] = node
         for node in ast.walk(self.__ast_tree):
             if isinstance(node, ast.ImportFrom):
                 module = node.module
@@ -67,8 +68,8 @@ class ImportChecker:
                         py_file = os.path.join(dir, name.name + ".py")
                         if os.path.exists(py_file):
                             ok = True
-                    if isinstance(node.parent, ast.If):
-                        if "TYPE_CHECKING" in str(node.parent):
+                    if isinstance(parents[node], ast.If):
+                        if "TYPE_CHECKING" in str(parents[node]):
                             ok = True
                     if ok:
                         continue

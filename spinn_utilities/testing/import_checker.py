@@ -21,7 +21,7 @@ class ImportChecker:
        :param dir_path: Path to the top level directory
        """
         self.__dir_path = dir_path
-        self.__parent, self.__repo = os.path.split(dir_path)
+        self.__parent = os.path.basename(dir_path)
         self.__file_errors = 0
         self.__all_errors = 0
         # temp values until set on check_file
@@ -60,12 +60,12 @@ class ImportChecker:
                 module = node.module
                 assert module is not None
                 module = module.replace(".", os.sep)
-                dir = os.path.join(self.__parent, module)
-                init = os.path.join(dir, "__init__.py")
+                the_dir = os.path.join(self.__parent, module)
+                init = os.path.join(the_dir, "__init__.py")
                 if os.path.isfile(init):
                     ok = False
                     for name in node.names:
-                        py_file = os.path.join(dir, name.name + ".py")
+                        py_file = os.path.join(the_dir, name.name + ".py")
                         if os.path.exists(py_file):
                             ok = True
                     if isinstance(parents[node], ast.If):
@@ -82,7 +82,7 @@ class ImportChecker:
 
         :return: Number of errors found
         """
-        for root, dir_names, files in os.walk(self.__dir_path):
+        for root, _, files in os.walk(self.__dir_path):
             for file_name in files:
                 if file_name.endswith(".py"):
                     self.__filepath = os.path.join(root, file_name)

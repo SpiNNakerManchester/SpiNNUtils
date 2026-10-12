@@ -21,7 +21,7 @@ class ImportChecker:
        :param dir_path: Path to the top level directory
        """
         self.__dir_path = dir_path
-        self.__parent = os.path.basename(dir_path)
+        self.__parent = os.path.dirname(dir_path)
         self.__file_errors = 0
         self.__all_errors = 0
         # temp values until set on check_file
@@ -91,8 +91,7 @@ class ImportChecker:
 
 
 if __name__ == "__main__":
-    dir_checker = ImportChecker(
-        "/home/brenninc/spinnaker/PACMAN/pacman")
+    dir_checker = ImportChecker("")
     errors = dir_checker.check_dir()
     if errors:
         raise AssertionError(errors)

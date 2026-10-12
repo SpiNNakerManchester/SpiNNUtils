@@ -82,6 +82,9 @@ class ImportChecker:
                         py_file = os.path.join(the_dir, name.name + ".py")
                         if os.path.exists(py_file):
                             ok = True
+                    # once installed this is what TYPE_CHECKING looks like
+                    if "object at" in str(node):
+                        continue
                     if isinstance(parents[node], ast.If):
                         if "TYPE_CHECKING" in str(parents[node]):
                             ok = True

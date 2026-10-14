@@ -30,10 +30,11 @@ class ImportChecker:
     Importing from init files in test and scripts is fine.
     """
 
-    def __init__(self, dir_path: str, ) -> None:
+    def __init__(
+            self, dir_path: str, exceptions: list[str] | None = None) -> None:
         """
-       :param dir_path: Path to the top level directory
-       """
+        :param dir_path: Path to the top level directory
+        """
         self.__dir_path = dir_path
         self.__parent = os.path.dirname(dir_path)
         self.__file_errors = 0
@@ -42,6 +43,10 @@ class ImportChecker:
         self.__filepath = "TOBESET"
         self.__file_errors = 0
         self.__ast_tree = ast.AST()
+        if exceptions:
+            self.__exceptions = exceptions
+        else:
+            self.__exceptions = []
 
     def _check_file(self) -> None:
         self.__file_errors = 0
@@ -82,16 +87,21 @@ class ImportChecker:
                         py_file = os.path.join(the_dir, name.name + ".py")
                         if os.path.exists(py_file):
                             ok = True
+                    node_str = str(node)
                     # once installed this is what TYPE_CHECKING looks like
-                    if "object at" in str(node):
+                    if "object at" in node_str:
                         continue
                     if isinstance(parents[node], ast.If):
                         if "TYPE_CHECKING" in str(parents[node]):
                             ok = True
+                    for exception in self.__exceptions:
+                        if exception in node_str:
+                            ok = True
+                            continue
                     if ok:
                         continue
                     self._print_file_name()
-                    print("\t", repr(node))
+                    print("\t", node_str)
 
     def check_dir(self) -> int:
         """

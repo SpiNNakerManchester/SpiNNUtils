@@ -68,7 +68,7 @@ class ImportChecker:
         self.__all_errors += 1
         self.__file_errors += 1
 
-    def _check_dir_import(self) -> None:
+    def _check_dir_import_old(self) -> None:
         # Note the parent of each node
         parents = {}
         for node in ast.walk(self.__ast_tree):
@@ -102,6 +102,47 @@ class ImportChecker:
                         continue
                     self._print_file_name()
                     print("\t", node_str)
+
+    def _check_dir_import(self) -> None:
+        # Note the parent of each node
+        parents = {}
+        for node in ast.walk(self.__ast_tree):
+            for child in ast.iter_child_nodes(node):
+                parents[child] = node
+        for node in ast.walk(self.__ast_tree):
+            if not isinstance(node, ast.ImportFrom):
+                continue
+
+            module = node.module
+            assert module is not None
+            module = module.replace(".", os.sep)
+            the_dir = os.path.join(self.__parent, module)
+            init = os.path.join(the_dir, "__init__.py")
+            # not actually an import from init
+            if init == self.__filepath:
+                return
+            if not os.path.isfile(init):
+                continue
+
+            # Skip is inside the TYPE_CHECKING
+            # once installed this is what TYPE_CHECKING looks like
+            if "object at" in str(node):
+                continue
+            if isinstance(parents[node], ast.If):
+                if "TYPE_CHECKING" in str(parents[node]):
+                    continue
+
+            # check the import is actually in the init
+            in_init = False
+            with open(init, "r", encoding="utf-8") as file:
+                for line in file:
+                    for name in node.names:
+                        if name.name in line:
+                            in_init = True
+
+            if in_init:
+                self._print_file_name()
+                print("\t", node)
 
     def check_dir(self) -> int:
         """

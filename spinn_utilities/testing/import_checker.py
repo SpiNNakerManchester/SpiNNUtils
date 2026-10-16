@@ -68,47 +68,13 @@ class ImportChecker:
         self.__all_errors += 1
         self.__file_errors += 1
 
-    def _check_dir_import_old(self) -> None:
-        # Note the parent of each node
-        parents = {}
-        for node in ast.walk(self.__ast_tree):
-            for child in ast.iter_child_nodes(node):
-                parents[child] = node
-        for node in ast.walk(self.__ast_tree):
-            if isinstance(node, ast.ImportFrom):
-                module = node.module
-                assert module is not None
-                module = module.replace(".", os.sep)
-                the_dir = os.path.join(self.__parent, module)
-                init = os.path.join(the_dir, "__init__.py")
-                if os.path.isfile(init):
-                    ok = False
-                    for name in node.names:
-                        py_file = os.path.join(the_dir, name.name + ".py")
-                        if os.path.exists(py_file):
-                            ok = True
-                    node_str = str(node)
-                    # once installed this is what TYPE_CHECKING looks like
-                    if "object at" in node_str:
-                        continue
-                    if isinstance(parents[node], ast.If):
-                        if "TYPE_CHECKING" in str(parents[node]):
-                            ok = True
-                    for exception in self.__exceptions:
-                        if exception in node_str:
-                            ok = True
-                            continue
-                    if ok:
-                        continue
-                    self._print_file_name()
-                    print("\t", node_str)
-
     def _check_dir_import(self) -> None:
         # Note the parent of each node
         parents = {}
         for node in ast.walk(self.__ast_tree):
             for child in ast.iter_child_nodes(node):
                 parents[child] = node
+
         for node in ast.walk(self.__ast_tree):
             if not isinstance(node, ast.ImportFrom):
                 continue
@@ -120,7 +86,7 @@ class ImportChecker:
             init = os.path.join(the_dir, "__init__.py")
             # not actually an import from init
             if init == self.__filepath:
-                return
+                continue
             if not os.path.isfile(init):
                 continue
 
@@ -133,16 +99,28 @@ class ImportChecker:
                     continue
 
             # check the import is actually in the init
-            in_init = False
+            ok = True
             with open(init, "r", encoding="utf-8") as file:
                 for line in file:
                     for name in node.names:
                         if name.name in line:
-                            in_init = True
+                            ok = False
 
-            if in_init:
+            if ok:
+                continue
+
+            # check for import of another whole init
+            # These appear not to be fully imported right away
+            for name in node.names:
+                link_init = os.path.join(the_dir, name.name, "__init__.py")
+                if os.path.exists(link_init):
+                    # print(link_init)
+                    ok = True
+
+            if not ok:
                 self._print_file_name()
                 print("\t", node)
+
 
     def check_dir(self) -> int:
         """

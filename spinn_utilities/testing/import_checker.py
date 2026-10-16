@@ -30,8 +30,7 @@ class ImportChecker:
     Importing from init files in test and scripts is fine.
     """
 
-    def __init__(
-            self, dir_path: str, exceptions: list[str] | None = None) -> None:
+    def __init__(self, dir_path: str) -> None:
         """
         :param dir_path: Path to the top level directory
         """

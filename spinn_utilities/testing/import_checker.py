@@ -18,7 +18,7 @@ import os
 
 class ImportChecker:
     """
-    Checks a directory for imports that may lead to import for partial
+    Checks a directory for imports that may lead to import from partial
 
     Any imports from init files in the same repository is dangerous.
     These require the init to be imported before some of the code files.
@@ -71,9 +71,11 @@ class ImportChecker:
                 parents[child] = node
 
         for node in ast.walk(self.__ast_tree):
+            # only import nodes are of interest
             if not isinstance(node, ast.ImportFrom):
                 continue
 
+            # check if the import is from an init file
             module = node.module
             assert module is not None
             module = module.replace(".", os.sep)

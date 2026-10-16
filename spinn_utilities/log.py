@@ -22,7 +22,9 @@ from datetime import datetime
 from inspect import getfullargspec
 from typing import Any, ClassVar
 
-from spinn_utilities.configs import CamelCaseConfigParser
+from spinn_utilities.configs.camel_case_config_parser import (
+    CamelCaseConfigParser,
+)
 from spinn_utilities.local_time_zone import LOCAL
 
 from .log_store import LogStore

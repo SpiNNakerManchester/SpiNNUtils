@@ -121,7 +121,6 @@ class ImportChecker:
                 self._print_file_name()
                 print("\t", node)
 
-
     def check_dir(self) -> int:
         """
         Checks the directory

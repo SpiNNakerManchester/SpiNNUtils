@@ -43,10 +43,6 @@ class ImportChecker:
         self.__filepath = "TOBESET"
         self.__file_errors = 0
         self.__ast_tree = ast.AST()
-        if exceptions:
-            self.__exceptions = exceptions
-        else:
-            self.__exceptions = []
 
     def _check_file(self) -> None:
         self.__file_errors = 0

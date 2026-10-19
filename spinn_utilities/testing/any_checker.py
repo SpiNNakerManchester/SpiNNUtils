@@ -18,16 +18,12 @@ import os
 
 class AnyChecker:
     """
-    Checks a directory for imports that may lead to import from partial
+    Checks a directory for imports of "Any"
 
-    Any imports from init files in the same repository is dangerous.
-    These require the init to be imported before some of the code files.
-    Which in turn increases the risk of import from partial errors.
+    This is intended to find from typing import Any
+    but actually just looks for the "Any"
 
-    Imports inside If TYPE_CHECKER can import from init
-    as circular imports are allowed here.
-
-    Importing from init files in test and scripts is fine.
+    Can be provided exceptions
     """
 
     def __init__(self, dir_path: str, exceptions: list[str] | None = None) -> None:
@@ -81,14 +77,8 @@ class AnyChecker:
 
 
 if __name__ == "__main__":
-    exceptions = [
-        # ArrayLike does not nest as needed
-        "abstract_list.py",
-        # citation is pythonic and not worth fixing
-        "citation_updater_and_doi_generator.py",
-        "citation_aggregator.py"""
-    ]
-    dir_checker = AnyChecker("/home/brenninc/spinnaker/SpiNNUtils/spinn_utilities",
+    exceptions = []
+    dir_checker = AnyChecker("PATH_HERE",
                              exceptions)
     errors = dir_checker.check_dir()
     if errors:

@@ -20,7 +20,7 @@ from typing import Literal
 
 from typing_extensions import Self
 
-from spinn_utilities.data import UtilsDataView
+from spinn_utilities.data.utils_data_view import UtilsDataView
 from spinn_utilities.log import FormatAdapter
 
 from .file_converter import FORMAT_EXP, TOKEN

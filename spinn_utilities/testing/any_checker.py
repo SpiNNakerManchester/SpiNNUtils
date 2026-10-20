@@ -37,8 +37,6 @@ class AnyChecker:
             self.__exceptions = exceptions
         else:
             self.__exceptions = []
-            # temp values until set on check_file
-        self.__filepath = "TOBESET"
 
     def _check_file(self, filepath: str) -> None:
         with open(filepath, "r", encoding="utf-8") as file:
@@ -78,9 +76,9 @@ class AnyChecker:
 
 
 if __name__ == "__main__":
-    exceptions: list[str] = []
+    local_exceptions: list[str] = []
     dir_checker = AnyChecker("PATH_HERE",
-                             exceptions)
+                             local_exceptions)
     errors = dir_checker.check_dir()
     if errors:
         raise AssertionError(errors)

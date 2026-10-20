@@ -77,7 +77,7 @@ class AnyChecker:
 
 
 if __name__ == "__main__":
-    exceptions = []
+    exceptions: list[str] = []
     dir_checker = AnyChecker("PATH_HERE",
                              exceptions)
     errors = dir_checker.check_dir()

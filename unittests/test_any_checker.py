@@ -34,6 +34,10 @@ class TestAnyChecker(unittest.TestCase):
         exceptions: list[str] = [
             # ArrayLike does not nest as needed
             "abstract_list.py",
+            # https://github.com/SpiNNakerManchester/SpiNNUtils/issues/402
+            "classproperty.py",
+            # https://github.com/SpiNNakerManchester/SpiNNUtils/issues/401
+            "safe_eval.py",
         ]
         code_dir = os.path.join(repo_dir, "spinn_utilities")
         checker = AnyChecker(code_dir, exceptions)

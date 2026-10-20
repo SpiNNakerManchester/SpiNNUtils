@@ -31,7 +31,7 @@ class TestAnyChecker(unittest.TestCase):
         abs_class_file = os.path.abspath(class_file)
         unittest_dir = os.path.dirname(abs_class_file)
         repo_dir = os.path.dirname(unittest_dir)
-        exceptions = [
+        exceptions: list[str] = [
             # ArrayLike does not nest as needed
             "abstract_list.py",
             # citation is pythonic and not worth fixing

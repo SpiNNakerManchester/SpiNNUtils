@@ -14,7 +14,7 @@
 
 from collections.abc import Callable
 from types import ModuleType
-
+from typing import Any
 
 class SafeEval:
     """
@@ -68,7 +68,7 @@ class SafeEval:
         env.update(kwargs)
         self._environment = env
 
-    def eval(self, expression: str, **kwargs: object) -> object:
+    def eval(self, expression: str, **kwargs: object) -> Any:
         """
         Evaluate an expression and return the result.
 

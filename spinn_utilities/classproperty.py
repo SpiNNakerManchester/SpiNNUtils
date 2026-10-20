@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from collections.abc import Callable
-
+from typing import Any
 
 class _ClassPropertyDescriptor:
     """
@@ -27,7 +27,7 @@ class _ClassPropertyDescriptor:
         self.method = method
 
     def __get__(
-            self, obj: object | None, klass: type | None = None) -> object:
+            self, obj: object | None, klass: type | None = None) -> Any:
         if klass is None:
             klass = type(obj)
         return self.method.__get__(obj, klass)()

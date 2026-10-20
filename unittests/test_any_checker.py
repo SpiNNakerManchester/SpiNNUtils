@@ -36,7 +36,7 @@ class TestAnyChecker(unittest.TestCase):
             "abstract_list.py",
             # citation is pythonic and not worth fixing
             "citation_updater_and_doi_generator.py",
-            "citation_aggregator.py"""
+            "citation_aggregator.py"
         ]
         code_dir = os.path.join(repo_dir, "spinn_utilities")
         checker = AnyChecker(code_dir, exceptions)

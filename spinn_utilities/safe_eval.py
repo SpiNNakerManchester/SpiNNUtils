@@ -16,6 +16,7 @@ from collections.abc import Callable
 from types import ModuleType
 from typing import Any
 
+
 class SafeEval:
     """
     This provides expression evaluation capabilities while allowing the

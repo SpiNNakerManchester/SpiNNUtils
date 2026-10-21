@@ -15,6 +15,7 @@
 from collections.abc import Callable
 from typing import Any
 
+
 class _ClassPropertyDescriptor:
     """
     A class to handle the management of class properties.

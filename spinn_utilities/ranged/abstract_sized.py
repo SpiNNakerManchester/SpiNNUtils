@@ -16,7 +16,7 @@ import itertools
 import logging
 import sys
 from collections.abc import Sequence, Sized
-from typing import Any, SupportsInt, TypeAlias, TypeGuard
+from typing import SupportsInt, TypeAlias, TypeGuard
 
 import numpy
 
@@ -67,7 +67,7 @@ class AbstractSized:
         return self._size
 
     @staticmethod
-    def _is_id_type(the_id: Any) -> TypeGuard[int | SupportsInt]:
+    def _is_id_type(the_id: object) -> TypeGuard[int | SupportsInt]:
         """
         Check if the given ID has a type acceptable for IDs.
         """

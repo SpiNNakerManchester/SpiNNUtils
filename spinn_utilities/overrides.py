@@ -14,10 +14,10 @@
 
 from collections.abc import Callable
 from types import FunctionType, MethodType
-from typing import Any, TypeVar
+from typing import TypeVar
 
 #: :meta private:
-Method = TypeVar("Method", bound=Callable[..., Any])
+Method = TypeVar("Method", bound=Callable[..., object])
 
 
 #  pylint: disable=invalid-name

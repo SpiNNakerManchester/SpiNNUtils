@@ -28,7 +28,7 @@ class _ClassPropertyDescriptor:
         self.method = method
 
     def __get__(
-            self, obj: Any | None, klass: type | None = None) -> Any:
+            self, obj: object | None, klass: type | None = None) -> Any:
         if klass is None:
             klass = type(obj)
         return self.method.__get__(obj, klass)()

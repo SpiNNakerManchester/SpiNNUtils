@@ -61,7 +61,7 @@ def require_subclass(required_class: type) -> Callable[[type], type]:
 
         def __init_subclass__(
                 cls: type, allow_derivation: bool = False,
-                **kwargs: dict[str, object]) -> None:
+                **kwargs: object) -> None:
             if not issubclass(cls, required_class) and not allow_derivation:
                 raise _RequiresSubclassTypeError(
                     f"{cls.__name__} must be a subclass "

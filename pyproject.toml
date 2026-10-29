@@ -62,7 +62,6 @@ Spin2_code = "https://gitlab.com/spinnaker2/SpiNNUtils2"
 [project.optional-dependencies]
 test = [
     "pytest-cov",
-    "platformdirs != 4.14.0",
     "testfixtures",
     "httpretty != 1.0.0",
     "types-appdirs",

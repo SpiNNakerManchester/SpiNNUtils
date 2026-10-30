@@ -47,7 +47,7 @@ class SafeEval:
     __slots__ = ["_environment"]
 
     def __init__(self, *args: Callable | ModuleType,
-                 **kwargs: Any) -> None:
+                 **kwargs: object) -> None:
         """
         :param args:
             The symbols to use to populate the global reference table.
@@ -63,13 +63,13 @@ class SafeEval:
             symbols (e.g., constants in numpy) do not have names that we can
             otherwise look up easily.
         """
-        env: dict[Any, Any] = {}
+        env: dict[str, object] = {}
         for item in args:
             env[item.__name__] = item
         env.update(kwargs)
         self._environment = env
 
-    def eval(self, expression: str, **kwargs: Any) -> Any:
+    def eval(self, expression: str, **kwargs: object) -> Any:
         """
         Evaluate an expression and return the result.
 
